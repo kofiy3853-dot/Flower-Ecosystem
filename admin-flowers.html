@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin panel for managing flower knowledge profiles in the Flower Ecosystem">
+    <title>Admin - Flowers | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .admin-layout { display:grid; grid-template-columns:220px 1fr; min-height:calc(100vh - 60px); }
+        .admin-sidebar { background:var(--bg-dark); color:white; padding:1.5rem; }
+        .admin-sidebar h3 { color:white; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; opacity:0.6; margin-bottom:1rem; }
+        .admin-sidebar a { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.75rem; color:rgba(255,255,255,0.8); text-decoration:none; border-radius:8px; font-size:0.9rem; margin-bottom:0.3rem; }
+        .admin-sidebar a:hover { background:rgba(255,255,255,0.1); color:white; }
+        .admin-sidebar a.active { background:rgba(255,255,255,0.15); color:white; font-weight:600; }
+        .admin-main { padding:1.5rem 2rem; overflow-y:auto; }
+        .admin-main h1 { font-size:1.5rem; margin-bottom:0.25rem; }
+        .admin-main .sub { color:var(--text-light); font-size:0.9rem; margin-bottom:1.5rem; }
+        .admin-table { width:100%; border-collapse:collapse; }
+        .admin-table th, .admin-table td { padding:0.6rem 0.8rem; border-bottom:1px solid var(--border-color); text-align:left; font-size:0.85rem; }
+        .admin-table th { font-weight:600; color:var(--text-light); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.03em; background:var(--bg-light); }
+        .admin-table tr:hover td { background:var(--bg-light); }
+        .admin-toolbar { display:flex; gap:0.5rem; align-items:center; margin-bottom:1rem; flex-wrap:wrap; justify-content:space-between; }
+        .admin-toolbar .left { display:flex; gap:0.5rem; align-items:center; }
+        .admin-search { padding:0.5rem 0.75rem 0.5rem 2rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.85rem; width:200px; }
+        .admin-form { max-width:700px; }
+        .admin-form .row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
+        .admin-form .row.three { grid-template-columns:1fr 1fr 1fr; }
+        .admin-form label { display:block; font-size:0.8rem; font-weight:600; color:var(--text-light); margin-bottom:0.3rem; }
+        .admin-form input, .admin-form select, .admin-form textarea { width:100%; padding:0.55rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.85rem; box-sizing:border-box; }
+        .admin-form textarea { min-height:80px; resize:vertical; }
+        .admin-form .full { grid-column:1/-1; }
+        .admin-tags { display:flex; flex-wrap:wrap; gap:0.35rem; }
+        .admin-tag { font-size:0.75rem; padding:0.15rem 0.5rem; border-radius:20px; background:var(--bg-light); border:1px solid var(--border-color); display:inline-flex; align-items:center; gap:0.3rem; }
+        .admin-tag .remove { cursor:pointer; opacity:0.5; }
+        .admin-tag .remove:hover { opacity:1; color:#e74c3c; }
+        .admin-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; display:none; align-items:center; justify-content:center; padding:1rem; }
+        .admin-modal-overlay.show { display:flex; }
+        .admin-modal { background:var(--bg-white); border-radius:16px; max-width:750px; width:100%; max-height:90vh; overflow-y:auto; padding:1.5rem; }
+        .admin-modal h2 { font-size:1.2rem; margin-bottom:1rem; }
+        .admin-actions { display:flex; gap:0.5rem; }
+        .admin-actions button { padding:0.3rem 0.6rem; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-white); cursor:pointer; font-size:0.8rem; }
+        .admin-actions button:hover { background:var(--bg-light); }
+        .admin-actions .delete { color:#e74c3c; border-color:#e74c3c40; }
+        .admin-actions .delete:hover { background:#e74c3c10; }
+        .empty-state { text-align:center; padding:3rem; color:var(--text-light); }
+        .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; }
+        @media(max-width:768px){
+            .admin-layout { grid-template-columns:1fr; }
+            .admin-sidebar { display:none; }
+            .admin-form .row { grid-template-columns:1fr; }
+            .admin-form .row.three { grid-template-columns:1fr; }
+            .admin-toolbar { flex-direction:column; align-items:stretch; }
+            .admin-search { width:100%; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+    <div class="admin-layout">
+        <div class="admin-sidebar">
+            <h3>Knowledge Admin</h3>
+            <a href="#" class="active" onclick="showList();return false;"><i class="bi bi-flower1"></i> Flowers</a>
+            <a href="#" onclick="showCategories();return false;"><i class="bi bi-tags"></i> Categories</a>
+            <a href="flower-knowledge-hub.html"><i class="bi bi-book"></i> View Hub</a>
+        </div>
+        <div class="admin-main">
+            <div id="adminList">
+                <div class="admin-toolbar">
+                    <div class="left">
+                        <h1 style="margin:0;font-size:1.4rem;">🌸 Flowers</h1>
+                        <input type="text" class="admin-search" id="adminSearch" placeholder="Search flowers..." oninput="renderTable()" style="background:var(--bg-light) url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" fill=\"%23999\" viewBox=\"0 0 16 16\"><path d=\"M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85-.017.016zm-5.242.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10z\"/></svg>') no-repeat 0.6rem center;padding-left:2rem;">
+                    </div>
+                    <button class="btn btn-primary" onclick="openAdd()" style="font-size:0.85rem;padding:0.5rem 1rem;border-radius:8px;">+ Add Flower</button>
+                </div>
+                <div id="adminTableWrap"></div>
+            </div>
+            <div id="adminCategories" style="display:none;">
+                <div class="admin-toolbar"><h1 style="margin:0;font-size:1.4rem;">🏷️ Categories</h1></div>
+                <div id="adminCatTableWrap"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-modal-overlay" id="adminModal">
+        <div class="admin-modal">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <h2 id="adminModalTitle" style="margin:0;">Edit Flower</h2>
+                <button style="background:none;border:none;font-size:1.5rem;cursor:pointer;" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="adminModalBody"></div>
+        </div>
+    </div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script>
+        let allFlowers = [], categories = [], editingSlug = null;
+
+        document.addEventListener('componentLoaded', async () => {
+            try {
+                const token = getToken();
+                if (!token) { document.querySelector('.admin-main').innerHTML = '<div class="empty-state"><i class="bi bi-shield-lock"></i><h2>Login Required</h2><p style="color:var(--text-light);">Please log in as admin.</p><a href="login.html" class="btn btn-primary" style="border-radius:50px;margin-top:1rem;">Go to Login</a></div>'; return; }
+                [allFlowers, categories] = await Promise.all([
+                    api.apiFetch('/api/admin/knowledge/flowers', ''),
+                    api.apiFetch('/api/admin/knowledge/categories', '')
+                ]);
+                renderTable();
+                renderCatTable();
+            } catch(e) { document.querySelector('.admin-main').innerHTML = '<div class="empty-state"><i class="bi bi-exclamation-triangle"></i><h2>Access Denied</h2><p style="color:var(--text-light);">You need admin privileges.</p></div>'; }
+        });
+
+        function renderTable() {
+            const q = (document.getElementById('adminSearch').value || '').toLowerCase();
+            const filtered = allFlowers.filter(f => f.common_name.toLowerCase().includes(q) || (f.scientific_name || '').toLowerCase().includes(q));
+            const wrap = document.getElementById('adminTableWrap');
+            if (!filtered.length) { wrap.innerHTML = '<div class="empty-state"><i class="bi bi-flower1"></i><p>No flowers found.</p></div>'; return; }
+            wrap.innerHTML = `<table class="admin-table"><thead><tr><th>Flower</th><th>Scientific Name</th><th>Status</th><th>Actions</th></tr></thead><tbody>${filtered.map(f => `<tr><td><strong>${f.emoji || '🌸'} ${f.common_name}</strong></td><td style="font-style:italic;color:var(--text-light);">${f.scientific_name || '-'}</td><td>${f.is_published ? '<span style="color:#27ae60;">● Published</span>' : '<span style="color:#e74c3c;">● Hidden</span>'}</td><td><div class="admin-actions"><button onclick="openEdit('${f.slug}')"><i class="bi bi-pencil"></i></button><button class="delete" onclick="deleteFlower('${f.slug}')"><i class="bi bi-trash"></i></button></div></td></tr>`).join('')}</tbody></table>`;
+        }
+
+        function renderCatTable() {
+            const wrap = document.getElementById('adminCatTableWrap');
+            if (!categories.length) { wrap.innerHTML = '<div class="empty-state"><p>No categories.</p></div>'; return; }
+            wrap.innerHTML = `<table class="admin-table"><thead><tr><th>Icon</th><th>Name</th><th>Slug</th><th>Description</th></tr></thead><tbody>${categories.map(c => `<tr><td>${c.icon || '🌸'}</td><td><strong>${c.name}</strong></td><td style="color:var(--text-light);">${c.slug}</td><td style="color:var(--text-light);font-size:0.8rem;">${c.description || ''}</td></tr>`).join('')}</tbody></table>`;
+        }
+
+        function showList() { document.getElementById('adminList').style.display = 'block'; document.getElementById('adminCategories').style.display = 'none'; }
+        function showCategories() { document.getElementById('adminList').style.display = 'none'; document.getElementById('adminCategories').style.display = 'block'; renderCatTable(); }
+
+        function openAdd() {
+            editingSlug = null;
+            document.getElementById('adminModalTitle').textContent = 'Add New Flower';
+            document.getElementById('adminModalBody').innerHTML = buildForm({});
+            document.getElementById('adminModal').classList.add('show');
+        }
+
+        async function openEdit(slug) {
+            editingSlug = slug;
+            document.getElementById('adminModalTitle').textContent = 'Edit Flower';
+            try {
+                const f = await api.apiFetch('/api/admin/knowledge/flowers/' + slug, '');
+                document.getElementById('adminModalBody').innerHTML = buildForm(f);
+                document.getElementById('adminModal').classList.add('show');
+            } catch(e) { alert('Failed to load flower.'); }
+        }
+
+        function buildForm(f) {
+            const cats = categories.map(c => `<label style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.2rem 0.5rem;background:var(--bg-light);border-radius:6px;cursor:pointer;"><input type="checkbox" value="${c.id}" ${(f.category_ids||[]).includes(c.id)?'checked':''}> ${c.icon} ${c.name}</label>`).join('');
+            return `<div class="admin-form"><div class="row"><div><label>Slug *</label><input id="ffSlug" value="${f.slug||''}" ${f.slug?'readonly':''}></div><div><label>Common Name *</label><input id="ffName" value="${f.common_name||''}"></div></div><div class="row"><div><label>Scientific Name</label><input id="ffSci" value="${f.scientific_name||''}"></div><div><label>Emoji</label><input id="ffEmoji" value="${f.emoji||''}" maxlength="5"></div></div><div class="row"><div><label>Family</label><input id="ffFamily" value="${f.family||''}"></div><div><label>Origin</label><input id="ffOrigin" value="${f.origin||''}"></div></div><div class="row"><div><label>Sunlight</label><input id="ffSun" value="${f.sunlight||''}"></div><div><label>Water</label><input id="ffWater" value="${f.water||''}"></div></div><div class="row three"><div><label>Soil</label><input id="ffSoil" value="${f.soil||''}"></div><div><label>Difficulty</label><input id="ffDiff" value="${f.difficulty||''}"></div><div><label>Growth Rate</label><input id="ffGrowth" value="${f.growth_rate||''}"></div></div><div class="row"><div><label>Height</label><input id="ffHeight" value="${f.height||''}"></div><div><label>Bloom Season</label><select id="ffBloom"><option value="">Select...</option><option value="Spring" ${(f.bloom_season||'').includes('Spring')?'selected':''}>Spring</option><option value="Summer" ${(f.bloom_season||'').includes('Summer')?'selected':''}>Summer</option><option value="Fall" ${(f.bloom_season||'').includes('Fall')?'selected':''}>Fall</option><option value="Winter" ${(f.bloom_season||'').includes('Winter')?'selected':''}>Winter</option><option value="Spring-Fall" ${(f.bloom_season||'')==='Spring-Fall'?'selected':''}>Spring to Fall</option><option value="Spring-Frost" ${(f.bloom_season||'')==='Spring-Frost'?'selected':''}>Spring to Frost</option><option value="Summer-Fall" ${(f.bloom_season||'')==='Summer-Fall'?'selected':''}>Summer to Fall</option><option value="Year-round" ${(f.bloom_season||'')==='Year-round'?'selected':''}>Year-round</option></select></div></div><div class="row full"><label>Description</label><textarea id="ffDesc">${(f.description||'').replace(/</g,'&lt;')}</textarea></div><div class="row full"><label>Marketplace Tags (comma-separated)</label><input id="ffTags" value="${(f.marketplace_tags||[]).join(', ')}"></div><div class="row full"><label>Categories</label><div style="display:flex;flex-wrap:wrap;gap:0.4rem;">${cats}</div></div><div class="row full"><label>Benefits (one per line: type|description)</label><textarea id="ffBenefits" rows="4">${(f.benefits||[]).map(b => b.benefit_type + '|' + (b.description||'')).join('\n')}</textarea></div><div class="row full"><label>Care Tips (one per line: title|description)</label><textarea id="ffCare" rows="4">${(f.care_tips||[]).map(t => (t.title||'') + '|' + (t.description||'')).join('\n')}</textarea></div><div style="display:flex;gap:0.75rem;margin-top:1rem;"><button class="btn btn-primary" onclick="saveFlower()" style="border-radius:8px;">💾 Save</button><button class="btn btn-outline" onclick="closeModal()" style="border-radius:8px;">Cancel</button></div></div>`;
+        }
+
+        async function saveFlower() {
+            const g = id => document.getElementById(id).value;
+            const cbs = document.querySelectorAll('#adminModalBody input[type=checkbox]:checked');
+            const data = {
+                slug: g('ffSlug'), common_name: g('ffName'), scientific_name: g('ffSci'), family: g('ffFamily'),
+                origin: g('ffOrigin'), description: g('ffDesc'), image_url: g('ffImg'), emoji: g('ffEmoji'),
+                sunlight: g('ffSun'), water: g('ffWater'), soil: g('ffSoil'), difficulty: g('ffDiff'),
+                growth_rate: g('ffGrowth'), height: g('ffHeight'), bloom_season: g('ffBloom'),
+                marketplace_tags: g('ffTags').split(',').map(t => t.trim()).filter(Boolean),
+                category_ids: Array.from(cbs).map(c => parseInt(c.value)),
+                benefits: g('ffBenefits').split('\n').filter(Boolean).map(l => { const p = l.split('|'); return { benefit_type: p[0]?.trim(), description: p[1]?.trim(), sort_order: 0 }; }).filter(b => b.benefit_type),
+                care_tips: g('ffCare').split('\n').filter(Boolean).map(l => { const p = l.split('|'); return { title: p[0]?.trim(), description: p[1]?.trim(), sort_order: 0 }; }).filter(t => t.title)
+            };
+            if (!data.slug || !data.common_name) { alert('Slug and Common Name are required.'); return; }
+            try {
+                if (editingSlug) {
+                    await api.apiFetch('/api/admin/knowledge/flowers/' + editingSlug, 'PUT', data);
+                } else {
+                    await api.apiFetch('/api/admin/knowledge/flowers', 'POST', data);
+                }
+                closeModal();
+                const fresh = await api.apiFetch('/api/admin/knowledge/flowers', '');
+                allFlowers = fresh;
+                renderTable();
+            } catch(e) { alert('Save failed: ' + (e.message || e)); }
+        }
+
+        async function deleteFlower(slug) {
+            if (!confirm('Delete ' + slug + '? This cannot be undone.')) return;
+            try {
+                await api.apiFetch('/api/admin/knowledge/flowers/' + slug, 'DELETE');
+                allFlowers = allFlowers.filter(f => f.slug !== slug);
+                renderTable();
+            } catch(e) { alert('Delete failed.'); }
+        }
+
+        function closeModal() { document.getElementById('adminModal').classList.remove('show'); }
+        document.getElementById('adminModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+[
+    {
+        "id": "cat-bouquets",
+        "name": "Bouquets",
+        "tagline": "Curated arrangements for every moment",
+        "image": "https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=600&auto=format&fit=crop"
+    },
+    {
+        "id": "cat-roses",
+        "name": "Roses",
+        "tagline": "Timeless romance in every petal",
+        "image": "https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?q=80&w=600&auto=format&fit=crop"
+    },
+    {
+        "id": "cat-orchids",
+        "name": "Orchids",
+        "tagline": "Exotic & sophisticated blooms",
+        "image": "https://images.unsplash.com/photo-1522926193341-e9ffd686c60f?q=80&w=600&auto=format&fit=crop"
+    },
+    {
+        "id": "cat-wildflowers",
+        "name": "Wildflowers",
+        "tagline": "Natural & free-spirited",
+        "image": "https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?q=80&w=600&auto=format&fit=crop"
+    },
+    {
+        "id": "cat-succulents",
+        "name": "Succulents",
+        "tagline": "Low maintenance, high beauty",
+        "image": "https://images.unsplash.com/photo-1485955900006-10f4d324d411?q=80&w=600&auto=format&fit=crop"
+    },
+    {
+        "id": "cat-plants",
+        "name": "Indoor Plants",
+        "tagline": "Green your living space",
+        "image": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=600&auto=format&fit=crop"
+    }
+]

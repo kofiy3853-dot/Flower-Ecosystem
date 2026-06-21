@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plan and manage your virtual garden with flower care schedules and notes">
+    <meta property="og:title" content="My Garden Planner | Flower Ecosystem">
+    <meta property="og:description" content="Plan and manage your virtual garden with care schedules and notes.">
+    <meta property="og:type" content="website">
+    <title>My Garden Planner | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=17.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .gp-hero { background:linear-gradient(135deg, #27ae60, #1a7a42); padding:2.5rem 0; color:white; text-align:center; }
+        .gp-hero h1 { color:white; font-size:1.8rem; margin-bottom:0.25rem; }
+        .gp-hero p { opacity:0.85; font-size:0.95rem; }
+        .gp-empty { text-align:center; padding:3rem; color:var(--text-light); }
+        .gp-empty i { font-size:3rem; display:block; margin-bottom:1rem; }
+        .gp-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:1.25rem; margin-top:1.5rem; }
+        .gp-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; }
+        .gp-card h3 { font-size:1rem; margin-bottom:0.75rem; display:flex; align-items:center; justify-content:space-between; }
+        .gp-card h3 .gp-del { font-size:0.8rem; color:var(--text-light); cursor:pointer; padding:0.2rem; }
+        .gp-card h3 .gp-del:hover { color:#e74c3c; }
+        .gp-item { display:flex; align-items:center; gap:0.75rem; padding:0.5rem 0; border-bottom:1px solid var(--border-light); }
+        .gp-item:last-child { border-bottom:none; }
+        .gp-item img { width:44px; height:44px; border-radius:8px; object-fit:cover; }
+        .gp-item .gi-info { flex:1; }
+        .gp-item .gi-info strong { display:block; font-size:0.85rem; }
+        .gp-item .gi-info small { font-size:0.75rem; color:var(--text-light); }
+        .gp-item .gi-del { color:var(--text-light); cursor:pointer; font-size:0.85rem; padding:0.25rem; }
+        .gp-item .gi-del:hover { color:#e74c3c; }
+        .gp-add-form { display:flex; gap:0.5rem; margin-top:1rem; flex-wrap:wrap; }
+        .gp-add-form select, .gp-add-form input { padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.85rem; }
+        .gp-add-form select { flex:1; min-width:150px; }
+        .gp-add-form input[type=number] { width:60px; }
+        .gp-add-btn { border-radius:8px; padding:0.5rem 1rem; border:none; background:var(--primary-color); color:white; cursor:pointer; font-size:0.85rem; }
+        .gp-new-btn { border-radius:50px; padding:0.6rem 1.5rem; border:2px dashed var(--border-color); background:none; color:var(--text-light); cursor:pointer; font-size:0.9rem; display:inline-flex;align-items:center;gap:0.5rem;margin-top:1rem; }
+        .gp-new-btn:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .gp-login { text-align:center; padding:4rem 2rem; }
+        @media(max-width:768px){
+            .gp-grid { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+    <section class="gp-hero">
+        <div class="container">
+            <h1>🌱 My Garden Planner</h1>
+            <p>Plan your garden, track care schedules, and organize your favorite flowers</p>
+        </div>
+    </section>
+    <section class="section-padding">
+        <div class="container">
+            <div id="gpLogin" class="gp-login" style="display:none;">
+                <i class="bi bi-person-circle" style="font-size:3rem;display:block;margin-bottom:1rem;color:var(--text-light);"></i>
+                <h2>Login Required</h2>
+                <p style="color:var(--text-light);">Sign in to create and manage your garden plans.</p>
+                <a href="login.html?redirect=my-garden.html" class="btn btn-primary" style="border-radius:50px;margin-top:1rem;">Go to Login</a>
+            </div>
+            <div id="gpContent" style="display:none;">
+                <div id="gpEmpty" class="gp-empty">
+                    <i class="bi bi-tree"></i>
+                    <h3>No Gardens Yet</h3>
+                    <p style="color:var(--text-light);">Create your first garden plan to start organizing flowers.</p>
+                    <button class="gp-new-btn" onclick="createGarden()"><i class="bi bi-plus-lg"></i> Create My First Garden</button>
+                </div>
+                <div id="gpGrid" class="gp-grid"></div>
+                <div style="text-align:center;margin-top:1rem;"><button class="gp-new-btn" id="gpAddNewBtn" onclick="createGarden()" style="display:none;"><i class="bi bi-plus-lg"></i> New Garden</button></div>
+            </div>
+        </div>
+    </section>
+    <div id="footer-container"></div>
+    <div id="auth-modal-container"></div>
+
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script>
+        let plans = [], allFlowers = [];
+
+        document.addEventListener('componentLoaded', async () => {
+            if (!isLoggedIn()) {
+                document.getElementById('gpLogin').style.display = 'block';
+                return;
+            }
+            document.getElementById('gpContent').style.display = 'block';
+            try {
+                [plans, allFlowers] = await Promise.all([
+                    api.apiFetch('/api/garden/plans', ''),
+                    api.fetchKnowledgeFlowers()
+                ]);
+                renderGardens();
+            } catch(e) { console.error('Failed to load gardens:', e); }
+        });
+
+        function renderGardens() {
+            document.getElementById('gpEmpty').style.display = plans.length ? 'none' : 'block';
+            document.getElementById('gpAddNewBtn').style.display = plans.length ? 'inline-flex' : 'none';
+            const grid = document.getElementById('gpGrid');
+            if (!plans.length) { grid.innerHTML = ''; return; }
+            grid.innerHTML = plans.map(p => {
+                const items = (p.items || []).map(item => {
+                    const f = allFlowers.find(ff => ff.slug === item.flower_slug);
+                    return `<div class="gp-item"><img src="${f ? f.image_url : 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=100&auto=format&fit=crop'}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=100&auto=format&fit=crop'"><div class="gi-info"><strong>${f ? (f.emoji||'🌸')+' '+f.common_name : item.flower_slug}</strong><small>Qty: ${item.quantity || 1}${item.notes ? ' · ' + item.notes : ''}</small></div><span class="gi-del" onclick="removeItem('${p.id}','${item.id}')" title="Remove"><i class="bi bi-x"></i></span></div>`;
+                }).join('');
+                const addForm = `<div class="gp-add-form"><select id="sel-${p.id}"><option value="">Select flower...</option>${allFlowers.map(f => `<option value="${f.slug}">${f.emoji||'🌸'} ${f.common_name}</option>`).join('')}</select><input type="number" id="qty-${p.id}" value="1" min="1" style="width:50px;"><button class="gp-add-btn" onclick="addToGarden('${p.id}')">+</button></div>`;
+                return `<div class="gp-card"><h3><span>${p.name}</span><span class="gp-del" onclick="deleteGarden('${p.id}')" title="Delete garden"><i class="bi bi-trash"></i></span></h3>${items || '<div style="color:var(--text-light);font-size:0.85rem;text-align:center;padding:1rem;">No flowers yet. Add some below!</div>'}${addForm}</div>`;
+            }).join('');
+        }
+
+        async function createGarden() {
+            const name = prompt('Garden name:', 'My Garden');
+            if (!name) return;
+            try {
+                const p = await api.apiFetch('/api/garden/plans', 'POST', { name });
+                plans.push(p);
+                renderGardens();
+            } catch(e) { alert('Failed to create garden.'); }
+        }
+
+        async function addToGarden(planId) {
+            const sel = document.getElementById('sel-' + planId);
+            const qty = document.getElementById('qty-' + planId);
+            if (!sel.value) return;
+            try {
+                await api.apiFetch('/api/garden/plans/' + planId + '/items', 'POST', { flower_slug: sel.value, quantity: parseInt(qty.value) || 1 });
+                const fresh = await api.apiFetch('/api/garden/plans', '');
+                plans = fresh;
+                renderGardens();
+            } catch(e) { alert('Failed to add flower.'); }
+        }
+
+        async function removeItem(planId, itemId) {
+            try {
+                await api.apiFetch('/api/garden/plans/' + planId + '/items/' + itemId, 'DELETE');
+                plans = plans.map(p => {
+                    if (p.id === planId) p.items = (p.items || []).filter(i => i.id !== itemId);
+                    return p;
+                });
+                renderGardens();
+            } catch(e) { alert('Failed to remove item.'); }
+        }
+
+        async function deleteGarden(planId) {
+            if (!confirm('Delete this garden plan?')) return;
+            try {
+                await api.apiFetch('/api/garden/plans/' + planId, 'DELETE');
+                plans = plans.filter(p => p.id !== planId);
+                renderGardens();
+            } catch(e) { alert('Failed to delete garden.'); }
+        }
+    </script>
+</body>
+</html>

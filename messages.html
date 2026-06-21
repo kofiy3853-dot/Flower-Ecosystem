@@ -1,0 +1,164 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Messages - Chat with florists, sellers, and other members.">
+    <title>Messages | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .msg-layout { display:grid; grid-template-columns:300px 1fr; gap:0; height:calc(100vh - 200px); min-height:500px; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; }
+        .msg-sidebar { border-right:1px solid var(--border-color); overflow-y:auto; }
+        .msg-sidebar-header { padding:1rem; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; }
+        .msg-sidebar-header h3 { font-size:1rem; }
+        .conv-item { display:flex; gap:0.75rem; padding:0.75rem 1rem; cursor:pointer; border-bottom:1px solid var(--border-light); transition:background 0.15s; }
+        .conv-item:hover { background:var(--bg-light); }
+        .conv-item.active { background:var(--primary-light); }
+        .conv-avatar { width:40px; height:40px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+        .conv-info { flex:1; min-width:0; }
+        .conv-name { font-size:0.88rem; font-weight:500; }
+        .conv-preview { font-size:0.78rem; color:var(--text-light); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .conv-time { font-size:0.7rem; color:var(--text-muted); }
+        .conv-unread { width:8px; height:8px; border-radius:50%; background:var(--primary-color); flex-shrink:0; align-self:center; }
+        .msg-main { display:flex; flex-direction:column; }
+        .msg-header { padding:0.75rem 1rem; border-bottom:1px solid var(--border-color); display:flex; align-items:center; gap:0.75rem; }
+        .msg-header .name { font-weight:500; }
+        .msg-body { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column; gap:0.5rem; }
+        .msg-bubble { max-width:70%; padding:0.6rem 1rem; border-radius:12px; font-size:0.88rem; line-height:1.5; }
+        .msg-bubble.sent { align-self:flex-end; background:var(--primary-color); color:white; border-bottom-right-radius:4px; }
+        .msg-bubble.received { align-self:flex-start; background:var(--bg-light); border-bottom-left-radius:4px; }
+        .msg-time { font-size:0.65rem; opacity:0.7; margin-top:0.2rem; }
+        .msg-input { display:flex; gap:0.5rem; padding:0.75rem 1rem; border-top:1px solid var(--border-color); }
+        .msg-input input { flex:1; padding:0.6rem 1rem; border:1px solid var(--border-color); border-radius:20px; font-size:0.9rem; }
+        .msg-input input:focus { outline:none; border-color:var(--primary-color); }
+        .msg-empty { display:flex; align-items:center; justify-content:center; height:100%; color:var(--text-light); }
+        .login-prompt { text-align:center; padding:4rem 2rem; }
+        @media(max-width:768px) { .msg-layout { grid-template-columns:1fr; } .msg-sidebar { display:none; } .msg-sidebar.active { display:block; position:absolute; inset:0; z-index:10; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="section-padding" style="padding-top:1rem;">
+        <div class="container">
+            <div id="loginPrompt" class="login-prompt" style="display:none;">
+                <i class="bi bi-chat-dots" style="font-size:3rem;display:block;margin-bottom:1rem;color:var(--text-light);"></i>
+                <h2>Sign In Required</h2>
+                <p style="color:var(--text-light);">Sign in to access your messages.</p>
+                <a href="login.html" class="btn btn-primary">Sign In</a>
+            </div>
+            <div id="msgContent" style="display:none;">
+                <div class="msg-layout">
+                    <div class="msg-sidebar" id="msgSidebar">
+                        <div class="msg-sidebar-header"><h3>Messages</h3></div>
+                        <div id="convList"></div>
+                    </div>
+                    <div class="msg-main">
+                        <div class="msg-header" id="msgHeader" style="display:none;">
+                            <div class="conv-avatar" id="msgAvatar"></div>
+                            <div><div class="name" id="msgName"></div></div>
+                        </div>
+                        <div class="msg-body" id="msgBody">
+                            <div class="msg-empty"><p>Select a conversation</p></div>
+                        </div>
+                        <div class="msg-input" id="msgInput" style="display:none;">
+                            <input type="text" id="msgText" placeholder="Type a message...">
+                            <button class="btn btn-primary btn-sm" onclick="sendMessage()"><i class="bi bi-send"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script>
+        function authHeaders() { const t = localStorage.getItem('flower-token'); return t ? { 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' }; }
+        function escapeHtml(s) { if (typeof s !== 'string') return String(s || ''); const d = document.createElement('div'); d.appendChild(document.createTextNode(s)); return d.innerHTML; }
+        function timeAgo(d) { const diff = Math.floor((Date.now() - new Date(d)) / 1000); if (diff < 60) return 'now'; if (diff < 3600) return Math.floor(diff/60) + 'm'; if (diff < 86400) return Math.floor(diff/3600) + 'h'; return Math.floor(diff/86400) + 'd'; }
+
+        let currentConv = null;
+        let conversations = [];
+
+        async function init() {
+            if (!localStorage.getItem('flower-token')) { document.getElementById('loginPrompt').style.display = 'block'; return; }
+            document.getElementById('msgContent').style.display = 'block';
+            await loadConversations();
+            document.getElementById('msgText').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+            const params = new URLSearchParams(window.location.search);
+            const convId = params.get('conversation');
+            if (convId) selectConversation(convId);
+        }
+
+        async function loadConversations() {
+            try { conversations = await fetch('/api/messages/conversations', { headers: authHeaders() }).then(r => r.json()); } catch { conversations = []; }
+            const el = document.getElementById('convList');
+            if (!conversations.length) { el.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-light);font-size:0.85rem;">No conversations yet</div>'; return; }
+            el.innerHTML = conversations.map(c => `
+                <div class="conv-item${currentConv === c.id ? ' active' : ''}" onclick="selectConversation('${c.id}')">
+                    <div class="conv-avatar">${(c.other_name || '?')[0].toUpperCase()}</div>
+                    <div class="conv-info">
+                        <div class="conv-name">${escapeHtml(c.other_name || 'User')}</div>
+                        <div class="conv-preview">${escapeHtml(c.last_message || 'Start a conversation')}</div>
+                    </div>
+                    <div class="conv-time">${c.last_message_at ? timeAgo(c.last_message_at) : ''}</div>
+                    ${c.unread_count > 0 ? '<div class="conv-unread"></div>' : ''}
+                </div>
+            `).join('');
+        }
+
+        async function selectConversation(id) {
+            currentConv = id;
+            const conv = conversations.find(c => c.id === id);
+            document.getElementById('msgHeader').style.display = 'flex';
+            document.getElementById('msgAvatar').textContent = (conv?.other_name || '?')[0].toUpperCase();
+            document.getElementById('msgName').textContent = conv?.other_name || 'User';
+            document.getElementById('msgInput').style.display = 'flex';
+            await loadMessages(id);
+            await loadConversations();
+        }
+
+        async function loadMessages(convId) {
+            let msgs;
+            try { msgs = await fetch(`/api/messages/${convId}`, { headers: authHeaders() }).then(r => r.json()); } catch { msgs = []; }
+            const el = document.getElementById('msgBody');
+            const myId = JSON.parse(atob(localStorage.getItem('flower-token').split('.')[1])).id;
+            el.innerHTML = msgs.map(m => `
+                <div class="msg-bubble ${m.sender_id === myId ? 'sent' : 'received'}">
+                    ${m.sender_id !== myId ? `<div style="font-size:0.75rem;font-weight:500;margin-bottom:0.2rem;">${escapeHtml(m.sender_name)}</div>` : ''}
+                    ${escapeHtml(m.content)}
+                    <div class="msg-time">${timeAgo(m.created_at)}</div>
+                </div>
+            `).join('');
+            el.scrollTop = el.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('msgText');
+            const content = input.value.trim();
+            if (!content || !currentConv) return;
+            input.value = '';
+            try {
+                await fetch(`/api/messages/${currentConv}`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ content }) });
+                await loadMessages(currentConv);
+                await loadConversations();
+            } catch {}
+        }
+
+        init();
+    </script>
+</body>
+</html>

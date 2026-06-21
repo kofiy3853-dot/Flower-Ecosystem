@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore flower arrangements — bouquets, centerpieces, wreaths, corsages, and custom designs for every occasion.">
+    <title>Flower Arrangements | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .arr-hero { background:linear-gradient(135deg, #831843 0%, #be185d 50%, #db2777 100%); padding:5rem 0 3rem; color:white; text-align:center; position:relative; overflow:hidden; }
+        .arr-hero::before { content:''; position:absolute; top:0; left:0; right:0; bottom:0; background:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M40 0c22.09 0 40 17.91 40 40s-17.91 40-40 40S0 62.09 0 40 17.91 0 40 0zm0 60c11.05 0 20-8.95 20-20S51.05 20 40 20 20 28.95 20 40s8.95 20 20 20z'/%3E%3C/g%3E%3C/svg%3E"); }
+        .arr-hero h1 { color:white; font-size:2.2rem; margin-bottom:0.5rem; position:relative; }
+        .arr-hero p { opacity:0.9; font-size:1rem; max-width:600px; margin:0 auto; position:relative; }
+
+        .section-title { text-align:center; margin-bottom:2rem; }
+        .section-title h2 { font-size:1.5rem; margin-bottom:0.3rem; }
+        .section-title p { color:var(--text-light); font-size:0.95rem; }
+
+        .cat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:3rem; }
+        .cat-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; text-decoration:none; color:inherit; transition:all 0.3s; cursor:pointer; }
+        .cat-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
+        .cat-card-img { height:140px; overflow:hidden; }
+        .cat-card-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .cat-card:hover .cat-card-img img { transform:scale(1.05); }
+        .cat-card-body { padding:1rem; }
+        .cat-card-body h3 { font-size:0.95rem; margin-bottom:0.2rem; display:flex; align-items:center; gap:0.3rem; }
+        .cat-card-body p { font-size:0.8rem; color:var(--text-light); line-height:1.4; }
+        .cat-card-body .count { font-size:0.7rem; color:var(--primary-color); font-weight:600; margin-top:0.3rem; }
+
+        .occasion-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:3rem; }
+        .occasion-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; transition:all 0.3s; cursor:pointer; }
+        .occasion-card:hover { border-color:var(--primary-color); box-shadow:var(--shadow-sm); }
+        .occasion-icon { width:48px; height:48px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:0.75rem; }
+        .occasion-card h3 { font-size:1rem; margin-bottom:0.3rem; }
+        .occasion-card p { font-size:0.85rem; color:var(--text-light); line-height:1.5; margin-bottom:0.5rem; }
+        .occasion-flowers { display:flex; gap:0.3rem; flex-wrap:wrap; }
+        .occasion-flowers span { font-size:0.7rem; padding:0.15rem 0.5rem; border-radius:12px; background:var(--bg-light); color:var(--text-light); }
+
+        .featured-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:3rem; }
+        .featured-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; transition:all 0.3s; }
+        .featured-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
+        .featured-img { height:220px; overflow:hidden; position:relative; }
+        .featured-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .featured-card:hover .featured-img img { transform:scale(1.05); }
+        .featured-badge { position:absolute; top:0.75rem; left:0.75rem; background:rgba(255,255,255,0.9); color:var(--primary-color); font-size:0.7rem; font-weight:600; padding:0.2rem 0.6rem; border-radius:4px; }
+        .featured-body { padding:1.25rem; }
+        .featured-body h3 { font-size:1rem; margin-bottom:0.3rem; }
+        .featured-body .florist { font-size:0.8rem; color:var(--primary-color); margin-bottom:0.4rem; }
+        .featured-body p { font-size:0.85rem; color:var(--text-light); line-height:1.5; margin-bottom:0.75rem; }
+        .featured-meta { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid var(--border-light); }
+        .featured-meta .price { font-size:1.1rem; font-weight:700; color:var(--primary-color); }
+        .featured-meta .rating { font-size:0.8rem; color:var(--accent-gold); display:flex; align-items:center; gap:0.2rem; }
+
+        .tips-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin-bottom:3rem; }
+        .tip-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; }
+        .tip-card h4 { font-size:0.95rem; margin-bottom:0.4rem; display:flex; align-items:center; gap:0.4rem; }
+        .tip-card p { font-size:0.85rem; color:var(--text-light); line-height:1.5; }
+
+        .size-guide { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:3rem; }
+        .size-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; text-align:center; }
+        .size-card .icon { font-size:2rem; margin-bottom:0.5rem; }
+        .size-card h4 { font-size:0.9rem; margin-bottom:0.2rem; }
+        .size-card .stems { font-size:0.75rem; color:var(--primary-color); font-weight:600; margin-bottom:0.3rem; }
+        .size-card p { font-size:0.78rem; color:var(--text-light); }
+
+        .cta-banner { background:linear-gradient(135deg, var(--primary-color), #be185d); border-radius:var(--radius-md); padding:3rem; text-align:center; color:white; margin-bottom:2rem; }
+        .cta-banner h2 { color:white; margin-bottom:0.5rem; }
+        .cta-banner p { color:rgba(255,255,255,0.85); margin-bottom:1.25rem; max-width:500px; margin-left:auto; margin-right:auto; }
+
+        @media(max-width:1024px) { .cat-grid { grid-template-columns:repeat(2,1fr); } .occasion-grid, .featured-grid { grid-template-columns:repeat(2,1fr); } .size-guide { grid-template-columns:repeat(2,1fr); } }
+        @media(max-width:640px) { .cat-grid, .occasion-grid, .featured-grid, .size-guide, .tips-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="arr-hero">
+        <div class="container">
+            <h1><i class="bi bi-flower1"></i> Flower Arrangements</h1>
+            <p>From hand-tied bouquets to elaborate centerpieces — find the perfect arrangement for every moment</p>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="section-title reveal-up">
+                <h2>Arrangement Types</h2>
+                <p>Explore our curated collection of floral arrangement styles</p>
+            </div>
+            <div class="cat-grid reveal-up" id="catGrid"></div>
+
+            <div class="section-title reveal-up">
+                <h2>Shop by Occasion</h2>
+                <p>The right flowers for every celebration and milestone</p>
+            </div>
+            <div class="occasion-grid reveal-up" id="occasionGrid"></div>
+
+            <div class="section-title reveal-up">
+                <h2>Featured Arrangements</h2>
+                <p>Handpicked designs from top florists</p>
+            </div>
+            <div class="featured-grid reveal-up" id="featuredGrid"></div>
+
+            <div class="section-title reveal-up">
+                <h2>Arrangement Size Guide</h2>
+                <p>Choose the right size for your space and occasion</p>
+            </div>
+            <div class="size-guide reveal-up" id="sizeGuide"></div>
+
+            <div class="section-title reveal-up">
+                <h2>Arrangement Care Tips</h2>
+                <p>Keep your flowers fresh and beautiful longer</p>
+            </div>
+            <div class="tips-grid reveal-up" id="tipsGrid"></div>
+
+            <div class="cta-banner reveal-up">
+                <h2>Need a Custom Arrangement?</h2>
+                <p>Work with our expert florists to create something unique for your special occasion.</p>
+                <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                    <a href="florists.html" class="btn" style="background:white;color:var(--primary-color);font-weight:600;">Find a Florist</a>
+                    <a href="marketplace.html" class="btn" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);">Browse Marketplace</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/arrangements.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initArrangementsPage();
+        });
+    </script>
+</body>
+</html>

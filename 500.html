@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Server error — Flower Ecosystem">
+    <title>500 — Server Error | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .error-page { text-align:center; padding:5rem 2rem; max-width:500px; margin:0 auto; }
+        .error-page .code { font-size:6rem; font-weight:700; background:linear-gradient(135deg,var(--error-color),#dc3545); -webkit-background-clip:text; -webkit-text-fill-color:transparent; line-height:1; margin-bottom:0.5rem; }
+        .error-page h1 { font-size:1.5rem; margin-bottom:0.5rem; }
+        .error-page p { color:var(--text-light); margin-bottom:2rem; line-height:1.6; }
+        .error-page .links { display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap; }
+        .error-page .links a { padding:0.6rem 1.25rem; border-radius:8px; text-decoration:none; font-weight:500; font-size:0.9rem; }
+        .error-page .links .btn-primary { background:var(--primary-color); color:white; }
+        .error-page .links .btn-outline { border:1px solid var(--border-color); color:var(--text-main); }
+        .error-page .flower-art { font-size:4rem; margin-bottom:1rem; display:block; opacity:0.6; }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+    <section class="section-padding">
+        <div class="container">
+            <div class="error-page">
+                <span class="flower-art">🥀</span>
+                <div class="code">500</div>
+                <h1>Something went wrong</h1>
+                <p>Our garden is experiencing some technical difficulties.<br>Our team has been notified and is working on it.</p>
+                <div class="links">
+                    <a href="/" class="btn-primary"><i class="bi bi-house"></i> Home</a>
+                    <a href="flower-knowledge-hub.html" class="btn-outline"><i class="bi bi-book"></i> Encyclopedia</a>
+                    <a href="marketplace.html" class="btn-outline"><i class="bi bi-bag"></i> Marketplace</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div id="footer-container"></div>
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+[
+    {
+        "id": "v1",
+        "title": "Modern Arrangement Techniques",
+        "tag": "Tutorial",
+        "category": "Arrangement Techniques",
+        "duration": "12:34 min",
+        "description": "Learn contemporary arrangement styles from pro florist Maria Chen.",
+        "image": "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=600&auto=format&fit=crop",
+        "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "instructor": "Maria Chen",
+        "views": 12453
+    },
+    {
+        "id": "v2",
+        "title": "Wedding Flower Design 101",
+        "tag": "Course",
+        "category": "Wedding Floristry",
+        "duration": "28:15 min",
+        "description": "Complete guide to planning and executing flawless wedding arrangements.",
+        "image": "https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=600&auto=format&fit=crop",
+        "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "instructor": "Sophie Laurent",
+        "views": 8932
+    },
+    {
+        "id": "v3",
+        "title": "Growing Premium Peonies",
+        "tag": "Masterclass",
+        "category": "Flower Care",
+        "duration": "35:42 min",
+        "description": "Expert techniques for cultivating show-quality peony flowers year-round.",
+        "image": "https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=600&auto=format&fit=crop",
+        "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "instructor": "Dr. James Whitfield",
+        "views": 15678
+    },
+    {
+        "id": "v4",
+        "title": "Floristry Business Startup",
+        "tag": "Course",
+        "category": "Business Skills",
+        "duration": "45:20 min",
+        "description": "Learn how to start, market, and scale your floristry business successfully.",
+        "image": "https://images.unsplash.com/photo-1664575602276-acd073f104c1?q=80&w=600&auto=format&fit=crop",
+        "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "instructor": "Amara Sterling",
+        "views": 7231
+    },
+    {
+        "id": "v5",
+        "title": "Event Floral Design Masterclass",
+        "tag": "Masterclass",
+        "category": "Event Decorations",
+        "duration": "52:10 min",
+        "description": "Transform venues with professional-grade event floral arrangements.",
+        "image": "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?q=80&w=600&auto=format&fit=crop",
+        "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "instructor": "Luis Mendez",
+        "views": 11420
+    },
+    {
+        "id": "v6",
+        "title": "Floristry Essentials for Beginners",
+        "tag": "Tutorial",
+        "category": "Beginner Floristry",
+        "duration": "18:45 min",
+        "description": "Master the fundamental tools, techniques, and principles of floristry.",
+        "image": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=600&auto=format&fit=crop",
+        "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "instructor": "Maria Chen",
+        "views": 18902
+    }
+]

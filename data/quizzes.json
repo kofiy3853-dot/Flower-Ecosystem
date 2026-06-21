@@ -1,0 +1,25 @@
+[
+    {
+        "id": "qz1",
+        "course_id": "c1",
+        "title": "Arrangement Fundamentals Quiz",
+        "questions": [
+            { "id": "qq1", "question": "Which element of floral design refers to the visual path the eye follows through an arrangement?", "options": ["Line", "Form", "Texture", "Space"], "correct": 0 },
+            { "id": "qq2", "question": "What is the recommended stem cutting angle for optimal water absorption?", "options": ["90 degrees", "45 degrees", "30 degrees", "60 degrees"], "correct": 1 },
+            { "id": "qq3", "question": "Which flower type is NOT suitable for a hand-tied bouquet?", "options": ["Roses", "Tulips", "Sunflowers", "Broken-stemmed flowers"], "correct": 3 },
+            { "id": "qq4", "question": "What does the golden ratio in floral design help achieve?", "options": ["Color harmony", "Visual balance", "Faster arrangement", "Longer vase life"], "correct": 1 },
+            { "id": "qq5", "question": "Which tool is essential for removing thorns from rose stems?", "options": ["Floral shears", "Stem stripper", "Ribbon scissors", "Floral tape"], "correct": 1 }
+        ]
+    },
+    {
+        "id": "qz2",
+        "course_id": "c2",
+        "title": "Flower Identification Test",
+        "questions": [
+            { "id": "qq6", "question": "Which feature usually indicates a natural flower?", "options": ["Plastic Stem", "Natural Fragrance", "Uniform Petals", "Wire Stem"], "correct": 1 },
+            { "id": "qq7", "question": "What is the most reliable test for identifying silk flowers?", "options": ["Smell test", "Burn test", "Water test", "Weight test"], "correct": 1 },
+            { "id": "qq8", "question": "Preserved flowers are best characterized by:", "options": ["Wire stems", "Natural flexibility", "Firm but pliable texture", "Complete rigidity"], "correct": 2 },
+            { "id": "qq9", "question": "Which flower type has the longest lifespan without water?", "options": ["Fresh-cut", "Artificial", "Preserved", "Dried"], "correct": 1 }
+        ]
+    }
+]

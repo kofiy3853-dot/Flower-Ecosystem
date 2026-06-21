@@ -1,0 +1,177 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Shop fresh flowers, bouquets, plants and arrangements from verified sellers on Flower Ecosystem.">
+    <meta property="og:title" content="Flower Marketplace | Flower Ecosystem">
+    <meta property="og:description" content="Shop fresh flowers, curated bouquets, and unique arrangements from trusted sellers worldwide.">
+    <meta property="og:type" content="website">
+    <title>Shop Flowers | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=17.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    <!-- ===== COMPACT MARKETPLACE HERO ===== -->
+    <section class="mkt-hero">
+        <div class="container">
+            <div class="mkt-hero-inner reveal-up">
+                <h1 class="mkt-hero-title">Flower Marketplace</h1>
+                <p class="mkt-hero-sub">Fresh flowers, bouquets &amp; plants from verified sellers</p>
+
+                <!-- Search -->
+                <div class="mkt-search-wrap">
+                    <i class="bi bi-search mkt-search-icon"></i>
+                    <input type="search" id="heroSearch" class="mkt-search-input" placeholder="Search roses, bouquets, orchids...">
+                    <button class="btn btn-primary mkt-search-btn">Search</button>
+                </div>
+
+                <!-- Quick category pills -->
+                <div class="mkt-cat-pills" id="catPills">
+                    <a href="category-listing.html?cat=bouquets" class="mkt-cat-pill">&#x1F490; Bouquets</a>
+                    <a href="category-listing.html?cat=roses" class="mkt-cat-pill">&#x1F339; Roses</a>
+                    <a href="category-listing.html?cat=orchids" class="mkt-cat-pill">&#x1F338; Orchids</a>
+                    <a href="category-listing.html?cat=wildflowers" class="mkt-cat-pill">&#x1F33C; Wildflowers</a>
+                    <a href="category-listing.html?cat=succulents" class="mkt-cat-pill">&#x1F331; Succulents</a>
+                    <a href="category-listing.html?cat=plants" class="mkt-cat-pill">&#x1FAB4; Indoor Plants</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== STICKY FILTER BAR ===== -->
+    <div class="mkt-filter-bar" id="filterBar">
+        <div class="container">
+            <div class="mkt-filters" id="filtersRow">
+                <select id="categoryFilter" class="form-select mkt-filter-select" aria-label="Category">
+                    <option value="all">All Categories</option>
+                    <option value="roses">Roses</option>
+                    <option value="bouquets">Bouquets</option>
+                    <option value="orchids">Orchids</option>
+                    <option value="succulents">Succulents</option>
+                    <option value="wildflowers">Wildflowers</option>
+                    <option value="plants">Indoor Plants</option>
+                </select>
+                <select id="occasionFilter" class="form-select mkt-filter-select" aria-label="Occasion">
+                    <option value="all">Any Occasion</option>
+                    <option value="romance">Romance</option>
+                    <option value="wedding">Wedding</option>
+                    <option value="birthday">Birthday</option>
+                    <option value="any">Everyday</option>
+                </select>
+                <select id="colorFilter" class="form-select mkt-filter-select" aria-label="Color">
+                    <option value="all">Any Color</option>
+                    <option value="red">Red</option>
+                    <option value="pink">Pink</option>
+                    <option value="white">White</option>
+                    <option value="yellow">Yellow</option>
+                    <option value="purple">Purple</option>
+                    <option value="green">Green</option>
+                    <option value="multi">Multi</option>
+                </select>
+                <select id="priceFilter" class="form-select mkt-filter-select" aria-label="Price">
+                    <option value="all">Any Price</option>
+                    <option value="0-20">Under $20</option>
+                    <option value="20-35">$20 – $35</option>
+                    <option value="35-50">$35 – $50</option>
+                    <option value="50+">$50+</option>
+                </select>
+                <select id="typeFilter" class="form-select mkt-filter-select" aria-label="Type">
+                    <option value="all">Fresh &amp; Dried</option>
+                    <option value="fresh">Fresh Flowers</option>
+                    <option value="artificial">Artificial/Dried</option>
+                </select>
+                <select id="sellerFilter" class="form-select mkt-filter-select" aria-label="Seller"></select>
+                <select id="sortFilter" class="form-select mkt-filter-select" aria-label="Sort by">
+                    <option value="popularity">Popular</option>
+                    <option value="rating">Top Rated</option>
+                    <option value="price-asc">Price ↑</option>
+                    <option value="price-desc">Price ↓</option>
+                    <option value="newest">Newest</option>
+                </select>
+                <button class="btn btn-outline mkt-clear-btn" id="clearFiltersBtn">Clear</button>
+            </div>
+            <div class="mkt-active-filters" id="activeFilters"></div>
+        </div>
+    </div>
+
+    <!-- ===== FEATURED ===== -->
+    <section id="featured-section" class="section-padding">
+        <div class="container">
+            <div class="flex-between reveal-up">
+                <div>
+                    <span class="subtitle">HAND-PICKED</span>
+                    <h2>Featured Products</h2>
+                </div>
+                <button class="btn btn-outline" onclick="document.getElementById('all-products').scrollIntoView({behavior:'smooth'})">View All →</button>
+            </div>
+            <div class="product-grid reveal-up" id="featuredGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===== BEST SELLERS ===== -->
+    <section id="bestsellers-section" class="section-padding bg-light">
+        <div class="container">
+            <div class="flex-between reveal-up">
+                <div>
+                    <span class="subtitle">TOP RATED</span>
+                    <h2>Best Sellers</h2>
+                </div>
+                <button class="btn btn-outline" onclick="document.getElementById('all-products').scrollIntoView({behavior:'smooth'})">View All →</button>
+            </div>
+            <div class="product-grid reveal-up" id="bestsellerGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===== NEW ARRIVALS ===== -->
+    <section id="newarrivals-section" class="section-padding">
+        <div class="container">
+            <div class="flex-between reveal-up">
+                <div>
+                    <span class="subtitle">JUST ADDED</span>
+                    <h2>New Arrivals</h2>
+                </div>
+                <button class="btn btn-outline" onclick="document.getElementById('all-products').scrollIntoView({behavior:'smooth'})">View All →</button>
+            </div>
+            <div class="product-grid reveal-up" id="newArrivalGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===== ALL PRODUCTS ===== -->
+    <section id="all-products" class="section-padding bg-light">
+        <div class="container">
+            <div class="flex-between reveal-up">
+                <div>
+                    <span class="subtitle">ALL PRODUCTS</span>
+                    <h2>Browse Everything</h2>
+                </div>
+                <p class="section-subtitle" id="productCount" style="margin:0;align-self:flex-end;"></p>
+            </div>
+            <div class="product-grid reveal-up" id="productGrid" style="margin-top:1.5rem;"></div>
+            <div class="text-center mt-4 reveal-up">
+                <button class="btn btn-outline" id="loadMoreBtn">Load More</button>
+                <span id="pageInfo" style="margin-left:1rem;color:var(--text-light);font-size:0.875rem;"></span>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <div id="auth-modal-container"></div>
+
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/empty-state.js"></script>
+    <script src="js/marketplace.js"></script>
+</body>
+</html>

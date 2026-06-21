@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI-powered flower identification and expert assistant — upload a photo to identify flowers, learn care tips, find sellers, and explore related resources">
+  <title>AI Flower Scanner — Expert Assistant</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/ai-scanner.css" />
+</head>
+<body>
+  <div id="header-container"></div>
+
+  <main class="container section-padding">
+    <nav class="breadcrumb" style="margin-bottom:1.5rem;font-size:0.9rem;color:var(--text-light);">
+      <a href="learning.html" style="color:var(--text-light);text-decoration:none;">Learn</a>
+      <span class="sep" style="margin:0 0.5rem;">/</span>
+      <span style="color:var(--text-main);font-weight:500;">AI Flower Scanner</span>
+    </nav>
+
+    <div class="scanner-hero">
+      <h1>AI Flower Scanner</h1>
+      <p class="section-subtitle">Upload a photo to identify any flower — get expert care tips, health benefits, marketplace listings, learning resources, and more.</p>
+    </div>
+
+    <div class="scanner-main">
+      <div class="upload-area" id="upload-area">
+        <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" title="Upload a flower image" />
+        <div id="upload-prompt">
+          <i class="bi bi-camera" style="font-size:3rem; color:var(--primary-color); margin-bottom:1rem; display:block;"></i>
+          <p style="font-size:1.1rem; font-weight:500; margin-bottom:0.5rem;">Click to upload or drag and drop</p>
+          <p style="color:var(--text-light); font-size:0.9rem;">JPG, PNG or WEBP (Max 5MB)</p>
+        </div>
+        <img id="image-preview" src="" alt="Preview" style="display:none; max-width:100%; max-height:300px; border-radius:var(--radius-sm); margin:0 auto;" />
+      </div>
+
+      <div class="scanner-actions">
+        <button id="analyze-btn" class="btn btn-primary" disabled>
+          <i class="bi bi-stars" style="margin-right:0.5rem;"></i> Identify Flower
+        </button>
+      </div>
+
+      <p id="error-msg" class="scanner-error" style="display:none;"></p>
+
+      <div id="loading-section" class="scanner-loading" style="display:none;">
+        <div class="scanner-spinner"></div>
+        <p>Analyzing your flower with AI...</p>
+      </div>
+
+      <div id="result-section" style="display:none;">
+        <div class="scanner-result-card" style="background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; margin-top:1.5rem;">
+          <h2 style="margin-bottom:0.25rem;"><span id="flower-name"></span></h2>
+          <p style="color:var(--text-light); font-style:italic; margin-bottom:1rem;" id="scientific-name"></p>
+          
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
+            <div style="background:var(--bg-light); padding:0.75rem; border-radius:var(--radius-sm); text-align:center;">
+              <span style="display:block; font-size:0.8rem; color:var(--text-muted); text-transform:uppercase;">Confidence</span>
+              <span style="font-weight:600; font-size:1.1rem; color:var(--primary-color);"><span id="confidence"></span>%</span>
+            </div>
+            <div style="background:var(--bg-light); padding:0.75rem; border-radius:var(--radius-sm); text-align:center;">
+              <span style="display:block; font-size:0.8rem; color:var(--text-muted); text-transform:uppercase;">Category</span>
+              <span style="font-weight:600; font-size:0.95rem;" id="category"></span>
+            </div>
+            <div style="background:var(--bg-light); padding:0.75rem; border-radius:var(--radius-sm); text-align:center;">
+              <span style="display:block; font-size:0.8rem; color:var(--text-muted); text-transform:uppercase;">Type</span>
+              <span style="font-weight:600; font-size:0.95rem;" id="flower-type"></span>
+            </div>
+          </div>
+
+          <div style="margin-bottom:1.25rem;">
+            <h3 style="font-size:1.05rem; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.4rem;">
+              <i class="bi bi-info-circle" style="color:var(--primary-color);"></i> Identification Reasons
+            </h3>
+            <ul id="reasons-list" style="padding-left:1.5rem; color:var(--text-main); font-size:0.95rem;"></ul>
+          </div>
+
+          <div style="margin-bottom:1.5rem;">
+            <h3 style="font-size:1.05rem; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.4rem;">
+              <i class="bi bi-droplet" style="color:var(--accent-blue);"></i> General Care Tips
+            </h3>
+            <ul id="care-tips" style="padding-left:1.5rem; color:var(--text-main); font-size:0.95rem;"></ul>
+          </div>
+
+          <div style="text-align:center;">
+            <a href="#" id="knowledge-link" class="btn btn-primary" style="display:none; align-items:center; gap:0.5rem; justify-content:center; text-decoration:none;">
+              <i class="bi bi-book"></i> Learn More in Flower Encyclopedia →
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="js/shared/api.js"></script>
+  <script src="js/shared/theme.js"></script>
+  <script src="js/shared/auth.js"></script>
+  <script src="js/shared/ui.js"></script>
+  <script src="js/shared/cart.js"></script>
+  <script src="js/shared/components.js"></script>
+  <script src="js/shared/animations.js"></script>
+  <script src="js/ai-scanner.js?v=3"></script>
+</body>
+</html>

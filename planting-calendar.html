@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Seasonal planting calendar with monthly tasks, bloom schedules, and garden planning guides.">
+    <title>Planting Calendar | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .cal-hero { background:linear-gradient(135deg, #2d6a4f, #40916c); padding:2.5rem 0; color:white; text-align:center; }
+        .cal-hero h1 { color:white; font-size:1.8rem; margin-bottom:0.25rem; }
+        .cal-hero p { opacity:0.85; font-size:0.95rem; }
+        .month-nav { display:flex; gap:0.25rem; overflow-x:auto; padding:0.5rem 0; margin-bottom:1.5rem; scrollbar-width:thin; }
+        .month-btn { padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.8rem; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; white-space:nowrap; flex-shrink:0; }
+        .month-btn:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .month-btn.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+        .month-btn .emoji { margin-right:0.25rem; }
+        .current-season { display:inline-flex; align-items:center; gap:0.5rem; padding:0.5rem 1rem; background:var(--primary-light); border-radius:var(--radius-sm); font-size:0.85rem; color:var(--primary-color); font-weight:500; margin-bottom:1.5rem; }
+        .tasks-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:2rem; }
+        .task-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; transition:all 0.3s; }
+        .task-card:hover { border-color:var(--primary-color); box-shadow:var(--shadow-sm); }
+        .task-type { display:inline-flex; align-items:center; gap:0.3rem; font-size:0.7rem; font-weight:600; text-transform:uppercase; padding:0.15rem 0.5rem; border-radius:12px; margin-bottom:0.5rem; }
+        .type-planning { background:rgba(14,165,233,0.1); color:var(--accent-blue); }
+        .type-indoor { background:rgba(245,158,11,0.1); color:var(--accent-gold); }
+        .type-outdoor { background:rgba(16,185,129,0.1); color:var(--accent-green); }
+        .type-maintenance { background:rgba(139,92,246,0.1); color:#8b5cf6; }
+        .type-watering { background:rgba(14,165,233,0.1); color:var(--accent-blue); }
+        .type-harvesting { background:rgba(239,68,68,0.1); color:var(--error-color); }
+        .task-card h3 { font-size:0.95rem; margin-bottom:0.3rem; }
+        .task-card p { font-size:0.82rem; color:var(--text-light); line-height:1.5; margin-bottom:0.5rem; }
+        .task-plants { font-size:0.75rem; color:var(--primary-color); font-weight:500; }
+        .bloom-section { margin-top:2rem; }
+        .bloom-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; }
+        .bloom-tab { padding:0.4rem 1rem; border:1px solid var(--border-color); border-radius:20px; font-size:0.8rem; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; }
+        .bloom-tab:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .bloom-tab.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+        .bloom-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .bloom-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; cursor:pointer; transition:all 0.3s; text-decoration:none; color:inherit; }
+        .bloom-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
+        .bloom-card img { width:100%; height:120px; object-fit:cover; }
+        .bloom-card .info { padding:0.75rem; }
+        .bloom-card .info h4 { font-size:0.85rem; margin-bottom:0.1rem; }
+        .bloom-card .info .sci { font-size:0.7rem; color:var(--text-light); font-style:italic; }
+        .bloom-card .info .season-badge { display:inline-block; margin-top:0.3rem; font-size:0.65rem; padding:0.1rem 0.4rem; border-radius:12px; }
+        .guides-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin-top:2rem; }
+        .guide-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; }
+        .guide-card h3 { font-size:1rem; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.4rem; }
+        .guide-card p { font-size:0.85rem; color:var(--text-light); line-height:1.6; margin-bottom:0.75rem; }
+        .guide-card ul { list-style:none; padding:0; margin:0; }
+        .guide-card li { font-size:0.82rem; color:var(--text-light); padding:0.25rem 0; display:flex; gap:0.4rem; }
+        .guide-card li i { color:var(--accent-green); margin-top:0.15rem; flex-shrink:0; }
+        .zones-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:0.75rem; margin-top:1.5rem; }
+        .zone-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:1rem; text-align:center; }
+        .zone-card h4 { font-size:0.85rem; margin-bottom:0.25rem; }
+        .zone-card p { font-size:0.75rem; color:var(--text-light); }
+        .zone-card .temp { font-size:0.7rem; color:var(--primary-color); font-weight:500; margin-top:0.25rem; }
+        .empty-state { text-align:center; padding:2rem; color:var(--text-light); grid-column:1/-1; }
+        @media(max-width:1024px) { .tasks-grid, .bloom-grid { grid-template-columns:repeat(2,1fr); } .guides-grid, .zones-grid { grid-template-columns:1fr 1fr; } }
+        @media(max-width:640px) { .tasks-grid, .bloom-grid, .guides-grid, .zones-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="cal-hero">
+        <div class="container">
+            <h1>📅 Planting Calendar</h1>
+            <p>Monthly tasks, bloom schedules, and seasonal guides for your garden</p>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="current-season" id="currentSeason"></div>
+
+            <div class="month-nav" id="monthNav"></div>
+
+            <div id="tasksSection">
+                <h2 style="margin-bottom:1rem;" id="tasksTitle">This Month's Tasks</h2>
+                <div class="tasks-grid" id="tasksGrid"></div>
+            </div>
+
+            <div class="bloom-section">
+                <h2 style="margin-bottom:0.5rem;">What's Blooming</h2>
+                <p style="color:var(--text-light);font-size:0.9rem;margin-bottom:1rem;">Flowers that bloom in the selected month</p>
+                <div class="bloom-tabs" id="bloomTabs">
+                    <button class="bloom-tab active" data-season="all">All</button>
+                    <button class="bloom-tab" data-season="Spring">🌷 Spring</button>
+                    <button class="bloom-tab" data-season="Summer">☀️ Summer</button>
+                    <button class="bloom-tab" data-season="Fall">🍂 Fall</button>
+                    <button class="bloom-tab" data-season="Winter">❄️ Winter</button>
+                </div>
+                <div class="bloom-grid" id="bloomGrid"></div>
+            </div>
+
+            <div>
+                <h2 style="margin-bottom:0.5rem;">Seasonal Guides</h2>
+                <p style="color:var(--text-light);font-size:0.9rem;">Expert advice for each season</p>
+                <div class="guides-grid" id="guidesGrid"></div>
+            </div>
+
+            <div>
+                <h2 style="margin-bottom:0.5rem;">Growing Zones</h2>
+                <p style="color:var(--text-light);font-size:0.9rem;">Find your USDA hardiness zone</p>
+                <div class="zones-grid" id="zonesGrid"></div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/planting-calendar.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initPlantingCalendar();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Event detail - Flower workshops, webinars, exhibitions, and community events.">
+    <title>Event | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .event-hero { position:relative; height:380px; border-radius:var(--radius-md); overflow:hidden; margin-bottom:2rem; }
+        .event-hero img { width:100%; height:100%; object-fit:cover; }
+        .event-hero-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%); display:flex; flex-direction:column; justify-content:flex-end; padding:2rem; }
+        .event-hero-badge { display:inline-flex; align-items:center; gap:0.3rem; background:var(--accent-gold); color:white; font-size:0.7rem; font-weight:600; padding:0.25rem 0.75rem; border-radius:12px; margin-bottom:0.5rem; width:fit-content; }
+        .event-hero h1 { color:white; font-size:1.8rem; margin-bottom:0.5rem; }
+        .event-hero-meta { display:flex; gap:1.5rem; flex-wrap:wrap; color:rgba(255,255,255,0.85); font-size:0.9rem; }
+        .event-hero-meta span { display:flex; align-items:center; gap:0.3rem; }
+        .detail-layout { display:grid; grid-template-columns:1fr 360px; gap:2rem; }
+        .detail-main { min-width:0; }
+        .detail-sidebar { display:flex; flex-direction:column; gap:1.25rem; }
+        .back-link { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.88rem; color:var(--text-light); margin-bottom:1rem; text-decoration:none; }
+        .back-link:hover { color:var(--primary-color); }
+        .info-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; margin-bottom:1.5rem; }
+        .info-card h2 { font-size:1.1rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.4rem; }
+        .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+        .info-item { display:flex; gap:0.5rem; }
+        .info-item .label { font-size:0.8rem; color:var(--text-muted); min-width:80px; }
+        .info-item .value { font-size:0.9rem; font-weight:500; color:var(--text-main); }
+        .description-content { font-size:0.95rem; line-height:1.7; color:var(--text-main); white-space:pre-wrap; }
+        .agenda-list { list-style:none; padding:0; margin:0; }
+        .agenda-list li { display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0; border-bottom:1px solid var(--border-light); font-size:0.9rem; }
+        .agenda-list li:last-child { border-bottom:none; }
+        .agenda-num { width:28px; height:28px; border-radius:50%; background:var(--primary-light); color:var(--primary-color); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:600; flex-shrink:0; }
+        .speaker-card { display:flex; gap:1rem; padding:1rem; background:var(--bg-main); border-radius:var(--radius-sm); margin-bottom:0.75rem; }
+        .speaker-avatar { width:64px; height:64px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; overflow:hidden; }
+        .speaker-avatar img { width:100%; height:100%; object-fit:cover; }
+        .speaker-info h4 { font-size:0.95rem; margin-bottom:0.15rem; }
+        .speaker-info .title { font-size:0.8rem; color:var(--primary-color); margin-bottom:0.25rem; }
+        .speaker-info .bio { font-size:0.85rem; color:var(--text-light); line-height:1.5; }
+        .speaker-stats { display:flex; gap:1rem; margin-top:0.3rem; font-size:0.75rem; color:var(--text-muted); }
+        .resource-list { display:flex; flex-direction:column; gap:0.5rem; }
+        .resource-item { display:flex; align-items:center; gap:0.75rem; padding:0.75rem; background:var(--bg-main); border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s; }
+        .resource-item:hover { background:var(--primary-light); }
+        .resource-icon { width:36px; height:36px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+        .resource-icon.pdf { background:rgba(239,68,68,0.1); color:var(--error-color); }
+        .resource-icon.video { background:rgba(14,165,233,0.1); color:var(--accent-blue); }
+        .resource-icon.slide { background:rgba(245,158,11,0.1); color:var(--accent-gold); }
+        .resource-icon.doc { background:rgba(16,185,129,0.1); color:var(--accent-green); }
+        .resource-name { font-size:0.88rem; font-weight:500; }
+        .resource-size { font-size:0.75rem; color:var(--text-muted); }
+        .reg-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; position:sticky; top:100px; }
+        .reg-card h3 { font-size:1.1rem; margin-bottom:1rem; }
+        .reg-price { font-size:1.8rem; font-weight:700; color:var(--primary-color); margin-bottom:0.5rem; }
+        .reg-price.free { color:var(--accent-green); }
+        .reg-spots { font-size:0.85rem; color:var(--text-light); margin-bottom:1rem; }
+        .reg-spots .available { color:var(--accent-green); font-weight:500; }
+        .reg-spots .low { color:var(--error-color); font-weight:500; }
+        .reg-info { display:flex; flex-direction:column; gap:0.5rem; margin:1rem 0; padding:1rem; background:var(--bg-main); border-radius:var(--radius-sm); font-size:0.85rem; }
+        .reg-info-row { display:flex; justify-content:space-between; }
+        .reg-info-row .label { color:var(--text-light); }
+        .reg-info-row .value { font-weight:500; }
+        .cert-card { background:linear-gradient(135deg, var(--accent-gold), #f59e0b); color:white; border-radius:var(--radius-md); padding:1.5rem; text-align:center; }
+        .cert-card h3 { color:white; margin-bottom:0.5rem; }
+        .cert-card p { opacity:0.9; font-size:0.85rem; margin-bottom:1rem; }
+        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); }
+        .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
+        .prereq-list { padding-left:1.2rem; }
+        .prereq-list li { font-size:0.9rem; color:var(--text-light); margin-bottom:0.25rem; }
+        @media(max-width:1024px) { .detail-layout { grid-template-columns:1fr; } .reg-card { position:static; } }
+        @media(max-width:640px) { .event-hero { height:250px; } .info-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="section-padding" style="padding-top:2rem;">
+        <div class="container">
+            <a href="events.html" class="back-link"><i class="bi bi-arrow-left"></i> Back to Events</a>
+            <div id="eventContent"></div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/events.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initEventDetail();
+        });
+    </script>
+</body>
+</html>

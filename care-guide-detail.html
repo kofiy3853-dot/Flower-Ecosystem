@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Care guide for your plants - Flower Ecosystem">
+    <meta property="og:title" content="Care Guide | Flower Ecosystem">
+    <meta property="og:description" content="Detailed plant and flower care guide on Flower Ecosystem.">
+    <meta property="og:type" content="website">
+    <title>Care Guide | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=17.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .back-link { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.88rem; color:var(--text-light); margin-bottom:1rem; text-decoration:none; }
+        .back-link:hover { color:var(--primary-color); }
+        .guide-hero { height:350px; border-radius:var(--radius-md); overflow:hidden; margin-bottom:2rem; position:relative; }
+        .guide-hero img { width:100%; height:100%; object-fit:cover; }
+        .guide-hero-overlay { position:absolute; bottom:0; left:0; right:0; padding:2rem; background:linear-gradient(to top, rgba(0,0,0,0.7), transparent); }
+        .guide-hero-overlay .cat-badge { display:inline-block; background:var(--primary-color); color:white; font-size:0.7rem; font-weight:600; padding:0.2rem 0.6rem; border-radius:4px; margin-bottom:0.5rem; }
+        .guide-hero-overlay h1 { color:white; font-size:1.8rem; margin-bottom:0.5rem; }
+        .guide-hero-meta { display:flex; gap:1.5rem; color:rgba(255,255,255,0.85); font-size:0.85rem; flex-wrap:wrap; }
+        .guide-hero-meta span { display:flex; align-items:center; gap:0.3rem; }
+        .detail-layout { display:grid; grid-template-columns:1fr 300px; gap:2rem; }
+        .detail-main { min-width:0; }
+        .detail-sidebar { display:flex; flex-direction:column; gap:1.25rem; }
+        .care-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; margin-bottom:1.5rem; }
+        .care-card h2 { font-size:1.1rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.4rem; }
+        .care-params { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+        .care-param { display:flex; gap:0.75rem; padding:0.75rem; background:var(--bg-main); border-radius:var(--radius-sm); }
+        .care-param .icon { width:36px; height:36px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+        .care-param .icon.light { background:rgba(245,158,11,0.1); color:var(--accent-gold); }
+        .care-param .icon.water { background:rgba(14,165,233,0.1); color:var(--accent-blue); }
+        .care-param .icon.temp { background:rgba(239,68,68,0.1); color:var(--error-color); }
+        .care-param .icon.humid { background:rgba(16,185,129,0.1); color:var(--accent-green); }
+        .care-param .icon.soil { background:rgba(139,92,246,0.1); color:#8b5cf6; }
+        .care-param .label { font-size:0.75rem; color:var(--text-muted); }
+        .care-param .value { font-size:0.88rem; font-weight:500; }
+        .content-text { font-size:0.95rem; line-height:1.8; color:var(--text-main); }
+        .content-text h2 { font-size:1.3rem; margin:2rem 0 0.75rem; }
+        .content-text h3 { font-size:1.1rem; margin:1.5rem 0 0.5rem; color:var(--primary-color); }
+        .content-text p { margin-bottom:1rem; }
+        .content-text ul, .content-text ol { padding-left:1.5rem; margin-bottom:1rem; }
+        .content-text li { margin-bottom:0.4rem; }
+        .content-text strong { color:var(--text-main); }
+        .tips-list { list-style:none; padding:0; margin:0; }
+        .tips-list li { display:flex; align-items:flex-start; gap:0.75rem; padding:0.6rem 0; border-bottom:1px solid var(--border-light); font-size:0.9rem; }
+        .tips-list li:last-child { border-bottom:none; }
+        .tip-icon { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; flex-shrink:0; }
+        .tip-icon.tip { background:rgba(16,185,129,0.1); color:var(--accent-green); }
+        .tip-icon.warning { background:rgba(239,68,68,0.1); color:var(--error-color); }
+        .share-bar { display:flex; gap:0.75rem; padding:1.5rem 0; border-top:1px solid var(--border-color); margin-top:1.5rem; }
+        .related-card { display:flex; gap:0.75rem; padding:0.75rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s; text-decoration:none; color:inherit; }
+        .related-card:hover { border-color:var(--primary-color); box-shadow:var(--shadow-sm); }
+        .related-img { width:80px; height:60px; border-radius:var(--radius-sm); overflow:hidden; flex-shrink:0; }
+        .related-img img { width:100%; height:100%; object-fit:cover; }
+        .related-info h4 { font-size:0.85rem; margin-bottom:0.2rem; line-height:1.3; }
+        .related-info .meta { font-size:0.75rem; color:var(--text-muted); }
+        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); }
+        .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
+        @media(max-width:1024px) { .detail-layout { grid-template-columns:1fr; } .care-params { grid-template-columns:1fr; } }
+        @media(max-width:640px) { .guide-hero { height:250px; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="section-padding" style="padding-top:2rem;">
+        <div class="container">
+            <div id="guideContent"></div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <div id="auth-modal-container"></div>
+
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/care-guides.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initCareGuideDetail();
+        });
+    </script>
+</body>
+</html>

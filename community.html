@@ -1,0 +1,297 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Connect with florists and flower enthusiasts worldwide. Discussions, Q&A, success stories, photo sharing, and flower challenges.">
+    <title>Community – Connect with Florists | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .feature-icon { font-size:2.2rem; margin-bottom:0.75rem; }
+        .community-feature-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:1.25rem; margin-top:2rem; }
+        .community-feature-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.75rem 1.25rem; text-align:center; transition:all 0.3s ease; cursor:default; }
+        .community-feature-card:hover { transform:translateY(-6px); box-shadow:0 12px 32px rgba(0,0,0,0.1); border-color:var(--primary-color); }
+        .community-feature-card h3 { font-size:1rem; margin-bottom:0.5rem; color:var(--text-main); }
+        .community-feature-card p { font-size:0.85rem; color:var(--text-light); line-height:1.5; }
+        .discussion-list { margin-top:2rem; }
+        .discussion-item { display:grid; grid-template-columns:auto 1fr auto; gap:1rem; align-items:start; padding:1.25rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; margin-bottom:0.75rem; transition:all 0.2s ease; }
+        .discussion-item:hover { border-color:var(--primary-color); box-shadow:0 4px 16px rgba(0,0,0,0.06); }
+        .discussion-item.pinned { border-left:4px solid var(--primary-color); background:rgba(172,50,80,0.03); }
+        .discussion-avatar { font-size:2rem; width:48px; height:48px; display:flex; align-items:center; justify-content:center; background:var(--bg-light); border-radius:50%; flex-shrink:0; }
+        .discussion-meta { display:flex; gap:1rem; font-size:0.8rem; color:var(--text-light); margin-top:0.4rem; }
+        .discussion-stats { text-align:right; white-space:nowrap; color:var(--text-light); font-size:0.85rem; }
+        .discussion-stats span { display:block; margin-bottom:0.25rem; }
+        .pinned-badge { background:var(--primary-color); color:white; font-size:0.7rem; padding:0.15rem 0.5rem; border-radius:4px; margin-left:0.5rem; vertical-align:middle; }
+        .question-card { padding:1rem 1.25rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; margin-bottom:0.75rem; display:flex; justify-content:space-between; align-items:center; gap:1rem; }
+        .question-card h4 { font-size:0.95rem; margin-bottom:0.25rem; }
+        .question-card .q-meta { font-size:0.8rem; color:var(--text-light); }
+        .q-stats { text-align:right; font-size:0.85rem; color:var(--text-light); white-space:nowrap; }
+        .q-stats strong { color:var(--primary-color); }
+        .story-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; overflow:hidden; transition:all 0.3s ease; }
+        .story-card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,0.1); }
+        .story-card img { width:100%; height:180px; object-fit:cover; }
+        .story-body { padding:1.25rem; }
+        .story-body h3 { font-size:1.05rem; margin-bottom:0.3rem; }
+        .story-body .story-author { font-size:0.85rem; color:var(--text-light); margin-bottom:0.75rem; }
+        .story-body p { font-size:0.9rem; color:var(--text-light); line-height:1.6; }
+        .challenge-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.5rem; transition:all 0.3s ease; display:flex; flex-direction:column; }
+        .challenge-card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,0.1); border-color:var(--primary-color); }
+        .challenge-card .challenge-icon { font-size:2rem; margin-bottom:0.75rem; }
+        .challenge-card h3 { font-size:1rem; margin-bottom:0.3rem; }
+        .challenge-card .challenge-meta { font-size:0.8rem; color:var(--text-light); margin-bottom:0.75rem; }
+        .challenge-card p { font-size:0.9rem; color:var(--text-light); line-height:1.5; flex-grow:1; }
+        .category-chip { display:inline-block; padding:0.25rem 0.75rem; border-radius:20px; font-size:0.8rem; background:rgba(172,50,80,0.1); color:var(--primary-color); font-weight:500; }
+        .photo-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-top:2rem; }
+        .photo-grid-item { aspect-ratio:1; border-radius:10px; overflow:hidden; position:relative; cursor:pointer; }
+        .photo-grid-item img { width:100%; height:100%; object-fit:cover; transition:transform 0.4s ease; }
+        .photo-grid-item:hover img { transform:scale(1.08); }
+        .photo-grid-item .photo-overlay { position:absolute; bottom:0; left:0; right:0; padding:0.75rem; background:linear-gradient(to top, rgba(0,0,0,0.7), transparent); color:white; font-size:0.8rem; opacity:0; transition:opacity 0.3s ease; }
+        .photo-grid-item:hover .photo-overlay { opacity:1; }
+        @media(max-width:1024px){ .community-feature-grid { grid-template-columns:repeat(3,1fr); } .photo-grid { grid-template-columns:repeat(3,1fr); } }
+        @media(max-width:768px){ .community-feature-grid { grid-template-columns:repeat(2,1fr); } .discussion-item { grid-template-columns:1fr; } .discussion-stats { text-align:left; } .question-card { flex-direction:column; align-items:start; } .story-card img { height:140px; } .photo-grid { grid-template-columns:repeat(2,1fr); } }
+        @media(max-width:480px){ .community-feature-grid { grid-template-columns:1fr; } .photo-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="page-header primary-bg text-white section-padding text-center" style="padding-top:6rem; padding-bottom:3rem;">
+        <div class="container reveal-up">
+            <span class="subtitle" style="color:rgba(255,255,255,0.7)">CONNECT & SHARE</span>
+            <h1 style="color:white;">Our Community</h1>
+            <p class="section-subtitle text-white">Join 89,000+ flower enthusiasts, florists, and growers from around the world</p>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="quick-stats reveal-up">
+                <div class="stat-item"><div class="stat-number">89K+</div><div class="stat-label">Members</div></div>
+                <div class="stat-item"><div class="stat-number">12K</div><div class="stat-label">Posts This Month</div></div>
+                <div class="stat-item"><div class="stat-number">340+</div><div class="stat-label">Events Hosted</div></div>
+                <div class="stat-item"><div class="stat-number">98%</div><div class="stat-label">Satisfaction Rate</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Features -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="text-center reveal-up">
+                <span class="subtitle">GET INVOLVED</span>
+                <h2>Community Features</h2>
+                <p class="section-subtitle">Connect, learn, and grow with fellow flower enthusiasts</p>
+            </div>
+            <div class="community-feature-grid reveal-up" id="featureGrid">
+                <div class="community-feature-card" style="cursor:pointer;" onclick="window.location.href='discussions.html'"><div class="feature-icon">💬</div><h3>Discussion Forum</h3><p>Join conversations about flower care, arrangements, and industry trends. Share your expertise and learn from others.</p></div>
+                <div class="community-feature-card"><div class="feature-icon">❓</div><h3>Questions & Answers</h3><p>Ask the community for advice on any floral topic. Get answers from experienced florists and growers worldwide.</p></div>
+                <div class="community-feature-card" style="cursor:pointer;" onclick="window.location.href='success-stories.html'"><div class="feature-icon">🌟</div><h3>Success Stories</h3><p>Read inspiring stories from community members who turned their passion for flowers into something extraordinary.</p></div>
+                <div class="community-feature-card"><div class="feature-icon">📸</div><h3>Photo Sharing</h3><p>Showcase your best floral photography. Get feedback, inspiration, and recognition from fellow flower lovers.</p></div>
+                <div class="community-feature-card"><div class="feature-icon">🏆</div><h3>Flower Challenges</h3><p>Participate in themed challenges, compete for prizes, and push your creativity to new heights.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="text-center reveal-up">
+                <span class="subtitle">BROWSE BY TOPIC</span>
+                <h2>Discussion Categories</h2>
+                <p class="section-subtitle">Find conversations that matter to you</p>
+            </div>
+            <div class="identification-grid reveal-up" style="grid-template-columns:repeat(5,1fr); margin-top:2rem;">
+                <div class="id-card" style="cursor:pointer;"><div class="id-icon">🌿</div><h3>Flower Care</h3><p class="id-subtitle">Watering, pruning, pests</p></div>
+                <div class="id-card" style="cursor:pointer;"><div class="id-icon">🛒</div><h3>Buying Advice</h3><p class="id-subtitle">Where & what to buy</p></div>
+                <div class="id-card" style="cursor:pointer;"><div class="id-icon">💼</div><h3>Selling Tips</h3><p class="id-subtitle">Pricing, marketing, growth</p></div>
+                <div class="id-card" style="cursor:pointer;"><div class="id-icon">✂️</div><h3>Arrangements</h3><p class="id-subtitle">Designs, techniques, tools</p></div>
+                <div class="id-card" style="cursor:pointer;"><div class="id-icon">🌱</div><h3>Gardening</h3><p class="id-subtitle">Growing, soil, seasons</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Discussions -->
+    <section class="section-padding" id="discussionsSection">
+        <div class="container">
+            <div class="flex-between reveal-up">
+                <div><span class="subtitle">HOT TOPICS</span><h2>Recent Discussions</h2></div>
+                <a href="discussions.html" class="btn btn-outline btn-sm" style="align-self:flex-end;">View All →</a>
+            </div>
+            <div class="discussion-list reveal-up" id="discussionList"></div>
+        </div>
+    </section>
+
+    <!-- Q&A -->
+    <section class="section-padding bg-light" id="qaSection">
+        <div class="container">
+            <div class="flex-between reveal-up">
+                <div><span class="subtitle">ASK & ANSWER</span><h2>Top Questions</h2></div>
+                <a href="#" class="btn btn-primary btn-sm" style="align-self:flex-end;">Ask a Question →</a>
+            </div>
+            <div class="reveal-up" id="questionList" style="margin-top:2rem;"></div>
+        </div>
+    </section>
+
+    <!-- Success Stories -->
+    <section class="section-padding" id="storiesSection">
+        <div class="container">
+            <div class="text-center reveal-up">
+                <span class="subtitle">INSPIRATION</span>
+                <h2>Success Stories</h2>
+                <p class="section-subtitle">Real stories from real members of our community</p>
+            </div>
+            <div class="identification-grid reveal-up" style="grid-template-columns:repeat(3,1fr); margin-top:2rem;" id="storyGrid"></div>
+        </div>
+    </section>
+
+    <!-- Photo Sharing -->
+    <section class="section-padding bg-light" id="photosSection">
+        <div class="container">
+            <div class="flex-between reveal-up">
+                <div><span class="subtitle">GALLERY</span><h2>Member Photos</h2></div>
+                <a href="#" class="btn btn-outline btn-sm" style="align-self:flex-end;">Upload Photo →</a>
+            </div>
+            <div class="photo-grid reveal-up" id="photoGrid">
+                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?q=80&w=400&auto=format&fit=crop" alt="Red rose close-up" loading="lazy"><div class="photo-overlay">🌹 by Maria</div></div>
+                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop" alt="Sunflower field" loading="lazy"><div class="photo-overlay">🌻 by James</div></div>
+                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1526045612212-70caf35c14df?q=80&w=400&auto=format&fit=crop" alt="Tulip bouquet" loading="lazy"><div class="photo-overlay">🌷 by Priya</div></div>
+                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1470509037662-253afb3100f9?q=80&w=400&auto=format&fit=crop" alt="Lavender field" loading="lazy"><div class="photo-overlay">💜 by Chen</div></div>
+                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1494972308805-463bc619d34d?q=80&w=400&auto=format&fit=crop" alt="Mixed arrangement" loading="lazy"><div class="photo-overlay">🌸 by Emma</div></div>
+                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1471899236350-e3016bf1e69e?q=80&w=400&auto=format&fit=crop" alt="White lily" loading="lazy"><div class="photo-overlay">💮 by Liam</div></div>
+                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1470509037662-253afb3100f9?q=80&w=400&auto=format&fit=crop" alt="Garden view" loading="lazy"><div class="photo-overlay">🌿 by Amara</div></div>
+                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1468327768560-75b778cbb551?q=80&w=400&auto=format&fit=crop" alt="Peony bloom" loading="lazy"><div class="photo-overlay">🌺 by Rosa</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Flower Challenges -->
+    <section class="section-padding" id="challengesSection">
+        <div class="container">
+            <div class="text-center reveal-up">
+                <span class="subtitle">COMPETE & WIN</span>
+                <h2>Active Challenges</h2>
+                <p class="section-subtitle">Participate in community challenges and earn recognition</p>
+            </div>
+            <div class="identification-grid reveal-up" style="grid-template-columns:repeat(3,1fr); margin-top:2rem;" id="challengeGrid"></div>
+        </div>
+    </section>
+
+    <!-- Join CTA -->
+    <section class="section-padding primary-bg text-white text-center">
+        <div class="container reveal-up">
+            <h2 style="color:white;">Ready to Join the Community?</h2>
+            <p style="color:rgba(255,255,255,0.85); max-width:480px; margin:0 auto 2rem;">Create your free account and start connecting with flower lovers worldwide today.</p>
+            <a href="index.html" class="btn" style="background:white; color:var(--primary-color); font-weight:600; padding:0.9rem 2rem;">Join Free →</a>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script>
+        (async () => {
+            const data = await api.fetchJSON('data/community.json');
+
+            // Discussions
+            const discussionList = document.getElementById('discussionList');
+            discussionList.innerHTML = data.discussions.map(d => `
+                <div class="discussion-item${d.pinned ? ' pinned' : ''}" style="cursor:pointer;" onclick="window.location.href='discussion-detail.html?id=${d.id}'">
+                    <div class="discussion-avatar">${d.avatar}</div>
+                    <div>
+                        <h4 style="font-size:1rem; margin-bottom:0.15rem;">
+                            ${d.pinned ? '<span class="pinned-badge">📌 Pinned</span>' : ''}
+                            ${d.title}
+                        </h4>
+                        <div style="font-size:0.85rem; color:var(--text-light);">
+                            by ${d.author} · <span class="category-chip">${d.category}</span>
+                        </div>
+                        <p style="font-size:0.9rem; color:var(--text-light); margin-top:0.5rem; line-height:1.5;">${d.excerpt}</p>
+                        <div class="discussion-meta">
+                            <span><i class="bi bi-chat-dots"></i> ${d.replies} replies</span>
+                            <span><i class="bi bi-eye"></i> ${d.views} views</span>
+                            <span><i class="bi bi-clock"></i> ${d.lastActive}</span>
+                        </div>
+                    </div>
+                    <div class="discussion-stats">
+                        <span><i class="bi bi-chat-dots"></i> ${d.replies}</span>
+                        <span style="font-size:0.75rem;">replies</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Q&A
+            const questionList = document.getElementById('questionList');
+            questionList.innerHTML = data.questions.map(q => `
+                <div class="question-card">
+                    <div>
+                        <h4>${q.title}</h4>
+                        <div class="q-meta">by ${q.author} · ${q.timeAgo} · <span class="category-chip">${q.category}</span></div>
+                    </div>
+                    <div class="q-stats">
+                        <strong>${q.answers}</strong> answers<br>
+                        <span>${q.votes} votes</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Success Stories
+            const storyGrid = document.getElementById('storyGrid');
+            storyGrid.innerHTML = data.successStories.map(s => `
+                <div class="story-card">
+                    <img loading="lazy" src="${s.image}" alt="${s.title}">
+                    <div class="story-body">
+                        <h3>${s.title}</h3>
+                        <div class="story-author">${s.avatar} ${s.author} · ${s.role}</div>
+                        <p>${s.story}</p>
+                        <div style="margin-top:0.75rem; display:flex; gap:1rem; font-size:0.85rem; color:var(--text-light);">
+                            <span><i class="bi bi-heart" style="color:var(--error-color);"></i> ${s.likes}</span>
+                            <span><i class="bi bi-chat-dots"></i> ${s.comments}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Challenges
+            const challengeGrid = document.getElementById('challengeGrid');
+            challengeGrid.innerHTML = data.challenges.map(c => `
+                <div class="challenge-card">
+                    <div class="challenge-icon">🏆</div>
+                    <h3>${c.name}</h3>
+                    <div class="challenge-meta">
+                        <span><i class="bi bi-people"></i> ${c.participants} participants</span> · 
+                        <span>${c.entries} entries</span> · 
+                        <span>Ends ${c.endsIn}</span>
+                    </div>
+                    <p>${c.description}</p>
+                    <div style="margin-top:1rem; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.8rem; color:var(--text-light);"><i class="bi bi-gift"></i> ${c.prize}</span>
+                        <a href="#" class="btn btn-primary btn-sm">Join Challenge</a>
+                    </div>
+                </div>
+            `).join('');
+        })();
+    </script>
+    <script>
+        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    this.parentElement.classList.toggle('mobile-open');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Track your garden journey with photos, notes, plant logs, and care reminders.">
+    <meta property="og:title" content="Garden Journal | Flower Ecosystem">
+    <meta property="og:description" content="Track your garden journey with photos, notes, and care reminders.">
+    <meta property="og:type" content="website">
+    <title>Garden Journal | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=17.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .jrn-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
+        .jrn-stats { display:flex; gap:1.5rem; margin-bottom:1.5rem; }
+        .jrn-stat { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1rem 1.5rem; flex:1; text-align:center; }
+        .jrn-stat .num { font-size:1.5rem; font-weight:700; color:var(--primary-color); }
+        .jrn-stat .label { font-size:0.8rem; color:var(--text-light); }
+        .jrn-tabs { display:flex; gap:0.25rem; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.25rem; width:fit-content; margin-bottom:1.5rem; }
+        .jrn-tab { padding:0.5rem 1rem; border-radius:var(--radius-sm); font-size:0.85rem; cursor:pointer; color:var(--text-light); transition:all 0.2s; border:none; background:none; }
+        .jrn-tab.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
+        .entries-list { display:flex; flex-direction:column; gap:1rem; }
+        .entry-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; transition:all 0.2s; cursor:pointer; }
+        .entry-card:hover { border-color:var(--primary-color); box-shadow:var(--shadow-sm); }
+        .entry-header { display:flex; justify-content:space-between; align-items:start; margin-bottom:0.5rem; }
+        .entry-date { font-size:0.78rem; color:var(--text-muted); display:flex; align-items:center; gap:0.3rem; }
+        .entry-title { font-size:1.05rem; font-weight:600; margin-bottom:0.3rem; }
+        .entry-content { font-size:0.88rem; color:var(--text-light); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin-bottom:0.5rem; }
+        .entry-meta { display:flex; gap:0.75rem; flex-wrap:wrap; font-size:0.78rem; color:var(--text-muted); }
+        .entry-meta span { display:flex; align-items:center; gap:0.2rem; }
+        .entry-photos { display:flex; gap:0.5rem; margin-top:0.75rem; overflow-x:auto; }
+        .entry-photos img { width:80px; height:60px; border-radius:var(--radius-sm); object-fit:cover; flex-shrink:0; }
+        .entry-plants { display:flex; gap:0.4rem; flex-wrap:wrap; margin-top:0.5rem; }
+        .plant-tag { padding:0.15rem 0.5rem; border-radius:12px; font-size:0.7rem; background:rgba(16,185,129,0.1); color:var(--accent-green); }
+        .reminders-list { display:flex; flex-direction:column; gap:0.5rem; }
+        .reminder-card { display:flex; align-items:center; gap:0.75rem; padding:0.75rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-sm); }
+        .reminder-check { width:20px; height:20px; accent-color:var(--primary-color); cursor:pointer; }
+        .reminder-info { flex:1; }
+        .reminder-info .title { font-size:0.88rem; font-weight:500; }
+        .reminder-info .date { font-size:0.75rem; color:var(--text-muted); }
+        .reminder-card.completed .title { text-decoration:line-through; opacity:0.5; }
+        .reminder-delete { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.85rem; }
+        .reminder-delete:hover { color:var(--error-color); }
+        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); }
+        .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
+        .login-prompt { text-align:center; padding:4rem 2rem; }
+        .login-prompt a { color:var(--primary-color); text-decoration:underline; }
+        @media(max-width:768px) { .jrn-stats { flex-direction:column; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="page-header primary-bg text-white section-padding text-center" style="padding-top:5rem; padding-bottom:2.5rem;">
+        <div class="container reveal-up">
+            <span class="subtitle" style="color:rgba(255,255,255,0.7)">MY GARDEN</span>
+            <h1 style="color:white;">Garden Journal</h1>
+            <p class="section-subtitle text-white">Track your garden journey with photos, notes, plant logs, and care reminders</p>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div id="journalContent">
+                <div class="login-prompt" id="loginPrompt" style="display:none;">
+                    <i class="bi bi-journal-text" style="font-size:3rem;display:block;margin-bottom:1rem;color:var(--text-light);"></i>
+                    <h2>Sign In Required</h2>
+                    <p style="color:var(--text-light);margin-bottom:1rem;">Sign in to create and manage your garden journal.</p>
+                    <a href="login.html?redirect=garden-journal.html" class="btn btn-primary">Sign In</a>
+                </div>
+
+                <div id="journalDashboard" style="display:none;">
+                    <div class="jrn-stats" id="statsGrid"></div>
+
+                    <div class="jrn-header">
+                        <div class="jrn-tabs">
+                            <button class="jrn-tab active" data-tab="entries">📝 Entries</button>
+                            <button class="jrn-tab" data-tab="reminders">⏰ Reminders</button>
+                        </div>
+                        <a href="create-journal-entry.html" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> New Entry</a>
+                    </div>
+
+                    <div id="entriesTab">
+                        <div class="entries-list" id="entriesList"></div>
+                    </div>
+
+                    <div id="remindersTab" style="display:none;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                            <h3 style="font-size:1rem;">Upcoming Reminders</h3>
+                            <button class="btn btn-outline btn-sm" onclick="showAddReminder()"><i class="bi bi-plus"></i> Add Reminder</button>
+                        </div>
+                        <div id="addReminderForm" style="display:none;margin-bottom:1rem;padding:1rem;background:var(--bg-white);border:1px solid var(--border-color);border-radius:var(--radius-sm);">
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-bottom:0.5rem;">
+                                <input type="text" id="reminderTitle" placeholder="Task title" style="padding:0.5rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:0.85rem;">
+                                <input type="date" id="reminderDate" style="padding:0.5rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:0.85rem;">
+                                <input type="text" id="reminderPlant" placeholder="Plant name (optional)" style="padding:0.5rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:0.85rem;">
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="addReminder()">Save Reminder</button>
+                        </div>
+                        <div class="reminders-list" id="remindersList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <div id="auth-modal-container"></div>
+
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/garden-journal.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initGardenJournal();
+        });
+    </script>
+</body>
+</html>

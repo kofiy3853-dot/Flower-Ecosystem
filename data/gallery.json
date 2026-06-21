@@ -1,0 +1,178 @@
+[
+    {
+        "id": "g1",
+        "title": "Rustic Barn Wedding Bouquet",
+        "category": "Wedding Flowers",
+        "author": "Emma Laurent",
+        "image": "https://images.unsplash.com/photo-1567691482090-4cc36f5721f6?q=80&w=600&auto=format&fit=crop",
+        "description": "A hand-tied bouquet featuring garden roses, lavender, and eucalyptus wrapped in burlap and lace.",
+        "likes": 234,
+        "saved": false,
+        "featured": true
+    },
+    {
+        "id": "g2",
+        "title": "Modern Birthday Centerpiece",
+        "category": "Birthday Arrangements",
+        "author": "Priya Nair",
+        "image": "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=80&w=600&auto=format&fit=crop",
+        "description": "Vibrant sunflowers and white daisies in a geometric gold vase — perfect for a 30th birthday celebration.",
+        "likes": 156,
+        "saved": false,
+        "featured": false
+    },
+    {
+        "id": "g3",
+        "title": "Luxury Red Rose Cascade",
+        "category": "Luxury Bouquets",
+        "author": "Maya Torres",
+        "image": "https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?q=80&w=600&auto=format&fit=crop",
+        "description": "A cascading arrangement of 50 premium long-stem red roses wrapped in silk ribbon and pearl pins.",
+        "likes": 412,
+        "saved": false,
+        "featured": true
+    },
+    {
+        "id": "g4",
+        "title": "Spring Living Room Vignette",
+        "category": "Home Decoration",
+        "author": "Amara Singh",
+        "image": "https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=600&auto=format&fit=crop",
+        "description": "A bright spring arrangement of tulips, hyacinths, and daffodils styled on a wooden coffee table.",
+        "likes": 189,
+        "saved": false,
+        "featured": false
+    },
+    {
+        "id": "g5",
+        "title": "Corporate Lobby Statement",
+        "category": "Corporate Events",
+        "author": "David Osei",
+        "image": "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?q=80&w=600&auto=format&fit=crop",
+        "description": "A large-scale minimalist arrangement of white orchids and monstera leaves in a tall ceramic vase.",
+        "likes": 278,
+        "saved": false,
+        "featured": true
+    },
+    {
+        "id": "g6",
+        "title": "Vintage Tea Party Arrangement",
+        "category": "Birthday Arrangements",
+        "author": "Sarah Chen",
+        "image": "https://images.unsplash.com/photo-1471899236350-e3016bf1e69e?q=80&w=600&auto=format&fit=crop",
+        "description": "Delicate pink peonies and sweet peas arranged in a vintage porcelain teapot for an intimate birthday tea.",
+        "likes": 203,
+        "saved": false,
+        "featured": false
+    },
+    {
+        "id": "g7",
+        "title": "White Garden Wedding Arch",
+        "category": "Wedding Flowers",
+        "author": "James Bloom",
+        "image": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=600&auto=format&fit=crop",
+        "description": "A lush white floral arch featuring hydrangeas, garden roses, and cascading jasmine for an outdoor ceremony.",
+        "likes": 345,
+        "saved": false,
+        "featured": true
+    },
+    {
+        "id": "g8",
+        "title": "Executive Desk Orchid Display",
+        "category": "Corporate Events",
+        "author": "Nadia Kwarteng",
+        "image": "https://images.unsplash.com/photo-1526045612212-70caf35c14df?q=80&w=600&auto=format&fit=crop",
+        "description": "Sleek black ceramic pots with phalaenopsis orchids arranged in a minimalist row for a modern executive suite.",
+        "likes": 167,
+        "saved": false,
+        "featured": false
+    },
+    {
+        "id": "g9",
+        "title": "Golden Luxury Gift Box",
+        "category": "Luxury Bouquets",
+        "author": "Liam Frost",
+        "image": "https://images.unsplash.com/photo-1470509037662-253afb3100f9?q=80&w=600&auto=format&fit=crop",
+        "description": "A premium hat-box arrangement of preserved roses in gold and champagne tones with dried pampas grass accents.",
+        "likes": 521,
+        "saved": false,
+        "featured": true
+    },
+    {
+        "id": "g10",
+        "title": "Kitchen Herb & Flower Garden",
+        "category": "Home Decoration",
+        "author": "Rosa Martinez",
+        "image": "https://images.unsplash.com/photo-1494972308805-463bc619d34d?q=80&w=600&auto=format&fit=crop",
+        "description": "Edible flowers and fresh herbs arranged in rustic terracotta pots along a sunny kitchen windowsill.",
+        "likes": 134,
+        "saved": false,
+        "featured": false
+    },
+    {
+        "id": "g11",
+        "title": "Reception Table Runners",
+        "category": "Wedding Flowers",
+        "author": "Emma Laurent",
+        "image": "https://images.unsplash.com/photo-1468327768560-75b778cbb551?q=80&w=600&auto=format&fit=crop",
+        "description": "Low-profile table runners of greenery, white roses, and hanging amaranthus along a farm-style reception table.",
+        "likes": 298,
+        "saved": false,
+        "featured": false
+    },
+    {
+        "id": "g12",
+        "title": "Conference Stage Floral Wings",
+        "category": "Corporate Events",
+        "author": "David Osei",
+        "image": "https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=600&auto=format&fit=crop",
+        "description": "Large-scale floral wings framing a conference stage, using tropical leaves, orchids, and anthuriums.",
+        "likes": 223,
+        "saved": false,
+        "featured": false
+    },
+    {
+        "id": "g13",
+        "title": "Luxury Valentine's Bouquet",
+        "category": "Luxury Bouquets",
+        "author": "Maya Torres",
+        "image": "https://images.unsplash.com/photo-1522926193341-e9ffd686c60f?q=80&w=600&auto=format&fit=crop",
+        "description": "An extravagant mix of black velvet roses, deep burgundy dahlias, and silver brunia berries wrapped in velvet.",
+        "likes": 487,
+        "saved": false,
+        "featured": true
+    },
+    {
+        "id": "g14",
+        "title": "Bohemian Bedroom Dried Florals",
+        "category": "Home Decoration",
+        "author": "Iris Nakamura",
+        "image": "https://images.unsplash.com/photo-1485955900006-10f4d324d411?q=80&w=600&auto=format&fit=crop",
+        "description": "Dried eucalyptus, pampas grass, and bunny tail grass in woven baskets for a boho bedroom aesthetic.",
+        "likes": 156,
+        "saved": false,
+        "featured": false
+    },
+    {
+        "id": "g15",
+        "title": "Milestone 50th Birthday Cascade",
+        "category": "Birthday Arrangements",
+        "author": "Priya Nair",
+        "image": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=600&auto=format&fit=crop",
+        "description": "A dramatic cascade of golden roses, orange lilies, and yellow freesias in a tall gilded vase for a golden milestone.",
+        "likes": 189,
+        "saved": false,
+        "featured": false
+    },
+    {
+        "id": "g16",
+        "title": "Midsummer Night's Dream Tablescape",
+        "category": "Wedding Flowers",
+        "author": "Sarah Chen",
+        "image": "https://images.unsplash.com/photo-1567691482090-4cc36f5721f6?q=80&w=600&auto=format&fit=crop",
+        "description": "Floating candle centerpieces with lavender, delphinium, and fairy lights scattered across a long banquet table.",
+        "likes": 267,
+        "saved": false,
+        "featured": false
+    }
+]

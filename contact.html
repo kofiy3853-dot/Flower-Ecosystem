@@ -1,0 +1,228 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Get in touch with the Flower Ecosystem team. Contact support, sales, or partnerships.">
+    <title>Contact Us | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .contact-grid { display:grid; grid-template-columns:1fr 1.5fr; gap:3rem; align-items:start; }
+        .contact-info h2 { margin-bottom:0.5rem; }
+        .contact-info > p { color:var(--text-light); margin-bottom:2rem; line-height:1.7; }
+        .info-list { display:flex; flex-direction:column; gap:1.5rem; }
+        .info-item { display:flex; gap:1rem; align-items:flex-start; }
+        .info-icon { width:44px; height:44px; background:rgba(172,50,80,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.2rem; color:var(--primary-color); }
+        .info-item h4 { margin-bottom:0.25rem; font-size:0.95rem; }
+        .info-item p { color:var(--text-light); font-size:0.9rem; line-height:1.5; }
+        .contact-form-card { background:var(--bg-white); padding:2rem; border-radius:var(--radius-md); box-shadow:var(--shadow-md); border:1px solid var(--border-color); }
+        .contact-form-card h3 { margin-bottom:1.25rem; }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
+        .form-group { margin-bottom:1rem; }
+        .form-group label { display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.88rem; }
+        .form-group input,
+        .form-group select,
+        .form-group textarea { width:100%; padding:0.7rem 0.9rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:inherit; font-size:0.9rem; background:var(--bg-main); color:var(--text-main); transition:border-color 0.2s; }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus { outline:none; border-color:var(--primary-color); }
+        .form-group textarea { resize:vertical; min-height:120px; }
+        .form-message { display:none; text-align:center; padding:1rem; border-radius:var(--radius-sm); margin-top:1rem; font-weight:500; }
+        .form-message.success { display:block; background:rgba(16,185,129,0.1); color:var(--accent-green); }
+        .form-message.error { display:block; background:rgba(239,68,68,0.1); color:var(--error-color); }
+        .channel-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-top:3rem; }
+        .channel-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; text-align:center; transition:all 0.3s; cursor:pointer; }
+        .channel-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
+        .channel-icon { font-size:2rem; margin-bottom:0.75rem; }
+        .channel-card h4 { font-size:0.95rem; margin-bottom:0.25rem; }
+        .channel-card p { font-size:0.8rem; color:var(--text-light); }
+        .faq-section { margin-top:3rem; }
+        .faq-section h2 { text-align:center; margin-bottom:0.5rem; }
+        .faq-section > p { text-align:center; color:var(--text-light); margin-bottom:2rem; }
+        .faq-tabs { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; margin-bottom:1.5rem; }
+        .faq-tab { padding:0.4rem 1rem; border:1px solid var(--border-color); border-radius:20px; font-size:0.85rem; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; }
+        .faq-tab:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .faq-tab.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+        .faq-list { max-width:800px; margin:0 auto; }
+        .faq-item { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-sm); margin-bottom:0.75rem; overflow:hidden; }
+        .faq-question { display:flex; justify-content:space-between; align-items:center; padding:1rem 1.25rem; cursor:pointer; font-weight:500; font-size:0.95rem; transition:background 0.2s; }
+        .faq-question:hover { background:var(--bg-light); }
+        .faq-question i { transition:transform 0.3s; color:var(--text-muted); }
+        .faq-item.open .faq-question i { transform:rotate(180deg); }
+        .faq-answer { padding:0 1.25rem; max-height:0; overflow:hidden; transition:all 0.3s; }
+        .faq-item.open .faq-answer { max-height:500px; padding:0 1.25rem 1rem; }
+        .faq-answer p { font-size:0.9rem; color:var(--text-light); line-height:1.7; }
+        .office-section { margin-top:3rem; }
+        .office-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
+        .office-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; }
+        .office-card h4 { font-size:1rem; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.4rem; }
+        .office-card p { font-size:0.88rem; color:var(--text-light); line-height:1.6; }
+        .office-card .flag { font-size:1.2rem; }
+        @media(max-width:1024px) { .contact-grid { grid-template-columns:1fr; } .channel-cards { grid-template-columns:repeat(2,1fr); } .office-grid { grid-template-columns:1fr; } }
+        @media(max-width:640px) { .form-row { grid-template-columns:1fr; } .channel-cards { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="page-header primary-bg text-white section-padding text-center" style="padding-top:5rem; padding-bottom:2.5rem;">
+        <div class="container reveal-up">
+            <span class="subtitle" style="color:rgba(255,255,255,0.7)">GET IN TOUCH</span>
+            <h1 style="color:white;">Contact Us</h1>
+            <p class="section-subtitle text-white">We'd love to hear from you. Our team is here to help!</p>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-info reveal-up">
+                    <h2>Get in Touch</h2>
+                    <p>Have a question about buying, selling, or learning? We're here to help. Reach out to us and we'll respond as soon as possible.</p>
+                    <div class="info-list">
+                        <div class="info-item">
+                            <div class="info-icon"><i class="bi bi-envelope"></i></div>
+                            <div><h4>Email</h4><p>hello@flowerecosystem.com<br>support@flowerecosystem.com</p></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="bi bi-telephone"></i></div>
+                            <div><h4>Phone</h4><p>+1 (800) 555-FLOWER<br>+233 (0) 302 123 456</p></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="bi bi-clock"></i></div>
+                            <div><h4>Support Hours</h4><p>Mon–Fri: 9am–6pm EST<br>Weekend: 10am–4pm EST</p></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon"><i class="bi bi-chat-dots"></i></div>
+                            <div><h4>Live Chat</h4><p>Available 24/7 in your dashboard<br>Average response: 2 minutes</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form-card reveal-up">
+                    <h3><i class="bi bi-send" style="color:var(--primary-color);margin-right:0.3rem;"></i> Send Us a Message</h3>
+                    <form id="contactForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactName">Name *</label>
+                                <input type="text" id="contactName" placeholder="Your full name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactEmail">Email *</label>
+                                <input type="email" id="contactEmail" placeholder="you@example.com" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactPhone">Phone (optional)</label>
+                                <input type="tel" id="contactPhone" placeholder="+1 (555) 000-0000">
+                            </div>
+                            <div class="form-group">
+                                <label for="contactCompany">Company (optional)</label>
+                                <input type="text" id="contactCompany" placeholder="Your company name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactSubject">Subject *</label>
+                            <select id="contactSubject" required>
+                                <option value="General Inquiry">General Inquiry</option>
+                                <option value="Order Support">Order Support</option>
+                                <option value="Seller Account Help">Seller Account Help</option>
+                                <option value="Technical Issue">Technical Issue</option>
+                                <option value="Partnership Inquiry">Partnership Inquiry</option>
+                                <option value="Event Hosting">Event Hosting</option>
+                                <option value="Bug Report">Bug Report</option>
+                                <option value="Feature Request">Feature Request</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactMessage">Message *</label>
+                            <textarea id="contactMessage" placeholder="Tell us how we can help you..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="contactSubmitBtn" style="width:100%;padding:0.85rem;">
+                            <i class="bi bi-send"></i> Send Message
+                        </button>
+                        <div class="form-message" id="formMessage"></div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="channel-cards reveal-up">
+                <div class="channel-card" onclick="window.location.href='mailto:hello@flowerecosystem.com'">
+                    <div class="channel-icon">📧</div>
+                    <h4>Email Us</h4>
+                    <p>hello@flowerecosystem.com</p>
+                </div>
+                <div class="channel-card" onclick="window.location.href='tel:+18005553569'">
+                    <div class="channel-icon">📞</div>
+                    <h4>Call Us</h4>
+                    <p>+1 (800) 555-FLOWER</p>
+                </div>
+                <div class="channel-card">
+                    <div class="channel-icon">💬</div>
+                    <h4>Live Chat</h4>
+                    <p>24/7 in-app support</p>
+                </div>
+                <div class="channel-card" onclick="window.location.href='https://twitter.com/flowerecosystem'">
+                    <div class="channel-icon">🐦</div>
+                    <h4>Social Media</h4>
+                    <p>@flowerecosystem</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding bg-light faq-section">
+        <div class="container">
+            <h2>Frequently Asked Questions</h2>
+            <p>Quick answers to common questions</p>
+            <div class="faq-tabs" id="faqTabs"></div>
+            <div class="faq-list" id="faqList"></div>
+        </div>
+    </section>
+
+    <section class="section-padding office-section">
+        <div class="container">
+            <div class="text-center" style="margin-bottom:2rem;">
+                <span class="subtitle">OUR OFFICES</span>
+                <h2>Find Us Around the World</h2>
+            </div>
+            <div class="office-grid reveal-up">
+                <div class="office-card">
+                    <h4><span class="flag">🇺🇸</span> United States</h4>
+                    <p>123 Flower Lane<br>Portland, OR 97201<br>+1 (800) 555-FLOWER</p>
+                </div>
+                <div class="office-card">
+                    <h4><span class="flag">🇬🇭</span> Ghana</h4>
+                    <p>45 Garden Avenue<br>Accra, Greater Accra<br>+233 (0) 302 123 456</p>
+                </div>
+                <div class="office-card">
+                    <h4><span class="flag">🇬🇧</span> United Kingdom</h4>
+                    <p>78 Botanical Road<br>London, SW1A 1AA<br>+44 (0) 20 7946 0958</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/contact.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initContactPage();
+        });
+    </script>
+</body>
+</html>

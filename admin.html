@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Inter',sans-serif;background:var(--bg-light);display:flex;min-height:100vh;}
+
+        /* Sidebar */
+        .admin-sidebar{width:260px;background:linear-gradient(180deg,#1a1a2e 0%,#16213e 100%);color:white;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:transform 0.3s;}
+        .admin-sidebar-header{padding:1.5rem;border-bottom:1px solid rgba(255,255,255,0.08);}
+        .admin-sidebar-header h2{font-size:1.1rem;font-weight:600;display:flex;align-items:center;gap:0.5rem;}
+        .admin-sidebar-header h2 span{font-size:1.4rem;}
+        .admin-sidebar-header p{font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:0.2rem;}
+        .admin-sidebar-nav{flex:1;padding:0.75rem 0;overflow-y:auto;}
+        .admin-sidebar-nav a{display:flex;align-items:center;gap:0.75rem;padding:0.7rem 1.5rem;color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.88rem;font-weight:500;transition:all 0.2s;border-left:3px solid transparent;}
+        .admin-sidebar-nav a:hover{background:rgba(255,255,255,0.06);color:white;}
+        .admin-sidebar-nav a.active{background:rgba(255,255,255,0.08);color:white;border-left-color:var(--primary-color);}
+        .admin-sidebar-nav a i{font-size:1.1rem;width:20px;text-align:center;}
+        .admin-sidebar-nav .nav-section{padding:0.5rem 1.5rem;margin-top:0.75rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.3);font-weight:600;}
+        .admin-sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.08);}
+        .admin-sidebar-footer a{display:flex;align-items:center;gap:0.5rem;color:rgba(255,255,255,0.5);text-decoration:none;font-size:0.85rem;padding:0.4rem 0;}
+        .admin-sidebar-footer a:hover{color:white;}
+
+        /* Main */
+        .admin-main{margin-left:260px;flex:1;min-height:100vh;}
+        .admin-topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:var(--bg-white);border-bottom:1px solid var(--border-color);position:sticky;top:0;z-index:50;}
+        .admin-topbar h1{font-size:1.3rem;font-weight:600;}
+        .admin-topbar-actions{display:flex;gap:0.5rem;}
+        .admin-topbar-actions button{padding:0.5rem 1rem;border-radius:8px;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;gap:0.35rem;border:none;font-weight:500;transition:all 0.2s;}
+        .btn-admin-primary{background:var(--primary-color);color:white;}
+        .btn-admin-primary:hover{opacity:0.9;}
+        .btn-admin-outline{background:transparent;border:1px solid var(--border-color);color:var(--text-main);}
+        .btn-admin-outline:hover{background:var(--bg-light);}
+        .admin-content{padding:2rem;}
+        .admin-hamburger{display:none;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-main);}
+
+        /* Welcome */
+        .welcome-card{background:linear-gradient(135deg,var(--primary-color),#8b2a40);border-radius:14px;padding:2rem 2.5rem;color:white;margin-bottom:2rem;}
+        .welcome-card h2{font-size:1.6rem;margin-bottom:0.3rem;}
+        .welcome-card p{opacity:0.85;font-size:0.95rem;}
+
+        /* Stats */
+        .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-bottom:2rem;}
+        .stat-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:12px;padding:1.5rem;transition:all 0.2s;}
+        .stat-card:hover{box-shadow:0 4px 15px rgba(0,0,0,0.06);transform:translateY(-2px);}
+        .stat-card .stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem;}
+        .stat-card .stat-value{font-size:1.8rem;font-weight:700;color:var(--text-main);margin-bottom:0.15rem;}
+        .stat-card .stat-label{font-size:0.85rem;color:var(--text-light);}
+        .stat-card .stat-trend{font-size:0.8rem;margin-top:0.3rem;display:flex;align-items:center;gap:0.2rem;}
+        .trend-up{color:#16a34a;}
+        .trend-down{color:#dc2626;}
+
+        /* Section */
+        .admin-section{display:none;}
+        .admin-section.active{display:block;}
+        .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.75rem;}
+        .section-header h2{font-size:1.4rem;}
+
+        /* Table */
+        .admin-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:12px;overflow:hidden;}
+        .admin-card-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;border-bottom:1px solid var(--border-color);flex-wrap:wrap;gap:0.75rem;}
+        .admin-card-header h3{font-size:1rem;}
+        .admin-filter{display:flex;gap:0.5rem;flex-wrap:wrap;}
+        .admin-filter input,.admin-filter select{padding:0.45rem 0.75rem;border:1px solid var(--border-color);border-radius:6px;font-size:0.85rem;font-family:inherit;}
+        .admin-filter input:focus,.admin-filter select:focus{outline:none;border-color:var(--primary-color);}
+        .admin-table{width:100%;border-collapse:collapse;font-size:0.88rem;}
+        .admin-table th{text-align:left;padding:0.75rem 1rem;background:var(--bg-light);color:var(--text-light);font-weight:600;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border-color);}
+        .admin-table td{padding:0.75rem 1rem;border-bottom:1px solid var(--border-color);vertical-align:middle;}
+        .admin-table tr:hover td{background:rgba(172,50,80,0.02);}
+        .admin-table tr:last-child td{border-bottom:none;}
+        .admin-table-wrap{overflow-x:auto;}
+
+        /* Badges */
+        .badge{padding:0.25rem 0.6rem;border-radius:20px;font-size:0.75rem;font-weight:600;display:inline-block;}
+        .badge-active{background:rgba(22,163,74,0.1);color:#16a34a;}
+        .badge-suspended{background:rgba(220,38,38,0.1);color:#dc2626;}
+        .badge-pending{background:rgba(202,138,4,0.1);color:#ca8a04;}
+        .badge-shipped{background:rgba(124,58,237,0.1);color:#7c3aed;}
+        .badge-delivered{background:rgba(37,99,235,0.1);color:#2563eb;}
+        .badge-processing{background:rgba(172,50,80,0.1);color:var(--primary-color);}
+        .badge-role{background:rgba(100,116,139,0.1);color:#475569;}
+
+        /* Action buttons */
+        .act-btn{padding:0.3rem 0.65rem;border:none;border-radius:5px;font-size:0.78rem;cursor:pointer;font-weight:500;transition:all 0.15s;}
+        .act-btn-primary{background:rgba(59,130,246,0.1);color:#3b82f6;}
+        .act-btn-primary:hover{background:#3b82f6;color:white;}
+        .act-btn-success{background:rgba(22,163,74,0.1);color:#16a34a;}
+        .act-btn-success:hover{background:#16a34a;color:white;}
+        .act-btn-danger{background:rgba(220,38,38,0.1);color:#dc2626;}
+        .act-btn-danger:hover{background:#dc2626;color:white;}
+
+        /* Quick actions */
+        .qa-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+        .qa-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1.25rem;cursor:pointer;transition:all 0.2s;text-decoration:none;color:inherit;display:flex;align-items:center;gap:0.75rem;}
+        .qa-card:hover{border-color:var(--primary-color);box-shadow:0 4px 12px rgba(0,0,0,0.06);}
+        .qa-card .qa-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+        /* Missing small button class used by coupon table */
+        .btn-admin-sm{padding:0.25rem 0.55rem;border:none;border-radius:5px;font-size:0.78rem;cursor:pointer;font-weight:500;transition:all 0.15s;background:rgba(100,116,139,0.1);color:#475569;}
+        .btn-admin-sm:hover{background:var(--primary-color);color:white;}
+
+        /* Analytics */
+        .analytics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;margin-bottom:2rem;}
+        .analytics-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:12px;padding:1.5rem;text-align:center;}
+        .analytics-card .big{font-size:2rem;font-weight:700;color:var(--primary-color);}
+        .analytics-card .lbl{font-size:0.85rem;color:var(--text-light);margin-top:0.25rem;}
+
+        /* Chart placeholder */
+        .chart-placeholder{background:var(--bg-white);border:1px solid var(--border-color);border-radius:12px;padding:2rem;text-align:center;color:var(--text-light);}
+        .chart-bars{display:flex;align-items:flex-end;gap:0.5rem;height:120px;justify-content:center;margin-top:1rem;}
+        .chart-bar{width:40px;border-radius:4px 4px 0 0;transition:height 0.5s ease;}
+        .chart-bar-label{font-size:0.7rem;color:var(--text-light);text-align:center;margin-top:0.25rem;}
+
+        /* Modal */
+        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;justify-content:center;align-items:center;}
+        .modal-overlay.active{display:flex;}
+        .modal-box{background:var(--bg-white);border-radius:14px;padding:2rem;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;position:relative;}
+        .modal-box h3{margin-bottom:1.25rem;}
+        .modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-light);}
+        .admin-modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-light);}
+        .form-group{margin-bottom:1rem;}
+        .form-group label{display:block;font-weight:500;font-size:0.85rem;margin-bottom:0.35rem;}
+        .form-group input,.form-group select,.form-group textarea{width:100%;padding:0.6rem 0.75rem;border:1px solid var(--border-color);border-radius:6px;font-family:inherit;font-size:0.9rem;}
+        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary-color);}
+
+        /* Toast */
+        .admin-toast{position:fixed;bottom:2rem;right:2rem;padding:1rem 1.5rem;border-radius:10px;color:white;font-weight:500;z-index:9999;transform:translateY(20px);opacity:0;transition:all 0.3s;}
+        .admin-toast.active{transform:translateY(0);opacity:1;}
+        .admin-toast-success{background:#16a34a;}
+        .admin-toast-error{background:#dc2626;}
+
+        /* Responsive */
+        @media(max-width:1024px){.stat-grid{grid-template-columns:repeat(2,1fr);}.qa-grid{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:768px){
+            .admin-sidebar{transform:translateX(-100%);}
+            .admin-sidebar.open{transform:translateX(0);}
+            .admin-main{margin-left:0;}
+            .admin-hamburger{display:block;}
+            .stat-grid{grid-template-columns:1fr 1fr;}
+            .qa-grid{grid-template-columns:1fr;}
+            .admin-content{padding:1rem;}
+        }
+        @media(max-width:480px){.stat-grid{grid-template-columns:1fr;}}
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-sidebar-header">
+            <h2><span>&#127800;</span> Flower Ecosystem</h2>
+            <p>Admin Dashboard</p>
+        </div>
+        <nav class="admin-sidebar-nav">
+            <a href="#" data-section="dashboard" class="active"><i class="bi bi-grid-1x2"></i> Dashboard</a>
+            <div class="nav-section">Marketplace</div>
+            <a href="#" data-section="users"><i class="bi bi-people"></i> Users</a>
+            <a href="#" data-section="sellers"><i class="bi bi-shop"></i> Sellers & Florists</a>
+            <a href="#" data-section="products"><i class="bi bi-box-seam"></i> Products</a>
+            <a href="#" data-section="categories"><i class="bi bi-tags"></i> Categories</a>
+            <a href="#" data-section="coupons"><i class="bi bi-ticket-perforated"></i> Coupons</a>
+            <a href="#" data-section="orders"><i class="bi bi-receipt"></i> Orders</a>
+            <div class="nav-section">Content</div>
+            <a href="#" data-section="learning"><i class="bi bi-book"></i> Learning Center</a>
+            <a href="#" data-section="identification"><i class="bi bi-search"></i> Flower Identification</a>
+            <a href="#" data-section="community"><i class="bi bi-chat-dots"></i> Community</a>
+            <a href="#" data-section="events"><i class="bi bi-calendar-event"></i> Events</a>
+            <div class="nav-section">Platform</div>
+            <a href="#" data-section="analytics"><i class="bi bi-graph-up"></i> Analytics</a>
+            <a href="#" data-section="announcements"><i class="bi bi-megaphone"></i> Announcements</a>
+            <a href="#" data-section="settings"><i class="bi bi-gear"></i> Settings</a>
+        </nav>
+        <div class="admin-sidebar-footer">
+            <a href="index.html"><i class="bi bi-arrow-left"></i> Back to Store</a>
+            <a href="#" id="adminLogout"><i class="bi bi-box-arrow-left"></i> Sign Out</a>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="admin-main">
+        <div class="admin-topbar">
+            <button class="admin-hamburger" id="hamburger"><i class="bi bi-list"></i></button>
+            <h1 id="pageTitle">Dashboard</h1>
+            <div class="admin-topbar-actions">
+                <button class="btn-admin-primary" id="qaProductBtn"><i class="bi bi-plus-lg"></i> Add Product</button>
+                <button class="btn-admin-outline" id="qaCourseBtn"><i class="bi bi-plus-lg"></i> Add Course</button>
+                <button class="btn-admin-outline" id="qaEventBtn"><i class="bi bi-plus-lg"></i> Create Event</button>
+            </div>
+        </div>
+
+        <div class="admin-content">
+            <!-- Dashboard -->
+            <div class="admin-section active" data-section="dashboard">
+                <div class="welcome-card">
+                    <h2>Welcome Back, Admin</h2>
+                    <p>Here's a quick look at the health of your ecosystem.</p>
+                </div>
+                <div class="stat-grid" id="dashboardStats"></div>
+                <div class="qa-grid" id="quickActions"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+                    <div class="chart-placeholder">
+                        <h3 style="font-size:1rem;margin-bottom:0.5rem;">Users Growth</h3>
+                        <div class="chart-bars" id="usersChart"></div>
+                    </div>
+                    <div class="chart-placeholder">
+                        <h3 style="font-size:1rem;margin-bottom:0.5rem;">Popular Flowers</h3>
+                        <div id="popularFlowers" style="text-align:left;margin-top:0.5rem;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users -->
+            <div class="admin-section" data-section="users">
+                <div class="section-header"><h2>Users</h2></div>
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3>All Users</h3>
+                        <div class="admin-filter">
+                            <input type="text" id="userSearch" placeholder="Search users...">
+                            <select id="roleFilter"><option value="all">All Roles</option><option value="CUSTOMER">Customer</option><option value="SELLER">Seller</option><option value="FLORIST">Florist</option><option value="INSTRUCTOR">Instructor</option><option value="MODERATOR">Moderator</option><option value="ADMIN">Admin</option><option value="SUPERADMIN">Super Admin</option></select>
+                        </div>
+                    </div>
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+                            <tbody id="usersBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sellers -->
+            <div class="admin-section" data-section="sellers">
+                <div class="section-header"><h2>Sellers & Florists</h2></div>
+                <div class="admin-card">
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="sellersBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products -->
+            <div class="admin-section" data-section="products">
+                <div class="section-header">
+                    <h2>Products</h2>
+                    <button class="btn-admin-primary" onclick="openModal('product')"><i class="bi bi-plus-lg"></i> Add Product</button>
+                </div>
+                <div class="admin-card">
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="productsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="admin-section" data-section="categories">
+                <div class="section-header"><h2>Categories</h2></div>
+                <div class="admin-card">
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead><tr><th>Name</th><th>ID</th><th>Actions</th></tr></thead>
+                            <tbody id="categoriesBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coupons -->
+            <div class="admin-section" data-section="coupons">
+                <div class="section-header"><h2>🎟️ Coupons & Promo Codes</h2><button class="btn-admin-primary" onclick="showCouponForm()"><i class="bi bi-plus-lg"></i> Add Coupon</button></div>
+                <div class="admin-card" id="couponListCard">
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Min Order</th><th>Uses</th><th>Max Uses</th><th>Expires</th><th>Active</th><th>Actions</th></tr></thead>
+                            <tbody id="couponsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="admin-card" id="couponFormCard" style="display:none;">
+                    <div class="section-header"><h2 id="couponFormTitle">New Coupon</h2><button class="btn-admin-outline" onclick="hideCouponForm()"><i class="bi bi-x-lg"></i></button></div>
+                    <form id="couponForm" onsubmit="return saveCoupon(event)" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                        <div><label>Code</label><input type="text" id="cpCode" required style="text-transform:uppercase;width:100%;padding:0.5rem;border:1px solid var(--border-color);border-radius:6px;font-family:inherit;"></div>
+                        <div><label>Discount Type</label><select id="cpType" style="width:100%;padding:0.5rem;border:1px solid var(--border-color);border-radius:6px;font-family:inherit;"><option value="percentage">Percentage (%)</option><option value="fixed">Fixed ($)</option></select></div>
+                        <div><label>Value</label><input type="number" id="cpValue" required min="0.01" step="0.01" style="width:100%;padding:0.5rem;border:1px solid var(--border-color);border-radius:6px;font-family:inherit;"></div>
+                        <div><label>Min Order Amount ($)</label><input type="number" id="cpMin" value="0" min="0" step="0.01" style="width:100%;padding:0.5rem;border:1px solid var(--border-color);border-radius:6px;font-family:inherit;"></div>
+                        <div><label>Max Uses (0 = unlimited)</label><input type="number" id="cpMax" value="0" min="0" style="width:100%;padding:0.5rem;border:1px solid var(--border-color);border-radius:6px;font-family:inherit;"></div>
+                        <div><label>Expires At</label><input type="date" id="cpExpires" style="width:100%;padding:0.5rem;border:1px solid var(--border-color);border-radius:6px;font-family:inherit;"></div>
+                        <div style="grid-column:1/-1;display:flex;gap:0.75rem;margin-top:0.5rem;">
+                            <button type="submit" class="btn-admin-primary">Save Coupon</button>
+                            <button type="button" class="btn-admin-outline" onclick="hideCouponForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Orders -->
+            <div class="admin-section" data-section="orders">
+                <div class="section-header"><h2>Orders</h2></div>
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3>All Orders</h3>
+                        <div class="admin-filter">
+                            <select id="orderFilter"><option value="all">All Statuses</option><option value="PENDING">Pending</option><option value="PROCESSING">Processing</option><option value="SHIPPED">Shipped</option><option value="DELIVERED">Delivered</option><option value="CANCELLED">Cancelled</option></select>
+                        </div>
+                    </div>
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+                            <tbody id="ordersBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning -->
+            <div class="admin-section" data-section="learning">
+                <div class="section-header">
+                    <h2>Learning Center</h2>
+                    <button class="btn-admin-primary" onclick="openModal('course')"><i class="bi bi-plus-lg"></i> Create Course</button>
+                </div>
+                <div class="admin-card">
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead><tr><th>Course</th><th>Instructor</th><th>Level</th><th>Students</th><th>Rating</th></tr></thead>
+                            <tbody id="coursesBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Identification -->
+            <div class="admin-section" data-section="identification">
+                <div class="section-header"><h2>Flower Identification</h2></div>
+                <div class="admin-card">
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead><tr><th>Title</th><th>Category</th><th>Level</th><th>Duration</th></tr></thead>
+                            <tbody id="identBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community -->
+            <div class="admin-section" data-section="community">
+                <div class="section-header"><h2>Community</h2></div>
+                <div class="admin-card">
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead><tr><th>Title</th><th>Author</th><th>Replies</th><th>Pinned</th><th>Actions</th></tr></thead>
+                            <tbody id="communityBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events -->
+            <div class="admin-section" data-section="events">
+                <div class="section-header">
+                    <h2>Events</h2>
+                    <button class="btn-admin-primary" onclick="openModal('event')"><i class="bi bi-plus-lg"></i> Create Event</button>
+                </div>
+                <div class="admin-card">
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead><tr><th>Title</th><th>Date</th><th>Category</th><th>Location</th><th>Spots</th></tr></thead>
+                            <tbody id="eventsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics -->
+            <div class="admin-section" data-section="analytics">
+                <div class="section-header"><h2>Analytics</h2></div>
+                <div class="analytics-grid" id="analyticsGrid"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+                    <div class="chart-placeholder">
+                        <h3 style="font-size:1rem;">Revenue Trend</h3>
+                        <div class="chart-bars" id="revenueChart"></div>
+                    </div>
+                    <div class="chart-placeholder">
+                        <h3 style="font-size:1rem;">Most Viewed Courses</h3>
+                        <div id="topCourses" style="text-align:left;margin-top:0.5rem;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Announcements -->
+            <div class="admin-section" data-section="announcements">
+                <div class="section-header">
+                    <h2>Announcements</h2>
+                    <button class="btn-admin-primary" onclick="openModal('announcement')"><i class="bi bi-megaphone"></i> New Announcement</button>
+                </div>
+                <div class="admin-card">
+                    <div id="announcementsList" style="padding:1rem;"></div>
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="admin-section" data-section="settings">
+                <div class="section-header"><h2>Settings</h2></div>
+                <div style="max-width:600px;">
+                    <div class="admin-card" style="padding:1.5rem;margin-bottom:1rem;">
+                        <h3 style="margin-top:0;">Platform</h3>
+                        <p style="color:var(--text-light);font-size:0.9rem;">Platform configuration options will appear here.</p>
+                    </div>
+                    <div class="admin-card" style="padding:1.5rem;">
+                        <h3 style="margin-top:0;">Admin Account</h3>
+                        <p style="font-size:0.9rem;">Logged in as: <strong id="adminEmail"></strong></p>
+                        <button class="act-btn act-btn-danger" style="margin-top:0.75rem;padding:0.5rem 1rem;" onclick="logout();window.location.href='index.html'">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box">
+            <button class="admin-modal-close" onclick="closeModal()">&times;</button>
+            <h3 id="modalTitle">Add New</h3>
+            <form id="modalForm"></form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="admin-toast" id="adminToast"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script>
+        // Auth guard
+        if (typeof isLoggedIn === 'undefined' || !isLoggedIn()) {
+            document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Inter,sans-serif;"><div style="text-align:center;"><i class="bi bi-person-lock" style="font-size:3rem;color:var(--primary-color);"></i><h3 style="margin:1rem 0;">Please Sign In</h3><p style="color:var(--text-light);margin-bottom:1.5rem;">You need to be logged in as an admin.</p><a href="index.html" class="btn btn-primary">Go to Store</a></div></div>';
+        } else {
+            const u = getCurrentUser();
+            const role = (u?.role || '').toUpperCase();
+            if (!['ADMIN', 'SUPERADMIN'].includes(role)) {
+                document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Inter,sans-serif;"><div style="text-align:center;"><i class="bi bi-shield-lock" style="font-size:3rem;color:#dc2626;"></i><h3 style="margin:1rem 0;">Admin Access Only</h3><p style="color:var(--text-light);">You do not have permission to view this page.</p><a href="index.html" class="btn btn-outline" style="margin-top:1rem;">Go Home</a></div></div>';
+            } else {
+                initAdmin();
+            }
+        }
+
+        function authFetch(url, opts = {}) {
+            const token = localStorage.getItem('flower-token');
+            return fetch(url, { ...opts, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(opts.headers || {}) } })
+                .then(r => {
+                    if (r.status === 401 || r.status === 403) {
+                        localStorage.removeItem('flower-token');
+                        localStorage.removeItem('flower-auth');
+                        window.location.href = 'login.html?redirect=admin.html';
+                        throw new Error('Session expired');
+                    }
+                    return r;
+                });
+        }
+
+        function esc(str) { return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+        function showToast(msg, type) {
+            const t = document.getElementById('adminToast');
+            t.textContent = msg;
+            t.className = `admin-toast admin-toast-${type}`;
+            t.classList.add('active');
+            setTimeout(() => t.classList.remove('active'), 3000);
+        }
+
+        // Init
+        function initAdmin() {
+            const user = getCurrentUser();
+            document.getElementById('adminEmail').textContent = user?.email || '—';
+
+            // Sidebar nav
+            const navLinks = document.querySelectorAll('.admin-sidebar-nav a[data-section]');
+            const sections = document.querySelectorAll('.admin-section');
+            navLinks.forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    const sec = link.dataset.section;
+                    navLinks.forEach(a => a.classList.remove('active'));
+                    link.classList.add('active');
+                    sections.forEach(s => s.classList.toggle('active', s.dataset.section === sec));
+                    document.getElementById('pageTitle').textContent = link.textContent.trim();
+                    // Scroll page back to top when switching sections
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    // Close mobile sidebar
+                    document.getElementById('adminSidebar').classList.remove('open');
+                    loadSection(sec);
+                });
+            });
+
+            // Hamburger
+            document.getElementById('hamburger').addEventListener('click', () => {
+                document.getElementById('adminSidebar').classList.toggle('open');
+            });
+
+            // Quick action buttons
+            document.getElementById('qaProductBtn').addEventListener('click', () => openModal('product'));
+            document.getElementById('qaCourseBtn').addEventListener('click', () => openModal('course'));
+            document.getElementById('qaEventBtn').addEventListener('click', () => openModal('event'));
+
+            // Logout
+            document.getElementById('adminLogout').addEventListener('click', e => { e.preventDefault(); logout(); window.location.href = 'index.html'; });
+
+            loadDashboard();
+        }
+
+        // Dashboard
+        async function loadDashboard() {
+            try {
+                const [users, products, courses, events] = await Promise.all([
+                    authFetch('/api/admin/users').then(r => r.json()).catch(() => []),
+                    authFetch('/api/products').then(r => r.json()).catch(() => []),
+                    authFetch('/api/courses').then(r => r.json()).catch(() => []),
+                    authFetch('/api/events').then(r => r.json()).catch(() => [])
+                ]);
+                const u = Array.isArray(users) ? users : (users.users || []);
+                const p = Array.isArray(products) ? products : (products.products || []);
+                const c = Array.isArray(courses) ? courses : (courses.courses || []);
+                const ev = Array.isArray(events) ? events : (events.events || []);
+                const sellers = u.filter(x => ['SELLER','FLORIST'].includes(x.role)).length;
+
+                document.getElementById('dashboardStats').innerHTML = [
+                    statCard('bi-people', 'var(--primary-color)', u.length, 'Total Users', '+12%'),
+                    statCard('bi-box-seam', '#16a34a', p.length, 'Products', '+8%'),
+                    statCard('bi-receipt', '#3b82f6', '1,320', 'Orders', '+15%'),
+                    statCard('bi-book', '#7c3aed', c.length, 'Courses', '+5%')
+                ].join('');
+
+                document.getElementById('quickActions').innerHTML = [
+                    qaCard('bi-plus-circle', 'rgba(172,50,80,0.1)', 'Add Product', 'List a new flower or arrangement'),
+                    qaCard('bi-plus-circle', 'rgba(59,130,246,0.1)', 'Add Course', 'Create a new learning course'),
+                    qaCard('bi-calendar-plus', 'rgba(124,58,237,0.1)', 'Create Event', 'Schedule a workshop or webinar'),
+                    qaCard('bi-megaphone', 'rgba(245,158,11,0.1)', 'Announcement', 'Publish a platform announcement')
+                ].join('');
+
+                // Users chart
+                const months = ['Jan','Feb','Mar','Apr','May','Jun'];
+                const heights = [40,55,45,70,65,80];
+                document.getElementById('usersChart').innerHTML = months.map((m, i) =>
+                    `<div><div class="chart-bar" style="height:${heights[i]}%;background:var(--primary-color);opacity:${0.5 + i * 0.1};"></div><div class="chart-bar-label">${m}</div></div>`
+                ).join('');
+
+                // Popular flowers
+                document.getElementById('popularFlowers').innerHTML = ['Roses','Tulips','Orchids','Sunflowers','Lavender'].map((f, i) =>
+                    `<div style="display:flex;align-items:center;gap:0.5rem;padding:0.35rem 0;font-size:0.9rem;"><span style="font-weight:600;color:var(--text-light);width:20px;">${i+1}.</span> ${f}</div>`
+                ).join('');
+
+            } catch (e) {
+                document.getElementById('dashboardStats').innerHTML = '<p style="color:#dc2626;">Failed to load stats.</p>';
+            }
+        }
+
+        function statCard(icon, color, value, label, trend) {
+            return `<div class="stat-card">
+                <div class="stat-icon" style="background:${color}15;color:${color};"><i class="bi ${icon}"></i></div>
+                <div class="stat-value">${value}</div>
+                <div class="stat-label">${label}</div>
+                <div class="stat-trend trend-up"><i class="bi bi-arrow-up-right"></i> ${trend}</div>
+            </div>`;
+        }
+
+        function qaCard(icon, bg, title, desc) {
+            return `<div class="qa-card" onclick="openModal('${title.toLowerCase().replace('add ','').replace('create ','')}')">
+                <div class="qa-icon" style="background:${bg};"><i class="bi ${icon}"></i></div>
+                <div><div style="font-weight:600;font-size:0.9rem;">${title}</div><div style="font-size:0.8rem;color:var(--text-light);">${desc}</div></div>
+            </div>`;
+        }
+
+        // Section loader
+        async function loadSection(name) {
+            switch (name) {
+                case 'users': await renderUsers(); break;
+                case 'sellers': await renderSellers(); break;
+                case 'products': await renderProducts(); break;
+                case 'categories': await renderCategories(); break;
+                case 'orders': await renderOrders(); break;
+                case 'learning': await renderLearning(); break;
+                case 'identification': await renderIdentification(); break;
+                case 'community': await renderCommunity(); break;
+                case 'events': await renderEvents(); break;
+                case 'analytics': await renderAnalytics(); break;
+                case 'announcements': await renderAnnouncements(); break;
+                case 'coupons': await renderCoupons(); break;
+            }
+        }
+
+        // Coupons
+        let editingCouponId = null;
+
+        async function renderCoupons() {
+            try {
+                const coupons = await authFetch('/api/coupons').then(r => r.json()).catch(() => []);
+                document.getElementById('couponsBody').innerHTML = (Array.isArray(coupons)?coupons:[]).map(c => `
+                    <tr>
+                        <td><strong>${esc(c.code)}</strong></td>
+                        <td>${c.discount_type === 'percentage' ? '%' : '$'}</td>
+                        <td>${c.discount_type === 'percentage' ? Number(c.discount_value).toFixed(0) + '%' : '$' + Number(c.discount_value).toFixed(2)}</td>
+                        <td>$${Number(c.min_order_amount).toFixed(2)}</td>
+                        <td>${c.current_uses}</td>
+                        <td>${c.max_uses || '∞'}</td>
+                        <td>${c.expires_at ? new Date(c.expires_at).toLocaleDateString() : '—'}</td>
+                        <td><span class="badge ${c.is_active?'badge-active':'badge-pending'}">${c.is_active?'Active':'Inactive'}</span></td>
+                        <td>
+                            <button class="btn-admin-sm" onclick="editCoupon('${c.id}')"><i class="bi bi-pencil"></i></button>
+                            <button class="btn-admin-sm" style="color:var(--error-color);" onclick="deleteCoupon('${c.id}')"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('') || '<tr><td colspan="9" style="text-align:center;color:var(--text-light);">No coupons yet</td></tr>';
+                hideCouponForm();
+            } catch(e) {
+                document.getElementById('couponsBody').innerHTML = '<tr><td colspan="9" style="color:var(--error-color);">Failed to load coupons</td></tr>';
+            }
+        }
+
+        function showCouponForm(data) {
+            editingCouponId = data ? data.id : null;
+            document.getElementById('couponFormTitle').textContent = data ? 'Edit Coupon' : 'New Coupon';
+            document.getElementById('cpCode').value = data ? data.code : '';
+            document.getElementById('cpType').value = data ? data.discount_type : 'percentage';
+            document.getElementById('cpValue').value = data ? data.discount_value : '';
+            document.getElementById('cpMin').value = data ? data.min_order_amount : '0';
+            document.getElementById('cpMax').value = data ? data.max_uses : '0';
+            document.getElementById('cpExpires').value = data && data.expires_at ? data.expires_at.slice(0,10) : '';
+            document.getElementById('couponListCard').style.display = 'none';
+            document.getElementById('couponFormCard').style.display = 'block';
+        }
+
+        function hideCouponForm() {
+            editingCouponId = null;
+            document.getElementById('couponListCard').style.display = 'block';
+            document.getElementById('couponFormCard').style.display = 'none';
+        }
+
+        async function saveCoupon(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('[type="submit"]');
+            btn.disabled = true; btn.textContent = 'Saving...';
+            const body = {
+                code: document.getElementById('cpCode').value.trim(),
+                discount_type: document.getElementById('cpType').value,
+                discount_value: parseFloat(document.getElementById('cpValue').value),
+                min_order_amount: parseFloat(document.getElementById('cpMin').value) || 0,
+                max_uses: parseInt(document.getElementById('cpMax').value) || 0,
+                expires_at: document.getElementById('cpExpires').value || null
+            };
+            try {
+                if (editingCouponId) {
+                    await authFetch('/api/coupons/' + editingCouponId, { method:'PUT', body:JSON.stringify(body) });
+                } else {
+                    await authFetch('/api/coupons', { method:'POST', body:JSON.stringify(body) });
+                }
+                showToast('Coupon saved!', 'success');
+                hideCouponForm();
+                await renderCoupons();
+            } catch(e) { showToast(e.message || 'Failed to save coupon', 'error'); }
+            btn.disabled = false; btn.textContent = 'Save Coupon';
+        }
+
+        async function editCoupon(id) {
+            const coupons = await authFetch('/api/coupons').then(r => r.json()).catch(() => []);
+            const c = (Array.isArray(coupons)?coupons:[]).find(x => x.id === id);
+            if (c) showCouponForm(c);
+        }
+
+        async function deleteCoupon(id) {
+            if (!confirm('Delete this coupon?')) return;
+            try {
+                await authFetch('/api/coupons/' + id, { method:'DELETE' });
+                showToast('Coupon deleted', 'success');
+                await renderCoupons();
+            } catch(e) { showToast('Failed to delete', 'error'); }
+        }
+
+        // Users
+        async function renderUsers() {
+            const users = await authFetch('/api/admin/users').then(r => r.json()).catch(() => []);
+            window._users = Array.isArray(users) ? users : (users.users || []);
+            filterUsers();
+            document.getElementById('userSearch').oninput = filterUsers;
+            document.getElementById('roleFilter').onchange = filterUsers;
+        }
+        function filterUsers() {
+            const q = (document.getElementById('userSearch')?.value || '').toLowerCase();
+            const r = document.getElementById('roleFilter')?.value || 'all';
+            const list = window._users.filter(u => {
+                const name = ((u.first_name||'')+' '+(u.last_name||'')+' '+(u.email||'')).toLowerCase();
+                return name.includes(q) && (r === 'all' || u.role === r);
+            });
+            document.getElementById('usersBody').innerHTML = list.map(u => `<tr>
+                <td>${esc(u.first_name||'')} ${esc(u.last_name||'')}</td>
+                <td>${esc(u.email)}</td>
+                <td><span class="badge badge-role">${u.role}</span></td>
+                <td><span class="badge ${u.is_active?'badge-active':'badge-suspended'}">${u.is_active?'Active':'Suspended'}</span></td>
+                <td>${u.created_at?new Date(u.created_at).toLocaleDateString():'—'}</td>
+                <td>
+                    <button class="act-btn act-btn-primary" onclick="editUser('${u.id}')">Edit</button>
+                    <button class="act-btn ${u.is_active?'act-btn-danger':'act-btn-success'}" onclick="toggleStatus('${u.id}',${u.is_active})">${u.is_active?'Suspend':'Activate'}</button>
+                    <button class="act-btn act-btn-danger" onclick="deleteUser('${u.id}')">Delete</button>
+                </td></tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text-light);">No users found</td></tr>';
+        }
+        window.toggleStatus = async function(id, active) {
+            if (!confirm(`${active?'Suspend':'Activate'} this user?`)) return;
+            await authFetch(`/api/admin/users/${id}/status`, {method:'PUT'});
+            window._users = window._users.map(u => u.id===id?{...u,is_active:!active}:u);
+            filterUsers();
+            showToast(`User ${active?'suspended':'activated'}`, 'success');
+        };
+        window.changeRole = async function(id, current) {
+            const roles = ['CUSTOMER','SELLER','FLORIST','INSTRUCTOR','MODERATOR','ADMIN','SUPERADMIN'];
+            const r = prompt(`Current: ${current}\nNew role (${roles.join(', ')}):`, current);
+            if (!r || !roles.includes(r.toUpperCase())) return;
+            await authFetch(`/api/admin/users/${id}/role`, {method:'PUT',body:JSON.stringify({role:r.toUpperCase()})});
+            window._users = window._users.map(u => u.id===id?{...u,role:r.toUpperCase()}:u);
+            filterUsers();
+            showToast('Role updated', 'success');
+        };
+
+        // Sellers
+        async function renderSellers() {
+            const users = await authFetch('/api/admin/users').then(r => r.json()).catch(() => []);
+            window._users = Array.isArray(users) ? users : (users.users || []);
+            const sellers = window._users.filter(u => ['SELLER','FLORIST'].includes(u.role));
+            document.getElementById('sellersBody').innerHTML = sellers.map(s => `<tr>
+                <td>${esc(s.first_name||'')} ${esc(s.last_name||'')}</td>
+                <td>${esc(s.email)}</td>
+                <td><span class="badge badge-role">${s.role}</span></td>
+                <td><span class="badge ${s.is_active?'badge-active':'badge-pending'}">${s.is_active?'Active':'Pending Approval'}</span></td>
+                <td>
+                    <button class="act-btn ${s.is_active?'act-btn-danger':'act-btn-success'}" onclick="toggleStatus('${s.id}',${s.is_active})">${s.is_active?'Suspend':'Approve'}</button>
+                    <button class="act-btn act-btn-primary" onclick="editUser('${s.id}')">Edit</button>
+                    <button class="act-btn act-btn-danger" onclick="deleteUser('${s.id}')">Delete</button>
+                </td>
+            </tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text-light);">No sellers found</td></tr>';
+        }
+
+        window.deleteUser = async function(id) {
+            if (!confirm('Permanently delete this user? This cannot be undone.')) return;
+            await authFetch(`/api/admin/users/${id}`, {method:'DELETE'});
+            window._users = window._users.filter(u => u.id !== id);
+            filterUsers();
+            renderSellers();
+            showToast('User deleted', 'success');
+        };
+
+        window.editUser = function(id) {
+            const user = window._users.find(u => String(u.id) === String(id));
+            if (!user) return;
+            document.getElementById('modalTitle').textContent = 'Edit User';
+            document.getElementById('modalForm').innerHTML = `
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" id="edit-fname" value="${esc(user.first_name)}" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="edit-email" value="${esc(user.email)}" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select id="edit-role">
+                        ${['CUSTOMER','SELLER','FLORIST','INSTRUCTOR','MODERATOR','ADMIN','SUPERADMIN'].map(r=>`<option value="${r}" ${user.role===r?'selected':''}>${r}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="edit-location" value="${esc(user.location || '')}" placeholder="e.g. Accra, Ghana">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="edit-description" rows="3" placeholder="Short bio or description">${esc(user.description || '')}</textarea>
+                </div>
+                <div style="display:flex;gap:0.5rem;margin-top:1rem;">
+                    <button type="submit" class="act-btn act-btn-success" style="flex:1;padding:0.75rem;">Save Changes</button>
+                    <button type="button" class="act-btn act-btn-primary" style="flex:1;padding:0.75rem;" onclick="closeModal()">Cancel</button>
+                </div>
+            `;
+            document.getElementById('modalForm').onsubmit = async (e) => {
+                e.preventDefault();
+                const data = {
+                    name: document.getElementById('edit-fname').value,
+                    email: document.getElementById('edit-email').value,
+                    role: document.getElementById('edit-role').value,
+                    location: document.getElementById('edit-location').value,
+                    description: document.getElementById('edit-description').value
+                };
+                const res = await authFetch(`/api/admin/users/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    const updated = await res.json();
+                    const idx = window._users.findIndex(u => String(u.id) === String(id));
+                    if (idx !== -1) window._users[idx] = { ...window._users[idx], ...updated };
+                }
+                showToast('User updated', 'success');
+                closeModal();
+                renderUsers();
+                renderSellers();
+            };
+            document.getElementById('modalOverlay').classList.add('active');
+        };
+
+        window.closeModal = function() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        };
+
+        // Products
+        async function renderProducts() {
+            const products = await authFetch('/api/products').then(r => r.json()).catch(() => []);
+            window._products = Array.isArray(products) ? products : (products.products || []);
+            document.getElementById('productsBody').innerHTML = window._products.map(p => `<tr>
+                <td>${esc(p.name)}</td>
+                <td>${esc(p.category_name||p.category||'—')}</td>
+                <td>$${parseFloat(p.price||0).toFixed(2)}</td>
+                <td>${p.stock_quantity??'—'}</td>
+                <td><span class="badge ${p.is_active!==false?'badge-active':'badge-suspended'}">${p.is_active!==false?'Active':'Inactive'}</span></td>
+                <td>
+                    <button class="act-btn act-btn-danger" onclick="deleteProduct('${p.id}')">Remove</button>
+                </td></tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text-light);">No products found</td></tr>';
+        }
+        window.deleteProduct = async function(id) {
+            if (!confirm('Remove this product?')) return;
+            await authFetch(`/api/products/${id}`, {method:'DELETE'});
+            showToast('Product removed', 'success');
+            renderProducts();
+        };
+
+        // Categories
+        async function renderCategories() {
+            const cats = await authFetch('/api/categories').then(r => r.json()).catch(() => []);
+            document.getElementById('categoriesBody').innerHTML = (Array.isArray(cats)?cats:[]).map(c => `<tr>
+                <td>${esc(c.name)}</td>
+                <td>${esc(c.id||'—')}</td>
+                <td><button class="act-btn act-btn-primary" onclick="showToast('Category management coming soon','info')">View</button></td>
+            </tr>`).join('') || '<tr><td colspan="3" style="text-align:center;color:var(--text-light);">No categories found</td></tr>';
+        }
+
+        // Orders
+        async function renderOrders() {
+            const orders = await authFetch('/api/admin/orders').then(r => r.json()).catch(() => []);
+            window._orders = Array.isArray(orders) ? orders : [];
+            filterOrders();
+            document.getElementById('orderFilter').onchange = filterOrders;
+        }
+        function filterOrders() {
+            const f = document.getElementById('orderFilter')?.value || 'all';
+            const list = f==='all'?window._orders:window._orders.filter(o=>o.status===f);
+            document.getElementById('ordersBody').innerHTML = list.map(o => `<tr>
+                <td>#${String(o.id).slice(0,8)}</td>
+                <td>${esc(o.customer_name||o.customer||o.email||'Guest')}</td>
+                <td>$${parseFloat(o.total_amount||o.total||0).toFixed(2)}</td>
+                <td><span class="badge badge-${(o.status||'pending').toLowerCase()}">${o.status||'PENDING'}</span></td>
+                <td>${o.created_at?new Date(o.created_at).toLocaleDateString():'—'}</td>
+                <td><select onchange="updateOrder('${o.id}',this.value)" style="font-size:0.8rem;padding:0.25rem;border-radius:4px;border:1px solid var(--border-color);">
+                    ${['PENDING','PROCESSING','SHIPPED','DELIVERED','CANCELLED'].map(s=>`<option value="${s}"${s===o.status?' selected':''}>${s}</option>`).join('')}
+                </select></td>
+            </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text-light);">No orders found</td></tr>';
+        }
+        window.updateOrder = async function(id, status) {
+            await authFetch(`/api/admin/orders/${id}/status`, {method:'PUT',body:JSON.stringify({status})});
+            showToast('Order updated', 'success');
+        };
+
+        // Learning
+        async function renderLearning() {
+            const courses = await authFetch('/api/courses').then(r => r.json()).catch(() => []);
+            document.getElementById('coursesBody').innerHTML = (Array.isArray(courses)?courses:[]).map(c => `<tr>
+                <td>${esc(c.title)}</td>
+                <td>${esc(c.instructor||'—')}</td>
+                <td>${esc(c.level||'—')}</td>
+                <td>${c.students??0}</td>
+                <td>${c.rating?c.rating+' ★':'—'}</td>
+            </tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text-light);">No courses found</td></tr>';
+        }
+
+        // Identification
+        async function renderIdentification() {
+            const items = await authFetch('/api/identification').then(r => r.json()).catch(() => []);
+            document.getElementById('identBody').innerHTML = (Array.isArray(items)?items:[]).map(i => `<tr>
+                <td>${esc(i.title||i.name||'—')}</td>
+                <td>${esc(i.category||'—')}</td>
+                <td>${esc(i.level||'—')}</td>
+                <td>${i.duration?i.duration+' min':'—'}</td>
+            </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--text-light);">No entries found</td></tr>';
+        }
+
+        // Community
+        async function renderCommunity() {
+            const posts = await authFetch('/api/posts').then(r => r.json()).catch(() => []);
+            const postList = Array.isArray(posts) ? posts : (posts.posts || []);
+            document.getElementById('communityBody').innerHTML = postList.map(p => `<tr>
+                <td>${esc(p.title||'Untitled')}</td>
+                <td>${esc(p.author_name||p.first_name||p.user_name||'—')}</td>
+                <td>${p.comment_count??p.comments??0}</td>
+                <td><span class="badge ${p.is_pinned?'badge-active':'badge-pending'}">${p.is_pinned?'Pinned':'Normal'}</span></td>
+                <td><button class="act-btn act-btn-danger" onclick="deletePost('${p.id}')">Delete</button></td>
+            </tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text-light);">No posts found</td></tr>';
+        }
+        window.deletePost = async function(id) {
+            if (!confirm('Delete this post?')) return;
+            await authFetch(`/api/posts/${id}`, {method:'DELETE'});
+            showToast('Post deleted', 'success');
+            renderCommunity();
+        };
+
+        // Events
+        async function renderEvents() {
+            const ev = await authFetch('/api/events').then(r => r.json()).catch(() => []);
+            const eventList = Array.isArray(ev) ? ev : (ev.events || []);
+            document.getElementById('eventsBody').innerHTML = eventList.map(e => `<tr>
+                <td>${esc(e.title)}</td>
+                <td>${esc(e.date||e.event_date||'—')}</td>
+                <td>${esc(e.category||e.type||'—')}</td>
+                <td>${esc(e.location||'—')}</td>
+                <td>${e.spots??e.max_attendees??'—'}</td>
+            </tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text-light);">No events found</td></tr>';
+        }
+
+        // Analytics
+        async function renderAnalytics() {
+            try {
+                const data = await authFetch('/api/admin/analytics').then(r => r.json()).catch(() => ({}));
+                const a = data.analytics || data;
+                document.getElementById('analyticsGrid').innerHTML = [
+                    `<div class="analytics-card"><div class="big">${a.users??a.total_users??0}</div><div class="lbl">Total Users</div></div>`,
+                    `<div class="analytics-card"><div class="big">${a.products??a.total_products??0}</div><div class="lbl">Active Products</div></div>`,
+                    `<div class="analytics-card"><div class="big">${a.orders??a.total_orders??0}</div><div class="lbl">Total Orders</div></div>`,
+                    `<div class="analytics-card"><div class="big">$${parseFloat(a.revenue??a.total_revenue||0).toFixed(0)}</div><div class="lbl">Total Revenue</div></div>`
+                ].join('');
+
+                const months = ['Jan','Feb','Mar','Apr','May','Jun'];
+                const heights = [30,45,40,60,55,75];
+                document.getElementById('revenueChart').innerHTML = months.map((m,i) =>
+                    `<div><div class="chart-bar" style="height:${heights[i]}%;background:#3b82f6;opacity:${0.5+i*0.1};"></div><div class="chart-bar-label">${m}</div></div>`
+                ).join('');
+
+                document.getElementById('topCourses').innerHTML = ['Natural vs Artificial','Flower Care Basics','Wedding Floristry'].map((c,i) =>
+                    `<div style="display:flex;align-items:center;gap:0.5rem;padding:0.35rem 0;font-size:0.9rem;"><span style="font-weight:600;color:var(--text-light);width:20px;">${i+1}.</span> ${c}</div>`
+                ).join('');
+            } catch (e) {
+                document.getElementById('analyticsGrid').innerHTML = '<p style="color:#dc2626;">Failed to load analytics.</p>';
+            }
+        }
+
+        // Announcements
+        async function renderAnnouncements() {
+            const anns = await authFetch('/api/admin/announcements').then(r => r.json()).catch(() => []);
+            const annList = Array.isArray(anns) ? anns : (anns.announcements || []);
+            document.getElementById('announcementsList').innerHTML = annList.length
+                ? annList.map(a => `<div style="display:flex;justify-content:space-between;align-items:center;padding:0.8rem 0;border-bottom:1px solid var(--border-color);">
+                    <div><strong>${esc(a.title)}</strong><br><small style="color:var(--text-light)">${esc(a.content||'').slice(0,100)}${(a.content||'').length>100?'...':''}</small></div>
+                    <span class="badge ${a.active!==false?'badge-active':'badge-pending'}">${a.active!==false?'Active':'Inactive'}</span>
+                </div>`).join('')
+                : '<p style="color:var(--text-light);padding:1rem;">No announcements yet.</p>';
+        }
+
+        // Modal
+        function openModal(type) {
+            const titles = {product:'Add New Product',course:'Create Course',event:'Create Event',announcement:'New Announcement'};
+            document.getElementById('modalTitle').textContent = titles[type]||'Add New';
+            const form = document.getElementById('modalForm');
+            const forms = {
+                product: `<div class="form-group"><label>Name *</label><input name="name" required></div><div class="form-group"><label>Price ($) *</label><input name="price" type="number" step="0.01" min="0" required></div><div class="form-group"><label>Stock</label><input name="stock_quantity" type="number" min="0" value="0"></div><div class="form-group"><label>Description</label><textarea name="description" rows="3"></textarea></div><div class="form-group"><label>Image URL</label><input name="image" type="url" placeholder="https://..."></div><button type="submit" class="btn btn-primary" style="width:100%;">Save Product</button>`,
+                course: `<div class="form-group"><label>Title *</label><input name="title" required></div><div class="form-group"><label>Instructor</label><input name="instructor"></div><div class="form-group"><label>Level</label><select name="level"><option value="Beginner">Beginner</option><option value="Intermediate">Intermediate</option><option value="Advanced">Advanced</option></select></div><div class="form-group"><label>Thumbnail URL</label><input name="thumbnail" type="url" placeholder="https://..."></div><button type="submit" class="btn btn-primary" style="width:100%;">Create Course</button>`,
+                event: `<div class="form-group"><label>Title *</label><input name="title" required></div><div class="form-group"><label>Date *</label><input name="date" type="date" required></div><div class="form-group"><label>Time</label><input name="time" type="time"></div><div class="form-group"><label>Location</label><input name="location"></div><div class="form-group"><label>Category</label><input name="category" placeholder="e.g. Workshop, Webinar"></div><div class="form-group"><label>Max Spots</label><input name="spots" type="number" min="1" value="50"></div><button type="submit" class="btn btn-primary" style="width:100%;">Create Event</button>`,
+                announcement: `<div class="form-group"><label>Title *</label><input name="title" required></div><div class="form-group"><label>Content *</label><textarea name="content" rows="4" required></textarea></div><button type="submit" class="btn btn-primary" style="width:100%;">Publish</button>`
+            };
+            const endpoints = {product:'/api/products',course:'/api/courses',event:'/api/events',announcement:'/api/admin/announcements'};
+            form.innerHTML = forms[type]||'';
+            form.onsubmit = async e => {
+                e.preventDefault();
+                const data = Object.fromEntries(new FormData(form));
+                if (data.price) data.price = parseFloat(data.price);
+                if (data.stock_quantity) data.stock_quantity = parseInt(data.stock_quantity);
+                if (data.spots) data.spots = parseInt(data.spots);
+                const btn = form.querySelector('[type="submit"]');
+                btn.disabled = true; btn.textContent = 'Saving...';
+                try {
+                    const res = await authFetch(endpoints[type], {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+                    if (!res.ok) throw new Error((await res.json()).error||'Failed');
+                    closeModal(); showToast('Created successfully!', 'success');
+                    const map = {product:'products',course:'learning',event:'events',announcement:'announcements'};
+                    if (map[type]) loadSection(map[type]);
+                } catch(err) { showToast(err.message||'Failed to create', 'error'); btn.disabled=false; btn.textContent='Save'; }
+            };
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+        document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+    </script>
+</body>
+</html>
+

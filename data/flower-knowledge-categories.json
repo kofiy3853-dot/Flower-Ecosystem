@@ -1,0 +1,12 @@
+[
+    { "id": 1, "name": "Medicinal", "slug": "medicinal", "description": "Flowers with healing and therapeutic properties", "icon": "💊" },
+    { "id": 2, "name": "Ornamental", "slug": "ornamental", "description": "Flowers grown for decorative and aesthetic purposes", "icon": "🎨" },
+    { "id": 3, "name": "Perfume", "slug": "perfume", "description": "Flowers used in fragrances and essential oils", "icon": "🧴" },
+    { "id": 4, "name": "Edible", "slug": "edible", "description": "Flowers safe for culinary use", "icon": "🍽️" },
+    { "id": 5, "name": "Religious", "slug": "religious", "description": "Flowers with spiritual and ceremonial significance", "icon": "🕯️" },
+    { "id": 6, "name": "Landscaping", "slug": "landscaping", "description": "Flowers used in landscape design and gardens", "icon": "🏡" },
+    { "id": 7, "name": "Indoor Plants", "slug": "indoor-plants", "description": "Flowers suited for indoor cultivation", "icon": "🪴" },
+    { "id": 8, "name": "Palm Trees", "slug": "palm-trees", "description": "Ornamental palm varieties for tropical landscapes", "icon": "🌴" },
+    { "id": 9, "name": "Succulents", "slug": "succulents", "description": "Drought-tolerant plants with water-storing leaves", "icon": "🌵" },
+    { "id": 10, "name": "Tropical Plants", "slug": "tropical-plants", "description": "Exotic plants from tropical climates", "icon": "🌺" }
+]

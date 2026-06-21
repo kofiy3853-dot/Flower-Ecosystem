@@ -1,0 +1,3085 @@
+[
+    {
+        "id": "rose",
+        "slug": "rose",
+        "common_name": "Rose",
+        "scientific_name": "Rosa spp.",
+        "family": "Rosaceae",
+        "origin": "Asia",
+        "emoji": "🌹",
+        "description": "The rose is a woody perennial flowering plant known for its beauty, fragrance, and cultural significance. With over 300 species and thousands of cultivars, roses are one of the most popular and versatile flowers in the world.",
+        "image_url": "https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun (6+ hours)",
+        "water": "Moderate — water deeply 2-3 times per week",
+        "soil": "Well-drained, loamy soil with pH 6.0-6.5",
+        "difficulty": "Moderate",
+        "growth_rate": "Moderate",
+        "height": "1-6 feet (depending on variety)",
+        "category_ids": [
+            1,
+            2,
+            3,
+            4,
+            6
+        ],
+        "marketplace_tags": [
+            "rose",
+            "roses",
+            "rose bouquet",
+            "rose plant"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Rich in antioxidants, particularly vitamin C and polyphenols",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Used in herbal teas to aid digestion and reduce inflammation",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Rose water helps soothe skin irritation and acts as a natural astringent",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "May help reduce stress and anxiety through aromatherapy",
+                "sort_order": 4
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Aromatherapy with rose oil promotes relaxation and emotional balance",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Rose hip tea boosts immune system with high vitamin C content",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Natural mood enhancement and stress reduction",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Rose-infused skincare products help hydrate and rejuvenate skin",
+                "sort_order": 4
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Luxury perfumes — rose is the most widely used floral fragrance note",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Essential oils — rose otto and rose absolute are highly prized",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Body sprays, lotions, and scented candles",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Aromatherapy oils for relaxation and mood enhancement",
+                "sort_order": 4
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Gardens — a classic choice for formal and cottage gardens",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Weddings — the most popular flower for bridal bouquets",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Home decoration — cut roses brighten any room",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Landscaping — hedges, trellises, and garden borders",
+                "sort_order": 4
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Rose water used in Middle Eastern and Indian cuisine",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Rose petals candied for cake decorations and desserts",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Rose hip jam and jelly are rich in flavor and nutrients",
+                "sort_order": 3
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Plant in full sun",
+                "description": "Roses need at least 6 hours of direct sunlight daily for optimal blooming.",
+                "sort_order": 1
+            },
+            {
+                "title": "Water at the base",
+                "description": "Avoid wetting foliage to prevent fungal diseases. Water deeply at the root zone.",
+                "sort_order": 2
+            },
+            {
+                "title": "Prune annually",
+                "description": "Prune in early spring before new growth. Remove dead, diseased, or crossing branches.",
+                "sort_order": 3
+            },
+            {
+                "title": "Fertilize regularly",
+                "description": "Feed with a balanced rose fertilizer every 4-6 weeks during the growing season.",
+                "sort_order": 4
+            },
+            {
+                "title": "Mulch to retain moisture",
+                "description": "Apply 2-3 inches of organic mulch around the base to conserve water and suppress weeds.",
+                "sort_order": 5
+            },
+            {
+                "title": "Monitor for pests",
+                "description": "Watch for aphids, black spot, and powdery mildew. Treat early with neem oil or insecticidal soap.",
+                "sort_order": 6
+            }
+        ],
+        "bloom_season": "Spring-Fall"
+    },
+    {
+        "id": "lavender",
+        "slug": "lavender",
+        "common_name": "Lavender",
+        "scientific_name": "Lavandula angustifolia",
+        "family": "Lamiaceae",
+        "origin": "Mediterranean",
+        "emoji": "💜",
+        "description": "Lavender is a fragrant herb prized for its calming aroma, beautiful purple flowers, and versatile uses in medicine, perfumery, and cooking. It thrives in sunny, well-drained conditions.",
+        "image_url": "https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun",
+        "water": "Low — drought-tolerant once established",
+        "soil": "Well-drained, sandy or gravelly soil, pH 6.5-7.5",
+        "difficulty": "Easy",
+        "growth_rate": "Moderate",
+        "height": "1-3 feet",
+        "category_ids": [
+            1,
+            2,
+            3,
+            4,
+            6
+        ],
+        "marketplace_tags": [
+            "lavender",
+            "lavender plant",
+            "lavender oil",
+            "dried lavender"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Promotes relaxation and improves sleep quality",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Natural antiseptic and anti-inflammatory properties",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Helps relieve headaches and migraines when applied topically",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Aids digestion and reduces bloating when consumed as tea",
+                "sort_order": 4
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Reduces anxiety and stress through aromatherapy",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Improves sleep quality and helps with insomnia",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Natural insect repellent",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Classic fragrance note in soaps, lotions, and perfumes",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Lavender essential oil is one of the most popular aromatherapy oils",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Used in sachets, potpourri, and linen sprays",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Beautiful purple flower spikes in summer gardens",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Excellent for borders, hedges, and container gardens",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Dried lavender used in floral arrangements and crafts",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Lavender honey is a gourmet delicacy",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Used in baked goods like lavender cookies and cakes",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Lavender-infused teas and lemonades",
+                "sort_order": 3
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Plant in full sun",
+                "description": "Lavender needs at least 6-8 hours of direct sunlight daily.",
+                "sort_order": 1
+            },
+            {
+                "title": "Ensure excellent drainage",
+                "description": "Lavender hates wet feet. Plant in raised beds or add gravel to heavy soil.",
+                "sort_order": 2
+            },
+            {
+                "title": "Water sparingly",
+                "description": "Allow soil to dry between waterings. Overwatering is the most common cause of death.",
+                "sort_order": 3
+            },
+            {
+                "title": "Prune after flowering",
+                "description": "Cut back stems by one-third after blooming to maintain shape and encourage new growth.",
+                "sort_order": 4
+            },
+            {
+                "title": "Mulch with gravel",
+                "description": "Use gravel or pebble mulch rather than bark to keep moisture away from the crown.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Summer"
+    },
+    {
+        "id": "jasmine",
+        "slug": "jasmine",
+        "common_name": "Jasmine",
+        "scientific_name": "Jasminum officinale",
+        "family": "Oleaceae",
+        "origin": "Tropical Asia",
+        "emoji": "🤍",
+        "description": "Jasmine is celebrated for its intensely fragrant white flowers and twining vines. It is one of the most important flowers in perfumery and has deep cultural significance across Asia.",
+        "image_url": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun to Partial Shade",
+        "water": "Moderate — keep soil consistently moist",
+        "soil": "Rich, well-drained loamy soil",
+        "difficulty": "Moderate",
+        "growth_rate": "Fast",
+        "height": "10-15 feet (climbing)",
+        "category_ids": [
+            1,
+            2,
+            3,
+            4,
+            5
+        ],
+        "marketplace_tags": [
+            "jasmine",
+            "jasmine plant",
+            "jasmine tea",
+            "jasmine flower"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Used in traditional medicine as an antidepressant and relaxant",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Jasmine tea is rich in antioxidants and may boost immunity",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Anti-inflammatory properties help with muscle and joint pain",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Jasmine aromatherapy reduces anxiety and improves mood",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Jasmine tea promotes cardiovascular health",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Natural aphrodisiac properties",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Essential ingredient in luxury perfumes and colognes",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Jasmine absolute is one of the most expensive fragrance materials",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Used in scented oils, incense, and body products",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Beautiful climbing vine for trellises, walls, and arbors",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Fragrant night-blooming flowers ideal for patio and entryway gardens",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Religious",
+                "description": "Used in Hindu and Buddhist ceremonies and offerings",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Religious",
+                "description": "Symbol of purity and grace in many Asian cultures",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Jasmine flowers used to scent tea, particularly green tea",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Jasmine syrup used in desserts and cocktails",
+                "sort_order": 2
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Provide support for climbing",
+                "description": "Jasmine needs a trellis, arbor, or fence to climb. Train vines gently.",
+                "sort_order": 1
+            },
+            {
+                "title": "Water consistently",
+                "description": "Keep soil moist but not waterlogged. Reduce watering in winter.",
+                "sort_order": 2
+            },
+            {
+                "title": "Fertilize monthly",
+                "description": "Feed with a balanced fertilizer during the growing season for abundant blooms.",
+                "sort_order": 3
+            },
+            {
+                "title": "Prune after flowering",
+                "description": "Cut back spent flowers and wayward vines to maintain shape and encourage reblooming.",
+                "sort_order": 4
+            },
+            {
+                "title": "Protect from frost",
+                "description": "In colder climates, grow in containers and move indoors during winter.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Summer-Fall"
+    },
+    {
+        "id": "hibiscus",
+        "slug": "hibiscus",
+        "common_name": "Hibiscus",
+        "scientific_name": "Hibiscus rosa-sinensis",
+        "family": "Malvaceae",
+        "origin": "East Asia",
+        "emoji": "🌺",
+        "description": "Hibiscus produces large, vibrant trumpet-shaped flowers in a stunning array of colors. It is beloved for its tropical aesthetic and multiple practical uses in medicine and cuisine.",
+        "image_url": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun",
+        "water": "Moderate to High — keep soil moist",
+        "soil": "Rich, well-drained, slightly acidic soil",
+        "difficulty": "Moderate",
+        "growth_rate": "Fast",
+        "height": "3-10 feet",
+        "category_ids": [
+            1,
+            2,
+            3,
+            4,
+            6,
+            10
+        ],
+        "marketplace_tags": [
+            "hibiscus",
+            "hibiscus plant",
+            "hibiscus flower",
+            "hibiscus tea"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Hibiscus tea may help lower blood pressure and cholesterol",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Rich in vitamin C and antioxidants",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Traditional remedy for colds and respiratory issues",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Anti-inflammatory properties aid skin health",
+                "sort_order": 4
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Supports liver health and aids digestion",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Hydrating and refreshing beverage",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Hibiscus extract used in tropical fragrances",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Hair oils and skincare products featuring hibiscus",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Show-stopping tropical garden centerpiece",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Container plant for patios and balconies",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Popular in Hawaiian and tropical-themed events",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Dried hibiscus flowers used in teas (agua de jamaica)",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Hibiscus syrup for cocktails and desserts",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Edible flowers used as garnish in salads",
+                "sort_order": 3
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Provide ample sunlight",
+                "description": "Hibiscus needs at least 6 hours of direct sun for best blooming.",
+                "sort_order": 1
+            },
+            {
+                "title": "Water frequently",
+                "description": "Keep soil consistently moist, especially during hot weather. Never let it dry out completely.",
+                "sort_order": 2
+            },
+            {
+                "title": "Fertilize weekly",
+                "description": "Use a high-potassium fertilizer weekly during the growing season for continuous blooms.",
+                "sort_order": 3
+            },
+            {
+                "title": "Prune to shape",
+                "description": "Cut back in early spring to encourage bushier growth and more flowers.",
+                "sort_order": 4
+            },
+            {
+                "title": "Watch for pests",
+                "description": "Aphids, whiteflies, and spider mites can be problematic. Treat with neem oil.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Summer-Fall"
+    },
+    {
+        "id": "chamomile",
+        "slug": "chamomile",
+        "common_name": "Chamomile",
+        "scientific_name": "Matricaria chamomilla",
+        "family": "Asteraceae",
+        "origin": "Europe and Western Asia",
+        "emoji": "🌼",
+        "description": "Chamomile is a gentle, daisy-like herb famous for its calming tea and apple-like fragrance. It is one of the oldest documented medicinal plants used by humans.",
+        "image_url": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun to Partial Shade",
+        "water": "Low to Moderate",
+        "soil": "Light, well-drained soil",
+        "difficulty": "Very Easy",
+        "growth_rate": "Fast",
+        "height": "8-24 inches",
+        "category_ids": [
+            1,
+            2,
+            3,
+            4
+        ],
+        "marketplace_tags": [
+            "chamomile",
+            "chamomile plant",
+            "chamomile tea",
+            "dried chamomile"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Promotes relaxation and helps treat insomnia",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Anti-inflammatory properties aid digestive issues",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Soothes skin irritations and minor wounds",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "May help reduce menstrual cramps and muscle spasms",
+                "sort_order": 4
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Calming tea is ideal for bedtime routines",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Supports immune system with mild antibacterial properties",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Chamomile essential oil used in aromatherapy blends",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Apple-like scent used in natural hair and skincare products",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Delicate daisy-like flowers add charm to herb gardens",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Most popular herbal tea worldwide",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Edible flowers used as garnish in salads and desserts",
+                "sort_order": 2
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Sow seeds directly",
+                "description": "Chamomile grows easily from seed scattered directly in the garden after frost.",
+                "sort_order": 1
+            },
+            {
+                "title": "Water moderately",
+                "description": "Water regularly until established, then reduce. Chamomile is somewhat drought-tolerant.",
+                "sort_order": 2
+            },
+            {
+                "title": "Harvest regularly",
+                "description": "Pick flowers when petals begin to fold back for the best tea flavor.",
+                "sort_order": 3
+            },
+            {
+                "title": "Self-seeds readily",
+                "description": "Allow some flowers to go to seed for volunteers next season.",
+                "sort_order": 4
+            }
+        ],
+        "bloom_season": "Spring-Summer"
+    },
+    {
+        "id": "areca-palm",
+        "slug": "areca-palm",
+        "common_name": "Areca Palm",
+        "scientific_name": "Dypsis lutescens",
+        "family": "Arecaceae",
+        "origin": "Madagascar",
+        "emoji": "🌴",
+        "description": "The Areca Palm, also known as the Butterfly Palm, is one of the most popular indoor palms. Its feathery, arching fronds bring a tropical feel to any space and it is renowned for its air-purifying qualities.",
+        "image_url": "https://images.unsplash.com/photo-1596574202648-5a4d45f28976?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Bright Indirect Light",
+        "water": "Moderate — keep soil slightly moist",
+        "soil": "Well-drained potting mix",
+        "difficulty": "Moderate",
+        "growth_rate": "Moderate",
+        "height": "6-10 feet (indoor), 20+ feet (outdoor)",
+        "category_ids": [
+            7,
+            8,
+            10
+        ],
+        "marketplace_tags": [
+            "areca palm",
+            "butterfly palm",
+            "indoor palm",
+            "palm plant"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Ornamental",
+                "description": "Elegant indoor plant that adds tropical ambiance",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Popular in offices, hotels, and commercial spaces",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Natural air purifier — removes formaldehyde and benzene",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Landscaping",
+                "description": "Excellent for tropical-themed garden designs",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Landscaping",
+                "description": "Works well as a privacy screen or hedge in warm climates",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Landscaping",
+                "description": "Ideal for poolside and patio container planting",
+                "sort_order": 3
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Provide bright indirect light",
+                "description": "Place near a window with filtered light. Direct sun can scorch the fronds.",
+                "sort_order": 1
+            },
+            {
+                "title": "Keep soil consistently moist",
+                "description": "Water when the top inch of soil feels dry. Reduce watering in winter.",
+                "sort_order": 2
+            },
+            {
+                "title": "Mist regularly",
+                "description": "Areca palms love humidity. Mist the fronds daily or use a humidifier.",
+                "sort_order": 3
+            },
+            {
+                "title": "Fertilize seasonally",
+                "description": "Feed with a balanced liquid fertilizer monthly during spring and summer.",
+                "sort_order": 4
+            },
+            {
+                "title": "Remove yellow fronds",
+                "description": "Trim brown or yellow fronds at the base to keep the plant looking tidy.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Year-round"
+    },
+    {
+        "id": "aloe-vera",
+        "slug": "aloe-vera",
+        "common_name": "Aloe Vera",
+        "scientific_name": "Aloe barbadensis miller",
+        "family": "Asphodelaceae",
+        "origin": "Arabian Peninsula",
+        "emoji": "🌿",
+        "description": "Aloe Vera is a succulent plant species renowned for its medicinal gel-filled leaves. It is one of the most widely used medicinal plants in the world, valued for both its healing properties and ornamental appeal.",
+        "image_url": "https://images.unsplash.com/photo-1596574202648-5a4d45f28976?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Bright Indirect to Full Sun",
+        "water": "Low — water deeply but infrequently",
+        "soil": "Well-drained succulent or cactus mix",
+        "difficulty": "Very Easy",
+        "growth_rate": "Slow to Moderate",
+        "height": "1-2 feet",
+        "category_ids": [
+            1,
+            7,
+            9
+        ],
+        "marketplace_tags": [
+            "aloe vera",
+            "aloe plant",
+            "succulent",
+            "aloe gel"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Heals burns, cuts, and skin irritations with cooling gel",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Anti-inflammatory and antibacterial properties",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Aloe juice aids digestion and supports gut health",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Rich in vitamins A, C, E, and B12",
+                "sort_order": 4
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Hydrates and rejuvenates skin naturally",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Boosts immune system with antioxidants",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Modern sculptural appearance suits contemporary decor",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Low-maintenance indoor plant ideal for beginners",
+                "sort_order": 2
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Water infrequently",
+                "description": "Allow soil to dry completely between waterings. Overwatering causes root rot.",
+                "sort_order": 1
+            },
+            {
+                "title": "Use well-draining soil",
+                "description": "Cactus or succulent mix is essential. Add perlite or sand to improve drainage.",
+                "sort_order": 2
+            },
+            {
+                "title": "Provide bright light",
+                "description": "Aloe needs several hours of bright, indirect light. A south or west-facing window is ideal.",
+                "sort_order": 3
+            },
+            {
+                "title": "Keep at room temperature",
+                "description": "Aloe thrives between 55-80°F. Protect from frost.",
+                "sort_order": 4
+            },
+            {
+                "title": "Harvest leaves carefully",
+                "description": "Cut outer leaves at the base when needed. Leave inner young leaves to grow.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Summer"
+    },
+    {
+        "id": "coconut-palm",
+        "slug": "coconut-palm",
+        "common_name": "Coconut Palm",
+        "scientific_name": "Cocos nucifera",
+        "family": "Arecaceae",
+        "origin": "Tropical Indo-Pacific",
+        "emoji": "🥥",
+        "description": "The Coconut Palm is one of the most useful trees in the world, providing food, water, oil, fiber, and timber. Its graceful, leaning trunk and feathery fronds are iconic symbols of tropical beaches.",
+        "image_url": "https://images.unsplash.com/photo-1596574202648-5a4d45f28976?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun",
+        "water": "Moderate — salt-tolerant",
+        "soil": "Sandy, well-drained soil, salt-tolerant",
+        "difficulty": "Moderate",
+        "growth_rate": "Fast",
+        "height": "50-80 feet",
+        "category_ids": [
+            8,
+            10
+        ],
+        "marketplace_tags": [
+            "coconut palm",
+            "coconut tree",
+            "tropical palm"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Ornamental",
+                "description": "Iconic tropical landscape tree for coastal and resort settings",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Landscaping",
+                "description": "Creates dramatic silhouette in beachfront and tropical gardens",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Landscaping",
+                "description": "Excellent for creating shade in tropical landscapes",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Coconut water — natural electrolyte-rich beverage",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Coconut meat, milk, and oil used in cuisines worldwide",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Coconut oil has antimicrobial and moisturizing properties",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Coconut water is a natural source of electrolytes and minerals",
+                "sort_order": 2
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Plant in full tropical sun",
+                "description": "Coconut palms need direct sun for at least 6 hours daily.",
+                "sort_order": 1
+            },
+            {
+                "title": "Provide sandy well-drained soil",
+                "description": "They tolerate salty coastal conditions but need good drainage.",
+                "sort_order": 2
+            },
+            {
+                "title": "Water regularly when young",
+                "description": "Young palms need consistent moisture. Mature trees are drought-tolerant.",
+                "sort_order": 3
+            },
+            {
+                "title": "Fertilize with palm-specific food",
+                "description": "Use a fertilizer formulated for palms with micronutrients like magnesium and manganese.",
+                "sort_order": 4
+            },
+            {
+                "title": "Protect from cold",
+                "description": "Coconut palms are tropical and cannot tolerate frost.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Year-round"
+    },
+    {
+        "id": "sunflower",
+        "slug": "sunflower",
+        "common_name": "Sunflower",
+        "scientific_name": "Helianthus annuus",
+        "family": "Asteraceae",
+        "origin": "North America",
+        "emoji": "🌻",
+        "description": "The sunflower is a towering annual plant famous for its large, cheerful yellow flower heads that track the sun. It is widely cultivated for its seeds, oil, and ornamental value across the globe.",
+        "image_url": "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun",
+        "water": "Moderate — water deeply once a week",
+        "soil": "Well-drained, nutrient-rich soil",
+        "difficulty": "Easy",
+        "growth_rate": "Fast",
+        "height": "3-12 feet",
+        "category_ids": [
+            2,
+            3,
+            4,
+            6
+        ],
+        "marketplace_tags": [
+            "sunflower",
+            "sunflower seeds",
+            "sunflower bouquet"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Sunflower seeds are rich in vitamin E and selenium",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Sunflower oil contains heart-healthy unsaturated fats",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Sunflower seeds support heart health and reduce inflammation",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Cheerful appearance boosts mood and mental wellbeing",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Sunflower extract used in mild floral fragrances",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Sunflower oil is a base carrier for essential oil blends",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Dramatic tall flowers create garden focal points",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Popular in cut flower arrangements and rustic bouquets",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Children's gardens — fast-growing and rewarding",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Roasted sunflower seeds are a nutritious snack",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Sunflower oil is used for cooking and baking",
+                "sort_order": 2
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Plant in full sun",
+                "description": "Sunflowers need 6-8 hours of direct sunlight daily. They literally grow toward the sun.",
+                "sort_order": 1
+            },
+            {
+                "title": "Water deeply but infrequently",
+                "description": "Water once a week with deep soaking to encourage deep root growth.",
+                "sort_order": 2
+            },
+            {
+                "title": "Stake tall varieties",
+                "description": "Tall sunflower varieties may need staking to prevent toppling in wind.",
+                "sort_order": 3
+            },
+            {
+                "title": "Protect from birds",
+                "description": "Cover seed heads with netting if you want to harvest seeds before birds do.",
+                "sort_order": 4
+            },
+            {
+                "title": "Harvest at the right time",
+                "description": "Harvest seeds when the back of the flower head turns brown and seeds are plump.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Summer-Fall"
+    },
+    {
+        "id": "tulip",
+        "slug": "tulip",
+        "common_name": "Tulip",
+        "scientific_name": "Tulipa spp.",
+        "family": "Liliaceae",
+        "origin": "Central Asia",
+        "emoji": "🌷",
+        "description": "Tulips are spring-blooming bulbs prized for their cup-shaped flowers in virtually every color. They sparked economic mania in the Dutch Golden Age and remain one of the most popular garden flowers worldwide.",
+        "image_url": "https://images.unsplash.com/photo-1588279101884-12ae9a5e9ab2?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun to Partial Shade",
+        "water": "Moderate — keep soil moist during growth",
+        "soil": "Well-drained, sandy loam",
+        "difficulty": "Easy",
+        "growth_rate": "Moderate",
+        "height": "6-24 inches",
+        "category_ids": [
+            2,
+            3,
+            6
+        ],
+        "marketplace_tags": [
+            "tulip",
+            "tulip bulbs",
+            "tulip bouquet",
+            "spring flowers"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Tulip extracts have been used in traditional skincare",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Gardening with tulips provides physical activity and stress relief",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Some tulip varieties have a subtle, sweet fragrance",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Tulip-inspired synthetic notes used in modern perfumery",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Iconic spring garden flower with endless color variety",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Excellent for borders, containers, and mass plantings",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "One of the most popular cut flowers worldwide",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Tulip petals are edible and can be used as garnish",
+                "sort_order": 1
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Plant bulbs in fall",
+                "description": "Plant tulip bulbs 6-8 inches deep in well-drained soil before the first frost.",
+                "sort_order": 1
+            },
+            {
+                "title": "Water after planting",
+                "description": "Water bulbs thoroughly after planting, then leave them alone over winter.",
+                "sort_order": 2
+            },
+            {
+                "title": "Fertilize in spring",
+                "description": "Apply a balanced bulb fertilizer when shoots first emerge in spring.",
+                "sort_order": 3
+            },
+            {
+                "title": "Deadhead after blooming",
+                "description": "Remove spent flowers but leave foliage to die back naturally to nourish the bulb.",
+                "sort_order": 4
+            },
+            {
+                "title": "Lift and store bulbs",
+                "description": "In warm climates, lift bulbs after foliage dies and store cool and dry for replanting in fall.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Spring"
+    },
+    {
+        "id": "orchid",
+        "slug": "orchid",
+        "common_name": "Orchid",
+        "scientific_name": "Phalaenopsis spp.",
+        "family": "Orchidaceae",
+        "origin": "Southeast Asia",
+        "emoji": "🌺",
+        "description": "Orchids are one of the largest and most diverse plant families on Earth. Moth orchids (Phalaenopsis) are the most popular houseplant orchids, valued for their long-lasting exotic blooms.",
+        "image_url": "https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Bright Indirect Light",
+        "water": "Low — water once every 1-2 weeks",
+        "soil": "Orchid bark mix (not regular potting soil)",
+        "difficulty": "Moderate",
+        "growth_rate": "Slow",
+        "height": "1-3 feet",
+        "category_ids": [
+            2,
+            3,
+            7
+        ],
+        "marketplace_tags": [
+            "orchid",
+            "moth orchid",
+            "phalaenopsis",
+            "orchid plant"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Some orchid species used in traditional Chinese medicine",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Orchid-growing is a meditative hobby that reduces stress",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Improves indoor air quality",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Vanilla orchid produces vanilla beans used in perfumery",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Many orchids have exquisite, complex fragrances",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Exotic long-lasting blooms — flowers last 2-4 months",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Elegant indoor plant for modern home decor",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Popular gift plant for special occasions",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Vanilla beans from vanilla orchids are used in baking",
+                "sort_order": 1
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Use orchid bark mix",
+                "description": "Never use regular potting soil. Orchids need bark, sphagnum moss, or perlite for root aeration.",
+                "sort_order": 1
+            },
+            {
+                "title": "Water sparingly",
+                "description": "Water once every 7-14 days when the bark is nearly dry. Overwatering is the #1 killer.",
+                "sort_order": 2
+            },
+            {
+                "title": "Provide bright indirect light",
+                "description": "Place near an east or west window. Direct sun burns leaves, low light prevents blooming.",
+                "sort_order": 3
+            },
+            {
+                "title": "Maintain humidity",
+                "description": "Orchids love 50-70% humidity. Use a humidity tray or mist occasionally.",
+                "sort_order": 4
+            },
+            {
+                "title": "Fertilize weakly weekly",
+                "description": "Feed with orchid fertilizer at half strength every week during the growing season.",
+                "sort_order": 5
+            },
+            {
+                "title": "Repot every 1-2 years",
+                "description": "Repot when bark breaks down or roots outgrow the pot. Use fresh bark mix.",
+                "sort_order": 6
+            }
+        ],
+        "bloom_season": "Year-round"
+    },
+    {
+        "id": "lily",
+        "slug": "lily",
+        "common_name": "Lily",
+        "scientific_name": "Lilium spp.",
+        "family": "Liliaceae",
+        "origin": "Northern Hemisphere",
+        "emoji": "🌸",
+        "description": "Lilies are tall, stately perennials with large, showy, often fragrant flowers. They have deep cultural symbolism representing purity, renewal, and majesty across many civilizations.",
+        "image_url": "https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun to Partial Shade",
+        "water": "Moderate — keep soil moist but not waterlogged",
+        "soil": "Rich, well-drained soil",
+        "difficulty": "Easy to Moderate",
+        "growth_rate": "Moderate",
+        "height": "2-6 feet",
+        "category_ids": [
+            2,
+            3,
+            4,
+            5
+        ],
+        "marketplace_tags": [
+            "lily",
+            "lily bulbs",
+            "easter lily",
+            "asiatic lily"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Lily extracts used in traditional medicine for their anti-inflammatory properties",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Lily root used in some Chinese herbal remedies",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Fragrant lilies promote relaxation and stress relief",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Intoxicating fragrance used in luxury perfumes and candles",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Lily of the valley is a classic perfume note",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Majestic garden flowers with spectacular trumpet-shaped blooms",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Excellent cut flowers with long vase life",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Symbol of Easter and spring celebrations",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Religious",
+                "description": "Symbol of purity in Christian iconography, particularly the Madonna lily",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Religious",
+                "description": "Used in Easter and spring religious ceremonies",
+                "sort_order": 2
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Plant bulbs in spring or fall",
+                "description": "Plant lily bulbs 4-6 inches deep in well-drained soil with the pointed end up.",
+                "sort_order": 1
+            },
+            {
+                "title": "Provide good drainage",
+                "description": "Lilies rot in wet soil. Raised beds or sloping sites are ideal.",
+                "sort_order": 2
+            },
+            {
+                "title": "Mulch to keep roots cool",
+                "description": "Apply 2-3 inches of mulch around the base to keep roots cool in summer.",
+                "sort_order": 3
+            },
+            {
+                "title": "Stake tall varieties",
+                "description": "Tall lily varieties may need staking to keep heavy flower heads upright.",
+                "sort_order": 4
+            },
+            {
+                "title": "Remove spent flowers",
+                "description": "Deadhead after blooming but leave stems to die back naturally for next year's growth.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Spring-Summer"
+    },
+    {
+        "id": "marigold",
+        "slug": "marigold",
+        "common_name": "Marigold",
+        "scientific_name": "Tagetes spp.",
+        "family": "Asteraceae",
+        "origin": "Mexico and Central America",
+        "emoji": "🏵️",
+        "description": "Marigolds are cheerful, sun-loving annuals with bright orange and yellow flowers. They are beloved in gardens for their pest-repelling properties and are deeply woven into cultural celebrations.",
+        "image_url": "https://images.unsplash.com/photo-1588279101884-12ae9a5e9ab2?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun",
+        "water": "Low to Moderate",
+        "soil": "Well-drained, average soil",
+        "difficulty": "Very Easy",
+        "growth_rate": "Fast",
+        "height": "6-36 inches",
+        "category_ids": [
+            1,
+            2,
+            4,
+            5
+        ],
+        "marketplace_tags": [
+            "marigold",
+            "marigold seeds",
+            "marigold plant",
+            "african marigold"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Marigold (calendula) ointment heals wounds and skin irritations",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Anti-inflammatory and antiseptic properties",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Used in natural skincare and diaper rash creams",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Natural pest repellent in companion planting",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Edible flowers add color and nutrients to salads",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Vibrant color from spring until frost",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Excellent for borders, containers, and mass plantings",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Essential in Day of the Dead celebrations (cempasúchil)",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Religious",
+                "description": "Central to Día de los Muertos (Day of the Dead) altars and decorations",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Religious",
+                "description": "Used in Hindu ceremonies and temple offerings",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Edible petals used as a saffron substitute in cooking",
+                "sort_order": 1
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Plant in full sun",
+                "description": "Marigolds need at least 6 hours of direct sun for best blooming.",
+                "sort_order": 1
+            },
+            {
+                "title": "Deadhead spent blooms",
+                "description": "Remove faded flowers to encourage continuous blooming all season.",
+                "sort_order": 2
+            },
+            {
+                "title": "Water at the base",
+                "description": "Avoid wetting foliage to prevent fungal issues. Water at soil level.",
+                "sort_order": 3
+            },
+            {
+                "title": "Fertilize lightly",
+                "description": "Marigolds need little fertilizer. Too much nitrogen produces leaves instead of flowers.",
+                "sort_order": 4
+            },
+            {
+                "title": "Use as companion plants",
+                "description": "Plant near vegetables to repel nematodes, aphids, and other pests naturally.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Spring-Frost"
+    },
+    {
+        "id": "peony",
+        "slug": "peony",
+        "common_name": "Peony",
+        "scientific_name": "Paeonia lactiflora",
+        "family": "Paeoniaceae",
+        "origin": "China, Japan, and Siberia",
+        "emoji": "🌸",
+        "description": "Peonies are beloved perennials with enormous, lush, fragrant blooms in shades of pink, white, and red. They are long-lived plants that can thrive for decades, making them treasured garden heirlooms.",
+        "image_url": "https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun",
+        "water": "Moderate",
+        "soil": "Rich, fertile, well-drained soil",
+        "difficulty": "Moderate",
+        "growth_rate": "Slow to establish",
+        "height": "2-3 feet",
+        "category_ids": [
+            2,
+            3,
+            4
+        ],
+        "marketplace_tags": [
+            "peony",
+            "peony plant",
+            "peony bouquet",
+            "garden peony"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Peony root used in traditional Chinese medicine (Bai Shao) for pain relief",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Anti-inflammatory properties used to treat arthritis and muscle cramps",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Growing peonies provides rewarding gardening experience and stress relief",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Luxurious floral scent used in high-end perfumes",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Peony is a popular note in candles and home fragrances",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Spectacular large blooms — up to 10 inches in diameter",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Favorite cut flower for weddings and special occasions",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Long-lived perennial that improves with age",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Peony petals can be used to make tea and floral water",
+                "sort_order": 1
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Plant in fall",
+                "description": "Plant peony roots (bare root) in early fall. Set the eyes (buds) 1-2 inches below soil surface.",
+                "sort_order": 1
+            },
+            {
+                "title": "Provide full sun",
+                "description": "Peonies need at least 6 hours of sun for best flowering. Too much shade reduces blooms.",
+                "sort_order": 2
+            },
+            {
+                "title": "Support heavy blooms",
+                "description": "Use peony rings or stakes to keep heavy flower heads from drooping to the ground.",
+                "sort_order": 3
+            },
+            {
+                "title": "Water during dry spells",
+                "description": "Water deeply during extended dry periods, especially when buds are forming.",
+                "sort_order": 4
+            },
+            {
+                "title": "Cut back in fall",
+                "description": "Cut stems to ground level after frost kills the foliage. Remove debris to prevent disease.",
+                "sort_order": 5
+            },
+            {
+                "title": "Be patient first year",
+                "description": "Peonies often don't bloom well the first year. They need time to establish.",
+                "sort_order": 6
+            }
+        ],
+        "bloom_season": "Spring-Summer"
+    },
+    {
+        "id": "lotus",
+        "slug": "lotus",
+        "common_name": "Lotus",
+        "scientific_name": "Nelumbo nucifera",
+        "family": "Nelumbonaceae",
+        "origin": "Asia and Australia",
+        "emoji": "🪷",
+        "description": "The lotus is an aquatic perennial with stunning pink or white flowers that rise above the water. It holds profound spiritual symbolism in Eastern religions and is renowned for its remarkable seed longevity.",
+        "image_url": "https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun",
+        "water": "Aquatic — grows in calm freshwater",
+        "soil": "Heavy clay loam in aquatic containers",
+        "difficulty": "Advanced",
+        "growth_rate": "Fast (in warm water)",
+        "height": "Flowers rise 2-4 feet above water",
+        "category_ids": [
+            1,
+            2,
+            4,
+            5,
+            10
+        ],
+        "marketplace_tags": [
+            "lotus",
+            "lotus flower",
+            "water lily",
+            "aquatic plant"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "All parts of lotus used in traditional Asian medicine",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Lotus seeds are rich in protein, fiber, and antioxidants",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Lotus root is used to treat digestive issues",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Lotus tea promotes relaxation and mental clarity",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Low-calorie lotus root is rich in dietary fiber",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Stunning aquatic centerpiece for ponds and water gardens",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Iconic subject in Asian art and photography",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Religious",
+                "description": "Sacred symbol in Buddhism representing purity and enlightenment",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Religious",
+                "description": "Important in Hinduism — associated with Lakshmi and Brahma",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Lotus root is a popular vegetable in Asian cuisine",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Lotus seeds are eaten raw, roasted, or used in soups and desserts",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Lotus tea is made from dried lotus leaves",
+                "sort_order": 3
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Grow in aquatic containers",
+                "description": "Plant lotus in a wide, shallow container with heavy clay soil. Submerge in 2-6 inches of water.",
+                "sort_order": 1
+            },
+            {
+                "title": "Provide full sun",
+                "description": "Lotus needs at least 6 hours of direct sun daily. No blooms in shade.",
+                "sort_order": 2
+            },
+            {
+                "title": "Use warm water",
+                "description": "Lotus thrives in warm water above 70°F. Cold water slows growth significantly.",
+                "sort_order": 3
+            },
+            {
+                "title": "Fertilize with aquatic tabs",
+                "description": "Use slow-release aquatic fertilizer tablets pushed into the soil monthly.",
+                "sort_order": 4
+            },
+            {
+                "title": "Protect in winter",
+                "description": "In cold climates, move containers to a frost-free location or lower to the deepest part of the pond.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Summer"
+    },
+    {
+        "id": "cherry-blossom",
+        "slug": "cherry-blossom",
+        "common_name": "Cherry Blossom (Sakura)",
+        "scientific_name": "Prunus serrulata",
+        "family": "Rosaceae",
+        "origin": "Japan, Korea, China",
+        "emoji": "🌸",
+        "description": "Cherry blossoms, or sakura, are the fleeting flowers of ornamental cherry trees. They are revered in Japan as symbols of the transient beauty of life and draw millions of visitors during spring bloom season.",
+        "image_url": "https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun",
+        "water": "Moderate",
+        "soil": "Well-drained, fertile loam",
+        "difficulty": "Moderate",
+        "growth_rate": "Moderate",
+        "height": "15-25 feet",
+        "category_ids": [
+            2,
+            3,
+            5,
+            6
+        ],
+        "marketplace_tags": [
+            "cherry blossom",
+            "sakura",
+            "ornamental cherry",
+            "japanese cherry"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Cherry blossom extract used in skincare for anti-aging benefits",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Sakura tea is rich in antioxidants",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Hanami (flower viewing) promotes mental wellbeing and mindfulness",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Cherry blossoms contain coumaric acid with anti-inflammatory properties",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Delicate floral fragrance used in spring-themed perfumes",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Sakura-scented body care products are hugely popular in Asia",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "World-famous spring bloom — iconic landscape trees",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Spectacular pink cloud-like displays along boulevards and parks",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Cherry blossom festivals are major cultural events worldwide",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Religious",
+                "description": "Symbol of impermanence in Japanese Buddhism",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Religious",
+                "description": "Central to hanami tradition dating back over 1,000 years",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Sakura-flavored sweets, lattes, and mochi",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Pickled cherry blossoms (sakura-zuke) used in traditional wagashi",
+                "sort_order": 2
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Plant in spring or fall",
+                "description": "Plant cherry trees in well-drained soil with the graft union above ground level.",
+                "sort_order": 1
+            },
+            {
+                "title": "Prune after flowering",
+                "description": "Prune cherry trees immediately after blooming to shape and remove dead branches.",
+                "sort_order": 2
+            },
+            {
+                "title": "Water deeply during dry spells",
+                "description": "Water deeply once a week during dry periods. Avoid overhead watering to prevent disease.",
+                "sort_order": 3
+            },
+            {
+                "title": "Fertilize in early spring",
+                "description": "Apply a balanced fertilizer in early spring before new growth emerges.",
+                "sort_order": 4
+            },
+            {
+                "title": "Protect from pests",
+                "description": "Watch for aphids, caterpillars, and fungal diseases. Treat promptly.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Spring"
+    },
+    {
+        "id": "frangipani",
+        "slug": "frangipani",
+        "common_name": "Frangipani (Plumeria)",
+        "scientific_name": "Plumeria rubra",
+        "family": "Apocynaceae",
+        "origin": "Central America",
+        "emoji": "🌺",
+        "description": "Frangipani, or plumeria, is a tropical tree with intensely fragrant, waxy flowers in white, pink, yellow, and red. It is strongly associated with Hawaiian leis and tropical paradise aesthetics.",
+        "image_url": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun",
+        "water": "Low to Moderate — drought-tolerant",
+        "soil": "Well-drained, sandy or cactus mix",
+        "difficulty": "Moderate",
+        "growth_rate": "Moderate",
+        "height": "10-25 feet",
+        "category_ids": [
+            2,
+            3,
+            5,
+            10
+        ],
+        "marketplace_tags": [
+            "frangipani",
+            "plumeria",
+            "plumeria plant",
+            "hawaiian flower"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Plumeria extracts used in traditional medicine for anti-inflammatory purposes",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Frangipani aromatherapy promotes relaxation and stress relief",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Intensely fragrant — a key note in tropical perfumes",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Plumeria essential oil used in aromatherapy and scented products",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Hawaiian leis are traditionally made from frangipani flowers",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Tropical beauty with stunning, long-lasting flowers",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Perfect specimen tree for tropical and Mediterranean gardens",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Iconic Hawaiian lei flower",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Religious",
+                "description": "Used in temple offerings in Bali and Southeast Asia",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Religious",
+                "description": "Planted in Buddhist temple gardens for its beauty and fragrance",
+                "sort_order": 2
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Provide full sun",
+                "description": "Plumeria needs at least 6 hours of direct sun for abundant flowering.",
+                "sort_order": 1
+            },
+            {
+                "title": "Use well-draining soil",
+                "description": "Cactus or succulent mix works well. Plumerias are susceptible to root rot in heavy soil.",
+                "sort_order": 2
+            },
+            {
+                "title": "Water sparingly in winter",
+                "description": "Reduce watering during dormancy. Resume when new leaves appear in spring.",
+                "sort_order": 3
+            },
+            {
+                "title": "Fertilize with high phosphorus",
+                "description": "Use a fertilizer high in phosphorus (middle number) to promote blooming.",
+                "sort_order": 4
+            },
+            {
+                "title": "Protect from frost",
+                "description": "In cold climates, grow in containers and move indoors when temperatures drop below 50°F.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Summer-Fall"
+    },
+    {
+        "id": "gardenia",
+        "slug": "gardenia",
+        "common_name": "Gardenia",
+        "scientific_name": "Gardenia jasminoides",
+        "family": "Rubiaceae",
+        "origin": "Asia",
+        "emoji": "🌼",
+        "description": "Gardenias are prized for their creamy white, waxy flowers with an intoxicating sweet fragrance. They are considered one of the most fragrant flowers in the world but can be challenging to grow.",
+        "image_url": "https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Bright Indirect to Partial Shade",
+        "water": "Moderate — keep soil consistently moist",
+        "soil": "Acidic, rich, well-drained soil (pH 5.0-6.5)",
+        "difficulty": "Advanced",
+        "growth_rate": "Slow to Moderate",
+        "height": "2-6 feet",
+        "category_ids": [
+            2,
+            3,
+            7
+        ],
+        "marketplace_tags": [
+            "gardenia",
+            "gardenia plant",
+            "gardenia flower",
+            "gardenia bouquet"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Gardenia fruit used in traditional Chinese medicine for its anti-inflammatory properties",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Gardenia extracts used to treat fever and swelling",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Aromatherapy with gardenia promotes calm and reduces anxiety",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "One of the most beloved floral fragrance notes in luxury perfumery",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Gardenia absolute is a prized ingredient in high-end fragrances",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Scented candles, soaps, and lotions featuring gardenia",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Elegant white flowers with a stunning fragrance",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Beautiful container plant for patios and entryways",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Popular in bridal bouquets and corsages",
+                "sort_order": 3
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Maintain acidic soil",
+                "description": "Gardenias need acidic soil (pH 5.0-6.5). Use fertilizer formulated for acid-loving plants.",
+                "sort_order": 1
+            },
+            {
+                "title": "Provide consistent moisture",
+                "description": "Keep soil evenly moist but not waterlogged. Fluctuations cause bud drop.",
+                "sort_order": 2
+            },
+            {
+                "title": "Increase humidity",
+                "description": "Gardenias need high humidity. Mist daily or place on a humidity tray.",
+                "sort_order": 3
+            },
+            {
+                "title": "Provide bright indirect light",
+                "description": "Morning sun with afternoon shade is ideal. Too much direct sun scorches leaves.",
+                "sort_order": 4
+            },
+            {
+                "title": "Prune after flowering",
+                "description": "Prune to shape after blooming ends. Avoid heavy pruning which reduces next year's flowers.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Summer"
+    },
+    {
+        "id": "dandelion",
+        "slug": "dandelion",
+        "common_name": "Dandelion",
+        "scientific_name": "Taraxacum officinale",
+        "family": "Asteraceae",
+        "origin": "Eurasia",
+        "emoji": "🌼",
+        "description": "The dandelion is one of the most recognizable and useful wild plants. Often dismissed as a weed, it is actually a nutrient-dense edible plant with a long history of medicinal use across cultures.",
+        "image_url": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun to Partial Shade",
+        "water": "Low — highly adaptable",
+        "soil": "Any soil type — highly adaptable",
+        "difficulty": "Very Easy",
+        "growth_rate": "Very Fast",
+        "height": "4-12 inches",
+        "category_ids": [
+            1,
+            2,
+            4
+        ],
+        "marketplace_tags": [
+            "dandelion",
+            "dandelion root",
+            "dandelion tea",
+            "wild herbs"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Dandelion root is a powerful liver detoxifier and diuretic",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Rich in vitamins A, C, K, and minerals like iron and calcium",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Dandelion tea aids digestion and reduces bloating",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Traditional remedy for skin conditions like eczema",
+                "sort_order": 4
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Supports liver function and natural detoxification",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Dandelion root coffee is a healthy caffeine-free alternative",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Prebiotic fiber supports gut health",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Bright yellow flowers signal the arrival of spring",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Whimsical seed heads (blowballs) beloved by children",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Young dandelion leaves make nutritious salad greens",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Dandelion flowers can be made into wine, jelly, and syrup",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Roasted dandelion root is a popular coffee substitute",
+                "sort_order": 3
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Grows anywhere",
+                "description": "Dandelions need virtually no care. They thrive in lawns, fields, cracks in pavement — anywhere.",
+                "sort_order": 1
+            },
+            {
+                "title": "Harvest young leaves",
+                "description": "Pick leaves in early spring before flowers appear for the best flavor (less bitter).",
+                "sort_order": 2
+            },
+            {
+                "title": "Harvest roots in fall",
+                "description": "Dig roots in autumn of the second year for the best medicinal potency.",
+                "sort_order": 3
+            },
+            {
+                "title": "Use as a lawn indicator",
+                "description": "Dandelions indicate compacted soil. Their deep taproots actually help break up soil.",
+                "sort_order": 4
+            }
+        ],
+        "bloom_season": "Spring-Fall"
+    },
+    {
+        "id": "eucalyptus",
+        "slug": "eucalyptus",
+        "common_name": "Eucalyptus",
+        "scientific_name": "Eucalyptus globulus",
+        "family": "Myrtaceae",
+        "origin": "Australia",
+        "emoji": "🌿",
+        "description": "Eucalyptus is a fast-growing evergreen tree with distinctive blue-green, aromatic leaves. It is one of the most important sources of essential oils and is widely used in medicine, perfumery, and floristry.",
+        "image_url": "https://images.unsplash.com/photo-1596574202648-5a4d45f28976?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun",
+        "water": "Low — drought-tolerant once established",
+        "soil": "Well-drained, slightly acidic",
+        "difficulty": "Easy",
+        "growth_rate": "Very Fast",
+        "height": "30-180 feet (species dependent)",
+        "category_ids": [
+            1,
+            3,
+            6
+        ],
+        "marketplace_tags": [
+            "eucalyptus",
+            "eucalyptus plant",
+            "eucalyptus oil",
+            "eucalyptus leaves"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Eucalyptus oil is a powerful decongestant and respiratory aid",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Antiseptic and anti-inflammatory properties",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Used in chest rubs, inhalants, and cough drops",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Natural pain reliever for muscle and joint pain",
+                "sort_order": 4
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Clears nasal congestion and supports respiratory health",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Natural insect repellent",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Aromatherapy promotes clear breathing and mental alertness",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Fresh, camphoraceous scent used in colognes and body products",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Eucalyptus essential oil is a staple in aromatherapy blends",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Popular in shower steamers, soaps, and room sprays",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Beautiful silvery-blue foliage used in floral arrangements",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Aromatic foliage adds sensory interest to gardens",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Dramatic, fast-growing specimen tree",
+                "sort_order": 3
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Plant in full sun",
+                "description": "Eucalyptus needs full sun and plenty of space. Do not plant near buildings or pipes.",
+                "sort_order": 1
+            },
+            {
+                "title": "Water deeply but infrequently",
+                "description": "Water deeply once established. Eucalyptus is very drought-tolerant.",
+                "sort_order": 2
+            },
+            {
+                "title": "Prune to control size",
+                "description": "Coppicing (cutting to the ground) keeps eucalyptus shrub-sized. Otherwise it grows into a large tree.",
+                "sort_order": 3
+            },
+            {
+                "title": "Fertilize lightly",
+                "description": "Eucalyptus needs little fertilizer. A light application in spring is sufficient.",
+                "sort_order": 4
+            },
+            {
+                "title": "Harvest leaves for oil",
+                "description": "Crush leaves to release aromatic oil. Steam distillation produces concentrated essential oil.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Year-round"
+    },
+    {
+        "id": "snake-plant",
+        "slug": "snake-plant",
+        "common_name": "Snake Plant",
+        "scientific_name": "Dracaena trifasciata",
+        "family": "Asparagaceae",
+        "origin": "West Africa",
+        "emoji": "🌿",
+        "description": "Snake plant, also called mother-in-law's tongue, is one of the most popular and resilient houseplants. Its striking upright sword-like leaves with yellow margins make it a favorite for modern interiors.",
+        "image_url": "https://images.unsplash.com/photo-1596574202648-5a4d45f28976?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Low to Bright Indirect",
+        "water": "Very Low — drought-tolerant",
+        "soil": "Well-drained succulent or cactus mix",
+        "difficulty": "Very Easy",
+        "growth_rate": "Slow to Moderate",
+        "height": "1-4 feet",
+        "category_ids": [
+            1,
+            7,
+            9
+        ],
+        "marketplace_tags": [
+            "snake plant",
+            "sansevieria",
+            "mother in law tongue",
+            "indoor plant"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Snake plant purifies air by removing toxins like formaldehyde and benzene",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Converts CO2 to oxygen at night — ideal for bedrooms",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "NASA-approved air purifying plant",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Increases humidity and reduces airborne allergens",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Striking architectural foliage for modern interiors",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Nearly unkillable — perfect for beginners and offices",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Available in many varieties with different leaf patterns",
+                "sort_order": 3
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Water very sparingly",
+                "description": "Snake plants are succulents. Water every 2-6 weeks depending on light. Overwatering kills them.",
+                "sort_order": 1
+            },
+            {
+                "title": "Tolerates low light",
+                "description": "Snake plants thrive in low to bright indirect light. They adapt to almost any indoor condition.",
+                "sort_order": 2
+            },
+            {
+                "title": "Use well-draining soil",
+                "description": "Cactus or succulent mix is essential. Add perlite to regular potting soil if needed.",
+                "sort_order": 3
+            },
+            {
+                "title": "Keep above 50°F",
+                "description": "Snake plants are tropical and cannot tolerate cold temperatures or frost.",
+                "sort_order": 4
+            },
+            {
+                "title": "Propagate by division",
+                "description": "Divide overcrowded plants by separating rhizomes. Each section needs roots and a leaf.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Summer"
+    },
+    {
+        "id": "peace-lily",
+        "slug": "peace-lily",
+        "common_name": "Peace Lily",
+        "scientific_name": "Spathiphyllum wallisii",
+        "family": "Araceae",
+        "origin": "Tropical Americas",
+        "emoji": "🪴",
+        "description": "Peace lily is a popular flowering houseplant known for its elegant white spathes (flowers) and glossy green leaves. It is one of the best air-purifying plants and adapts well to indoor conditions.",
+        "image_url": "https://images.unsplash.com/photo-1596574202648-5a4d45f28976?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Low to Bright Indirect",
+        "water": "Moderate — prefers consistently moist soil",
+        "soil": "Rich, well-drained potting mix",
+        "difficulty": "Easy",
+        "growth_rate": "Moderate",
+        "height": "1-4 feet",
+        "category_ids": [
+            1,
+            2,
+            7
+        ],
+        "marketplace_tags": [
+            "peace lily",
+            "spathiphyllum",
+            "indoor flowering plant",
+            "air purifying"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Peace lily improves indoor air quality by removing VOCs",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Increases humidity and reduces airborne mold spores",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Peace lily indicates when it needs water — leaves droop dramatically then recover",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Health",
+                "description": "NASA-approved for removing benzene, formaldehyde, and trichloroethylene",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Elegant white flowers bloom multiple times per year",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Lush tropical foliage — one of the most popular houseplants",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Excellent gift plant for housewarmings and sympathy",
+                "sort_order": 3
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Keep soil consistently moist",
+                "description": "Water when the top inch of soil feels dry. Peace lilies wilt dramatically when thirsty.",
+                "sort_order": 1
+            },
+            {
+                "title": "Provide indirect light",
+                "description": "Peace lilies thrive in medium to low indirect light. Direct sun burns leaves.",
+                "sort_order": 2
+            },
+            {
+                "title": "Mist regularly",
+                "description": "Peace lilies love humidity. Mist leaves weekly or place on a humidity tray.",
+                "sort_order": 3
+            },
+            {
+                "title": "Fertilize monthly",
+                "description": "Feed with balanced houseplant fertilizer monthly during spring and summer.",
+                "sort_order": 4
+            },
+            {
+                "title": "Wipe leaves clean",
+                "description": "Dust collects on large leaves. Wipe with a damp cloth to keep them photosynthesizing efficiently.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Year-round"
+    },
+    {
+        "id": "bougainvillea",
+        "slug": "bougainvillea",
+        "common_name": "Bougainvillea",
+        "scientific_name": "Bougainvillea glabra",
+        "family": "Nyctaginaceae",
+        "origin": "South America",
+        "emoji": "🌸",
+        "description": "Bougainvillea is a vibrant, thorny vine renowned for its spectacular displays of papery bracts in vivid shades of magenta, purple, orange, and white. It thrives in hot, dry climates and is a staple of Mediterranean and tropical gardens.",
+        "image_url": "https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun",
+        "water": "Low — drought-tolerant once established",
+        "soil": "Well-drained, slightly acidic",
+        "difficulty": "Moderate",
+        "growth_rate": "Fast",
+        "height": "10-30 feet (climbing)",
+        "category_ids": [
+            2,
+            6,
+            10
+        ],
+        "marketplace_tags": [
+            "bougainvillea",
+            "bougainvillea plant",
+            "climbing vine",
+            "tropical vine"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Bougainvillea extracts used in traditional medicine for cough and respiratory issues",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Dense thorny growth makes excellent natural security hedge",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Explosive color in hot, dry climates where few plants thrive",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Excellent for trellises, walls, and cascading over fences",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Thrives in coastal gardens with salt spray",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Landscaping",
+                "description": "Creates dramatic vertical interest with vibrant color",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Landscaping",
+                "description": "Ideal for xeriscaping and drought-tolerant gardens",
+                "sort_order": 2
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Provide full sun",
+                "description": "Bougainvillea needs at least 6 hours of direct sun daily. Less sun means fewer blooms.",
+                "sort_order": 1
+            },
+            {
+                "title": "Water sparingly",
+                "description": "Bougainvillea blooms best when stressed. Water only when soil is dry to the touch.",
+                "sort_order": 2
+            },
+            {
+                "title": "Prune after bloom cycle",
+                "description": "Prune after each bloom cycle to shape and encourage new growth (which produces flowers).",
+                "sort_order": 3
+            },
+            {
+                "title": "Fertilize for blooms",
+                "description": "Use a fertilizer high in phosphorus and potassium. Avoid high nitrogen which produces leaves.",
+                "sort_order": 4
+            },
+            {
+                "title": "Protect from frost",
+                "description": "Bougainvillea is frost-tender. In cold climates, grow in containers and overwinter indoors.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Summer-Fall"
+    },
+    {
+        "id": "dahlia",
+        "slug": "dahlia",
+        "common_name": "Dahlia",
+        "scientific_name": "Dahlia pinnata",
+        "family": "Asteraceae",
+        "origin": "Mexico",
+        "emoji": "🌸",
+        "description": "Dahlias are tuberous perennials with an astonishing range of flower forms, sizes, and colors. From tiny pompons to giant dinner-plate blooms, dahlias are a favorite of flower arrangers and gardeners.",
+        "image_url": "https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun",
+        "water": "Moderate",
+        "soil": "Rich, well-drained, fertile soil",
+        "difficulty": "Moderate",
+        "growth_rate": "Fast",
+        "height": "1-6 feet",
+        "category_ids": [
+            2,
+            4
+        ],
+        "marketplace_tags": [
+            "dahlia",
+            "dahlia tubers",
+            "dahlia bouquet",
+            "dinnerplate dahlia"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Dahlia tubers were used by Aztecs as a food source and medicine",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Flower arranging with dahlias provides creative therapy and stress relief",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Growing dahlias encourages outdoor activity",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Incredible variety — from 1-inch pompons to 12-inch dinner-plate blooms",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Excellent cut flower with long vase life",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Blooms from midsummer until first frost",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Dahlia tubers are edible and were cultivated as food by the Aztecs",
+                "sort_order": 1
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Plant tubers in spring",
+                "description": "Plant dahlia tubers after all danger of frost has passed. Position eyes facing up, 4-6 inches deep.",
+                "sort_order": 1
+            },
+            {
+                "title": "Pinch for bushier growth",
+                "description": "Pinch out the center tip when plants are 12 inches tall to encourage branching and more flowers.",
+                "sort_order": 2
+            },
+            {
+                "title": "Water consistently",
+                "description": "Water deeply 2-3 times per week. Consistent moisture is key for large blooms.",
+                "sort_order": 3
+            },
+            {
+                "title": "Fertilize regularly",
+                "description": "Feed with a low-nitrogen fertilizer every 2-4 weeks throughout the growing season.",
+                "sort_order": 4
+            },
+            {
+                "title": "Lift tubers in fall",
+                "description": "In cold climates, dig up tubers after first frost, dry them, and store in a cool, dark place over winter.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Summer-Frost"
+    },
+    {
+        "id": "fern",
+        "slug": "fern",
+        "common_name": "Fern",
+        "scientific_name": "Various (Nephrolepis, Adiantum, etc.)",
+        "family": "Various",
+        "origin": "Worldwide",
+        "emoji": "🌿",
+        "description": "Ferns are ancient, non-flowering plants with delicate, feathery fronds. They have thrived on Earth for over 360 million years and are prized in gardens and homes for their lush, textural foliage.",
+        "image_url": "https://images.unsplash.com/photo-1596574202648-5a4d45f28976?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Partial to Full Shade",
+        "water": "Moderate to High",
+        "soil": "Rich, moist, well-drained organic soil",
+        "difficulty": "Easy",
+        "growth_rate": "Moderate",
+        "height": "1-6 feet (species dependent)",
+        "category_ids": [
+            2,
+            6,
+            7,
+            10
+        ],
+        "marketplace_tags": [
+            "fern",
+            "indoor fern",
+            "boston fern",
+            "maidenhair fern"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Some ferns used in traditional medicine for respiratory and digestive issues",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Ferns increase humidity and improve indoor air quality",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Lush foliage creates a calming, biophilic environment",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Elegant feathery fronds add texture to shade gardens",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Classic indoor plant for Victorian and modern interiors",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Essential element in woodland and shade garden designs",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Landscaping",
+                "description": "Excellent ground cover for shady, moist areas",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Landscaping",
+                "description": "Perfect for erosion control on shaded slopes",
+                "sort_order": 2
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Provide shade",
+                "description": "Ferns need shade or filtered light. Direct sun burns their delicate fronds.",
+                "sort_order": 1
+            },
+            {
+                "title": "Keep soil moist",
+                "description": "Ferns love moisture. Water regularly to keep soil consistently damp but not waterlogged.",
+                "sort_order": 2
+            },
+            {
+                "title": "Increase humidity",
+                "description": "Ferns need high humidity. Mist daily or use a humidifier, especially indoors.",
+                "sort_order": 3
+            },
+            {
+                "title": "Fertilize lightly",
+                "description": "Feed with half-strength liquid fertilizer monthly during the growing season.",
+                "sort_order": 4
+            },
+            {
+                "title": "Remove dead fronds",
+                "description": "Cut brown or dead fronds at the base to keep the plant looking fresh and encourage new growth.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Year-round"
+    },
+    {
+        "id": "mint",
+        "slug": "mint",
+        "common_name": "Mint",
+        "scientific_name": "Mentha spp.",
+        "family": "Lamiaceae",
+        "origin": "Europe and Asia",
+        "emoji": "🌿",
+        "description": "Mint is a fast-growing aromatic herb with a unmistakable cool, refreshing flavor. It is one of the most versatile culinary herbs and has been used for millennia in medicine, cooking, and beverages.",
+        "image_url": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun to Partial Shade",
+        "water": "Moderate to High",
+        "soil": "Moist, rich, well-drained soil",
+        "difficulty": "Very Easy",
+        "growth_rate": "Very Fast (can be invasive)",
+        "height": "1-3 feet",
+        "category_ids": [
+            1,
+            3,
+            4,
+            6
+        ],
+        "marketplace_tags": [
+            "mint",
+            "mint plant",
+            "peppermint",
+            "spearmint"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Peppermint tea relieves digestive issues and nausea",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Menthol in mint acts as a natural decongestant",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Anti-inflammatory and antimicrobial properties",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Helps relieve tension headaches when applied topically",
+                "sort_order": 4
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Mint tea promotes digestion and freshens breath",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Increases alertness and mental clarity",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Fresh, cool scent used in toothpaste, gum, and body products",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Perfume",
+                "description": "Peppermint essential oil for aromatherapy and focus",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Quick ground cover for moist, shady areas",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Essential herb in Middle Eastern, Mediterranean, and Southeast Asian cuisine",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Mint juleps, mojitos, and mint tea are classic beverages",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Mint sauce, chutney, and jelly complement lamb dishes",
+                "sort_order": 3
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Grow in containers",
+                "description": "Mint is highly invasive. Always grow in containers or use underground barriers to contain runners.",
+                "sort_order": 1
+            },
+            {
+                "title": "Keep soil moist",
+                "description": "Mint thrives in consistently moist soil. It tolerates more water than most herbs.",
+                "sort_order": 2
+            },
+            {
+                "title": "Harvest frequently",
+                "description": "Regular harvesting (pinching stems) encourages bushier growth and prevents flowering.",
+                "sort_order": 3
+            },
+            {
+                "title": "Cut back in fall",
+                "description": "Cut plants back to ground level in fall. Mint will regrow vigorously in spring.",
+                "sort_order": 4
+            },
+            {
+                "title": "Divide every 2-3 years",
+                "description": "Divide overcrowded mint patches to maintain vigor and flavor.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Summer"
+    },
+    {
+        "id": "basil",
+        "slug": "basil",
+        "common_name": "Basil",
+        "scientific_name": "Ocimum basilicum",
+        "family": "Lamiaceae",
+        "origin": "Central Africa and Southeast Asia",
+        "emoji": "🌿",
+        "description": "Basil is one of the most beloved culinary herbs, with fragrant leaves that are essential to Italian and Southeast Asian cuisines. Its aromatic leaves come in many varieties from sweet to spicy.",
+        "image_url": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun",
+        "water": "Moderate — keep soil consistently moist",
+        "soil": "Rich, well-drained soil",
+        "difficulty": "Easy",
+        "growth_rate": "Fast",
+        "height": "12-24 inches",
+        "category_ids": [
+            1,
+            4
+        ],
+        "marketplace_tags": [
+            "basil",
+            "basil plant",
+            "sweet basil",
+            "culinary herbs"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Basil contains antioxidants and has anti-inflammatory properties",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Holy basil (Tulsi) is used in Ayurvedic medicine for stress relief",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Medicinal",
+                "description": "Basil tea helps with digestive issues and nausea",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Rich in vitamin K, iron, and calcium",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Antibacterial properties support immune health",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Beautiful green or purple leaves make attractive garden plants",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Aromatic leaves release fragrance when brushed",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Essential for pesto, Caprese salad, and Italian cuisine",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Holy basil (Tulsi) is used in teas and Southeast Asian cooking",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Fresh basil elevates pizzas, pastas, salads, and sauces",
+                "sort_order": 3
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Plant after frost",
+                "description": "Basil is extremely frost-sensitive. Plant outdoors only after all frost danger has passed.",
+                "sort_order": 1
+            },
+            {
+                "title": "Pinch regularly",
+                "description": "Pinch off top sets of leaves weekly to encourage bushy growth and prevent flowering.",
+                "sort_order": 2
+            },
+            {
+                "title": "Water consistently",
+                "description": "Keep soil moist but not waterlogged. Basil wilts quickly in dry soil.",
+                "sort_order": 3
+            },
+            {
+                "title": "Provide full sun",
+                "description": "Basil needs at least 6 hours of direct sun. It grows leggy in shade.",
+                "sort_order": 4
+            },
+            {
+                "title": "Harvest from top down",
+                "description": "Always harvest from the top, cutting just above a leaf pair. Never strip leaves from stems.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Summer"
+    },
+    {
+        "id": "morning-glory",
+        "slug": "morning-glory",
+        "common_name": "Morning Glory",
+        "scientific_name": "Ipomoea purpurea",
+        "family": "Convolvulaceae",
+        "origin": "Tropical Americas",
+        "emoji": "🌺",
+        "description": "Morning glory is a fast-growing climbing vine with beautiful trumpet-shaped flowers that open in the morning and close by afternoon. It is beloved for its ability to quickly cover fences and trellises with color.",
+        "image_url": "https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=800&auto=format&fit=crop",
+        "sunlight": "Full Sun",
+        "water": "Moderate",
+        "soil": "Average, well-drained soil",
+        "difficulty": "Very Easy",
+        "growth_rate": "Very Fast",
+        "height": "6-15 feet (climbing)",
+        "category_ids": [
+            2,
+            4,
+            6
+        ],
+        "marketplace_tags": [
+            "morning glory",
+            "climbing vine",
+            "flower seeds",
+            "annual vine"
+        ],
+        "benefits": [
+            {
+                "benefit_type": "Medicinal",
+                "description": "Morning glory seeds have been used in traditional medicine (caution: some species contain alkaloids)",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Fast-growing vines provide quick privacy screening",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Health",
+                "description": "Gardening with morning glories provides daily mindfulness practice",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Quick coverage for fences, trellises, and arbors",
+                "sort_order": 1
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Hundreds of flowers appear daily during peak bloom",
+                "sort_order": 2
+            },
+            {
+                "benefit_type": "Ornamental",
+                "description": "Beautiful blue, purple, pink, and white trumpet flowers",
+                "sort_order": 3
+            },
+            {
+                "benefit_type": "Culinary",
+                "description": "Morning glory leaves are edible and used in some Asian cuisines (water spinach variety)",
+                "sort_order": 1
+            }
+        ],
+        "care_tips": [
+            {
+                "title": "Sow seeds directly",
+                "description": "Morning glories don't transplant well. Sow seeds directly in the ground after frost.",
+                "sort_order": 1
+            },
+            {
+                "title": "Nick seeds before planting",
+                "description": "File or nick the hard seed coat and soak overnight before planting for better germination.",
+                "sort_order": 2
+            },
+            {
+                "title": "Provide a trellis",
+                "description": "Morning glories need a fence, trellis, or strings to climb. They twine counterclockwise.",
+                "sort_order": 3
+            },
+            {
+                "title": "Water moderately",
+                "description": "Water regularly but allow soil to dry between waterings. Overwatering reduces blooms.",
+                "sort_order": 4
+            },
+            {
+                "title": "Deadhead not needed",
+                "description": "Unlike many annuals, morning glories don't need deadheading. Let them self-sow for next year.",
+                "sort_order": 5
+            }
+        ],
+        "bloom_season": "Summer-Fall"
+    }
+]

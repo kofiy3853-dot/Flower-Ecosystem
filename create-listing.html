@@ -1,0 +1,407 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create a new product listing on Flower Ecosystem marketplace. List your flowers, arrangements, and plants for sale.">
+    <title>Create Listing | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .form-section { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:2rem; margin-bottom:1.5rem; }
+        .form-section h3 { font-size:1.1rem; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-color); }
+        .image-preview { display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:0.75rem; }
+        .image-preview .thumb { width:80px; height:80px; border-radius:8px; object-fit:cover; border:1px solid var(--border-color); }
+        .image-preview .thumb-wrap { position:relative; display:inline-block; }
+        .image-preview .thumb-wrap .remove-img { position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:var(--error-color); color:white; border:none; font-size:0.7rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    </style>
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    <section class="page-header primary-bg text-white section-padding text-center" style="padding-top:6rem; padding-bottom:3rem;">
+        <div class="container reveal-up">
+            <span class="subtitle" style="color:rgba(255,255,255,0.7)">SELLER TOOLS</span>
+            <h1 style="color:white;">Create New Listing</h1>
+            <p class="section-subtitle text-white">List your flowers, arrangements, or plants for sale on the marketplace.</p>
+        </div>
+    </section>
+
+    <section class="section-padding bg-light">
+        <div class="container" style="max-width:720px;">
+            <form id="listingForm" novalidate>
+                <div class="form-section">
+                    <h3>Product Details</h3>
+                    <div class="form-group">
+                        <label for="productName" class="form-label">Product Name *</label>
+                        <input type="text" id="productName" class="form-input" placeholder="e.g. Premium Rose Bouquet" required>
+                    </div>
+                    <div class="form-group" style="margin-top:1rem;">
+                        <label for="productDescription" class="form-label">Description *</label>
+                        <textarea id="productDescription" class="form-input" rows="4" placeholder="Describe your product in detail — flowers used, size, care instructions, etc." required></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Pricing & Inventory</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                        <div class="form-group">
+                            <label for="productPrice" class="form-label">Price ($) *</label>
+                            <input type="number" id="productPrice" class="form-input" step="0.01" min="0" placeholder="29.99" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productStock" class="form-label">Stock Quantity *</label>
+                            <input type="number" id="productStock" class="form-input" min="0" placeholder="10" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Classification</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                        <div class="form-group">
+                            <label for="productCategory" class="form-label">Category *</label>
+                            <select id="productCategory" class="form-select" required>
+                                <option value="">Select a category</option>
+                                <option value="roses">Roses</option>
+                                <option value="bouquets">Bouquets</option>
+                                <option value="orchids">Orchids</option>
+                                <option value="succulents">Succulents</option>
+                                <option value="wildflowers">Wildflowers</option>
+                                <option value="plants">Indoor Plants</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productCondition" class="form-label">Flower Condition *</label>
+                            <select id="productCondition" class="form-select" required>
+                                <option value="">Select condition</option>
+                                <option value="natural">Natural (Fresh)</option>
+                                <option value="artificial">Artificial (Silk)</option>
+                                <option value="preserved">Preserved</option>
+                                <option value="dried">Dried</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Images</h3>
+                    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:0.75rem;">Upload images from your device or add image URLs. At least one image is recommended.</p>
+                    
+                    <div id="uploadArea" style="border:2px dashed var(--border-color);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:border-color 0.2s;margin-bottom:1rem;">
+                        <i class="bi bi-cloud-arrow-up" style="font-size:2.5rem;color:var(--primary-color);display:block;margin-bottom:0.5rem;"></i>
+                        <p style="font-weight:500;margin-bottom:0.25rem;">Drag & drop images here</p>
+                        <p style="font-size:0.8rem;color:var(--text-light);">or click to browse (max 5MB each, jpg/png/webp/gif)</p>
+                        <input type="file" id="fileInput" multiple accept="image/*" style="display:none;">
+                    </div>
+                    <div id="uploadProgress" style="display:none;margin-bottom:1rem;">
+                        <div style="background:var(--border-color);border-radius:4px;height:6px;overflow:hidden;">
+                            <div id="uploadBar" style="background:var(--primary-color);height:100%;width:0%;transition:width 0.3s;"></div>
+                        </div>
+                        <p id="uploadStatus" style="font-size:0.8rem;color:var(--text-light);margin-top:0.25rem;"></p>
+                    </div>
+
+                    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:0.5rem;margin-top:0.5rem;">Or add image URLs:</p>
+                    <div id="imageInputs">
+                        <div class="form-group" style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;">
+                            <input type="url" class="form-input img-url" placeholder="https://example.com/image1.jpg">
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline btn-sm" id="addImageBtn"><i class="bi bi-plus-circle"></i> Add Another Image URL</button>
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Video <span style="font-size:0.8rem;font-weight:400;color:var(--text-light);">(optional)</span></h3>
+                    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:0.75rem;">Add a YouTube or Vimeo video to showcase your product.</p>
+                    <div class="form-group">
+                        <label for="productVideo" class="form-label">Video URL</label>
+                        <input type="url" id="productVideo" class="form-input" placeholder="https://www.youtube.com/watch?v=...">
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.5rem;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;padding:1rem 2rem;font-size:1rem;">Submit for Review</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-4">
+                <a href="account.html" style="color:var(--text-light);font-size:0.9rem;"><i class="bi bi-arrow-left"></i> Back to Seller Dashboard</a>
+            </div>
+
+            <div id="toast" style="display:none; position:fixed; bottom:2rem; right:2rem; background:var(--accent-green); color:white; padding:1rem 1.5rem; border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,0.15); z-index:9999; font-weight:500;"></div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script>
+        (() => {
+            if (typeof isLoggedIn !== 'undefined' && !isLoggedIn()) {
+                document.getElementById('listingForm').innerHTML = '<div class="empty-state" style="padding:3rem 1rem;"><i class="bi bi-person-lock"></i><h3>Please Sign In</h3><p style="margin-bottom:1.5rem;">You need to be logged in as a seller to create listings.</p><button class="btn btn-primary" onclick="openAuthModal(\'login\')">Sign In</button></div>';
+                return;
+            }
+            const _user = getCurrentUser();
+            const _role = (_user?.role || '').toLowerCase();
+            if (!['seller', 'florist', 'grower', 'admin'].includes(_role)) {
+                document.getElementById('listingForm').innerHTML = '<div class="empty-state" style="padding:3rem 1rem;"><i class="bi bi-shop-lock"></i><h3>Seller Access Only</h3><p style="margin-bottom:1.5rem;">This page is only available to sellers and florists.</p><a href="account.html" class="btn btn-outline">Go to My Account</a></div>';
+                return;
+            }
+
+            const form = document.getElementById('listingForm');
+            const addImageBtn = document.getElementById('addImageBtn');
+            const imageInputs = document.getElementById('imageInputs');
+            const imagePreview = document.getElementById('imagePreview');
+            const toast = document.getElementById('toast');
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const uploadProgress = document.getElementById('uploadProgress');
+            const uploadBar = document.getElementById('uploadBar');
+            const uploadStatus = document.getElementById('uploadStatus');
+
+            let imageUrls = [];
+            let uploadedFiles = [];
+            let editMode = false;
+            let editProductId = null;
+
+            // Check for edit mode
+            const params = new URLSearchParams(window.location.search);
+            const editId = params.get('id');
+            if (editId) {
+                editMode = true;
+                editProductId = editId;
+                document.querySelector('h1').textContent = 'Edit Listing';
+                document.querySelector('.section-subtitle').textContent = 'Update your product listing details.';
+                document.querySelector('[type="submit"]').textContent = 'Save Changes';
+                loadProductForEdit(editId);
+            }
+
+            async function loadProductForEdit(id) {
+                try {
+                    const res = await fetch(`/api/products/${id}`);
+                    if (!res.ok) throw new Error('Product not found');
+                    const data = await res.json();
+                    // API may return array (JSON fallback) or single object (DB)
+                    const p = Array.isArray(data) ? data.find(x => String(x.id) === String(id)) : data;
+                    if (!p) throw new Error('Product not found');
+                    document.getElementById('productName').value = p.name || '';
+                    document.getElementById('productDescription').value = p.description || '';
+                    document.getElementById('productPrice').value = p.price || '';
+                    document.getElementById('productStock').value = p.stock_quantity ?? '';
+                    // Map DB category name to select value
+                    const catMap = { Roses: 'roses', Bouquets: 'bouquets', Orchids: 'orchids', Succulents: 'succulents', Wildflowers: 'wildflowers', 'Indoor Plants': 'plants' };
+                    const catSelect = document.getElementById('productCategory');
+                    const catVal = catMap[p.category_name] || p.category || '';
+                    if (catVal) {
+                        const catOpt = Array.from(catSelect.options).find(o => o.value === catVal);
+                        if (catOpt) catOpt.selected = true;
+                    }
+                    // Map flower condition
+                    const condMap = { NATURAL: 'natural', ARTIFICIAL: 'artificial', PRESERVED: 'preserved', DRIED: 'dried' };
+                    const condSelect = document.getElementById('productCondition');
+                    const condVal = condMap[(p.flower_cond || '').toUpperCase()] || p.flower_cond || '';
+                    if (condVal) {
+                        const condOpt = Array.from(condSelect.options).find(o => o.value === condVal);
+                        if (condOpt) condOpt.selected = true;
+                    }
+                    // Load existing images
+                    const existingImages = p.images || (p.image ? [p.image] : []);
+                    if (existingImages.length) {
+                        uploadedFiles = existingImages.filter(u => u.startsWith('/uploads/'));
+                        imageUrls = existingImages.filter(u => !u.startsWith('/uploads/'));
+                        const imageInputs = document.getElementById('imageInputs');
+                        imageInputs.innerHTML = '';
+                        imageUrls.forEach(url => {
+                            const div = document.createElement('div');
+                            div.className = 'form-group';
+                            div.style.cssText = 'display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;';
+                            div.innerHTML = `<input type="url" class="form-input img-url" value="${url}" placeholder="https://example.com/image.jpg"> <button type="button" class="remove-img-input" style="background:var(--error-color);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:0.8rem;flex-shrink:0;">&#10005;</button>`;
+                            imageInputs.appendChild(div);
+                            div.querySelector('.remove-img-input').addEventListener('click', () => { div.remove(); updatePreview(); });
+                        });
+                        if (!imageUrls.length) {
+                            const div = document.createElement('div');
+                            div.className = 'form-group';
+                            div.style.cssText = 'display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;';
+                            div.innerHTML = '<input type="url" class="form-input img-url" placeholder="https://example.com/image1.jpg">';
+                            imageInputs.appendChild(div);
+                        }
+                        updatePreview();
+                    }
+                } catch (e) {
+                    showToast('Could not load product data.');
+                }
+            }
+
+            // File upload handlers
+            uploadArea.addEventListener('click', () => fileInput.click());
+            uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.style.borderColor = 'var(--primary-color)'; });
+            uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = 'var(--border-color)'; });
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--border-color)';
+                handleFiles(e.dataTransfer.files);
+            });
+            fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+            async function handleFiles(files) {
+                const validFiles = Array.from(files).filter(f => f.size <= 5 * 1024 * 1024 && f.type.startsWith('image/'));
+                if (!validFiles.length) {
+                    showToast('Please select valid image files under 5MB.');
+                    return;
+                }
+
+                uploadProgress.style.display = 'block';
+                uploadStatus.textContent = `Uploading ${validFiles.length} file(s)...`;
+                uploadBar.style.width = '10%';
+
+                const formData = new FormData();
+                validFiles.forEach(f => formData.append('images', f));
+
+                try {
+                    const token = getToken();
+                    const res = await fetch('/api/upload', {
+                        method: 'POST',
+                        headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+                        body: formData
+                    });
+                    uploadBar.style.width = '80%';
+                    if (!res.ok) throw new Error('Upload failed');
+                    const data = await res.json();
+                    uploadedFiles = uploadedFiles.concat(data.images);
+                    uploadBar.style.width = '100%';
+                    uploadStatus.textContent = `${validFiles.length} image(s) uploaded successfully.`;
+                    setTimeout(() => { uploadProgress.style.display = 'none'; uploadBar.style.width = '0%'; }, 2000);
+                    updatePreview();
+                } catch (err) {
+                    uploadStatus.textContent = 'Upload failed: ' + err.message;
+                    uploadBar.style.width = '0%';
+                    setTimeout(() => { uploadProgress.style.display = 'none'; }, 3000);
+                }
+                fileInput.value = '';
+            }
+
+            function updatePreview() {
+                const inputs = document.querySelectorAll('.img-url');
+                imageUrls = [];
+                inputs.forEach(inp => {
+                    const val = inp.value.trim();
+                    if (val) imageUrls.push(val);
+                });
+                const allImages = [...uploadedFiles, ...imageUrls];
+                imagePreview.innerHTML = allImages.map(url => `
+                    <div class="thumb-wrap">
+                        <img class="thumb" src="${url}" alt="" onerror="this.style.display='none'">
+                        ${uploadedFiles.includes(url) ? `<span style="position:absolute;bottom:2px;left:2px;background:var(--accent-green);color:white;font-size:0.6rem;padding:1px 4px;border-radius:3px;">Uploaded</span>` : ''}
+                    </div>
+                `).join('');
+            }
+
+            imageInputs.addEventListener('input', (e) => {
+                if (e.target.classList.contains('img-url')) updatePreview();
+            });
+
+            addImageBtn.addEventListener('click', () => {
+                const div = document.createElement('div');
+                div.className = 'form-group';
+                div.style.cssText = 'display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;';
+                div.innerHTML = '<input type="url" class="form-input img-url" placeholder="https://example.com/image.jpg"> <button type="button" class="remove-img-input" style="background:var(--error-color);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:0.8rem;flex-shrink:0;">✕</button>';
+                imageInputs.appendChild(div);
+                div.querySelector('.remove-img-input').addEventListener('click', () => {
+                    div.remove();
+                    updatePreview();
+                });
+            });
+
+            function showToast(msg) {
+                toast.textContent = msg;
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 4000);
+            }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const name = document.getElementById('productName').value.trim();
+                const desc = document.getElementById('productDescription').value.trim();
+                const price = parseFloat(document.getElementById('productPrice').value);
+                const stock = parseInt(document.getElementById('productStock').value);
+                const category = document.getElementById('productCategory').value;
+                const condition = document.getElementById('productCondition').value;
+
+                const video = document.getElementById('productVideo').value.trim();
+
+                if (!name || !desc || isNaN(price) || isNaN(stock) || !category || !condition) {
+                    showToast('Please fill in all required fields.');
+                    return;
+                }
+
+                updatePreview();
+                const allImages = [...uploadedFiles, ...imageUrls];
+                const images = allImages.length ? allImages : ['https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=600&auto=format&fit=crop'];
+
+                const product = {
+                    id: editMode ? editProductId : 'sp-' + Date.now(),
+                    name,
+                    description: desc,
+                    price,
+                    stockQuantity: stock,
+                    category,
+                    flowerType: condition,
+                    image: images[0],
+                    images,
+                    videoUrl: video || null,
+                    seller: getCurrentUser()?.name || 'Seller',
+                    badge: 'New',
+                    rating: 0,
+                    reviews: 0,
+                    createdAt: new Date().toISOString()
+                };
+
+                const existing = JSON.parse(localStorage.getItem('seller-products') || '[]');
+                if (editMode) {
+                    const idx = existing.findIndex(p => p.id === editProductId);
+                    if (idx !== -1) {
+                        product.createdAt = existing[idx].createdAt;
+                        existing[idx] = product;
+                    } else {
+                        existing.push(product);
+                    }
+                    localStorage.setItem('seller-products', JSON.stringify(existing));
+                    showToast('Listing updated successfully!');
+                } else {
+                    existing.push(product);
+                    localStorage.setItem('seller-products', JSON.stringify(existing));
+                    showToast('Listing submitted for review! It will appear on the marketplace after approval.');
+                    form.reset();
+                    imagePreview.innerHTML = '';
+                    document.querySelectorAll('.img-url').forEach(inp => inp.value = '');
+                    imageUrls = [];
+                    uploadedFiles = [];
+                }
+            });
+        })();
+    </script>
+    <script>
+        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    this.parentElement.classList.toggle('mobile-open');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

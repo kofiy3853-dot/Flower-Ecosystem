@@ -1,0 +1,226 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage incoming orders on Flower Ecosystem. Update order statuses, view customer details, and fulfill orders.">
+    <title>Manage Orders | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .manage-table-wrap { overflow-x:auto; background:var(--bg-white); border-radius:12px; border:1px solid var(--border-color); }
+        .manage-table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+        .manage-table th { text-align:left; padding:0.75rem 1rem; background:var(--bg-light); color:var(--text-light); font-weight:600; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.05em; border-bottom:1px solid var(--border-color); }
+        .manage-table td { padding:0.75rem 1rem; border-bottom:1px solid var(--border-color); vertical-align:middle; }
+        .manage-table tr:last-child td { border-bottom:none; }
+        .manage-table .status-select { padding:0.25rem 0.5rem; border-radius:6px; border:1px solid var(--border-color); font-size:0.8rem; background:var(--bg-white); cursor:pointer; }
+        .expand-row td { padding:0; }
+        .expand-row .expanded-content { padding:0.75rem 1rem 1rem; display:none; background:var(--bg-light); }
+        .expand-row .expanded-content.open { display:block; }
+        .expand-row .expanded-content .order-item { display:flex; align-items:center; gap:0.75rem; padding:0.4rem 0; font-size:0.85rem; }
+        .expand-row .expanded-content .order-item img { width:40px; height:40px; border-radius:6px; object-fit:cover; }
+    </style>
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    <section class="page-header primary-bg text-white section-padding text-center" style="padding-top:6rem; padding-bottom:3rem;">
+        <div class="container reveal-up">
+            <span class="subtitle" style="color:rgba(255,255,255,0.7)">SELLER TOOLS</span>
+            <h1 style="color:white;">Manage Orders</h1>
+            <p class="section-subtitle text-white">View and update incoming customer orders.</p>
+        </div>
+    </section>
+
+    <section class="section-padding bg-light" style="min-height:50vh;">
+        <div class="container">
+            <div class="learning-tabs" style="justify-content:center; margin-bottom:2rem;" id="statusFilters">
+                <button class="tab-btn active" data-filter="all">All</button>
+                <button class="tab-btn" data-filter="pending">Pending</button>
+                <button class="tab-btn" data-filter="processing">Processing</button>
+                <button class="tab-btn" data-filter="shipped">Shipped</button>
+                <button class="tab-btn" data-filter="delivered">Delivered</button>
+            </div>
+
+            <div id="tableContainer"></div>
+
+            <div class="empty-state" id="emptyState" style="display:none;">
+                <i class="bi bi-inbox"></i>
+                <h3>No orders yet</h3>
+                <p>Customer orders will appear here once they start purchasing your products.</p>
+                <a href="account.html" class="btn btn-outline" style="margin-top:1rem; display:inline-block;">Back to Dashboard</a>
+            </div>
+
+            <div class="text-center mt-3" id="orderCount" style="color:var(--text-light); font-size:0.9rem;"></div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script>
+        (() => {
+            const container = document.getElementById('tableContainer');
+            const emptyState = document.getElementById('emptyState');
+            const orderCount = document.getElementById('orderCount');
+
+            let allOrders = [];
+            let filter = 'all';
+
+            function loadOrders() {
+                const stored = localStorage.getItem('seller-orders');
+                if (stored) {
+                    try { allOrders = JSON.parse(stored); } catch (e) { allOrders = []; }
+                }
+                if (!allOrders.length) {
+                    allOrders = [
+                        { id: 'FLW-99201', customer: 'Sarah M.', items: 1, total: 89.99, date: '10 June 2026', status: 'delivered', product: 'Premium Orchids', image: 'https://images.unsplash.com/photo-1522926193341-e9ffd686c60f?q=80&w=100&auto=format&fit=crop' },
+                        { id: 'FLW-88202', customer: 'James K.', items: 2, total: 124.50, date: '5 June 2026', status: 'shipped', product: 'Wedding Arrangement', image: 'https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=100&auto=format&fit=crop' },
+                        { id: 'FLW-77303', customer: 'Priya R.', items: 1, total: 45.00, date: '1 June 2026', status: 'processing', product: 'Classic Red Roses', image: 'https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?q=80&w=100&auto=format&fit=crop' },
+                        { id: 'FLW-66404', customer: 'Emma L.', items: 3, total: 78.97, date: '28 May 2026', status: 'pending', product: 'Spring Tulips + Succulent', image: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=100&auto=format&fit=crop' },
+                        { id: 'FLW-55505', customer: 'David O.', items: 1, total: 34.99, date: '20 May 2026', status: 'delivered', product: 'Lavender Bunch', image: 'https://images.unsplash.com/photo-1499789500731-7f1c040cd617?q=80&w=100&auto=format&fit=crop' },
+                        { id: 'FLW-44606', customer: 'Amara S.', items: 2, total: 67.48, date: '12 May 2026', status: 'pending', product: 'Anemone Bouquet', image: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=100&auto=format&fit=crop' }
+                    ];
+                    localStorage.setItem('seller-orders', JSON.stringify(allOrders));
+                }
+            }
+
+            function saveOrders() {
+                localStorage.setItem('seller-orders', JSON.stringify(allOrders));
+            }
+
+            function statusBadge(s) {
+                const map = { pending: 'badge-pending', confirmed: 'badge-confirmed', processing: 'badge-processing', shipped: 'badge-shipped', delivered: 'badge-delivered', cancelled: 'badge-cancelled' };
+                return map[s?.toLowerCase()] || 'badge-processing';
+            }
+
+            function statusColor(s) {
+                const map = { pending: '#b8860b', confirmed: '#2563eb', processing: '#ac3250', shipped: '#7c3aed', delivered: 'var(--accent-green)', cancelled: 'var(--error-color)' };
+                return map[s?.toLowerCase()] || '#ac3250';
+            }
+
+            function render() {
+                const activeFilters = ['pending', 'processing', 'shipped'];
+                let filtered = allOrders;
+                if (filter === 'pending') filtered = allOrders.filter(o => o.status?.toLowerCase() === 'pending');
+                else if (filter === 'processing') filtered = allOrders.filter(o => o.status?.toLowerCase() === 'processing');
+                else if (filter === 'shipped') filtered = allOrders.filter(o => o.status?.toLowerCase() === 'shipped');
+                else if (filter === 'delivered') filtered = allOrders.filter(o => o.status?.toLowerCase() === 'delivered');
+
+                if (!filtered.length) {
+                    container.innerHTML = '';
+                    emptyState.style.display = 'block';
+                    orderCount.textContent = '';
+                    return;
+                }
+
+                emptyState.style.display = 'none';
+                orderCount.textContent = `Showing ${filtered.length} order${filtered.length !== 1 ? 's' : ''}`;
+
+                const statusOptions = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+
+                container.innerHTML = `
+                    <div class="manage-table-wrap">
+                        <table class="manage-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th style="width:40px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${filtered.map((o, idx) => `
+                                    <tr>
+                                        <td><strong>${o.id || '—'}</strong></td>
+                                        <td>${o.customer || 'Customer'}</td>
+                                        <td>${o.items || 1}</td>
+                                        <td><strong>$${(o.total || 0).toFixed(2)}</strong></td>
+                                        <td style="color:var(--text-light);font-size:0.85rem;">${o.date || ''}</td>
+                                        <td>
+                                            <select class="status-select" data-order-idx="${idx}" style="border-color:${statusColor(o.status)};color:${statusColor(o.status)};font-weight:600;">
+                                                ${statusOptions.map(s => `<option value="${s}" ${s === o.status?.toLowerCase() ? 'selected' : ''}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>`).join('')}
+                                            </select>
+                                        </td>
+                                        <td><button class="btn btn-outline btn-sm expand-btn" data-target="row-${idx}" style="padding:0.2rem 0.5rem;"><i class="bi bi-chevron-down"></i></button></td>
+                                    </tr>
+                                    <tr class="expand-row">
+                                        <td colspan="7"><div class="expanded-content" id="row-${idx}">
+                                            <div class="order-item">
+                                                <img src="${o.image || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=100&auto=format&fit=crop'}" alt="">
+                                                <div><strong>${o.product || 'Product'}</strong> · Qty: ${o.items || 1} · $${(o.total || 0).toFixed(2)}</div>
+                                            </div>
+                                            <div style="margin-top:0.5rem;display:flex;gap:0.5rem;">
+                                                <a href="product-detail.html?ref=order" class="btn btn-outline btn-sm">View Product</a>
+                                            </div>
+                                        </div></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                container.querySelectorAll('.status-select').forEach(sel => {
+                    sel.addEventListener('change', function() {
+                        const idx = parseInt(this.dataset.orderIdx);
+                        const realIdx = allOrders.findIndex(o => o.id === filtered[idx]?.id);
+                        if (realIdx >= 0) {
+                            allOrders[realIdx].status = this.value;
+                            saveOrders();
+                            render();
+                        }
+                    });
+                });
+
+                container.querySelectorAll('.expand-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const target = document.getElementById(btn.dataset.target);
+                        if (target) {
+                            target.classList.toggle('open');
+                            const icon = btn.querySelector('i');
+                            if (icon) icon.style.transform = target.classList.contains('open') ? 'rotate(180deg)' : '';
+                        }
+                    });
+                });
+            }
+
+            document.querySelectorAll('#statusFilters .tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#statusFilters .tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    filter = btn.dataset.filter;
+                    render();
+                });
+            });
+
+            loadOrders();
+            render();
+        })();
+    </script>
+    <script>
+        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    this.parentElement.classList.toggle('mobile-open');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

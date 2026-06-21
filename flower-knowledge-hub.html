@@ -1,0 +1,557 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Flower Knowledge Encyclopedia — explore flowers by medicinal uses, perfume, ornamental, edible, and more.">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#8b5cf6">
+    <title>Flower Knowledge Encyclopedia | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://images.unsplash.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .fk-hero { background:linear-gradient(135deg, var(--primary-color), #6b2fa0); padding:3rem 0 2rem; color:white; text-align:center; position:relative; overflow:hidden; }
+        .fk-hero h1 { color:white; font-size:2.2rem; margin-bottom:0.25rem; }
+        .fk-hero .fk-search { max-width:500px; margin:1rem auto 0; position:relative; }
+        .fk-hero .fk-search input { width:100%; padding:0.85rem 1rem 0.85rem 3rem; border:none; border-radius:50px; font-size:0.95rem; }
+        .fk-hero .fk-search i { position:absolute; left:1.2rem; top:50%; transform:translateY(-50%); color:var(--text-light); font-size:1.1rem; }
+        .fk-autocomplete { position:absolute; top:100%; left:0; right:0; background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; margin-top:0.35rem; box-shadow:var(--shadow-lg); z-index:100; max-height:320px; overflow-y:auto; display:none; text-align:left; }
+        .fk-autocomplete.show { display:block; }
+        .fk-ac-item { display:flex; align-items:center; gap:0.75rem; padding:0.6rem 1rem; cursor:pointer; transition:background 0.15s; text-decoration:none; color:var(--text-main); }
+        .fk-ac-item:hover { background:var(--bg-light); }
+        .fk-ac-item img { width:36px; height:36px; border-radius:6px; object-fit:cover; }
+        .fk-ac-item .ac-info { flex:1; }
+        .fk-ac-item .ac-info strong { display:block; font-size:0.85rem; }
+        .fk-ac-item .ac-info span { font-size:0.75rem; color:var(--text-light); }
+        .fk-random-widget { background:rgba(255,255,255,0.12); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px); border-radius:12px; padding:0.75rem 1.25rem; display:inline-flex; align-items:center; gap:1rem; margin-top:1rem; cursor:pointer; transition:all 0.25s; max-width:100%; }
+        .fk-random-widget:hover { background:rgba(255,255,255,0.2); transform:scale(1.02); }
+        .fk-random-widget img { width:48px; height:48px; border-radius:8px; object-fit:cover; flex-shrink:0; }
+        .fk-random-widget .r-info { text-align:left; }
+        .fk-random-widget .r-info strong { display:block; font-size:0.9rem; }
+        .fk-random-widget .r-info span { font-size:0.75rem; opacity:0.8; }
+        .fk-random-widget .r-refresh { font-size:1.1rem; opacity:0.7; flex-shrink:0; margin-left:auto; padding:0.25rem; }
+        .fk-random-widget .r-refresh:hover { opacity:1; }
+        .fk-hero-stats { display:flex; justify-content:center; gap:2rem; margin-top:1rem; font-size:0.85rem; opacity:0.85; }
+        .fk-cat-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:1rem; margin-top:2rem; }
+        .fk-cat-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.5rem; text-decoration:none; color:inherit; transition:all 0.25s; display:flex; align-items:center; gap:1rem; }
+        .fk-cat-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
+        .fk-cat-icon { font-size:2rem; width:56px; height:56px; display:flex; align-items:center; justify-content:center; background:var(--bg-light); border-radius:12px; flex-shrink:0; }
+        .fk-cat-info h3 { font-size:1rem; margin-bottom:0.2rem; }
+        .fk-cat-info p { font-size:0.8rem; color:var(--text-light); margin:0; }
+        .fk-flower-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:1.25rem; margin-top:1.5rem; }
+        .fk-flower-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; overflow:hidden; text-decoration:none; color:inherit; transition:all 0.25s; position:relative; }
+        .fk-flower-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
+        .fk-flower-card img { width:100%; height:160px; object-fit:cover; }
+        .fk-flower-card .fk-body { padding:0.85rem 1rem 1rem; }
+        .fk-flower-card .fk-body h3 { font-size:0.95rem; margin-bottom:0.2rem; display:flex; align-items:center; gap:0.35rem; }
+        .fk-flower-card .fk-body .fk-sci { font-size:0.75rem; color:var(--text-light); font-style:italic; margin-bottom:0.4rem; }
+        .fk-flower-card .fk-body .fk-tags { display:flex; flex-wrap:wrap; gap:0.3rem; }
+        .fk-flower-card .fk-body .fk-tag { font-size:0.65rem; padding:0.1rem 0.45rem; border-radius:20px; background:var(--bg-light); color:var(--text-light); }
+        .fk-compare-check { position:absolute; top:0.5rem; left:0.5rem; width:26px; height:26px; border-radius:6px; background:rgba(255,255,255,0.9); border:2px solid var(--border-color); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:0.8rem; color:transparent; transition:all 0.15s; z-index:2; }
+        .fk-compare-check.selected { background:var(--primary-color); border-color:var(--primary-color); color:white; }
+        .fk-compare-check i { pointer-events:none; }
+        .fk-section-title { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem; flex-wrap:wrap; }
+        .fk-section-title h2 { margin:0; font-size:1.3rem; }
+        .fk-back { display:inline-flex; align-items:center; gap:0.35rem; font-size:0.9rem; color:var(--text-light); text-decoration:none; margin-bottom:1rem; }
+        .fk-back:hover { color:var(--primary-color); }
+        .fk-empty { text-align:center; padding:3rem; color:var(--text-light); }
+        .fk-empty i { font-size:3rem; display:block; margin-bottom:1rem; }
+        .fk-badge { display:inline-block; font-size:0.7rem; padding:0.2rem 0.6rem; border-radius:20px; font-weight:600; text-transform:uppercase; letter-spacing:0.03em; }
+        .fk-screen { display:none; }
+        .fk-screen.active { display:block; }
+        .fk-toolbar { display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center; justify-content:space-between; margin-bottom:0.75rem; }
+        .fk-toolbar-left { display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; }
+        .fk-btn-sm { font-size:0.8rem; padding:0.4rem 0.9rem; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-white); cursor:pointer; display:inline-flex; align-items:center; gap:0.35rem; transition:all 0.2s; }
+        .fk-btn-sm:hover { border-color:var(--primary-color); background:var(--bg-light); }
+        .fk-btn-sm:disabled { opacity:0.4; cursor:default; }
+        .fk-btn-sm.primary { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+        .fk-btn-sm.primary:hover { opacity:0.9; }
+        .fk-fav-btn { font-size:0.8rem; padding:0.3rem 0.7rem; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-white); cursor:pointer; display:inline-flex; align-items:center; gap:0.3rem; transition:all 0.2s; }
+        .fk-fav-btn:hover { border-color:#e74c3c; color:#e74c3c; }
+        .fk-fav-btn.active { background:#e74c3c20; border-color:#e74c3c; color:#e74c3c; }
+        .fk-fav-btn i { pointer-events:none; }
+
+        .fk-compare-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; display:none; align-items:center; justify-content:center; padding:1rem; }
+        .fk-compare-overlay.show { display:flex; }
+        .fk-compare-modal { background:var(--bg-white); border-radius:16px; max-width:900px; width:100%; max-height:85vh; overflow-y:auto; padding:1.5rem; }
+        .fk-compare-modal h2 { margin-bottom:1rem; font-size:1.2rem; }
+        .fk-compare-table { width:100%; border-collapse:collapse; }
+        .fk-compare-table th, .fk-compare-table td { padding:0.6rem 0.8rem; border:1px solid var(--border-color); text-align:center; font-size:0.85rem; }
+        .fk-compare-table th:first-child, .fk-compare-table td:first-child { text-align:left; font-weight:600; width:140px; background:var(--bg-light); }
+        .fk-compare-table th { background:var(--bg-light); font-weight:600; }
+        .fk-compare-table img { width:60px; height:60px; border-radius:8px; object-fit:cover; }
+        .fk-close-modal { float:right; background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text-light); }
+        .fk-close-modal:hover { color:var(--text-main); }
+
+        .fk-fav-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:1rem; margin-top:1rem; }
+
+        @media(max-width:768px){
+            .fk-cat-grid { grid-template-columns:1fr 1fr; }
+            .fk-flower-grid { grid-template-columns:1fr 1fr; }
+            .fk-compare-table { font-size:0.75rem; }
+            .fk-compare-table img { width:40px; height:40px; }
+            .fk-hero-stats { gap:1rem; font-size:0.8rem; }
+            .fk-random-widget { flex-wrap:wrap; justify-content:center; text-align:center; }
+            .fk-random-widget .r-info { text-align:center; }
+            .fk-hero h1 { font-size:1.6rem; }
+            .fk-hero { padding:2rem 0 1.5rem; }
+            .fk-toolbar { flex-direction:column; align-items:stretch; }
+            .fk-toolbar-left { justify-content:center; }
+            .fk-compare-modal { padding:1rem; margin:0.5rem; max-height:90vh; }
+            .fk-compare-table th, .fk-compare-table td { padding:0.4rem 0.5rem; font-size:0.7rem; }
+        }
+        @media(max-width:480px){
+            .fk-cat-grid { grid-template-columns:1fr; }
+            .fk-flower-grid { grid-template-columns:1fr; }
+            .fk-random-widget { flex-direction:column; align-items:center; }
+            .fk-hero h1 { font-size:1.3rem; }
+            .fk-hero .fk-search input { font-size:0.85rem; padding:0.75rem 0.75rem 0.75rem 2.5rem; }
+            .fk-cat-card { padding:1rem; }
+            .fk-section-title h2 { font-size:1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="fk-hero">
+        <div class="container">
+            <h1>🌸 Flower Knowledge Encyclopedia</h1>
+            <p style="opacity:0.85; font-size:1rem; max-width:550px; margin:0 auto;">Discover the medicinal, ornamental, culinary, and cultural uses of flowers from around the world</p>
+            <div class="fk-search">
+                <i class="bi bi-search"></i>
+                <input type="text" id="fkSearch" placeholder="Search flowers by name or scientific name..." oninput="onSearchInput(this.value)" autocomplete="off">
+                <div class="fk-autocomplete" id="fkAutocomplete"></div>
+            </div>
+            <a id="fkRandomWidget" class="fk-random-widget" href="#" onclick="event.preventDefault();" aria-label="View random flower of the day">
+                <img id="fkRandomImg" src="" alt="Random flower">
+                <div class="r-info">
+                    <strong id="fkRandomName">🌺 Random Flower</strong>
+                    <span id="fkRandomSci"></span>
+                </div>
+                <span class="r-refresh" id="fkRandomRefresh" title="Show another random flower" role="button" tabindex="0" aria-label="Show another random flower" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();shuffleRandomFlower()}">↻</span>
+            </a>
+            <div class="fk-hero-stats" id="fkStats"><span>Loading...</span></div>
+            <div style="margin-top:0.75rem;display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;">
+                <a href="identification.html" class="fk-btn-sm" style="background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.3);"><i class="bi bi-eye"></i> Flower ID Guide</a>
+                <a href="ai-scanner.html" class="fk-btn-sm" style="background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.3);"><i class="bi bi-camera"></i> AI Scanner</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding" id="favoritesScreen" style="display:none;">
+        <div class="container">
+            <div class="fk-section-title">
+                <h2>❤️ My Favorite Flowers</h2>
+                <button class="fk-btn-sm" onclick="showCategories()" style="margin-left:auto;">Browse All</button>
+            </div>
+            <div id="fkFavGrid" class="fk-fav-grid"></div>
+        </div>
+    </section>
+
+    <section class="section-padding" id="categoryScreen">
+        <div class="container">
+            <div class="reveal-up">
+                <div class="fk-toolbar">
+                    <div class="fk-section-title" style="margin-bottom:0;">
+                        <h2>Browse by Category</h2>
+                    </div>
+                    <div class="fk-toolbar-left">
+                        <button class="fk-btn-sm" id="fkShowFavs" onclick="showFavorites()" aria-label="Show my favorite flowers"><i class="bi bi-heart"></i> My Favorites</button>
+                        <button class="fk-btn-sm" id="fkCompareBtn" onclick="openCompare()" disabled aria-label="Compare selected flowers"><i class="bi bi-list-columns"></i> Compare (<span id="fkCompareCount">0</span>)</button>
+                        <a href="bloom-calendar.html" class="fk-btn-sm"><i class="bi bi-calendar"></i> Bloom Calendar</a>
+                        <a href="my-garden.html" class="fk-btn-sm"><i class="bi bi-tree"></i> My Garden</a>
+                        <a href="flower-quiz.html" class="fk-btn-sm"><i class="bi bi-puzzle"></i> Quiz</a>
+                        <a href="identification.html" class="fk-btn-sm"><i class="bi bi-eye"></i> ID Guide</a>
+                            <div style="position:relative;display:inline-block;">
+                                <button class="fk-btn-sm" onclick="this.nextElementSibling.classList.toggle('show')" aria-label="Filter flowers" aria-expanded="false"><i class="bi bi-funnel"></i> Filter</button>
+                            <div id="fkFilterDropdown" style="display:none;position:absolute;top:100%;right:0;background:var(--bg-white);border:1px solid var(--border-color);border-radius:12px;padding:1rem;z-index:50;min-width:220px;margin-top:0.35rem;box-shadow:var(--shadow-lg);" onclick="event.stopPropagation()">
+                                <div style="font-size:0.75rem;font-weight:600;color:var(--text-light);text-transform:uppercase;margin-bottom:0.5rem;">Filter by</div>
+                                <div style="margin-bottom:0.5rem;"><label style="font-size:0.8rem;display:block;margin-bottom:0.2rem;">Difficulty</label><select id="filterDiff" onchange="applyFilters()" style="width:100%;padding:0.35rem;border:1px solid var(--border-color);border-radius:6px;font-size:0.8rem;"><option value="">Any</option><option value="Easy">Easy</option><option value="Moderate">Moderate</option><option value="Advanced">Advanced</option><option value="Very Easy">Very Easy</option></select></div>
+                                <div style="margin-bottom:0.5rem;"><label style="font-size:0.8rem;display:block;margin-bottom:0.2rem;">Sunlight</label><select id="filterSun" onchange="applyFilters()" style="width:100%;padding:0.35rem;border:1px solid var(--border-color);border-radius:6px;font-size:0.8rem;"><option value="">Any</option><option value="Full Sun">Full Sun</option><option value="Partial Shade">Partial Shade</option><option value="Indirect">Indirect Light</option><option value="Shade">Shade</option></select></div>
+                                <button class="fk-btn-sm primary" onclick="clearFilters()" style="width:100%;justify-content:center;margin-top:0.25rem;">Clear Filters</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p style="color:var(--text-light); margin-bottom:0.5rem;">Explore flowers by their uses, properties, and characteristics</p>
+                <div class="fk-cat-grid" id="fkCategoryGrid"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding bg-light" id="flowerScreen" style="display:none;">
+        <div class="container">
+            <a href="#" class="fk-back" id="fkBackBtn"><i class="bi bi-arrow-left"></i> All Categories</a>
+            <div class="reveal-up">
+                <div class="fk-toolbar">
+                    <div class="fk-section-title" style="margin-bottom:0;">
+                        <span id="fkCategoryIcon" style="font-size:2rem;"></span>
+                        <h2 id="fkCategoryTitle"></h2>
+                    </div>
+                    <button class="fk-btn-sm" id="fkCompareBtn2" onclick="openCompare()" disabled><i class="bi bi-list-columns"></i> Compare (<span id="fkCompareCount2">0</span>)</button>
+                </div>
+                <p style="color:var(--text-light);" id="fkCategoryDesc"></p>
+                <div class="fk-flower-grid" id="fkFlowerGrid"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding" id="fkRecentlySection" style="display:none;">
+        <div class="container">
+            <div class="reveal-up">
+                <div class="fk-section-title">
+                    <h2>🕐 Recently Viewed</h2>
+                    <button class="fk-btn-sm" onclick="clearRecentlyViewed()" style="font-size:0.75rem;"><i class="bi bi-trash"></i> Clear</button>
+                </div>
+                <div class="fk-flower-grid" id="fkRecentlyGrid"></div>
+            </div>
+        </div>
+    </section>
+
+    <div id="fkCompareOverlay" class="fk-compare-overlay">
+        <div class="fk-compare-modal">
+            <button class="fk-close-modal" onclick="closeCompare()">&times;</button>
+            <h2>📊 Compare Flowers</h2>
+            <div id="fkCompareContent"></div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script>
+        let allFlowers = [], categories = [], compareSet = [], userFavs = [];
+
+        document.addEventListener('componentLoaded', async () => {
+            try {
+                [allFlowers, categories] = await Promise.all([
+                    api.fetchKnowledgeFlowers(),
+                    api.fetchKnowledgeCategories()
+                ]);
+                renderCategories();
+                renderRandomFlower();
+                document.getElementById('fkStats').innerHTML = `<span>${allFlowers.length} Flowers</span><span>${categories.length} Categories</span>`;
+                await loadFavorites();
+                renderRecentlyViewed();
+            } catch(e) { console.error('Failed to load flower knowledge:', e); document.getElementById('fkStats').innerHTML = 'Failed to load'; }
+        });
+
+        async function loadFavorites() {
+            try {
+                if (isLoggedIn()) {
+                    const r = await api.apiFetch('/api/knowledge/favorites', '');
+                    if (r && r.favorites) userFavs = r.favorites;
+                }
+            } catch(e) { userFavs = []; }
+        }
+
+        function isFav(slug) { return userFavs.includes(slug); }
+
+        function renderCategories() {
+            const grid = document.getElementById('fkCategoryGrid');
+            if (!grid) return;
+            grid.innerHTML = categories.map(c => `
+                <a href="#" class="fk-cat-card" onclick="showCategory('${c.slug}'); return false;">
+                    <div class="fk-cat-icon">${c.icon}</div>
+                    <div class="fk-cat-info">
+                        <h3>${c.name}</h3>
+                        <p>${c.description}</p>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        function renderFlowerGrid(flowers, gridId) {
+            const grid = document.getElementById(gridId || 'fkFlowerGrid');
+            if (!grid) return;
+            if (!flowers.length) {
+                grid.innerHTML = '<div class="fk-empty"><i class="bi bi-search"></i><p>No flowers found.</p></div>';
+                return;
+            }
+            grid.innerHTML = flowers.map(f => {
+                const selected = compareSet.includes(f.slug);
+                return `
+                <div class="fk-flower-card" style="position:relative;">
+                    <div class="fk-compare-check ${selected?'selected':''}" onclick="toggleCompare('${f.slug}',this);event.stopPropagation();" role="checkbox" aria-checked="${selected}" aria-label="Compare ${f.common_name}" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
+                        <i class="bi bi-check-lg"></i>
+                    </div>
+                    <a href="flower-knowledge.html?slug=${f.slug}" style="text-decoration:none;color:inherit;">
+                        <img loading="lazy" src="${f.image_url}" alt="${f.common_name}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'">
+                        <div class="fk-body">
+                            <h3>${f.emoji} ${f.common_name}</h3>
+                            <div class="fk-sci">${f.scientific_name}</div>
+                            <div class="fk-tags">
+                                ${(f.category_ids || []).map(id => {
+                                    const c = categories.find(cat => cat.id === id);
+                                    return c ? `<span class="fk-tag">${c.name}</span>` : '';
+                                }).join('')}
+                            </div>
+                        </div>
+                    </a>
+                </div>`;
+            }).join('');
+        }
+
+        function showCategory(slug) {
+            const cat = categories.find(c => c.slug === slug);
+            if (!cat) return;
+            document.getElementById('categoryScreen').style.display = 'none';
+            document.getElementById('favoritesScreen').style.display = 'none';
+            const screen = document.getElementById('flowerScreen');
+            screen.style.display = 'block';
+            document.getElementById('fkCategoryIcon').textContent = cat.icon;
+            document.getElementById('fkCategoryTitle').textContent = cat.name;
+            document.getElementById('fkCategoryDesc').textContent = cat.description;
+            const filtered = allFlowers.filter(f => (f.category_ids || []).includes(cat.id));
+            renderFlowerGrid(filtered);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.getElementById('fkBackBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            showCategories();
+        });
+
+        document.getElementById('fkRandomWidget')?.addEventListener('click', function(e) {
+            if (e.target.id === 'fkRandomRefresh') return;
+            const slug = this.dataset.slug;
+            if (slug) window.location.href = 'flower-knowledge.html?slug=' + slug;
+        });
+
+        document.getElementById('fkRandomRefresh')?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            renderRandomFlower();
+        });
+
+        function renderRandomFlower() {
+            if (!allFlowers.length) return;
+            const f = allFlowers[Math.floor(Math.random() * allFlowers.length)];
+            document.getElementById('fkRandomImg').src = f.image_url;
+            document.getElementById('fkRandomName').innerHTML = `${f.emoji || '🌸'} ${f.common_name}`;
+            document.getElementById('fkRandomSci').textContent = f.scientific_name || '';
+            document.getElementById('fkRandomWidget').dataset.slug = f.slug;
+        }
+
+        function toggleCompare(slug, el) {
+            const idx = compareSet.indexOf(slug);
+            if (idx > -1) {
+                compareSet.splice(idx, 1);
+                if (el) el.classList.remove('selected');
+            } else {
+                if (compareSet.length >= 4) { alert('You can compare up to 4 flowers at a time.'); return; }
+                compareSet.push(slug);
+                if (el) el.classList.add('selected');
+            }
+            updateCompareBtn();
+        }
+
+        function updateCompareBtn() {
+            const count = compareSet.length;
+            document.getElementById('fkCompareCount').textContent = count;
+            document.getElementById('fkCompareCount2').textContent = count;
+            document.getElementById('fkCompareBtn').disabled = count < 2;
+            document.getElementById('fkCompareBtn2').disabled = count < 2;
+        }
+
+        function openCompare() {
+            if (compareSet.length < 2) return;
+            const flowers = allFlowers.filter(f => compareSet.includes(f.slug));
+            const fields = ['Common Name', 'Scientific Name', 'Family', 'Origin', 'Sunlight', 'Water', 'Soil', 'Difficulty', 'Growth Rate', 'Height'];
+            const getVal = (f, field) => {
+                const map = {
+                    'Common Name': f.common_name, 'Scientific Name': f.scientific_name, 'Family': f.family,
+                    'Origin': f.origin, 'Sunlight': f.sunlight, 'Water': f.water, 'Soil': f.soil,
+                    'Difficulty': f.difficulty, 'Growth Rate': f.growth_rate, 'Height': f.height
+                };
+                return map[field] || '-';
+            };
+            let html = `<table class="fk-compare-table"><thead><tr><th>Property</th>${flowers.map(f => `<th><img src="${f.image_url}" alt="${f.common_name}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'"><br>${f.emoji} ${f.common_name}</th>`).join('')}</tr></thead><tbody>`;
+            fields.forEach(field => {
+                html += `<tr><td>${field}</td>${flowers.map(f => `<td>${getVal(f, field)}</td>`).join('')}</tr>`;
+            });
+            const cats = flowers.map(f => (f.category_ids || []).map(id => { const c = categories.find(cat => cat.id === id); return c ? c.name : ''; }).filter(Boolean).join(', '));
+            html += `<tr><td>Categories</td>${cats.map(c => `<td>${c}</td>`).join('')}</tr>`;
+            html += '</tbody></table>';
+            document.getElementById('fkCompareContent').innerHTML = html;
+            document.getElementById('fkCompareOverlay').classList.add('show');
+        }
+
+        function closeCompare() {
+            document.getElementById('fkCompareOverlay').classList.remove('show');
+        }
+
+        document.getElementById('fkCompareOverlay')?.addEventListener('click', function(e) {
+            if (e.target === this) closeCompare();
+        });
+
+        function showFavorites() {
+            const screen = document.getElementById('favoritesScreen');
+            const catScreen = document.getElementById('categoryScreen');
+            const flowerScreen = document.getElementById('flowerScreen');
+            catScreen.style.display = 'none';
+            flowerScreen.style.display = 'none';
+            screen.style.display = 'block';
+            const grid = document.getElementById('fkFavGrid');
+            const favFlowers = allFlowers.filter(f => isFav(f.slug));
+            if (!favFlowers.length) {
+                grid.innerHTML = '<div class="fk-empty"><i class="bi bi-heart"></i><p>No favorites yet. Browse flowers and click the heart icon to save them.</p></div>';
+                return;
+            }
+            grid.innerHTML = favFlowers.map(f => `
+                <a href="flower-knowledge.html?slug=${f.slug}" class="fk-flower-card" style="text-decoration:none;color:inherit;">
+                    <img loading="lazy" src="${f.image_url}" alt="${f.common_name}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'" style="height:120px;">
+                    <div class="fk-body">
+                        <h3>${f.emoji} ${f.common_name}</h3>
+                        <div class="fk-sci">${f.scientific_name}</div>
+                    </div>
+                </a>
+            `).join('');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showCategories() {
+            document.getElementById('categoryScreen').style.display = 'block';
+            document.getElementById('flowerScreen').style.display = 'none';
+            document.getElementById('favoritesScreen').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function onSearchInput(q) {
+            searchFlowers(q);
+            const box = document.getElementById('fkAutocomplete');
+            if (!q.trim()) { box.classList.remove('show'); return; }
+            const ql = q.toLowerCase();
+            const matches = allFlowers.filter(f =>
+                f.common_name.toLowerCase().includes(ql) ||
+                (f.scientific_name || '').toLowerCase().includes(ql)
+            ).slice(0, 8);
+            if (!matches.length) { box.classList.remove('show'); return; }
+            box.innerHTML = matches.map(f => `
+                <a href="flower-knowledge.html?slug=${f.slug}" class="fk-ac-item" onclick="closeAutocomplete()">
+                    <img loading="lazy" src="${f.image_url}" alt="${f.common_name}" onerror="this.style.display='none'">
+                    <div class="ac-info">
+                        <strong>${f.emoji} ${highlight(f.common_name, q)}</strong>
+                        <span>${highlight(f.scientific_name || '', q)}</span>
+                    </div>
+                </a>
+            `).join('');
+            box.classList.add('show');
+        }
+
+        function highlight(text, query) {
+            if (!query.trim()) return text;
+            const idx = text.toLowerCase().indexOf(query.toLowerCase());
+            if (idx === -1) return text;
+            return text.slice(0, idx) + '<mark style="background:#e8d5f5;border-radius:2px;">' + text.slice(idx, idx + query.length) + '</mark>' + text.slice(idx + query.length);
+        }
+
+        function closeAutocomplete() {
+            document.getElementById('fkAutocomplete').classList.remove('show');
+        }
+
+        function searchFlowers(q) {
+            const catScreen = document.getElementById('categoryScreen');
+            const screen = document.getElementById('flowerScreen');
+            const favScreen = document.getElementById('favoritesScreen');
+            const grid = document.getElementById('fkFlowerGrid');
+            favScreen.style.display = 'none';
+            if (!q.trim()) {
+                screen.style.display = 'none';
+                catScreen.style.display = 'block';
+                return;
+            }
+            catScreen.style.display = 'none';
+            screen.style.display = 'block';
+            document.getElementById('fkCategoryIcon').textContent = '🔍';
+            document.getElementById('fkCategoryTitle').textContent = 'Search Results';
+            document.getElementById('fkCategoryDesc').textContent = `Showing results for "${q}"`;
+            const ql = q.toLowerCase();
+            const results = allFlowers.filter(f => f.common_name.toLowerCase().includes(ql) || (f.scientific_name || '').toLowerCase().includes(ql));
+            renderFlowerGrid(results);
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.fk-search')) closeAutocomplete();
+            if (!e.target.closest('#fkFilterDropdown') && !e.target.closest('[onclick*="Filter"]')) {
+                const dd = document.getElementById('fkFilterDropdown');
+                if (dd) dd.classList.remove('show');
+            }
+        });
+
+        function applyFilters() {
+            const diff = document.getElementById('filterDiff').value;
+            const sun = document.getElementById('filterSun').value;
+            let f = allFlowers;
+            if (diff) f = f.filter(d => (d.difficulty || '').toLowerCase().includes(diff.toLowerCase()));
+            if (sun) f = f.filter(d => (d.sunlight || '').toLowerCase().includes(sun.toLowerCase()));
+            const catScreen = document.getElementById('categoryScreen');
+            const screen = document.getElementById('flowerScreen');
+            catScreen.style.display = 'none';
+            screen.style.display = 'block';
+            document.getElementById('fkCategoryIcon').textContent = '🔍';
+            document.getElementById('fkCategoryTitle').textContent = `Filtered (${f.length})`;
+            document.getElementById('fkCategoryDesc').textContent = diff || sun ? `Difficulty: ${diff || 'Any'} · Sunlight: ${sun || 'Any'}` : 'All flowers';
+            renderFlowerGrid(f);
+        }
+
+        function clearFilters() {
+            document.getElementById('filterDiff').value = '';
+            document.getElementById('filterSun').value = '';
+            document.getElementById('fkFilterDropdown').classList.remove('show');
+            document.getElementById('categoryScreen').style.display = 'block';
+            document.getElementById('flowerScreen').style.display = 'none';
+        }
+
+        function getRecentlyViewed() {
+            try { return JSON.parse(localStorage.getItem('fk_recent') || '[]'); } catch { return []; }
+        }
+
+        function addRecentlyViewed(slug) {
+            let recent = getRecentlyViewed().filter(s => s !== slug);
+            recent.unshift(slug);
+            localStorage.setItem('fk_recent', JSON.stringify(recent.slice(0, 8)));
+        }
+
+        function clearRecentlyViewed() {
+            localStorage.removeItem('fk_recent');
+            document.getElementById('fkRecentlySection').style.display = 'none';
+        }
+
+        function renderRecentlyViewed() {
+            const slugs = getRecentlyViewed();
+            if (!slugs.length || !allFlowers.length) return;
+            const flowers = slugs.map(s => allFlowers.find(f => f.slug === s)).filter(Boolean);
+            if (!flowers.length) return;
+            document.getElementById('fkRecentlySection').style.display = 'block';
+            document.getElementById('fkRecentlyGrid').innerHTML = flowers.map(f => `
+                <a href="flower-knowledge.html?slug=${f.slug}" class="fk-flower-card" style="text-decoration:none;color:inherit;">
+                    <img loading="lazy" src="${f.image_url}" alt="${f.common_name}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'" style="height:120px;">
+                    <div class="fk-body">
+                        <h3>${f.emoji || '🌸'} ${f.common_name}</h3>
+                        <div class="fk-sci">${f.scientific_name || ''}</div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) { e.preventDefault(); this.parentElement.classList.toggle('mobile-open'); }
+            });
+        });
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

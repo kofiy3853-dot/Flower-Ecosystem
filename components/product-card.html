@@ -1,0 +1,16 @@
+<!-- Product Card Component -->
+<div class="product-card">
+    <div class="product-img">
+        <img src="{{image}}" alt="{{title}}" loading="lazy">
+        <span class="product-tag">{{tag}}</span>
+    </div>
+    <div class="product-content">
+        <h3>{{title}}</h3>
+        <p class="product-desc">{{description}}</p>
+        <div class="product-rating">{{rating}} ★ <span>({{reviews}})</span></div>
+        <div class="product-footer">
+            <span class="product-price">{{price}}</span>
+            <button class="btn btn-primary btn-sm add-to-cart" data-id="{{id}}">Add to Cart</button>
+        </div>
+    </div>
+</div>

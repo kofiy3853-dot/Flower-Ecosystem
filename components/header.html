@@ -1,0 +1,86 @@
+<nav class="navbar" id="navbar">
+    <div class="nav-container">
+        <a href="index.html" class="logo" aria-label="Flower Ecosystem Home">🌸 Flower Ecosystem</a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="index.html" class="nav-link-item" data-page="home">Home</a></li>
+            <li class="nav-dropdown">
+                <a href="marketplace.html" class="nav-link-item dropdown-toggle" data-page="marketplace">Marketplace <i class="bi bi-chevron-down"></i></a>
+                <div class="dropdown-menu">
+                    <a href="marketplace.html"><i class="bi bi-bag"></i> Buy Flowers</a>
+                    <a href="arrangements.html"><i class="bi bi-flower1"></i> Arrangements</a>
+                    <a href="sell.html" id="navSellLink"><i class="bi bi-shop"></i> Sell Flowers</a>
+                    <a href="marketplace.html"><i class="bi bi-grid"></i> Categories</a>
+                    <a href="florists.html"><i class="bi bi-people"></i> Florists Directory</a>
+                </div>
+            </li>
+            <li class="nav-dropdown">
+<a href="learning.html" class="nav-link-item dropdown-toggle" data-page="learning">Learn <i class="bi bi-chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                    <a href="learning.html"><i class="bi bi-book"></i> Floristry Courses</a>
+                    <a href="articles.html"><i class="bi bi-journal"></i> Articles & Guides</a>
+                    <a href="care-guides.html"><i class="bi bi-flower2"></i> Care Guides</a>
+                    <a href="composting.html"><i class="bi bi-recycle"></i> Composting Guide</a>
+                    <a href="planting-calendar.html"><i class="bi bi-calendar3"></i> Planting Calendar</a>
+                    <a href="identification.html"><i class="bi bi-search"></i> Flower Identification</a>
+                    <a href="ai-scanner.html"><i class="bi bi-camera"></i> AI Flower Scanner</a>
+                    <a href="learning.html"><i class="bi bi-play-btn"></i> Video Tutorials</a>
+                    <a href="flower-knowledge-hub.html"><i class="bi bi-bookmark-heart"></i> Flower Encyclopedia</a>
+                    <a href="my-learning.html"><i class="bi bi-person-circle"></i> My Learning</a>
+                    <a href="course-detail.html?id=c1"><i class="bi bi-play-circle"></i> Start a Course</a>
+                    </div>
+            </li>
+            <li class="nav-dropdown">
+                <a href="community.html" class="nav-link-item dropdown-toggle" data-page="community">Community <i class="bi bi-chevron-down"></i></a>
+                <div class="dropdown-menu">
+                    <a href="discussions.html"><i class="bi bi-chat-dots"></i> Discussions</a>
+                    <a href="questions.html"><i class="bi bi-question-circle"></i> Q&A</a>
+                    <a href="success-stories.html"><i class="bi bi-star"></i> Success Stories</a>
+                    <a href="events.html"><i class="bi bi-calendar-event"></i> Events & Workshops</a>
+                    <a href="messages.html"><i class="bi bi-envelope"></i> Messages</a>
+                    <a href="reviews.html"><i class="bi bi-star-half"></i> Reviews</a>
+                </div>
+            </li>
+            <li class="nav-dropdown">
+                <a href="gallery.html" class="nav-link-item dropdown-toggle" data-page="gallery">Discover <i class="bi bi-chevron-down"></i></a>
+                <div class="dropdown-menu">
+                    <a href="gardening.html"><i class="bi bi-flower2"></i> Gardening Hub</a>
+                    <a href="composting.html"><i class="bi bi-recycle"></i> Composting</a>
+                    <a href="arrangements.html"><i class="bi bi-flower1"></i> Arrangements</a>
+                    <a href="plant-database.html"><i class="bi bi-database"></i> Plant Database</a>
+                    <a href="flower-knowledge-hub.html"><i class="bi bi-bookmark-heart"></i> Flower Encyclopedia</a>
+                    <a href="garden-journal.html"><i class="bi bi-journal-text"></i> Garden Journal</a>
+                    <a href="gallery.html"><i class="bi bi-images"></i> Inspiration Gallery</a>
+                    <a href="marketplace.html"><i class="bi bi-fire"></i> Trending Flowers</a>
+                    <a href="florists.html"><i class="bi bi-award"></i> Featured Florists</a>
+                </div>
+            </li>
+        </ul>
+        <div class="nav-search" role="search">
+            <input type="text" class="search-input" id="globalSearchInput" placeholder="Search flowers..." autocomplete="off" aria-label="Search flowers">
+            <button class="search-btn" id="globalSearchBtn" aria-label="Search"><i class="bi bi-search"></i></button>
+        </div>
+        <div class="nav-actions">
+            <a href="cart.html" class="nav-link cart-link" aria-label="Shopping Cart" title="Shopping Cart">
+                <i class="bi bi-cart"></i>
+                <span class="cart-count" id="globalCartCount">0</span>
+            </a>
+            <button class="nav-link" id="globalAccountLink" aria-label="Account" title="My Account">
+                <i class="bi bi-person-circle"></i>
+            </button>
+            <button class="nav-link theme-toggle" id="globalThemeToggle" aria-label="Toggle dark mode">
+                <i class="bi bi-moon-fill" id="themeIcon"></i>
+            </button>
+            <button class="mobile-menu-btn" id="globalMobileMenuBtn" aria-label="Toggle Menu" aria-expanded="false" aria-controls="navLinks">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<script src="js/shared/toast.js"></script>
+<script src="js/shared/modal.js"></script>
+<script src="js/shared/loading.js"></script>
+<script src="js/shared/error.js"></script>
+<script src="js/shared/validation.js"></script>
+<script src="js/shared/image-upload.js"></script>
+<script src="js/shared/empty-state.js"></script>

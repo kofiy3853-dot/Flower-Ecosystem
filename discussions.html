@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Join flower care discussions, ask questions, share experiences, and connect with florists and growers worldwide.">
+    <title>Community Discussions | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .disc-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
+        .disc-search { display:flex; gap:0.5rem; flex:1; max-width:400px; }
+        .disc-search input { flex:1; padding:0.6rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.9rem; background:var(--bg-white); color:var(--text-main); }
+        .disc-search input:focus { outline:none; border-color:var(--primary-color); }
+        .disc-actions { display:flex; gap:0.5rem; }
+        .category-tabs { display:flex; gap:0.5rem; overflow-x:auto; padding-bottom:0.5rem; margin-bottom:1.5rem; scrollbar-width:thin; }
+        .category-tab { padding:0.5rem 1rem; border:1px solid var(--border-color); border-radius:20px; font-size:0.85rem; white-space:nowrap; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; }
+        .category-tab:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .category-tab.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+        .disc-layout { display:grid; grid-template-columns:1fr 280px; gap:1.5rem; }
+        .disc-main { min-width:0; }
+        .disc-sidebar { display:flex; flex-direction:column; gap:1.25rem; }
+        .sort-tabs { display:flex; gap:0.25rem; margin-bottom:1rem; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.25rem; }
+        .sort-tab { padding:0.4rem 0.75rem; border-radius:var(--radius-sm); font-size:0.8rem; cursor:pointer; color:var(--text-light); transition:all 0.2s; border:none; background:none; }
+        .sort-tab.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
+        .sort-tab:hover:not(.active) { color:var(--text-main); }
+        .disc-card { display:grid; grid-template-columns:auto 1fr auto; gap:1rem; padding:1.25rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); margin-bottom:0.75rem; transition:all 0.2s; cursor:pointer; }
+        .disc-card:hover { border-color:var(--primary-color); box-shadow:var(--shadow-sm); transform:translateY(-1px); }
+        .disc-card.pinned { border-left:3px solid var(--primary-color); background:rgba(172,50,80,0.02); }
+        .disc-card.solved { border-left:3px solid var(--accent-green); }
+        .disc-avatar { width:44px; height:44px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; overflow:hidden; }
+        .disc-avatar img { width:100%; height:100%; object-fit:cover; }
+        .disc-body { min-width:0; }
+        .disc-title { font-size:1rem; font-weight:600; margin-bottom:0.25rem; color:var(--text-main); display:flex; align-items:center; gap:0.5rem; }
+        .disc-title .pinned-badge { background:var(--primary-color); color:white; font-size:0.65rem; padding:0.1rem 0.4rem; border-radius:3px; }
+        .disc-title .solved-badge { background:var(--accent-green); color:white; font-size:0.65rem; padding:0.1rem 0.4rem; border-radius:3px; }
+        .disc-meta { font-size:0.8rem; color:var(--text-light); margin-bottom:0.3rem; }
+        .disc-excerpt { font-size:0.88rem; color:var(--text-light); line-height:1.5; margin-bottom:0.4rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .disc-tags { display:flex; gap:0.4rem; flex-wrap:wrap; }
+        .disc-tag { padding:0.15rem 0.5rem; border-radius:12px; font-size:0.75rem; background:rgba(172,50,80,0.08); color:var(--primary-color); }
+        .disc-stats { display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem; white-space:nowrap; color:var(--text-light); font-size:0.8rem; }
+        .disc-stat { display:flex; align-items:center; gap:0.25rem; }
+        .disc-stat i { font-size:0.85rem; }
+        .disc-image-preview { width:60px; height:60px; border-radius:6px; overflow:hidden; flex-shrink:0; }
+        .disc-image-preview img { width:100%; height:100%; object-fit:cover; }
+        .sidebar-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; }
+        .sidebar-card h3 { font-size:0.95rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
+        .topic-list { list-style:none; padding:0; margin:0; }
+        .topic-list li { padding:0.4rem 0; font-size:0.88rem; border-bottom:1px solid var(--border-light); display:flex; align-items:center; gap:0.5rem; cursor:pointer; }
+        .topic-list li:last-child { border-bottom:none; }
+        .topic-list li:hover { color:var(--primary-color); }
+        .stat-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; text-align:center; }
+        .stat-item { padding:0.5rem; }
+        .stat-num { font-size:1.2rem; font-weight:700; color:var(--primary-color); }
+        .stat-label { font-size:0.7rem; color:var(--text-light); }
+        .contributor-list { list-style:none; padding:0; margin:0; }
+        .contributor-list li { display:flex; align-items:center; gap:0.5rem; padding:0.35rem 0; font-size:0.85rem; }
+        .contributor-rank { width:20px; font-weight:600; color:var(--text-muted); font-size:0.8rem; }
+        .contributor-avatar { width:28px; height:28px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:0.8rem; flex-shrink:0; }
+        .contributor-score { margin-left:auto; font-size:0.75rem; color:var(--text-muted); }
+        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); }
+        .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
+        .pagination { display:flex; justify-content:center; gap:0.25rem; margin-top:1.5rem; }
+        .page-btn { padding:0.4rem 0.75rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.85rem; cursor:pointer; background:var(--bg-white); color:var(--text-main); transition:all 0.2s; }
+        .page-btn.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+        .page-btn:hover:not(.active) { border-color:var(--primary-color); }
+        @media(max-width:1024px) { .disc-layout { grid-template-columns:1fr; } .disc-sidebar { display:none; } }
+        @media(max-width:640px) { .disc-card { grid-template-columns:1fr; } .disc-stats { flex-direction:row; align-items:center; } .disc-image-preview { display:none; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="page-header primary-bg text-white section-padding text-center" style="padding-top:5rem; padding-bottom:2.5rem;">
+        <div class="container reveal-up">
+            <span class="subtitle" style="color:rgba(255,255,255,0.7)">COMMUNITY</span>
+            <h1 style="color:white;">Community Discussions</h1>
+            <p class="section-subtitle text-white">Connect with flower enthusiasts, florists, growers, and experts around the world</p>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="disc-header reveal-up">
+                <div class="disc-search">
+                    <input type="text" id="discSearch" placeholder="Search discussions..." aria-label="Search discussions">
+                    <button class="btn btn-primary btn-sm" id="discSearchBtn"><i class="bi bi-search"></i></button>
+                </div>
+                <div class="disc-actions">
+                    <button class="btn btn-outline btn-sm" id="myDiscBtn"><i class="bi bi-person"></i> My Discussions</button>
+                    <a href="create-discussion.html" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Create Discussion</a>
+                </div>
+            </div>
+
+            <div class="category-tabs reveal-up" id="categoryTabs"></div>
+
+            <div class="disc-layout">
+                <div class="disc-main">
+                    <div class="sort-tabs reveal-up" id="sortTabs">
+                        <button class="sort-tab active" data-sort="newest">Newest</button>
+                        <button class="sort-tab" data-sort="popular">Popular</button>
+                        <button class="sort-tab" data-sort="most_replies">Most Replies</button>
+                        <button class="sort-tab" data-sort="unsolved">Unsolved</button>
+                    </div>
+                    <div id="discussionList"></div>
+                    <div class="pagination" id="pagination"></div>
+                </div>
+
+                <div class="disc-sidebar">
+                    <div class="sidebar-card reveal-up">
+                        <h3><i class="bi bi-stats" style="color:var(--primary-color)"></i> Community Stats</h3>
+                        <div class="stat-grid" id="communityStats">
+                            <div class="stat-item"><div class="stat-num" id="statMembers">-</div><div class="stat-label">Members</div></div>
+                            <div class="stat-item"><div class="stat-num" id="statDiscussions">-</div><div class="stat-label">Discussions</div></div>
+                            <div class="stat-item"><div class="stat-num" id="statReplies">-</div><div class="stat-label">Replies</div></div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card reveal-up">
+                        <h3><i class="bi bi-fire" style="color:var(--accent-gold)"></i> Popular Topics</h3>
+                        <ul class="topic-list" id="topicList">
+                            <li><span>🌹</span> Roses</li>
+                            <li><span>🌻</span> Sunflowers</li>
+                            <li><span>🌷</span> Tulips</li>
+                            <li><span>🌴</span> Palm Trees</li>
+                            <li><span>🌿</span> Medicinal Plants</li>
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-card reveal-up">
+                        <h3><i class="bi bi-trophy" style="color:var(--accent-gold)"></i> Top Contributors</h3>
+                        <ul class="contributor-list" id="topContributors"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/discussions.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initDiscussionsPage();
+        });
+    </script>
+</body>
+</html>

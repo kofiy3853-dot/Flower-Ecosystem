@@ -1,0 +1,321 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage your Flower Ecosystem account settings, profile, and password.">
+    <title>Account Settings | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .acc-layout { display:grid; grid-template-columns:220px 1fr; gap:2rem; margin-top:2rem; }
+        .acc-sidebar { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1rem; height:fit-content; }
+        .acc-sidebar a { display:flex; align-items:center; gap:0.6rem; padding:0.6rem 0.8rem; border-radius:8px; text-decoration:none; color:var(--text-main); font-size:0.9rem; transition:all 0.15s; }
+        .acc-sidebar a:hover { background:var(--bg-light); }
+        .acc-sidebar a.active { background:rgba(139,92,246,0.1); color:var(--primary-color); font-weight:500; }
+        .acc-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem; }
+        .acc-card h2 { font-size:1.1rem; margin-bottom:0.25rem; }
+        .acc-card p { font-size:0.85rem; color:var(--text-light); margin-bottom:1rem; }
+        .acc-card label { font-size:0.8rem; font-weight:500; display:block; margin-bottom:0.25rem; }
+        .acc-card input { width:100%; padding:0.6rem 0.8rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.9rem; background:var(--bg-white); color:var(--text-main); font-family:inherit; box-sizing:border-box; }
+        .acc-card input:focus { outline:none; border-color:var(--primary-color); }
+        .acc-card .form-group { margin-bottom:1rem; }
+        .acc-card .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+        .acc-placeholder { width:80px; height:80px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--text-light); flex-shrink:0; overflow:hidden; }
+        .acc-placeholder img { width:100%; height:100%; object-fit:cover; }
+        .acc-user-card { display:flex; align-items:center; gap:1rem; padding-bottom:1rem; margin-bottom:1rem; border-bottom:1px solid var(--border-color); }
+        .acc-user-card h3 { margin:0; font-size:1rem; }
+        .acc-user-card span { font-size:0.8rem; color:var(--text-light); }
+        .acc-msg { padding:0.6rem 1rem; border-radius:8px; font-size:0.85rem; margin-bottom:1rem; display:none; }
+        .acc-msg.success { display:block; background:#d4edda; color:#155724; }
+        .acc-msg.error { display:block; background:#f8d7da; color:#721c24; }
+        .acc-loading { text-align:center; padding:4rem 2rem; color:var(--text-light); }
+        .acc-email-display { padding:0.6rem 0.8rem; background:var(--bg-light); border-radius:8px; font-size:0.9rem; color:var(--text-light); }
+        .spinner { width:24px; height:24px; border:3px solid var(--border-color); border-top-color:var(--primary-color); border-radius:50%; animation:spin 0.8s linear infinite; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        @media(max-width:768px) {
+            .acc-layout { grid-template-columns:1fr; }
+            .acc-card .form-row { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="section-padding">
+        <div class="container">
+            <h1 style="margin-bottom:0.25rem;">⚙️ Account Settings</h1>
+            <p style="color:var(--text-light); margin-bottom:0;">Manage your profile, security, and preferences</p>
+
+            <div id="accLoading" class="acc-loading">
+                <div class="spinner" style="margin:0 auto 1rem;"></div>
+                <p>Loading account...</p>
+            </div>
+
+            <div id="accContent" style="display:none;">
+                <div class="acc-layout">
+                    <nav class="acc-sidebar" id="accSidebar">
+                        <div class="acc-user-card" id="accUserCard">
+                            <div class="acc-placeholder" id="accAvatar"><i class="bi bi-person"></i></div>
+                            <div>
+                                <h3 id="accSidebarName">User</h3>
+                                <span id="accSidebarRole">Member</span>
+                            </div>
+                        </div>
+                        <a href="#" class="active" data-section="profile"><i class="bi bi-person"></i> Profile</a>
+                        <a href="#" data-section="security"><i class="bi bi-shield-lock"></i> Security</a>
+                        <a href="my-garden.html"><i class="bi bi-tree"></i> My Garden</a>
+                        <a href="flower-knowledge-hub.html?favorites=1"><i class="bi bi-heart"></i> Favorites</a>
+                        <a href="seller-dashboard.html"><i class="bi bi-shop"></i> Seller Dashboard</a>
+                    </nav>
+
+                    <div>
+                        <div id="accMsg" class="acc-msg"></div>
+
+                        <div id="section-profile" class="acc-section">
+                            <form id="accProfileForm" onsubmit="return saveProfile(event)">
+                                <div class="acc-card">
+                                    <h2>👤 Profile Information</h2>
+                                    <p>Update your name and personal details</p>
+                                    <div class="form-group">
+                                        <label>Profile Picture</label>
+                                        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+                                            <div class="acc-placeholder" id="accAvatarPreview" style="width:80px;height:80px;">
+                                                <i class="bi bi-person" style="font-size:2rem;"></i>
+                                            </div>
+                                            <div>
+                                                <input type="file" id="accAvatarInput" accept="image/jpeg,image/png,image/webp" style="display:none;">
+                                                <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('accAvatarInput').click()">
+                                                    <i class="bi bi-upload"></i> Upload Photo
+                                                </button>
+                                                <p style="font-size:0.75rem;color:var(--text-light);margin-top:0.25rem;">JPG, PNG, or WebP. Max 2MB.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="accFirstName">First Name</label>
+                                            <input type="text" id="accFirstName" name="firstName" maxlength="50" required data-validate="required|minLength:2">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="accLastName">Last Name</label>
+                                            <input type="text" id="accLastName" name="lastName" maxlength="50" data-validate="minLength:2">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <div class="acc-email-display" id="accEmail"></div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" style="margin-top:0.5rem;">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div id="section-security" class="acc-section" style="display:none;">
+                            <form id="accPasswordForm" onsubmit="return changePassword(event)">
+                                <div class="acc-card">
+                                    <h2>🔒 Change Password</h2>
+                                    <p>Update your account password</p>
+                                    <div class="form-group">
+                                        <label for="accCurrentPw">Current Password</label>
+                                        <input type="password" id="accCurrentPw" required minlength="8">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="accNewPw">New Password</label>
+                                        <input type="password" id="accNewPw" required minlength="8">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="accConfirmPw">Confirm New Password</label>
+                                        <input type="password" id="accConfirmPw" required minlength="8">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Update Password</button>
+                                </div>
+                            </form>
+
+                            <div class="acc-card">
+                                <h2>🗑️ Danger Zone</h2>
+                                <p>Irreversible actions. Proceed with caution.</p>
+                                <button class="btn btn-outline" style="color:var(--error-color);border-color:var(--error-color);" onclick="if(confirm('Are you sure? This cannot be undone.')) deleteAccount()"><i class="bi bi-trash"></i> Delete Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="accNotLoggedIn" style="display:none; text-align:center; padding:4rem 2rem;">
+                <i class="bi bi-person-lock" style="font-size:3rem;color:var(--text-light);display:block;margin-bottom:1rem;"></i>
+                <h2>Login Required</h2>
+                <p style="color:var(--text-light);margin-bottom:1.5rem;">You need to be logged in to manage your account settings.</p>
+                <button class="btn btn-primary" onclick="openAuthModal('login')">Log In</button>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/validation.js"></script>
+    <script src="js/shared/image-upload.js"></script>
+    <script>
+        let accUser = null;
+        const ROLE_LABELS = { CUSTOMER: 'Customer', SELLER: 'Seller', FLORIST: 'Florist', ADMIN: 'Admin', SUPERADMIN: 'Super Admin', MODERATOR: 'Moderator' };
+
+        document.addEventListener('componentLoaded', () => {
+            if (!isLoggedIn()) {
+                document.getElementById('accLoading').style.display = 'none';
+                document.getElementById('accNotLoggedIn').style.display = 'block';
+                return;
+            }
+            loadUserProfile();
+            updateSellerLink();
+            initAccountValidation();
+            initAvatarUpload();
+        });
+
+        function initAccountValidation() {
+            const profileForm = document.getElementById('accProfileForm');
+            const passwordForm = document.getElementById('accPasswordForm');
+            
+            if (profileForm && typeof Validation !== 'undefined') {
+                Validation.initForm(profileForm, {
+                    validateOnBlur: true,
+                    validateOnInput: false,
+                    showSuccess: true
+                });
+            }
+            
+            if (passwordForm && typeof Validation !== 'undefined') {
+                Validation.initForm(passwordForm, {
+                    validateOnBlur: true,
+                    validateOnInput: false,
+                    showSuccess: true
+                });
+            }
+        }
+
+        function initAvatarUpload() {
+            const avatarInput = document.getElementById('accAvatarInput');
+            const avatarPreview = document.getElementById('accAvatarPreview');
+            
+            if (avatarInput && avatarPreview && typeof ImageUpload !== 'undefined') {
+                ImageUpload.initAvatarUpload(avatarInput, avatarPreview, {
+                    maxSize: 2 * 1024 * 1024,
+                    acceptTypes: ['image/jpeg', 'image/png', 'image/webp'],
+                    onChange: (file) => {
+                        if (typeof Toast !== 'undefined') {
+                            Toast.success('Avatar selected');
+                        }
+                    }
+                });
+            }
+        }
+
+        function updateSellerLink() {
+            const user = getCurrentUser();
+            const role = (user?.role || '').toLowerCase();
+            const isSeller = ['seller', 'florist', 'grower', 'admin', 'superadmin'].includes(role);
+            const sellerLink = document.querySelector('a[href="seller-dashboard.html"]');
+            if (sellerLink) sellerLink.style.display = isSeller ? '' : 'none';
+        }
+
+        async function loadUserProfile() {
+            try {
+                const r = await apiFetch('/api/auth/me');
+                accUser = r.user;
+                document.getElementById('accLoading').style.display = 'none';
+                document.getElementById('accContent').style.display = 'block';
+                document.getElementById('accFirstName').value = accUser.first_name || '';
+                document.getElementById('accLastName').value = accUser.last_name || '';
+                document.getElementById('accEmail').textContent = accUser.email || '';
+                document.getElementById('accSidebarName').textContent = (accUser.first_name || accUser.email || 'User');
+                document.getElementById('accSidebarRole').textContent = ROLE_LABELS[accUser.role] || accUser.role || 'Member';
+                if (accUser.profile_image) {
+                    document.getElementById('accAvatar').innerHTML = '<img src="' + escapeHtml(accUser.profile_image) + '" alt="Avatar">';
+                }
+            } catch(e) {
+                document.getElementById('accLoading').innerHTML = '<p style="color:var(--error-color);">Failed to load profile.</p>';
+            }
+        }
+
+        function showMsg(msg, type) {
+            const el = document.getElementById('accMsg');
+            el.textContent = msg;
+            el.className = 'acc-msg ' + type;
+            el.style.display = 'block';
+            clearTimeout(el._timer);
+            el._timer = setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
+
+        async function saveProfile(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="auth-spinner"></span> Saving...';
+            try {
+                await apiFetchWithBody('/api/auth/profile', 'PUT', {
+                    first_name: document.getElementById('accFirstName').value.trim(),
+                    last_name: document.getElementById('accLastName').value.trim()
+                });
+                showMsg('Profile updated successfully!', 'success');
+                await loadUserProfile();
+            } catch(e) {
+                showMsg(e.message || 'Failed to update profile.', 'error');
+            }
+            btn.disabled = false;
+            btn.textContent = 'Save Changes';
+        }
+
+        async function changePassword(e) {
+            e.preventDefault();
+            const current = document.getElementById('accCurrentPw').value;
+            const newPw = document.getElementById('accNewPw').value;
+            const confirm = document.getElementById('accConfirmPw').value;
+            if (newPw !== confirm) { showMsg('New passwords do not match.', 'error'); return; }
+            if (newPw.length < 8) { showMsg('Password must be at least 8 characters.', 'error'); return; }
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="auth-spinner"></span> Updating...';
+            try {
+                await apiFetchWithBody('/api/auth/password', 'PUT', { current_password: current, new_password: newPw });
+                showMsg('Password updated successfully!', 'success');
+                document.getElementById('accCurrentPw').value = '';
+                document.getElementById('accNewPw').value = '';
+                document.getElementById('accConfirmPw').value = '';
+            } catch(e) {
+                showMsg(e.message || 'Failed to update password.', 'error');
+            }
+            btn.disabled = false;
+            btn.textContent = 'Update Password';
+        }
+
+        async function deleteAccount() {
+            showMsg('Account deletion is not yet available. Contact support.', 'error');
+        }
+
+        document.querySelectorAll('#accSidebar a[data-section]').forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                document.querySelectorAll('#accSidebar a[data-section]').forEach(a => a.classList.remove('active'));
+                link.classList.add('active');
+                document.querySelectorAll('.acc-section').forEach(s => s.style.display = 'none');
+                document.getElementById('section-' + link.getAttribute('data-section')).style.display = 'block';
+            });
+        });
+
+        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) { e.preventDefault(); this.parentElement.classList.toggle('mobile-open'); }
+            });
+        });
+    </script>
+</body>
+</html>

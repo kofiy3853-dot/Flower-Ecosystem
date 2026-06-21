@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Buyer Dashboard - Browse flowers, manage orders, track deliveries, and connect with growers.">
+    <title>Buyer Dashboard | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        /* Buyer dashboard accent overrides */
+        .welcome-card { background: linear-gradient(135deg, #0ea5e9, #0369a1) !important; box-shadow: 0 10px 30px rgba(14, 165, 233, 0.2) !important; }
+        .dash-sidebar-profile .avatar { background: linear-gradient(135deg, #0ea5e9, #0369a1) !important; }
+        .dash-nav li a.active { color: #0ea5e9 !important; border-left-color: #0ea5e9 !important; background: linear-gradient(90deg, rgba(14,165,233,0.1), transparent) !important; }
+        .stat-card .icon { background: rgba(14, 165, 233, 0.1) !important; color: #0ea5e9 !important; }
+        .section { animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div class="dash-layout">
+        <nav class="dash-sidebar">
+            <div class="dash-sidebar-profile">
+                <div class="avatar" id="buyerSidebarAvatar">B</div>
+                <div class="info">
+                    <h4 id="buyerSidebarName">My Account</h4>
+                    <p>Buyer</p>
+                </div>
+            </div>
+            <h3>Menu</h3>
+            <ul class="dash-nav">
+                <li><a href="#dashboard" class="active" data-section="dashboard"><i class="bi bi-house"></i> Dashboard</a></li>
+                <li><a href="#purchases" data-section="purchases"><i class="bi bi-bag-check"></i> Purchase History</a></li>
+                <li><a href="#watchlist" data-section="watchlist"><i class="bi bi-eye"></i> Watchlist</a></li>
+                <li><a href="#sellers" data-section="sellers"><i class="bi bi-shop"></i> Saved Sellers</a></li>
+                <li><a href="#deliveries" data-section="deliveries"><i class="bi bi-truck"></i> Deliveries</a></li>
+                <li><a href="#marketplace" data-section="marketplace"><i class="bi bi-bag"></i> Browse Marketplace</a></li>
+                <li><a href="#analytics" data-section="analytics"><i class="bi bi-bar-chart"></i> Analytics</a></li>
+                <li><a href="#settings" data-section="settings"><i class="bi bi-gear"></i> Settings</a></li>
+            </ul>
+        </nav>
+
+        <main class="dash-main">
+            <div id="loginPrompt" class="login-prompt" style="display:none;">
+                <i class="bi bi-person-circle" style="font-size:3rem;display:block;margin-bottom:1rem;color:var(--text-light);"></i>
+                <h2>Sign In Required</h2>
+                <p style="color:var(--text-light);">Sign in to access your buyer dashboard.</p>
+                <a href="login.html" class="btn btn-primary">Sign In</a>
+            </div>
+
+            <div id="dashContent" style="display:none;">
+                <div id="section-dashboard" class="section active">
+                    <div class="welcome-card"><h2 id="welcomeTitle">Welcome Back</h2><p>Browse flowers, manage orders, and connect with growers.</p></div>
+                    <div class="stats-grid" id="statsGrid"></div>
+                    <div class="grid-2">
+                        <div class="section-card"><h3>Recent Purchases</h3><div id="recentPurchases"></div></div>
+                        <div class="section-card"><h3>Watchlist Alerts</h3><div id="watchlistAlerts"></div></div>
+                    </div>
+                </div>
+
+                <div id="section-purchases" class="section">
+                    <div class="dash-header"><h1>🛍️ Purchase History</h1><button class="btn btn-primary btn-sm" onclick="showModal('purchaseModal')"><i class="bi bi-plus"></i> Log Purchase</button></div>
+                    <div class="section-card"><div class="table-wrap" id="purchasesTable"></div></div>
+                </div>
+
+                <div id="section-watchlist" class="section">
+                    <div class="dash-header"><h1>👁️ Watchlist</h1><button class="btn btn-primary btn-sm" onclick="showModal('watchlistModal')"><i class="bi bi-plus"></i> Add to Watchlist</button></div>
+                    <div class="section-card"><div id="watchlistGrid"></div></div>
+                </div>
+
+                <div id="section-sellers" class="section">
+                    <div class="dash-header"><h1>🏪 Saved Sellers</h1><button class="btn btn-primary btn-sm" onclick="showModal('sellerModal')"><i class="bi bi-plus"></i> Save Seller</button></div>
+                    <div class="section-card"><div id="sellersGrid"></div></div>
+                </div>
+
+                <div id="section-deliveries" class="section">
+                    <div class="dash-header"><h1>🚚 Deliveries</h1></div>
+                    <div class="section-card"><div class="table-wrap" id="deliveriesTable"></div></div>
+                </div>
+
+                <div id="section-marketplace" class="section">
+                    <div class="dash-header"><h1>🛒 Browse Marketplace</h1></div>
+                    <div class="section-card"><div id="marketplaceGrid"></div></div>
+                </div>
+
+                <div id="section-analytics" class="section">
+                    <div class="dash-header"><h1>📊 Analytics</h1></div>
+                    <div id="analyticsContent"></div>
+                </div>
+
+                <div id="section-settings" class="section">
+                    <div class="dash-header"><h1>⚙️ Settings</h1></div>
+                    <div class="section-card" id="settingsForm"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="purchaseModal"><div class="modal"><h3>Log Purchase</h3><div class="form-group"><label>Flower Name *</label><input type="text" id="purFlower"></div><div class="form-row"><div class="form-group"><label>Quantity</label><input type="number" id="purQty"></div><div class="form-group"><label>Unit Price</label><input type="number" id="purPrice" step="0.01"></div></div><div class="form-row"><div class="form-group"><label>Total Price</label><input type="number" id="purTotal" step="0.01"></div><div class="form-group"><label>Seller Name</label><input type="text" id="purSeller"></div></div><div class="form-group"><label>Rating (1-5)</label><select id="purRating"><option value="">Select</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div><div class="form-group"><label>Review</label><textarea id="purReview" rows="2"></textarea></div><div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;"><button class="btn btn-outline btn-sm" onclick="hideModal('purchaseModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="savePurchase()">Save</button></div></div></div>
+
+    <div class="modal-overlay" id="watchlistModal"><div class="modal"><h3>Add to Watchlist</h3><div class="form-group"><label>Flower Name *</label><input type="text" id="wlFlower"></div><div class="form-row"><div class="form-group"><label>Target Price</label><input type="number" id="wlPrice" step="0.01"></div><div class="form-group"><label>Max Quantity</label><input type="number" id="wlQty"></div></div><div class="form-group"><label>Notes</label><textarea id="wlNotes" rows="2"></textarea></div><div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;"><button class="btn btn-outline btn-sm" onclick="hideModal('watchlistModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="saveWatchlist()">Add</button></div></div></div>
+
+    <div class="modal-overlay" id="sellerModal"><div class="modal"><h3>Save Seller</h3><div class="form-group"><label>Seller Name *</label><input type="text" id="svSeller"></div><div class="form-group"><label>Seller ID (optional)</label><input type="text" id="svSellerId"></div><div class="form-group"><label>Notes</label><textarea id="svNotes" rows="2"></textarea></div><div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;"><button class="btn btn-outline btn-sm" onclick="hideModal('sellerModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="saveSeller()">Save</button></div></div></div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/buyer-dashboard.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => initBuyerDashboard());</script>
+</body>
+</html>

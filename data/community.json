@@ -1,0 +1,166 @@
+{
+    "discussions": [
+        {
+            "id": "d1",
+            "title": "Best roses for humid climates?",
+            "category": "Flower Care",
+            "author": "Maya Torres",
+            "avatar": "🌸",
+            "replies": 24,
+            "views": 412,
+            "lastActive": "2 hours ago",
+            "pinned": true,
+            "excerpt": "I'm setting up a rose garden in Florida and struggling with mildew. Any recommendations for heat-tolerant, disease-resistant varieties?"
+        },
+        {
+            "id": "d2",
+            "title": "How do I price wedding arrangements?",
+            "category": "Selling Tips",
+            "author": "James Bloom",
+            "avatar": "🌻",
+            "replies": 18,
+            "views": 289,
+            "lastActive": "5 hours ago",
+            "pinned": false,
+            "excerpt": "Just starting my floristry business and a bride asked for a quote on centerpieces. How do you calculate pricing for weddings?"
+        },
+        {
+            "id": "d3",
+            "title": "Silk flowers for outdoor events — yay or nay?",
+            "category": "Arrangements",
+            "author": "Priya Nair",
+            "avatar": "🌷",
+            "replies": 31,
+            "views": 523,
+            "lastActive": "1 day ago",
+            "pinned": false,
+            "excerpt": "Client wants an all-silk arrangement for an outdoor garden wedding. Concerned about UV fading and wind damage. Thoughts?"
+        },
+        {
+            "id": "d4",
+            "title": "Where to buy bulk peonies in season?",
+            "category": "Buying Advice",
+            "author": "Liam Frost",
+            "avatar": "🌺",
+            "replies": 12,
+            "views": 198,
+            "lastActive": "2 days ago",
+            "pinned": false,
+            "excerpt": "Looking for wholesale peony suppliers for spring. Open to local farms or online distributors with good shipping practices."
+        },
+        {
+            "id": "d5",
+            "title": "Composting flower waste — best practices",
+            "category": "Gardening",
+            "author": "Amara Singh",
+            "avatar": "🌿",
+            "replies": 9,
+            "views": 156,
+            "lastActive": "3 days ago",
+            "pinned": false,
+            "excerpt": "Running a small flower farm and want to compost all our green waste. Anyone have a system that works well for high-volume composting?"
+        }
+    ],
+    "questions": [
+        {
+            "id": "q1",
+            "title": "Why are my orchid leaves turning yellow?",
+            "category": "Flower Care",
+            "author": "Chen Wei",
+            "answers": 7,
+            "votes": 15,
+            "timeAgo": "1 day ago"
+        },
+        {
+            "id": "q2",
+            "title": "Can I use regular potting soil for succulents?",
+            "category": "Gardening",
+            "author": "Rosa Martinez",
+            "answers": 4,
+            "votes": 11,
+            "timeAgo": "3 days ago"
+        },
+        {
+            "id": "q3",
+            "title": "What's the average markup for retail flower shops?",
+            "category": "Selling Tips",
+            "author": "David Osei",
+            "answers": 9,
+            "votes": 23,
+            "timeAgo": "1 week ago"
+        },
+        {
+            "id": "q4",
+            "title": "Best flowers for a first-date bouquet?",
+            "category": "Buying Advice",
+            "author": "Nadia Kwarteng",
+            "answers": 12,
+            "votes": 31,
+            "timeAgo": "1 week ago"
+        }
+    ],
+    "successStories": [
+        {
+            "id": "s1",
+            "title": "From Hobby to Full-Time Florist",
+            "author": "Sarah Chen",
+            "avatar": "🌹",
+            "role": "Florist, Portland",
+            "story": "Started selling arrangements at a local farmers market. Within two years, I opened my own shop and now employ three part-time assistants. The community here gave me the confidence to take the leap.",
+            "image": "https://images.unsplash.com/photo-1567691482090-4cc36f5721f6?q=80&w=600&auto=format&fit=crop",
+            "likes": 234,
+            "comments": 45
+        },
+        {
+            "id": "s2",
+            "title": "Won 'Best Garden Design' at City Show",
+            "author": "Emma Laurent",
+            "avatar": "🌼",
+            "role": "Garden Designer, Austin",
+            "story": "Applied the companion planting techniques I learned from this community and won first place at the Austin Garden Show. Thank you to everyone who shared their tips!",
+            "image": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=600&auto=format&fit=crop",
+            "likes": 189,
+            "comments": 32
+        },
+        {
+            "id": "s3",
+            "title": "Grew 500 Tulips for Charity Event",
+            "author": "Iris Nakamura",
+            "avatar": "🌸",
+            "role": "Volunteer Grower, Seattle",
+            "story": "Organized a neighborhood tulip-growing project and donated all 500 blooms to local nursing homes. The planning advice from this community was invaluable.",
+            "image": "https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=600&auto=format&fit=crop",
+            "likes": 312,
+            "comments": 67
+        }
+    ],
+    "challenges": [
+        {
+            "id": "c1",
+            "name": "Spring Centerpiece Challenge",
+            "participants": 342,
+            "entries": 89,
+            "endsIn": "12 days",
+            "prize": "Featured on homepage",
+            "description": "Create your best spring-themed centerpiece using at least three seasonal flowers. Share your process and final arrangement."
+        },
+        {
+            "id": "c2",
+            "name": "Best Rose Photo",
+            "participants": 215,
+            "entries": 56,
+            "endsIn": "5 days",
+            "prize": "$50 gift card",
+            "description": "Capture the most stunning rose photograph. Any variety, any setting. Judged on composition, lighting, and creativity."
+        },
+        {
+            "id": "c3",
+            "name": "30-Day Flower Journal",
+            "participants": 128,
+            "entries": 0,
+            "endsIn": "Starts in 3 days",
+            "prize": "Premium plan upgrade",
+            "description": "Document your garden or flower care routine for 30 consecutive days. Share weekly updates and a final recap."
+        }
+    ]
+}

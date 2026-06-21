@@ -1,0 +1,216 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your complete gardening hub — planting calendar, garden journal, plant database, bloom schedules, and seasonal guides.">
+    <meta property="og:title" content="Gardening Hub | Flower Ecosystem">
+    <meta property="og:description" content="Your complete gardening hub — planting calendar, plant database, and seasonal guides.">
+    <meta property="og:type" content="website">
+    <title>Gardening | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=17.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .garden-hero { background:linear-gradient(135deg, #2d6a4f 0%, #40916c 50%, #52b788 100%); padding:5rem 0 3rem; color:white; text-align:center; position:relative; overflow:hidden; }
+        .garden-hero::before { content:''; position:absolute; top:0; left:0; right:0; bottom:0; background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); opacity:0.3; }
+        .garden-hero h1 { color:white; font-size:2.2rem; margin-bottom:0.5rem; position:relative; }
+        .garden-hero p { opacity:0.9; font-size:1rem; max-width:600px; margin:0 auto; position:relative; }
+        .garden-hero .season-badge { display:inline-flex; align-items:center; gap:0.5rem; padding:0.5rem 1.25rem; background:rgba(255,255,255,0.15); backdrop-filter:blur(10px); border-radius:20px; font-size:0.9rem; margin-top:1rem; position:relative; }
+
+        .section-title { text-align:center; margin-bottom:2rem; }
+        .section-title h2 { font-size:1.5rem; margin-bottom:0.3rem; }
+        .section-title p { color:var(--text-light); font-size:0.95rem; }
+
+        .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:3rem; }
+        .feature-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; text-decoration:none; color:inherit; transition:all 0.3s; position:relative; overflow:hidden; }
+        .feature-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
+        .feature-card .icon-wrap { width:52px; height:52px; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:1rem; }
+        .feature-card h3 { font-size:1.05rem; margin-bottom:0.3rem; }
+        .feature-card p { font-size:0.85rem; color:var(--text-light); line-height:1.5; margin-bottom:0.75rem; }
+        .feature-card .arrow { position:absolute; top:1.25rem; right:1.25rem; color:var(--text-muted); transition:all 0.2s; }
+        .feature-card:hover .arrow { color:var(--primary-color); transform:translateX(3px); }
+        .icon-green { background:rgba(16,185,129,0.1); color:var(--accent-green); }
+        .icon-blue { background:rgba(14,165,233,0.1); color:var(--accent-blue); }
+        .icon-gold { background:rgba(245,158,11,0.1); color:var(--accent-gold); }
+        .icon-purple { background:rgba(139,92,246,0.1); color:#8b5cf6; }
+        .icon-pink { background:rgba(216,68,124,0.1); color:var(--primary-color); }
+        .icon-red { background:rgba(239,68,68,0.1); color:var(--error-color); }
+
+        .quick-task { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; margin-bottom:1.5rem; }
+        .quick-task h3 { font-size:1rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
+        .task-list { list-style:none; padding:0; margin:0; }
+        .task-item { display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0; border-bottom:1px solid var(--border-light); font-size:0.9rem; }
+        .task-item:last-child { border-bottom:none; }
+        .task-check { width:20px; height:20px; border-radius:50%; border:2px solid var(--border-color); display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:all 0.2s; font-size:0.7rem; color:transparent; }
+        .task-check:hover { border-color:var(--accent-green); color:var(--accent-green); }
+        .task-check.done { background:var(--accent-green); border-color:var(--accent-green); color:white; }
+        .task-label.done { text-decoration:line-through; color:var(--text-muted); }
+        .task-type-badge { font-size:0.65rem; padding:0.1rem 0.4rem; border-radius:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-left:auto; flex-shrink:0; }
+        .badge-indoor { background:rgba(245,158,11,0.1); color:var(--accent-gold); }
+        .badge-outdoor { background:rgba(16,185,129,0.1); color:var(--accent-green); }
+        .badge-planning { background:rgba(14,165,233,0.1); color:var(--accent-blue); }
+        .badge-maintenance { background:rgba(139,92,246,0.1); color:#8b5cf6; }
+
+        .bloom-preview { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:3rem; }
+        .bloom-mini { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; text-decoration:none; color:inherit; transition:all 0.3s; }
+        .bloom-mini:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
+        .bloom-mini img { width:100%; height:100px; object-fit:cover; }
+        .bloom-mini .info { padding:0.6rem 0.75rem; }
+        .bloom-mini .info h4 { font-size:0.82rem; margin-bottom:0.1rem; }
+        .bloom-mini .info span { font-size:0.7rem; color:var(--text-light); }
+
+        .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:3rem; }
+        .stat-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; text-align:center; }
+        .stat-card .num { font-size:1.8rem; font-weight:700; color:var(--primary-color); line-height:1; }
+        .stat-card .label { font-size:0.8rem; color:var(--text-light); margin-top:0.25rem; }
+
+        .tips-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin-bottom:3rem; }
+        .tip-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; }
+        .tip-card h4 { font-size:0.95rem; margin-bottom:0.4rem; display:flex; align-items:center; gap:0.4rem; }
+        .tip-card p { font-size:0.85rem; color:var(--text-light); line-height:1.5; }
+
+        .cta-section { background:linear-gradient(135deg, var(--accent-green), #059669); border-radius:var(--radius-md); padding:3rem; text-align:center; color:white; margin-bottom:2rem; }
+        .cta-section h2 { color:white; margin-bottom:0.5rem; }
+        .cta-section p { color:rgba(255,255,255,0.85); margin-bottom:1.25rem; max-width:500px; margin-left:auto; margin-right:auto; }
+
+        @media(max-width:1024px) { .features-grid { grid-template-columns:repeat(2,1fr); } .bloom-preview { grid-template-columns:repeat(2,1fr); } .stats-row { grid-template-columns:repeat(2,1fr); } }
+        @media(max-width:640px) { .features-grid, .bloom-preview, .stats-row, .tips-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="garden-hero">
+        <div class="container">
+            <h1><i class="bi bi-flower2"></i> Gardening Hub</h1>
+            <p>Your complete gardening companion — plan, track, learn, and grow with confidence</p>
+            <div class="season-badge" id="seasonBadge"></div>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="section-title reveal-up">
+                <h2>Explore Gardening Tools</h2>
+                <p>Everything you need to plan and maintain your garden</p>
+            </div>
+
+            <div class="features-grid reveal-up">
+                <a href="planting-calendar.html" class="feature-card">
+                    <div class="icon-wrap icon-green"><i class="bi bi-calendar3"></i></div>
+                    <h3>Planting Calendar</h3>
+                    <p>Monthly tasks, seasonal guides, and bloom schedules to keep your garden on track year-round.</p>
+                    <span class="arrow"><i class="bi bi-arrow-right"></i></span>
+                </a>
+                <a href="garden-journal.html" class="feature-card">
+                    <div class="icon-wrap icon-blue"><i class="bi bi-journal-text"></i></div>
+                    <h3>Garden Journal</h3>
+                    <p>Track your garden journey with photos, notes, plant logs, and care reminders.</p>
+                    <span class="arrow"><i class="bi bi-arrow-right"></i></span>
+                </a>
+                <a href="plant-database.html" class="feature-card">
+                    <div class="icon-wrap icon-purple"><i class="bi bi-database"></i></div>
+                    <h3>Plant Database</h3>
+                    <p>Searchable encyclopedia of 28+ flower species with care requirements and growing conditions.</p>
+                    <span class="arrow"><i class="bi bi-arrow-right"></i></span>
+                </a>
+                <a href="bloom-calendar.html" class="feature-card">
+                    <div class="icon-wrap icon-pink"><i class="bi bi-flower1"></i></div>
+                    <h3>Bloom Calendar</h3>
+                    <p>See what's blooming each season and plan your garden for continuous color.</p>
+                    <span class="arrow"><i class="bi bi-arrow-right"></i></span>
+                </a>
+                <a href="care-guides.html" class="feature-card">
+                    <div class="icon-wrap icon-gold"><i class="bi bi-lightbulb"></i></div>
+                    <h3>Care Guides</h3>
+                    <p>Expert care instructions for indoor plants, outdoor gardens, and cut flowers.</p>
+                    <span class="arrow"><i class="bi bi-arrow-right"></i></span>
+                </a>
+                <a href="my-garden.html" class="feature-card">
+                    <div class="icon-wrap icon-red"><i class="bi bi-map"></i></div>
+                    <h3>Garden Planner</h3>
+                    <p>Design your garden layout, add plants, and visualize your space before planting.</p>
+                    <span class="arrow"><i class="bi bi-arrow-right"></i></span>
+                </a>
+            </div>
+
+            <div class="stats-row reveal-up" id="statsRow">
+                <div class="stat-card"><div class="num" id="statTasks">-</div><div class="label">Monthly Tasks</div></div>
+                <div class="stat-card"><div class="num" id="statPlants">-</div><div class="label">Plant Species</div></div>
+                <div class="stat-card"><div class="num" id="statGuides">-</div><div class="label">Care Guides</div></div>
+                <div class="stat-card"><div class="num" id="statZones">5</div><div class="label">Climate Zones</div></div>
+            </div>
+
+            <div class="quick-task reveal-up">
+                <h3><i class="bi bi-check2-square" style="color:var(--accent-green)"></i> <span id="taskMonthTitle">This Month's Tasks</span></h3>
+                <ul class="task-list" id="taskList"></ul>
+                <div style="text-align:center;margin-top:1rem;">
+                    <a href="planting-calendar.html" class="btn btn-outline btn-sm">View Full Calendar <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="section-title reveal-up">
+                <h2>Currently Blooming</h2>
+                <p>Flowers in season right now</p>
+            </div>
+            <div class="bloom-preview reveal-up" id="bloomGrid"></div>
+            <div style="text-align:center;margin-bottom:3rem;">
+                <a href="bloom-calendar.html" class="btn btn-outline btn-sm">View Full Bloom Calendar <i class="bi bi-arrow-right"></i></a>
+            </div>
+
+            <div class="section-title reveal-up">
+                <h2>Gardening Tips</h2>
+                <p>Quick advice to keep your garden thriving</p>
+            </div>
+            <div class="tips-grid reveal-up">
+                <div class="tip-card">
+                    <h4><i class="bi bi-droplet" style="color:var(--accent-blue)"></i> Watering Wisdom</h4>
+                    <p>Water deeply in the morning to reduce evaporation. Most flowers need 1-2 inches of water per week. Always check soil moisture 2 inches deep before watering.</p>
+                </div>
+                <div class="tip-card">
+                    <h4><i class="bi bi-sun" style="color:var(--accent-gold)"></i> Sunlight Guide</h4>
+                    <p>Full sun = 6+ hours daily. Partial shade = 3-6 hours. Match plants to your garden's light conditions for best results.</p>
+                </div>
+                <div class="tip-card">
+                    <h4><i class="bi bi-shield-check" style="color:var(--accent-green)"></i> Pest Prevention</h4>
+                    <p>Inspect plants weekly for pests. Companion planting with marigolds and herbs naturally deters many common garden pests.</p>
+                </div>
+                <div class="tip-card">
+                    <h4><i class="bi bi-layers" style="color:#8b5cf6"></i> Soil Health</h4>
+                    <p>Add compost annually to improve soil structure. Healthy soil grows healthy plants — test pH yearly and amend as needed.</p>
+                </div>
+            </div>
+
+            <div class="cta-section reveal-up">
+                <h2>Need Help With Your Garden?</h2>
+                <p>Join our community of gardeners, florists, and experts for personalized advice and inspiration.</p>
+                <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                    <a href="discussions.html" class="btn" style="background:white;color:var(--accent-green);font-weight:600;">Ask the Community</a>
+                    <a href="events.html" class="btn" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);">Upcoming Workshops</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <div id="auth-modal-container"></div>
+
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/gardening.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initGardeningPage();
+        });
+    </script>
+</body>
+</html>

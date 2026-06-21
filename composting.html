@@ -1,0 +1,323 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete guide to composting — learn hot, cold, vermicomposting, and bokashi methods. Turn kitchen scraps into garden gold.">
+    <title>Composting Guide | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .compost-hero { background:linear-gradient(135deg, #5b4a3f 0%, #8b7355 50%, #a0845c 100%); padding:5rem 0 3rem; color:white; text-align:center; position:relative; overflow:hidden; }
+        .compost-hero::before { content:''; position:absolute; top:0; left:0; right:0; bottom:0; background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10S0 14.5 0 20s4.5 10 10 10 10-4.5 10-10zm20 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/svg%3E"); }
+        .compost-hero h1 { color:white; font-size:2.2rem; margin-bottom:0.5rem; position:relative; }
+        .compost-hero p { opacity:0.9; font-size:1rem; max-width:600px; margin:0 auto; position:relative; }
+
+        .guide-layout { display:grid; grid-template-columns:1fr 300px; gap:2rem; }
+        .guide-main { min-width:0; }
+        .guide-sidebar { display:flex; flex-direction:column; gap:1.25rem; }
+
+        .content-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; margin-bottom:1.5rem; }
+        .content-card h2 { font-size:1.15rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.4rem; }
+        .content-card h3 { font-size:1rem; margin:1.25rem 0 0.5rem; color:var(--primary-color); }
+        .content-text { font-size:0.93rem; line-height:1.75; color:var(--text-main); }
+        .content-text p { margin-bottom:0.75rem; }
+        .content-text ul, .content-text ol { padding-left:1.5rem; margin-bottom:0.75rem; }
+        .content-text li { margin-bottom:0.35rem; }
+        .content-text strong { color:var(--text-main); }
+
+        .method-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:0.5rem; }
+        .method-card { border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; transition:all 0.3s; cursor:pointer; }
+        .method-card:hover { border-color:var(--primary-color); box-shadow:var(--shadow-sm); }
+        .method-card.active { border-color:var(--accent-green); background:var(--accent-green-light); }
+        .method-icon { width:44px; height:44px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:1.3rem; margin-bottom:0.75rem; }
+        .method-card h4 { font-size:0.95rem; margin-bottom:0.25rem; }
+        .method-card p { font-size:0.82rem; color:var(--text-light); line-height:1.5; margin-bottom:0.5rem; }
+        .method-meta { display:flex; gap:0.75rem; font-size:0.75rem; color:var(--text-muted); }
+        .method-meta span { display:flex; align-items:center; gap:0.2rem; }
+
+        .compare-table { width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:0.75rem; }
+        .compare-table th { padding:0.6rem 0.75rem; text-align:left; font-weight:600; background:var(--bg-light); border-bottom:2px solid var(--border-color); }
+        .compare-table td { padding:0.5rem 0.75rem; border-bottom:1px solid var(--border-light); }
+        .compare-table tr:hover { background:rgba(172,50,80,0.02); }
+
+        .do-dont-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+        .do-list, .dont-list { border-radius:var(--radius-md); padding:1.25rem; }
+        .do-list { background:var(--accent-green-light); border:1px solid rgba(16,185,129,0.2); }
+        .dont-list { background:rgba(239,68,68,0.04); border:1px solid rgba(239,68,68,0.15); }
+        .do-list h4 { color:var(--accent-green); margin-bottom:0.5rem; display:flex; align-items:center; gap:0.3rem; }
+        .dont-list h4 { color:var(--error-color); margin-bottom:0.5rem; display:flex; align-items:center; gap:0.3rem; }
+        .do-list li, .dont-list li { font-size:0.85rem; padding:0.25rem 0; display:flex; align-items:center; gap:0.4rem; }
+        .do-list li i { color:var(--accent-green); }
+        .dont-list li i { color:var(--error-color); }
+
+        .steps-list { counter-reset:step; list-style:none; padding:0; margin:0; }
+        .steps-list li { counter-increment:step; display:flex; gap:1rem; padding:1rem 0; border-bottom:1px solid var(--border-light); }
+        .steps-list li:last-child { border-bottom:none; }
+        .step-num { width:36px; height:36px; border-radius:50%; background:var(--primary-color); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem; flex-shrink:0; }
+        .step-content h4 { font-size:0.95rem; margin-bottom:0.2rem; }
+        .step-content p { font-size:0.85rem; color:var(--text-light); line-height:1.5; }
+
+        .troubleshoot-card { display:flex; gap:1rem; padding:1rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); margin-bottom:0.75rem; }
+        .troubleshoot-icon { width:40px; height:40px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+        .troubleshoot-info h4 { font-size:0.9rem; margin-bottom:0.2rem; }
+        .troubleshoot-info p { font-size:0.82rem; color:var(--text-light); line-height:1.5; }
+        .troubleshoot-info .fix { font-size:0.82rem; color:var(--accent-green); font-weight:500; margin-top:0.3rem; }
+
+        .tools-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-top:0.5rem; }
+        .tool-item { display:flex; align-items:center; gap:0.6rem; padding:0.75rem; background:var(--bg-main); border-radius:var(--radius-sm); }
+        .tool-item i { font-size:1.2rem; color:var(--accent-green); }
+        .tool-item span { font-size:0.85rem; }
+
+        .sidebar-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; }
+        .sidebar-card h3 { font-size:0.95rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
+        .sidebar-card ul { list-style:none; padding:0; margin:0; }
+        .sidebar-card li { padding:0.35rem 0; font-size:0.85rem; border-bottom:1px solid var(--border-light); }
+        .sidebar-card li:last-child { border-bottom:none; }
+        .sidebar-card li a { color:var(--text-main); text-decoration:none; display:flex; align-items:center; gap:0.4rem; }
+        .sidebar-card li a:hover { color:var(--primary-color); }
+
+        .benefit-list { list-style:none; padding:0; margin:0; }
+        .benefit-list li { display:flex; align-items:flex-start; gap:0.6rem; padding:0.5rem 0; font-size:0.88rem; }
+        .benefit-list li i { color:var(--accent-green); margin-top:0.15rem; flex-shrink:0; }
+
+        .cta-banner { background:linear-gradient(135deg, var(--accent-green), #059669); border-radius:var(--radius-md); padding:2.5rem; text-align:center; color:white; }
+        .cta-banner h2 { color:white; margin-bottom:0.5rem; }
+        .cta-banner p { color:rgba(255,255,255,0.85); margin-bottom:1.25rem; max-width:500px; margin-left:auto; margin-right:auto; }
+
+        @media(max-width:1024px) { .guide-layout { grid-template-columns:1fr; } .method-grid, .do-dont-grid { grid-template-columns:1fr; } .tools-grid { grid-template-columns:1fr 1fr; } }
+        @media(max-width:640px) { .tools-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="compost-hero">
+        <div class="container">
+            <h1><i class="bi bi-recycle"></i> Composting Guide</h1>
+            <p>Turn kitchen scraps and garden waste into nutrient-rich compost — the foundation of healthy soil</p>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="guide-layout">
+                <div class="guide-main">
+                    <div class="content-card">
+                        <h2><i class="bi bi-info-circle" style="color:var(--accent-blue)"></i> What Is Composting?</h2>
+                        <div class="content-text">
+                            <p>Composting is the natural process of recycling organic matter — like leaves, food scraps, and yard waste — into a valuable fertilizer that can enrich soil and plants. It's nature's way of breaking down dead material into nutrients that feed new growth.</p>
+                            <p>By composting at home, you reduce landfill waste, cut greenhouse gas emissions, and create a free, nutrient-dense soil amendment that improves soil structure, water retention, and microbial activity.</p>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <h2><i class="bi bi-grid" style="color:var(--primary-color)"></i> Composting Methods</h2>
+                        <p style="font-size:0.9rem;color:var(--text-light);margin-bottom:1rem;">Choose the method that fits your space, lifestyle, and goals.</p>
+                        <div class="method-grid" id="methodsGrid"></div>
+                    </div>
+
+                    <div class="content-card" id="compareSection">
+                        <h2><i class="bi bi-table" style="color:var(--accent-gold)"></i> Method Comparison</h2>
+                        <div style="overflow-x:auto;">
+                            <table class="compare-table">
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Hot Composting</th>
+                                        <th>Cold Composting</th>
+                                        <th>Vermicomposting</th>
+                                        <th>Bokashi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><strong>Speed</strong></td><td>4-8 weeks</td><td>6-12 months</td><td>3-6 months</td><td>2 weeks + 4 weeks cure</td></tr>
+                                    <tr><td><strong>Effort</strong></td><td>High</td><td>Low</td><td>Medium</td><td>Medium</td></tr>
+                                    <tr><td><strong>Space</strong></td><td>Large bin/pile</td><td>Any size</td><td>Small bin</td><td>Bucket</td></tr>
+                                    <tr><td><strong>Temperature</strong></td><td>130-160°F</td><td>Ambient</td><td>60-80°F</td><td>Ambient</td></tr>
+                                    <tr><td><strong>Odor</strong></td><td>Minimal if managed</td><td>Minimal</td><td>Earth-like</td><td>Musty (sealed)</td></tr>
+                                    <tr><td><strong>Best For</strong></td><td>Gardeners with lots of waste</td><td>Beginners, low effort</td><td>Indoor/apartment use</td><td>Meat/dairy composting</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <h2><i class="bi bi-list-check" style="color:var(--accent-green)"></i> What to Compost</h2>
+                        <div class="do-dont-grid">
+                            <div class="do-list">
+                                <h4><i class="bi bi-check-circle-fill"></i> Compost These</h4>
+                                <ul>
+                                    <li><i class="bi bi-check-lg"></i> Fruit & vegetable scraps</li>
+                                    <li><i class="bi bi-check-lg"></i> Coffee grounds & filters</li>
+                                    <li><i class="bi bi-check-lg"></i> Tea bags (non-synthetic)</li>
+                                    <li><i class="bi bi-check-lg"></i> Eggshells (crushed)</li>
+                                    <li><i class="bi bi-check-lg"></i> Yard trimmings & leaves</li>
+                                    <li><i class="bi bi-check-lg"></i> Grass clippings</li>
+                                    <li><i class="bi bi-check-lg"></i> Shredded newspaper/cardboard</li>
+                                    <li><i class="bi bi-check-lg"></i> Wood chips & sawdust</li>
+                                    <li><i class="bi bi-check-lg"></i> Houseplant trimmings</li>
+                                    <li><i class="bi bi-check-lg"></i> Hay & straw</li>
+                                </ul>
+                            </div>
+                            <div class="dont-list">
+                                <h4><i class="bi bi-x-circle-fill"></i> Avoid These</h4>
+                                <ul>
+                                    <li><i class="bi bi-x-lg"></i> Meat & fish</li>
+                                    <li><i class="bi bi-x-lg"></i> Dairy products</li>
+                                    <li><i class="bi bi-x-lg"></i> Oils & grease</li>
+                                    <li><i class="bi bi-x-lg"></i> Diseased plants</li>
+                                    <li><i class="bi bi-x-lg"></i> Pet waste</li>
+                                    <li><i class="bi bi-x-lg"></i> Treated/painted wood</li>
+                                    <li><i class="bi bi-x-lg"></i> Synthetic materials</li>
+                                    <li><i class="bi bi-x-lg"></i> Coal/charcoal ash</li>
+                                    <li><i class="bi bi-x-lg"></i> Invasive weed seeds</li>
+                                    <li><i class="bi bi-x-lg"></i> Glossy/colored paper</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <h2><i class="bi bi-rocket-takeoff" style="color:var(--accent-gold)"></i> Getting Started in 5 Steps</h2>
+                        <ol class="steps-list">
+                            <li>
+                                <div class="step-num">1</div>
+                                <div class="step-content">
+                                    <h4>Choose Your Method</h4>
+                                    <p>Pick a composting method based on your space, how much waste you produce, and how hands-on you want to be. A simple cold compost pile is easiest for beginners.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="step-num">2</div>
+                                <div class="step-content">
+                                    <h4>Pick a Location</h4>
+                                    <p>Choose a dry, shady spot near a water source. Direct soil contact helps beneficial organisms migrate into your pile. Avoid placing directly against structures.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="step-num">3</div>
+                                <div class="step-content">
+                                    <h4>Build Your Pile</h4>
+                                    <p>Layer <strong>brown materials</strong> (dry leaves, cardboard) with <strong>green materials</strong> (food scraps, grass). Aim for a 2:1 ratio of browns to greens by volume.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="step-num">4</div>
+                                <div class="step-content">
+                                    <h4>Keep It Moist & Aerated</h4>
+                                    <p>Your pile should feel like a wrung-out sponge. Turn it every 1-2 weeks to add oxygen and speed decomposition. Cover during heavy rain.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="step-num">5</div>
+                                <div class="step-content">
+                                    <h4>Harvest & Use</h4>
+                                    <p>Compost is ready when it's dark, crumbly, and earthy-smelling. Screen out large pieces and return them to the pile. Mix into garden beds or use as top dressing.</p>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="content-card">
+                        <h2><i class="bi bi-tools" style="color:var(--accent-blue)"></i> Essential Tools</h2>
+                        <div class="tools-grid">
+                            <div class="tool-item"><i class="bi bi-box"></i><span>Compost Bin or Tumbler</span></div>
+                            <div class="tool-item"><i class="bi bi-arrow-clockwise"></i><span>Compost Thermometer</span></div>
+                            <div class="tool-item"><i class="bi bi-shovel"></i><span>Pitchfork or Compost Aerator</span></div>
+                            <div class="tool-item"><i class="bi bi-bucket"></i><span>Kitchen Scrap Collector</span></div>
+                            <div class="tool-item"><i class="bi bi-eyedropper"></i><span>Moisture Meter</span></div>
+                            <div class="tool-item"><i class="bi bi-grid-3x3"></i><span>Compost Screen/Sifter</span></div>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <h2><i class="bi bi-exclamation-triangle" style="color:var(--accent-gold)"></i> Troubleshooting</h2>
+                        <div id="troubleshootList"></div>
+                    </div>
+
+                    <div class="content-card">
+                        <h2><i class="bi bi-trophy" style="color:var(--accent-green)"></i> Benefits of Composting</h2>
+                        <ul class="benefit-list">
+                            <li><i class="bi bi-check-circle-fill"></i> <div><strong>Reduces landfill waste</strong> — Up to 30% of household waste is compostable</div></li>
+                            <li><i class="bi bi-check-circle-fill"></i> <div><strong>Enriches soil</strong> — Adds nutrients, improves structure, and boosts microbial life</div></li>
+                            <li><i class="bi bi-check-circle-fill"></i> <div><strong>Retains moisture</strong> — Compost-amended soil holds water better, reducing irrigation needs</div></li>
+                            <li><i class="bi bi-check-circle-fill"></i> <div><strong>Suppresses diseases</strong> — Healthy compost outcompetes harmful pathogens</div></li>
+                            <li><i class="bi bi-check-circle-fill"></i> <div><strong>Reduces need for chemicals</strong> — Less reliance on synthetic fertilizers and pesticides</div></li>
+                            <li><i class="bi bi-check-circle-fill"></i> <div><strong>Sequesters carbon</strong> — Composting diverts organic waste from landfills where it produces methane</div></li>
+                            <li><i class="bi bi-check-circle-fill"></i> <div><strong>Saves money</strong> — Free soil amendment instead of buying bags of compost or fertilizer</div></li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card" style="border:none;background:transparent;padding:0;">
+                        <div class="cta-banner">
+                            <h2>Ready to Start Composting?</h2>
+                            <p>Join our community of gardeners sharing composting tips, progress photos, and troubleshooting advice.</p>
+                            <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                                <a href="discussions.html" class="btn" style="background:white;color:var(--accent-green);font-weight:600;">Ask the Community</a>
+                                <a href="gardening.html" class="btn" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);">Gardening Hub</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guide-sidebar">
+                    <div class="sidebar-card" style="position:sticky;top:100px;">
+                        <h3><i class="bi bi-list-nested" style="color:var(--primary-color)"></i> On This Page</h3>
+                        <ul>
+                            <li><a href="#what"><i class="bi bi-chevron-right"></i> What Is Composting?</a></li>
+                            <li><a href="#methods"><i class="bi bi-chevron-right"></i> Composting Methods</a></li>
+                            <li><a href="#compare"><i class="bi bi-chevron-right"></i> Method Comparison</a></li>
+                            <li><a href="#what-to"><i class="bi bi-chevron-right"></i> What to Compost</a></li>
+                            <li><a href="#steps"><i class="bi bi-chevron-right"></i> Getting Started</a></li>
+                            <li><a href="#tools"><i class="bi bi-chevron-right"></i> Essential Tools</a></li>
+                            <li><a href="#troubleshoot"><i class="bi bi-chevron-right"></i> Troubleshooting</a></li>
+                            <li><a href="#benefits"><i class="bi bi-chevron-right"></i> Benefits</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-lightbulb" style="color:var(--accent-gold)"></i> Quick Tips</h3>
+                        <ul style="list-style:none;">
+                            <li style="display:flex;gap:0.4rem;padding:0.4rem 0;font-size:0.82rem;"><i class="bi bi-check-circle" style="color:var(--accent-green);margin-top:0.1rem;flex-shrink:0;"></i> Chop materials small (1-2") for faster breakdown</li>
+                            <li style="display:flex;gap:0.4rem;padding:0.4rem 0;font-size:0.82rem;"><i class="bi bi-check-circle" style="color:var(--accent-green);margin-top:0.1rem;flex-shrink:0;"></i> Keep a kitchen caddy for daily scraps</li>
+                            <li style="display:flex;gap:0.4rem;padding:0.4rem 0;font-size:0.82rem;"><i class="bi bi-check-circle" style="color:var(--accent-green);margin-top:0.1rem;flex-shrink:0;"></i> Add a handful of finished compost as starter</li>
+                            <li style="display:flex;gap:0.4rem;padding:0.4rem 0;font-size:0.82rem;"><i class="bi bi-check-circle" style="color:var(--accent-green);margin-top:0.1rem;flex-shrink:0;"></i> Cover with a tarp to manage moisture</li>
+                            <li style="display:flex;gap:0.4rem;padding:0.4rem 0;font-size:0.82rem;"><i class="bi bi-check-circle" style="color:var(--accent-green);margin-top:0.1rem;flex-shrink:0;"></i> Balance nitrogen (greens) and carbon (browns)</li>
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-link-45deg" style="color:var(--accent-blue)"></i> Related</h3>
+                        <ul>
+                            <li><a href="care-guides.html"><i class="bi bi-chevron-right"></i> Care Guides</a></li>
+                            <li><a href="planting-calendar.html"><i class="bi bi-chevron-right"></i> Planting Calendar</a></li>
+                            <li><a href="gardening.html"><i class="bi bi-chevron-right"></i> Gardening Hub</a></li>
+                            <li><a href="plant-database.html"><i class="bi bi-chevron-right"></i> Plant Database</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/composting.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initCompostingPage();
+        });
+    </script>
+</body>
+</html>

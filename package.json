@@ -1,0 +1,29 @@
+{
+  "name": "flower-ecosystem",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Flower Ecosystem Platform — buy, sell, learn, and connect",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "build": "node scripts/build.js",
+    "test": "node tests/run.js",
+    "test:api": "node tests/api.test.js",
+    "test:data": "node tests/data.test.js",
+    "test:validation": "node tests/validation.test.js",
+    "test:auth": "node tests/auth.test.js",
+    "test:products": "node tests/products.test.js",
+    "test:cart": "node tests/cart.test.js",
+    "prestart": "node -e \"require('fs').existsSync('.env') || console.warn('Warning: No .env file found. Using defaults.')\""
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.0",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.2.0",
+    "pg": "^8.13.0"
+  }
+}

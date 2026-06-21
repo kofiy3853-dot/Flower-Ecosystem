@@ -1,0 +1,370 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Flower Knowledge Quiz | Test your flower knowledge">
+    <meta property="og:title" content="Flower Quiz | Flower Ecosystem">
+    <meta property="og:description" content="Test your flower knowledge with fun interactive quizzes.">
+    <meta property="og:type" content="website">
+    <title>Flower Quiz | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=17.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .qz-hero { background:linear-gradient(135deg, #e74c3c, #8e44ad); padding:3rem 0 2rem; color:white; text-align:center; }
+        .qz-hero h1 { color:white; font-size:2rem; margin-bottom:0.25rem; }
+        .qz-hero p { opacity:0.85; font-size:1rem; }
+        .qz-setup { max-width:500px; margin:2rem auto; text-align:center; }
+        .qz-setup .qz-opt { display:flex; flex-wrap:wrap; gap:0.75rem; justify-content:center; margin:1rem 0; }
+        .qz-setup .qz-opt label { background:var(--bg-light); border:2px solid var(--border-color); border-radius:12px; padding:1rem 1.5rem; cursor:pointer; transition:all 0.2s; text-align:center; min-width:120px; }
+        .qz-setup .qz-opt label:hover { border-color:var(--primary-color); background:var(--bg-white); }
+        .qz-setup .qz-opt input:checked + label { border-color:var(--primary-color); background:var(--primary-color); color:white; }
+        .qz-setup .qz-opt input { display:none; }
+        .qz-question { display:none; max-width:650px; margin:2rem auto; }
+        .qz-question.active { display:block; }
+        .qz-q-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+        .qz-q-header .qz-progress { font-size:0.85rem; color:var(--text-light); }
+        .qz-q-header .qz-score { font-size:0.85rem; font-weight:600; }
+        .qz-question h2 { font-size:1.2rem; margin-bottom:1.25rem; line-height:1.5; }
+        .qz-answers { display:grid; gap:0.75rem; }
+        .qz-answer { padding:1rem 1.25rem; background:var(--bg-white); border:2px solid var(--border-color); border-radius:12px; cursor:pointer; font-size:0.95rem; transition:all 0.2s; text-align:left; }
+        .qz-answer:hover { border-color:var(--primary-color); background:var(--bg-light); }
+        .qz-answer.selected { border-color:var(--primary-color); background:var(--primary-color); color:white; }
+        .qz-answer.correct { border-color:#27ae60; background:#27ae60; color:white; }
+        .qz-answer.wrong { border-color:#e74c3c; background:#e74c3c; color:white; }
+        .qz-answer:disabled { cursor:default; opacity:0.9; }
+        .qz-feedback { padding:1rem 1.25rem; border-radius:12px; margin-top:1rem; display:none; font-size:0.9rem; }
+        .qz-feedback.show { display:block; }
+        .qz-feedback.correct { background:#27ae6020; border:1px solid #27ae60; color:#1e8449; }
+        .qz-feedback.wrong { background:#e74c3c20; border:1px solid #e74c3c; color:#c0392b; }
+        .qz-next { margin-top:1rem; padding:0.75rem 2rem; border:none; border-radius:10px; background:var(--primary-color); color:white; font-size:0.95rem; cursor:pointer; display:none; }
+        .qz-next.show { display:inline-block; }
+        .qz-results { display:none; max-width:500px; margin:2rem auto; text-align:center; }
+        .qz-results.show { display:block; }
+        .qz-results .qz-big { font-size:4rem; margin-bottom:0.5rem; }
+        .qz-results h2 { font-size:1.5rem; margin-bottom:0.5rem; }
+        .qz-results .qz-sub { color:var(--text-light); margin-bottom:1.5rem; }
+        .qz-results .qz-stat { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; margin-bottom:1.5rem; }
+        .qz-results .qz-stat-item { background:var(--bg-light); border-radius:10px; padding:1rem; }
+        .qz-results .qz-stat-item .num { font-size:1.5rem; font-weight:700; display:block; }
+        .qz-results .qz-stat-item .lbl { font-size:0.75rem; color:var(--text-light); text-transform:uppercase; }
+        .qz-review { max-width:650px; margin:2rem auto; }
+        .qz-review-item { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1rem 1.25rem; margin-bottom:0.75rem; display:flex; gap:0.75rem; align-items:flex-start; }
+        .qz-review-item i { font-size:1.2rem; margin-top:0.1rem; flex-shrink:0; }
+        .qz-review-item .ri-q { font-size:0.85rem; }
+        .qz-review-item .ri-q strong { display:block; margin-bottom:0.25rem; }
+        .qz-review-item .ri-q .ri-user { color:var(--text-main); }
+        .qz-review-item .ri-q .ri-correct { color:#27ae60; }
+        .qz-review-item .ri-q .ri-wrong { color:#e74c3c; }
+        .qz-loading { text-align:center; padding:4rem; }
+        .qz-loading .spinner { width:40px; height:40px; border:3px solid var(--border-color); border-top-color:var(--primary-color); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 1rem; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        @media(max-width:768px){
+            .qz-hero h1 { font-size:1.5rem; }
+            .qz-setup .qz-opt label { min-width:100px; padding:0.75rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="qz-hero">
+        <div class="container">
+            <h1>🧠 Flower Knowledge Quiz</h1>
+            <p>Test your knowledge about medicinal uses, scientific names, care tips, and more</p>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div id="qzLoading" class="qz-loading">
+                <div class="spinner"></div>
+                <p>Preparing questions...</p>
+            </div>
+
+            <div id="qzSetup" class="qz-setup">
+                <h2>Quiz Settings</h2>
+                <p style="color:var(--text-light);font-size:0.9rem;">Choose the number of questions and difficulty</p>
+                <div class="qz-opt">
+                    <input type="radio" name="qty" value="5" id="qty5" checked>
+                    <label for="qty5">5 Quick</label>
+                    <input type="radio" name="qty" value="10" id="qty10">
+                    <label for="qty10">10 Standard</label>
+                    <input type="radio" name="qty" value="20" id="qty20">
+                    <label for="qty20">20 Challenge</label>
+                </div>
+                <button class="btn btn-primary" onclick="startQuiz()" style="border-radius:50px;padding:0.75rem 3rem;font-size:1rem;">Start Quiz</button>
+            </div>
+
+            <div id="qzQuestion" class="qz-question">
+                <div class="qz-q-header">
+                    <span class="qz-progress" id="qzProgress"></span>
+                    <span class="qz-score" id="qzScore">✅ 0</span>
+                </div>
+                <h2 id="qzQText"></h2>
+                <div class="qz-answers" id="qzAnswers"></div>
+                <div class="qz-feedback" id="qzFeedback"></div>
+                <button class="qz-next" id="qzNextBtn" onclick="nextQuestion()">Next →</button>
+            </div>
+
+            <div class="qz-results" id="qzResults">
+                <div class="qz-big" id="qzResultEmoji">🏆</div>
+                <h2 id="qzResultTitle">Great job!</h2>
+                <p class="qz-sub" id="qzResultSub">You scored X out of Y</p>
+                <div class="qz-stat">
+                    <div class="qz-stat-item"><span class="num" id="qzStatCorrect">0</span><span class="lbl">Correct</span></div>
+                    <div class="qz-stat-item"><span class="num" id="qzStatWrong">0</span><span class="lbl">Wrong</span></div>
+                    <div class="qz-stat-item"><span class="num" id="qzStatPct">0%</span><span class="lbl">Accuracy</span></div>
+                </div>
+                <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="startQuiz()" style="border-radius:50px;">🔄 Try Again</button>
+                    <button class="btn btn-outline" id="qzShowReviewBtn" onclick="toggleReview()" style="border-radius:50px;">📋 Review Answers</button>
+                    <a href="flower-knowledge-hub.html" class="btn btn-outline" style="border-radius:50px;">🌸 Browse Flowers</a>
+                </div>
+            </div>
+
+            <div id="qzReview" class="qz-review" style="display:none;"></div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <div id="auth-modal-container"></div>
+
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script>
+        let allFlowers = [], categories = [], questions = [], currentQ = 0, score = 0, answers = [], totalQ = 5;
+
+        document.addEventListener('componentLoaded', async () => {
+            try {
+                [allFlowers, categories] = await Promise.all([
+                    api.fetchKnowledgeFlowers(),
+                    api.fetchKnowledgeCategories()
+                ]);
+                document.getElementById('qzLoading').style.display = 'none';
+                document.getElementById('qzSetup').style.display = 'block';
+            } catch(e) {
+                document.getElementById('qzLoading').innerHTML = '<p style="color:var(--error-color);">Failed to load flower data.</p>';
+            }
+        });
+
+        function startQuiz() {
+            totalQ = parseInt(document.querySelector('input[name="qty"]:checked').value);
+            questions = generateQuestions(allFlowers, totalQ);
+            currentQ = 0; score = 0; answers = [];
+            document.getElementById('qzSetup').style.display = 'none';
+            document.getElementById('qzResults').classList.remove('show');
+            document.getElementById('qzReview').style.display = 'none';
+            renderQuestion();
+        }
+
+        function generateQuestions(flowers, count) {
+            if (!flowers.length) return [];
+            const qs = [];
+            const types = ['sciName', 'sunlight', 'difficulty', 'origin', 'family', 'benefit', 'care', 'water', 'height', 'category'];
+
+            for (let i = 0; i < count; i++) {
+                const type = types[i % types.length];
+                const correct = flowers[Math.floor(Math.random() * flowers.length)];
+                const others = flowers.filter(f => f.slug !== correct.slug);
+                const wrongs = shuffle(others).slice(0, 3);
+                let qText, options, answer;
+
+                switch(type) {
+                    case 'sciName':
+                        qText = `What is the scientific name of <strong>${correct.common_name}</strong>?`;
+                        options = shuffle([correct.scientific_name || 'N/A', ...wrongs.map(w => w.scientific_name || 'N/A')]);
+                        answer = correct.scientific_name;
+                        break;
+                    case 'sunlight':
+                        qText = `What sunlight does <strong>${correct.common_name}</strong> need?`;
+                        options = shuffle([correct.sunlight || 'N/A', ...wrongs.map(w => w.sunlight || 'N/A')]);
+                        answer = correct.sunlight;
+                        break;
+                    case 'difficulty':
+                        qText = `What is the growing difficulty of <strong>${correct.common_name}</strong>?`;
+                        options = shuffle([correct.difficulty || 'N/A', ...wrongs.map(w => w.difficulty || 'N/A')]);
+                        answer = correct.difficulty;
+                        break;
+                    case 'origin':
+                        qText = `Where does <strong>${correct.common_name}</strong> originally come from?`;
+                        options = shuffle([correct.origin || 'N/A', ...wrongs.map(w => w.origin || 'N/A')]);
+                        answer = correct.origin;
+                        break;
+                    case 'family':
+                        qText = `What plant family does <strong>${correct.common_name}</strong> belong to?`;
+                        options = shuffle([correct.family || 'N/A', ...wrongs.map(w => w.family || 'N/A')]);
+                        answer = correct.family;
+                        break;
+                    case 'benefit': {
+                        const benefits = correct.benefits || [];
+                        if (!benefits.length) { i--; continue; }
+                        const b = benefits[Math.floor(Math.random() * benefits.length)];
+                        qText = `"${b.description}" — which flower has this ${b.benefit_type.toLowerCase()} benefit?`;
+                        options = shuffle([correct.common_name, ...wrongs.map(w => w.common_name)]);
+                        answer = correct.common_name;
+                        break;
+                    }
+                    case 'care': {
+                        const tips = correct.care_tips || [];
+                        if (!tips.length) { i--; continue; }
+                        const t = tips[Math.floor(Math.random() * tips.length)];
+                        qText = `"${t.description}" — which flower does this care tip apply to?`;
+                        options = shuffle([correct.common_name, ...wrongs.map(w => w.common_name)]);
+                        answer = correct.common_name;
+                        break;
+                    }
+                    case 'water':
+                        qText = `How much water does <strong>${correct.common_name}</strong> need?`;
+                        options = shuffle([correct.water || 'N/A', ...wrongs.map(w => w.water || 'N/A')]);
+                        answer = correct.water;
+                        break;
+                    case 'height':
+                        qText = `How tall does <strong>${correct.common_name}</strong> grow?`;
+                        options = shuffle([correct.height || 'N/A', ...wrongs.map(w => w.height || 'N/A')]);
+                        answer = correct.height;
+                        break;
+                    case 'category': {
+                        const catIds = correct.category_ids || [];
+                        if (!catIds.length) { i--; continue; }
+                        const cat = categories.find(c => catIds.includes(c.id));
+                        if (!cat) { i--; continue; }
+                        qText = `Which category does <strong>${correct.common_name}</strong> belong to?`;
+                        const catWrongs = shuffle(categories.filter(c => !catIds.includes(c.id))).slice(0, 3);
+                        options = shuffle([cat.name, ...catWrongs.map(w => w.name)]);
+                        answer = cat.name;
+                        break;
+                    }
+                    default: { i--; continue; }
+                }
+
+                if (!answer || answer === 'N/A') { i--; continue; }
+
+                qs.push({
+                    flower: correct,
+                    question: qText,
+                    options,
+                    answer,
+                    type
+                });
+            }
+            return qs;
+        }
+
+        function renderQuestion() {
+            if (currentQ >= questions.length) { showResults(); return; }
+            const q = questions[currentQ];
+            document.getElementById('qzQuestion').classList.add('active');
+            document.getElementById('qzProgress').textContent = `Question ${currentQ + 1} of ${questions.length}`;
+            document.getElementById('qzScore').textContent = `✅ ${score}`;
+            document.getElementById('qzQText').innerHTML = q.question;
+
+            const container = document.getElementById('qzAnswers');
+            container.innerHTML = q.options.map((opt, i) =>
+                `<button class="qz-answer" data-idx="${i}" onclick="selectAnswer(this, '${opt.replace(/'/g, "\\'")}')">${opt}</button>`
+            ).join('');
+
+            document.getElementById('qzFeedback').classList.remove('show');
+            document.getElementById('qzNextBtn').classList.remove('show');
+        }
+
+        function selectAnswer(el, selected) {
+            const q = questions[currentQ];
+            const btns = document.querySelectorAll('.qz-answer');
+            btns.forEach(b => b.disabled = true);
+
+            const isCorrect = selected === q.answer;
+            if (isCorrect) score++;
+
+            btns.forEach(b => {
+                if (b.textContent === q.answer) b.classList.add('correct');
+                else if (b.textContent === selected && !isCorrect) b.classList.add('wrong');
+                else if (b === el) b.classList.add('selected');
+            });
+
+            const fb = document.getElementById('qzFeedback');
+            fb.innerHTML = isCorrect
+                ? `<strong>✅ Correct!</strong> ${q.flower.emoji} ${q.flower.common_name}`
+                : `<strong>❌ Oops!</strong> The answer is "${q.answer}". ${q.flower.emoji} ${q.flower.common_name}`;
+            fb.className = `qz-feedback show ${isCorrect ? 'correct' : 'wrong'}`;
+
+            answers.push({ question: q, selected, correct: isCorrect });
+            document.getElementById('qzNextBtn').classList.add('show');
+            document.getElementById('qzNextBtn').textContent = currentQ < questions.length - 1 ? 'Next →' : 'See Results 🏆';
+        }
+
+        function nextQuestion() {
+            currentQ++;
+            renderQuestion();
+        }
+
+        function showResults() {
+            document.getElementById('qzQuestion').classList.remove('active');
+            const results = document.getElementById('qzResults');
+            results.classList.add('show');
+
+            const pct = Math.round((score / questions.length) * 100);
+            document.getElementById('qzStatCorrect').textContent = score;
+            document.getElementById('qzStatWrong').textContent = questions.length - score;
+            document.getElementById('qzStatPct').textContent = pct + '%';
+
+            let emoji, title, sub;
+            if (pct >= 90) { emoji = '🏆'; title = 'Flower Master!'; sub = 'You really know your flowers!'; }
+            else if (pct >= 70) { emoji = '🌺'; title = 'Great Job!'; sub = 'You have solid flower knowledge.'; }
+            else if (pct >= 50) { emoji = '🌸'; title = 'Not Bad!'; sub = 'Keep learning and you\'ll be a pro.'; }
+            else { emoji = '🌱'; title = 'Keep Growing!'; sub = 'Time to study the flower encyclopedia.'; }
+
+            document.getElementById('qzResultEmoji').textContent = emoji;
+            document.getElementById('qzResultTitle').textContent = title;
+            document.getElementById('qzResultSub').textContent = `You scored ${score} out of ${questions.length} (${pct}%)`;
+
+            const reviewBtn = document.getElementById('qzShowReviewBtn');
+            reviewBtn.style.display = questions.length > 0 ? 'inline-flex' : 'none';
+        }
+
+        function toggleReview() {
+            const review = document.getElementById('qzReview');
+            if (review.style.display === 'block') {
+                review.style.display = 'none';
+                document.getElementById('qzShowReviewBtn').textContent = '📋 Review Answers';
+                return;
+            }
+            review.innerHTML = answers.map((a, i) => `
+                <div class="qz-review-item">
+                    <i class="bi bi-${a.correct ? 'check-circle-fill' : 'x-circle-fill'}" style="color:${a.correct ? '#27ae60' : '#e74c3c'};"></i>
+                    <div class="ri-q">
+                        <strong>Q${i + 1}:</strong> ${a.question.question}
+                        <div class="ri-user">Your answer: <span class="${a.correct ? 'ri-correct' : 'ri-wrong'}">${a.selected}</span></div>
+                        ${!a.correct ? `<div class="ri-correct">Correct: ${a.question.answer}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+            review.style.display = 'block';
+            document.getElementById('qzShowReviewBtn').textContent = '🙈 Hide Review';
+        }
+
+        function shuffle(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) { e.preventDefault(); this.parentElement.classList.toggle('mobile-open'); }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Seasonal bloom calendar showing when flowers bloom throughout the year">
+    <meta property="og:title" content="Bloom Calendar | Flower Ecosystem">
+    <meta property="og:description" content="Seasonal bloom calendar — discover when flowers bloom all year.">
+    <meta property="og:type" content="website">
+    <title>Bloom Calendar | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=17.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .bc-hero { background:linear-gradient(135deg, #e67e22, #c0392b); padding:2.5rem 0; color:white; text-align:center; }
+        .bc-hero h1 { color:white; font-size:1.8rem; }
+        .bc-hero p { opacity:0.85; }
+        .bc-nav { display:flex; justify-content:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:2rem; }
+        .bc-nav-btn { padding:0.5rem 1.25rem; border:1px solid var(--border-color); border-radius:50px; background:var(--bg-white); cursor:pointer; font-size:0.85rem; transition:all 0.2s; }
+        .bc-nav-btn:hover { border-color:var(--primary-color); }
+        .bc-nav-btn.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+        .bc-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:1.25rem; }
+        .bc-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; overflow:hidden; text-decoration:none; color:inherit; transition:all 0.25s; }
+        .bc-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
+        .bc-card img { width:100%; height:160px; object-fit:cover; }
+        .bc-card .bc-body { padding:1rem; }
+        .bc-card .bc-body h3 { font-size:0.95rem; margin-bottom:0.15rem; }
+        .bc-card .bc-body .bc-sci { font-size:0.75rem; color:var(--text-light); font-style:italic; }
+        .bc-card .bc-body .bc-season { display:inline-block; margin-top:0.5rem; font-size:0.7rem; padding:0.15rem 0.5rem; border-radius:20px; background:var(--bg-light); }
+        .bc-empty { text-align:center; padding:3rem; color:var(--text-light); grid-column:1/-1; }
+        .bc-legend { display:flex; justify-content:center; gap:1.5rem; flex-wrap:wrap; margin-top:1.5rem; font-size:0.85rem; color:var(--text-light); }
+        .bc-legend span { display:flex; align-items:center; gap:0.4rem; }
+        .bc-dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+        @media(max-width:768px){ .bc-grid { grid-template-columns:1fr 1fr; } }
+        @media(max-width:480px){ .bc-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+    <section class="bc-hero">
+        <div class="container">
+            <h1>📅 Bloom Calendar</h1>
+            <p>Discover which flowers bloom each season</p>
+        </div>
+    </section>
+    <section class="section-padding">
+        <div class="container">
+            <div class="bc-nav" id="bcNav">
+                <button class="bc-nav-btn active" data-season="all" onclick="filterSeason('all')">🌸 All Seasons</button>
+                <button class="bc-nav-btn" data-season="Spring" onclick="filterSeason('Spring')">🌷 Spring</button>
+                <button class="bc-nav-btn" data-season="Summer" onclick="filterSeason('Summer')">☀️ Summer</button>
+                <button class="bc-nav-btn" data-season="Fall" onclick="filterSeason('Fall')">🍂 Fall</button>
+                <button class="bc-nav-btn" data-season="Winter" onclick="filterSeason('Winter')">❄️ Winter</button>
+                <button class="bc-nav-btn" data-season="Frost" onclick="filterSeason('Frost')">❄️ Until Frost</button>
+                <button class="bc-nav-btn" data-season="Year-round" onclick="filterSeason('Year-round')">🔄 Year-round</button>
+            </div>
+            <div class="bc-legend">
+                <span><span class="bc-dot" style="background:#e74c3c;"></span> Spring</span>
+                <span><span class="bc-dot" style="background:#f39c12;"></span> Summer</span>
+                <span><span class="bc-dot" style="background:#e67e22;"></span> Fall</span>
+                <span><span class="bc-dot" style="background:#3498db;"></span> Winter</span>
+                <span><span class="bc-dot" style="background:#2ecc71;"></span> Year-round</span>
+                <span><span class="bc-dot" style="background:#9b59b6;"></span> Multi-season</span>
+            </div>
+            <div id="bcLoading" style="text-align:center;padding:3rem;">Loading...</div>
+            <div class="bc-grid" id="bcGrid" style="display:none;"></div>
+        </div>
+    </section>
+    <div id="footer-container"></div>
+    <div id="auth-modal-container"></div>
+
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script>
+        let allFlowers = [];
+
+        document.addEventListener('componentLoaded', async () => {
+            try {
+                const data = await api.apiFetch('/api/knowledge/bloom-calendar', 'flower-knowledge');
+                allFlowers = Array.isArray(data) ? data : [];
+                document.getElementById('bcLoading').style.display = 'none';
+                document.getElementById('bcGrid').style.display = 'grid';
+                renderSeason('all');
+            } catch(e) {
+                document.getElementById('bcLoading').innerHTML = 'Failed to load. <button onclick="location.reload()">Retry</button>';
+            }
+        });
+
+        function filterSeason(season) {
+            document.querySelectorAll('.bc-nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.bc-nav-btn[data-season="${season}"]`)?.classList.add('active');
+            renderSeason(season);
+        }
+
+        function renderSeason(season) {
+            const grid = document.getElementById('bcGrid');
+            const f = season === 'all' ? allFlowers : allFlowers.filter(fl => {
+                const s = (fl.bloom_season || 'Year-round');
+                if (season === 'Frost') return s.includes('Frost');
+                return s.includes(season);
+            });
+            if (!f.length) { grid.innerHTML = '<div class="bc-empty">No flowers bloom in this season.</div>'; return; }
+            grid.innerHTML = f.map(fl => {
+                const s = (fl.bloom_season || 'Year-round');
+                let color = '#2ecc71';
+                if (s.includes('Spring')) color = '#e74c3c';
+                if (s.includes('Summer') && !s.includes('Spring')) color = '#f39c12';
+                if (s.includes('Fall')) color = '#e67e22';
+                if (s.includes('Winter')) color = '#3498db';
+                if (s.includes('Frost')) color = '#9b59b6';
+                if (s.includes('-')) color = '#9b59b6';
+                return `<a href="flower-knowledge.html?slug=${fl.slug}" class="bc-card"><img loading="lazy" src="${fl.image_url}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'"><div class="bc-body"><h3>${fl.emoji || '🌸'} ${fl.common_name}</h3><div class="bc-sci">${fl.scientific_name || ''}</div><span class="bc-season" style="background:${color}20;color:${color};">${s}</span></div></a>`;
+            }).join('');
+        }
+    </script>
+</body>
+</html>

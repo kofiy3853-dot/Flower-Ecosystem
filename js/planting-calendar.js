@@ -1,0 +1,188 @@
+// js/planting-calendar.js
+// Seasonal Planting Calendar — monthly tasks, bloom schedules, guides
+
+const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const monthEmojis = ['❄️','❄️','🌷','🌷','🌷','☀️','☀️','☀️','🍂','🍂','🍂','❄️'];
+const seasonNames = { 1:'Winter', 2:'Winter', 3:'Spring', 4:'Spring', 5:'Spring', 6:'Summer', 7:'Summer', 8:'Summer', 9:'Fall', 10:'Fall', 11:'Fall', 12:'Winter' };
+const seasonColors = { Spring:'#e74c3c', Summer:'#f39c12', Fall:'#e67e22', Winter:'#3498db' };
+const seasonEmojis = { Spring:'🌷', Summer:'☀️', Fall:'🍂', Winter:'❄️' };
+
+let currentMonth = new Date().getMonth() + 1;
+let allFlowers = [];
+let currentBloomSeason = 'all';
+
+function escapeHtml(str) {
+    if (typeof str !== 'string') return String(str || '');
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+}
+
+async function initPlantingCalendar() {
+    const season = seasonNames[currentMonth];
+    document.getElementById('currentSeason').innerHTML = `${seasonEmojis[season]} Current Season: ${season} · ${monthNames[currentMonth - 1]}`;
+
+    renderMonthNav();
+    loadTasks(currentMonth);
+    loadBloomFlowers();
+    loadGuides();
+    loadZones();
+
+    document.getElementById('monthNav').addEventListener('click', (e) => {
+        const btn = e.target.closest('.month-btn');
+        if (!btn) return;
+        document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMonth = parseInt(btn.dataset.month, 10);
+        document.getElementById('tasksTitle').textContent = `${monthNames[currentMonth - 1]} Tasks`;
+        loadTasks(currentMonth);
+    });
+
+    document.getElementById('bloomTabs').addEventListener('click', (e) => {
+        const tab = e.target.closest('.bloom-tab');
+        if (!tab) return;
+        document.querySelectorAll('.bloom-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentBloomSeason = tab.dataset.season;
+        renderBloomFlowers();
+    });
+}
+
+function renderMonthNav() {
+    const nav = document.getElementById('monthNav');
+    nav.innerHTML = monthNames.map((name, i) => {
+        const m = i + 1;
+        return `<button class="month-btn${m === currentMonth ? ' active' : ''}" data-month="${m}"><span class="emoji">${monthEmojis[i]}</span>${name.slice(0, 3)}</button>`;
+    }).join('');
+}
+
+async function loadTasks(month) {
+    let tasks;
+    try {
+        const res = await fetch(`/api/planting/tasks?month=${month}`);
+        tasks = await res.json();
+    } catch {
+        tasks = [];
+    }
+
+    const grid = document.getElementById('tasksGrid');
+    if (!tasks.length) {
+        grid.innerHTML = '<div class="empty-state">No tasks for this month.</div>';
+        return;
+    }
+
+    const typeIcons = { planning: '📋', indoor: '🏠', outdoor: '🌳', maintenance: '🔧', watering: '💧', harvesting: '🌾' };
+
+    grid.innerHTML = tasks.map(t => `
+        <div class="task-card">
+            <span class="task-type type-${t.task_type}">${typeIcons[t.task_type] || '📌'} ${escapeHtml(t.task_type)}</span>
+            <h3>${escapeHtml(t.title)}</h3>
+            <p>${escapeHtml(t.description)}</p>
+            ${t.plant_names ? `<div class="task-plants"><i class="bi bi-flower2"></i> ${escapeHtml(t.plant_names)}</div>` : ''}
+        </div>
+    `).join('');
+}
+
+async function loadBloomFlowers() {
+    try {
+        const res = await fetch('/api/knowledge/flowers');
+        allFlowers = await res.json();
+    } catch {
+        allFlowers = [];
+    }
+    renderBloomFlowers();
+}
+
+function renderBloomFlowers() {
+    const month = monthNames[currentMonth - 1].toLowerCase();
+    const season = seasonNames[currentMonth];
+
+    let filtered = allFlowers.filter(f => {
+        const bloom = (f.bloom_season || '').toLowerCase();
+        if (currentBloomSeason === 'all') {
+            return bloom.includes(month) || bloom.includes(season.toLowerCase()) || bloom.includes('year-round') || bloom.includes('all');
+        }
+        return bloom.includes(currentBloomSeason.toLowerCase()) || bloom.includes(month);
+    });
+
+    if (!filtered.length) {
+        filtered = allFlowers.filter(f => {
+            const bloom = (f.bloom_season || '').toLowerCase();
+            return bloom.includes(season.toLowerCase()) || bloom.includes('year-round');
+        }).slice(0, 8);
+    }
+
+    const grid = document.getElementById('bloomGrid');
+    if (!filtered.length) {
+        grid.innerHTML = '<div class="empty-state">No flowers blooming this month.</div>';
+        return;
+    }
+
+    grid.innerHTML = filtered.map(f => {
+        const bloom = f.bloom_season || 'Year-round';
+        let color = '#2ecc71';
+        if (bloom.includes('Spring')) color = '#e74c3c';
+        if (bloom.includes('Summer')) color = '#f39c12';
+        if (bloom.includes('Fall')) color = '#e67e22';
+        if (bloom.includes('Winter')) color = '#3498db';
+
+        return `
+            <a href="flower-knowledge.html?slug=${escapeHtml(f.slug || f.id)}" class="bloom-card">
+                <img loading="lazy" src="${escapeHtml(f.image_url || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop')}" alt="${escapeHtml(f.common_name)}">
+                <div class="info">
+                    <h4>${escapeHtml(f.emoji || '🌸')} ${escapeHtml(f.common_name)}</h4>
+                    <div class="sci">${escapeHtml(f.scientific_name || '')}</div>
+                    <span class="season-badge" style="background:${color}20;color:${color};">${escapeHtml(bloom)}</span>
+                </div>
+            </a>
+        `;
+    }).join('');
+}
+
+async function loadGuides() {
+    let guides;
+    try {
+        const res = await fetch('/api/planting/guides');
+        guides = await res.json();
+    } catch {
+        guides = [];
+    }
+
+    const season = seasonNames[currentMonth];
+    const seasonIcons = { Spring:'🌷', Summer:'☀️', Fall:'🍂', Winter:'❄️' };
+
+    const grid = document.getElementById('guidesGrid');
+    grid.innerHTML = guides.map(g => {
+        const tips = g.tips || [];
+        return `
+            <div class="guide-card" style="${g.season === season ? 'border-color:var(--primary-color);box-shadow:var(--shadow-sm);' : ''}">
+                <h3>${seasonIcons[g.season] || '🌱'} ${escapeHtml(g.title)}</h3>
+                <p>${escapeHtml((g.content || '').slice(0, 120))}${(g.content || '').length > 120 ? '...' : ''}</p>
+                ${tips.length ? `
+                    <ul>
+                        ${tips.slice(0, 5).map(t => `<li><i class="bi bi-check2"></i> ${escapeHtml(typeof t === 'string' ? t : t.text || t)}</li>`).join('')}
+                    </ul>
+                ` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+async function loadZones() {
+    let zones;
+    try {
+        const res = await fetch('/api/planting/zones');
+        zones = await res.json();
+    } catch {
+        zones = [];
+    }
+
+    const grid = document.getElementById('zonesGrid');
+    grid.innerHTML = zones.map(z => `
+        <div class="zone-card">
+            <h4>${escapeHtml(z.zone_name)}</h4>
+            <p>${escapeHtml(z.description)}</p>
+            <div class="temp">${z.min_temp}°F – ${z.max_temp}°F</div>
+        </div>
+    `).join('');
+}

@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your notifications - orders, messages, and updates.">
+    <title>Notifications | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .notif-list { max-width:700px; margin:0 auto; }
+        .notif-item { display:flex; gap:0.75rem; padding:1rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-sm); margin-bottom:0.5rem; cursor:pointer; transition:all 0.2s; }
+        .notif-item:hover { border-color:var(--primary-color); }
+        .notif-item.unread { border-left:3px solid var(--primary-color); background:rgba(172,50,80,0.02); }
+        .notif-icon { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+        .notif-icon.order { background:rgba(16,185,129,0.1); color:var(--accent-green); }
+        .notif-icon.message { background:rgba(14,165,233,0.1); color:var(--accent-blue); }
+        .notif-icon.system { background:rgba(245,158,11,0.1); color:var(--accent-gold); }
+        .notif-body { flex:1; }
+        .notif-title { font-size:0.9rem; font-weight:500; margin-bottom:0.15rem; }
+        .notif-msg { font-size:0.82rem; color:var(--text-light); line-height:1.4; }
+        .notif-time { font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem; }
+        .notif-actions { display:flex; gap:0.5rem; margin-top:1rem; }
+        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); }
+        .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="page-header primary-bg text-white section-padding text-center" style="padding-top:5rem; padding-bottom:2rem;">
+        <div class="container">
+            <h1 style="color:white;">Notifications</h1>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="notif-actions" style="justify-content:flex-end;margin-bottom:1rem;">
+                <button class="btn btn-outline btn-sm" onclick="markAllRead()"><i class="bi bi-check-all"></i> Mark All Read</button>
+            </div>
+            <div class="notif-list" id="notifList"></div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script>
+        function authHeaders() {
+            const token = localStorage.getItem('flower-token');
+            return token ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
+        }
+        function escapeHtml(str) { if (typeof str !== 'string') return String(str || ''); const d = document.createElement('div'); d.appendChild(document.createTextNode(str)); return d.innerHTML; }
+        function timeAgo(d) { const diff = Math.floor((Date.now() - new Date(d)) / 1000); if (diff < 60) return 'just now'; if (diff < 3600) return Math.floor(diff/60) + 'm ago'; if (diff < 86400) return Math.floor(diff/3600) + 'h ago'; return Math.floor(diff/86400) + 'd ago'; }
+
+        async function loadNotifications() {
+            if (!localStorage.getItem('flower-token')) { document.getElementById('notifList').innerHTML = '<div class="empty-state"><p>Sign in to view notifications.</p></div>'; return; }
+            let notifs;
+            try { notifs = await fetch('/api/notifications', { headers: authHeaders() }).then(r => r.json()); } catch { notifs = []; }
+            const el = document.getElementById('notifList');
+            if (!notifs.length) { el.innerHTML = '<div class="empty-state"><i class="bi bi-bell"></i><h3>No notifications</h3><p>You\'re all caught up!</p></div>'; return; }
+            const icons = { order: 'bi-bag-check', message: 'bi-chat-dots', system: 'bi-gear' };
+            el.innerHTML = notifs.map(n => `
+                <div class="notif-item${n.is_read ? '' : ' unread'}" onclick="markRead('${n.id}', '${n.link || ''}')">
+                    <div class="notif-icon ${n.type || 'system'}"><i class="bi ${icons[n.type] || 'bi-bell'}"></i></div>
+                    <div class="notif-body">
+                        <div class="notif-title">${escapeHtml(n.title)}</div>
+                        <div class="notif-msg">${escapeHtml(n.message || '')}</div>
+                        <div class="notif-time">${timeAgo(n.created_at)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function markRead(id, link) {
+            try { await fetch(`/api/notifications/${id}/read`, { method: 'PUT', headers: authHeaders() }); } catch {}
+            if (link) window.location.href = link;
+            else loadNotifications();
+        }
+
+        async function markAllRead() {
+            try { await fetch('/api/notifications/read', { method: 'PUT', headers: authHeaders() }); } catch {}
+            loadNotifications();
+        }
+
+        loadNotifications();
+    </script>
+</body>
+</html>

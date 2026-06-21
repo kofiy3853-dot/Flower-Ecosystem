@@ -1,0 +1,239 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn about Flower Ecosystem — our mission, team, values, and the story behind the world's flower community platform.">
+    <title>About Us | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .about-hero { position:relative; height:500px; border-radius:var(--radius-md); overflow:hidden; margin-bottom:3rem; }
+        .about-hero img { width:100%; height:100%; object-fit:cover; }
+        .about-hero-overlay { position:absolute; inset:0; background:linear-gradient(135deg, rgba(216,68,124,0.85), rgba(15,23,42,0.8)); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:2rem; }
+        .about-hero-overlay h1 { color:white; font-size:2.5rem; margin-bottom:0.75rem; }
+        .about-hero-overlay p { color:rgba(255,255,255,0.9); font-size:1.1rem; max-width:600px; line-height:1.7; }
+        .mission-grid { display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:center; }
+        .mission-img { border-radius:var(--radius-md); overflow:hidden; height:350px; }
+        .mission-img img { width:100%; height:100%; object-fit:cover; }
+        .mission-text h2 { margin-bottom:0.75rem; }
+        .mission-text p { color:var(--text-light); line-height:1.8; margin-bottom:1rem; }
+        .values-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.25rem; }
+        .value-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; text-align:center; transition:all 0.3s; }
+        .value-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
+        .value-icon { font-size:2.5rem; margin-bottom:0.75rem; }
+        .value-card h3 { font-size:1rem; margin-bottom:0.4rem; }
+        .value-card p { font-size:0.85rem; color:var(--text-light); line-height:1.5; }
+        .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:1.5rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:2rem; }
+        .stat-item { text-align:center; }
+        .stat-num { font-size:2.2rem; font-weight:700; color:var(--primary-color); font-family:var(--font-serif); }
+        .stat-label { font-size:0.85rem; color:var(--text-light); margin-top:0.25rem; }
+        .timeline { position:relative; max-width:800px; margin:0 auto; }
+        .timeline::before { content:''; position:absolute; left:50%; transform:translateX(-50%); width:2px; height:100%; background:var(--border-color); }
+        .timeline-item { display:flex; margin-bottom:2rem; position:relative; }
+        .timeline-item:nth-child(odd) { justify-content:flex-start; padding-right:calc(50% + 2rem); }
+        .timeline-item:nth-child(even) { justify-content:flex-end; padding-left:calc(50% + 2rem); }
+        .timeline-dot { position:absolute; left:50%; transform:translateX(-50%); width:16px; height:16px; border-radius:50%; background:var(--primary-color); border:3px solid var(--bg-main); z-index:1; top:0.5rem; }
+        .timeline-content { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:1.25rem; max-width:350px; }
+        .timeline-date { font-size:0.75rem; font-weight:600; color:var(--primary-color); text-transform:uppercase; margin-bottom:0.25rem; }
+        .timeline-content h4 { font-size:0.95rem; margin-bottom:0.25rem; }
+        .timeline-content p { font-size:0.85rem; color:var(--text-light); line-height:1.5; }
+        .team-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.5rem; }
+        .team-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; text-align:center; transition:all 0.3s; }
+        .team-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
+        .team-img { height:220px; overflow:hidden; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:4rem; }
+        .team-img img { width:100%; height:100%; object-fit:cover; }
+        .team-info { padding:1.25rem; }
+        .team-info h4 { font-size:1rem; margin-bottom:0.15rem; }
+        .team-info .role { font-size:0.8rem; color:var(--primary-color); margin-bottom:0.5rem; }
+        .team-info p { font-size:0.82rem; color:var(--text-light); line-height:1.5; }
+        .team-social { display:flex; gap:0.5rem; justify-content:center; margin-top:0.75rem; }
+        .team-social a { width:32px; height:32px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; color:var(--text-light); text-decoration:none; transition:all 0.2s; font-size:0.9rem; }
+        .team-social a:hover { background:var(--primary-color); color:white; }
+        .partners-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:1.5rem; align-items:center; }
+        .partner-logo { height:60px; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:var(--text-muted); transition:all 0.3s; }
+        .partner-logo:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .cta-banner { background:linear-gradient(135deg, var(--primary-color), #c1235f); border-radius:var(--radius-md); padding:3rem; text-align:center; color:white; }
+        .cta-banner h2 { color:white; margin-bottom:0.5rem; }
+        .cta-banner p { color:rgba(255,255,255,0.85); margin-bottom:1.5rem; max-width:500px; margin-left:auto; margin-right:auto; }
+        @media(max-width:1024px) { .mission-grid { grid-template-columns:1fr; } .values-grid, .team-grid { grid-template-columns:repeat(2,1fr); } .stats-row { grid-template-columns:repeat(2,1fr); } .partners-grid { grid-template-columns:repeat(3,1fr); } .timeline::before { left:20px; } .timeline-item:nth-child(odd), .timeline-item:nth-child(even) { justify-content:flex-start; padding-left:50px; padding-right:0; } .timeline-dot { left:20px; } }
+        @media(max-width:640px) { .values-grid, .team-grid { grid-template-columns:1fr; } .stats-row { grid-template-columns:1fr; } .partners-grid { grid-template-columns:repeat(2,1fr); } .about-hero { height:350px; } .about-hero-overlay h1 { font-size:1.8rem; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="section-padding" style="padding-top:2rem;">
+        <div class="container">
+            <div class="about-hero reveal-up">
+                <img src="https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=1200&auto=format&fit=crop" alt="Flower Ecosystem community">
+                <div class="about-hero-overlay">
+                    <h1>Our Story</h1>
+                    <p>Building the world's largest community of flower enthusiasts, florists, and growers — one bloom at a time.</p>
+                </div>
+            </div>
+
+            <div class="mission-grid reveal-up" style="margin-bottom:4rem;">
+                <div class="mission-img">
+                    <img src="https://images.unsplash.com/photo-1567691482090-4cc36f5721f6?q=800&auto=format&fit=crop" alt="Flower workshop">
+                </div>
+                <div class="mission-text">
+                    <span class="subtitle">OUR MISSION</span>
+                    <h2>Connecting People Through Flowers</h2>
+                    <p>Flower Ecosystem was born from a simple idea: flowers bring joy, and that joy should be shared. We started as a small forum for gardeners in 2024 and grew into a global platform serving over 89,000 members across 40+ countries.</p>
+                    <p>Our mission is to make flowers accessible to everyone — whether you're buying your first bouquet, starting a floristry business, or growing roses in your backyard. We believe that the flower community is one of the most supportive and passionate communities in the world, and we're honored to be its home.</p>
+                    <a href="contact.html" class="btn btn-primary">Join Our Community →</a>
+                </div>
+            </div>
+
+            <div class="stats-row reveal-up" style="margin-bottom:4rem;">
+                <div class="stat-item"><div class="stat-num">89K+</div><div class="stat-label">Community Members</div></div>
+                <div class="stat-item"><div class="stat-num">40+</div><div class="stat-label">Countries</div></div>
+                <div class="stat-item"><div class="stat-num">15K</div><div class="stat-label">Products Listed</div></div>
+                <div class="stat-item"><div class="stat-num">500+</div><div class="stat-label">Events Hosted</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="text-center reveal-up" style="margin-bottom:2rem;">
+                <span class="subtitle">WHAT WE BELIEVE</span>
+                <h2>Our Core Values</h2>
+                <p class="section-subtitle">The principles that guide everything we do</p>
+            </div>
+            <div class="values-grid reveal-up">
+                <div class="value-card">
+                    <div class="value-icon">🌱</div>
+                    <h3>Growth</h3>
+                    <p>We believe in nurturing potential — in flowers, in people, and in communities. Every member's journey matters.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🤝</div>
+                    <h3>Community</h3>
+                    <p>Flowers connect people. We foster a supportive, inclusive space where knowledge flows freely and friendships bloom.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">✨</div>
+                    <h3>Quality</h3>
+                    <p>From the flowers on our marketplace to the courses in our learning center, we uphold the highest standards.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🌍</div>
+                    <h3>Sustainability</h3>
+                    <p>We promote eco-friendly practices, support local growers, and encourage sustainable floristry for a greener planet.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="text-center reveal-up" style="margin-bottom:2rem;">
+                <span class="subtitle">OUR JOURNEY</span>
+                <h2>How We Grew</h2>
+                <p class="section-subtitle">From a small idea to a global community</p>
+            </div>
+            <div class="timeline reveal-up">
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">January 2024</div><h4>The Seed Is Planted</h4><p>Three friends with a shared love for flowers launched Flower Ecosystem as a simple online forum for gardeners.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">June 2024</div><h4>Marketplace Launch</h4><p>Added our marketplace feature, connecting local florists with flower lovers across the country.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">December 2024</div><h4>10K Members</h4><p>Reached our first 10,000 members. Launched the Learning Center with floristry courses and video tutorials.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">April 2025</div><h4>Global Expansion</h4><p>Expanded to 20+ countries. Launched multi-currency support and international shipping options.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">September 2025</div><h4>AI Flower Scanner</h4><p>Introduced our AI-powered flower identification tool, helping members identify any flower with a simple photo.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">January 2026</div><h4>50K Members</h4><p>Celebrated 50,000 members and hosted our first international flower exhibition.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">June 2026</div><h4>89K & Growing</h4><p>Today we serve 89,000+ members in 40+ countries, with 500+ events hosted and counting.</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="text-center reveal-up" style="margin-bottom:2rem;">
+                <span class="subtitle">MEET THE TEAM</span>
+                <h2>The People Behind the Blooms</h2>
+                <p class="section-subtitle">Passionate individuals dedicated to growing the flower community</p>
+            </div>
+            <div class="team-grid reveal-up">
+                <div class="team-card">
+                    <div class="team-img"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=200&auto=format&fit=crop" alt="Amara Osei"></div>
+                    <div class="team-info">
+                        <h4>Amara Osei</h4>
+                        <div class="role">Co-Founder & CEO</div>
+                        <p>Former florist with 12 years of experience. Passionate about making flowers accessible to everyone.</p>
+                        <div class="team-social"><a href="#"><i class="bi bi-twitter"></i></a><a href="#"><i class="bi bi-linkedin"></i></a></div>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-img"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=200&auto=format&fit=crop" alt="Kofi Mensah"></div>
+                    <div class="team-info">
+                        <h4>Kofi Mensah</h4>
+                        <div class="role">Co-Founder & CTO</div>
+                        <p>Full-stack developer who believes technology can bring nature closer to people.</p>
+                        <div class="team-social"><a href="#"><i class="bi bi-twitter"></i></a><a href="#"><i class="bi bi-github"></i></a></div>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-img"><img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=200&auto=format&fit=crop" alt="Sarah Chen"></div>
+                    <div class="team-info">
+                        <h4>Sarah Chen</h4>
+                        <div class="role">Head of Community</div>
+                        <p>Community builder with a background in event management and floristry education.</p>
+                        <div class="team-social"><a href="#"><i class="bi bi-twitter"></i></a><a href="#"><i class="bi bi-linkedin"></i></a></div>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-img"><img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=200&auto=format&fit=crop" alt="James Ofori"></div>
+                    <div class="team-info">
+                        <h4>James Ofori</h4>
+                        <div class="role">Head of Marketplace</div>
+                        <p>E-commerce expert who ensures our sellers and buyers have the best experience possible.</p>
+                        <div class="team-social"><a href="#"><i class="bi bi-twitter"></i></a><a href="#"><i class="bi bi-linkedin"></i></a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="text-center reveal-up" style="margin-bottom:2rem;">
+                <span class="subtitle">TRUSTED BY</span>
+                <h2>Our Partners & Supporters</h2>
+            </div>
+            <div class="partners-grid reveal-up">
+                <div class="partner-logo">🌹 Rosy Farms</div>
+                <div class="partner-logo">🌻 SunBloom Co.</div>
+                <div class="partner-logo">🌷 Tulip Valley</div>
+                <div class="partner-logo">🌿 Green Thumb</div>
+                <div class="partner-logo">🌸 Bloom Academy</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="cta-banner reveal-up">
+                <h2>Ready to Join 89,000+ Flower Lovers?</h2>
+                <p>Whether you're here to buy, sell, learn, or connect — there's a place for you in our community.</p>
+                <div style="display:flex;gap:0.75rem;justify-content:center;">
+                    <a href="register.html" class="btn" style="background:white;color:var(--primary-color);font-weight:600;">Get Started Free →</a>
+                    <a href="contact.html" class="btn btn-outline" style="border-color:rgba(255,255,255,0.5);color:white;">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+</body>
+</html>

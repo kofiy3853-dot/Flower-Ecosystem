@@ -1,0 +1,313 @@
+// js/shared/empty-state.js
+// Empty state components for consistent empty data displays
+
+const EmptyState = {
+    create(options = {}) {
+        const {
+            type = 'default',
+            icon = 'bi-inbox',
+            title = 'No data found',
+            message = 'There\'s nothing to show here right now.',
+            action = null,
+            illustration = null
+        } = options;
+
+        const container = document.createElement('div');
+        container.className = 'empty-state';
+        container.style.cssText = `
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--text-light);
+        `;
+
+        const illustrations = {
+            search: 'bi-search',
+            cart: 'bi-cart-x',
+            orders: 'bi-box-seam',
+            messages: 'bi-chat-dots',
+            notifications: 'bi-bell',
+            favorites: 'bi-heart',
+            products: 'bi-shop',
+            reviews: 'bi-star',
+            events: 'bi-calendar-event',
+            courses: 'bi-book',
+            discussions: 'bi-chat-text',
+            default: icon
+        };
+
+        const iconClass = illustrations[type] || illustrations.default;
+
+        container.innerHTML = `
+            <div class="empty-state-icon" style="
+                font-size: 4rem;
+                margin-bottom: 1.5rem;
+                opacity: 0.4;
+                color: var(--text-muted);
+            ">
+                <i class="bi ${iconClass}"></i>
+            </div>
+            <h3 class="empty-state-title" style="
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: var(--text-main);
+                margin-bottom: 0.5rem;
+            ">${this.escapeHtml(title)}</h3>
+            <p class="empty-state-message" style="
+                font-size: 0.95rem;
+                max-width: 400px;
+                line-height: 1.6;
+                margin-bottom: 1.5rem;
+            ">${this.escapeHtml(message)}</p>
+            ${action ? `
+                <button class="empty-state-action btn btn-primary" style="
+                    padding: 10px 24px;
+                    border-radius: 8px;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                ">
+                    ${action.icon ? `<i class="bi ${action.icon}" style="margin-right: 8px;"></i>` : ''}
+                    ${this.escapeHtml(action.text)}
+                </button>
+            ` : ''}
+        `;
+
+        if (action && action.onClick) {
+            const actionBtn = container.querySelector('.empty-state-action');
+            actionBtn.addEventListener('click', action.onClick);
+        }
+
+        return container;
+    },
+
+    // Pre-configured empty states
+    search(query = '') {
+        return this.create({
+            type: 'search',
+            title: 'No results found',
+            message: query 
+                ? `We couldn't find anything matching "${this.escapeHtml(query)}". Try different keywords or filters.`
+                : 'Try searching for something specific or browse our categories.',
+            action: {
+                text: 'Clear Search',
+                icon: 'bi-x-circle',
+                onClick: () => {
+                    const searchInput = document.getElementById('globalSearchInput');
+                    if (searchInput) {
+                        searchInput.value = '';
+                        searchInput.focus();
+                    }
+                }
+            }
+        });
+    },
+
+    cart() {
+        return this.create({
+            type: 'cart',
+            title: 'Your cart is empty',
+            message: 'Looks like you haven\'t added any flowers yet. Browse our marketplace to find beautiful blooms.',
+            action: {
+                text: 'Start Shopping',
+                icon: 'bi-bag',
+                onClick: () => {
+                    window.location.href = 'marketplace.html';
+                }
+            }
+        });
+    },
+
+    orders() {
+        return this.create({
+            type: 'orders',
+            title: 'No orders yet',
+            message: 'You haven\'t placed any orders. When you do, they\'ll appear here.',
+            action: {
+                text: 'Browse Products',
+                icon: 'bi-shop',
+                onClick: () => {
+                    window.location.href = 'marketplace.html';
+                }
+            }
+        });
+    },
+
+    messages() {
+        return this.create({
+            type: 'messages',
+            title: 'No messages',
+            message: 'You don\'t have any messages yet. Start a conversation with a seller or community member.',
+            action: {
+                text: 'Browse Community',
+                icon: 'bi-people',
+                onClick: () => {
+                    window.location.href = 'community.html';
+                }
+            }
+        });
+    },
+
+    notifications() {
+        return this.create({
+            type: 'notifications',
+            title: 'No notifications',
+            message: 'You\'re all caught up! We\'ll notify you when there\'s something new.'
+        });
+    },
+
+    favorites() {
+        return this.create({
+            type: 'favorites',
+            title: 'No favorites yet',
+            message: 'Save flowers you love by clicking the heart icon on any product.',
+            action: {
+                text: 'Explore Flowers',
+                icon: 'bi-heart',
+                onClick: () => {
+                    window.location.href = 'marketplace.html';
+                }
+            }
+        });
+    },
+
+    reviews() {
+        return this.create({
+            type: 'reviews',
+            title: 'No reviews',
+            message: 'Be the first to review this product! Share your experience with others.'
+        });
+    },
+
+    events() {
+        return this.create({
+            type: 'events',
+            title: 'No upcoming events',
+            message: 'Check back later for upcoming workshops, exhibitions, and flower shows.',
+            action: {
+                text: 'Browse Courses',
+                icon: 'bi-book',
+                onClick: () => {
+                    window.location.href = 'learning.html';
+                }
+            }
+        });
+    },
+
+    courses() {
+        return this.create({
+            type: 'courses',
+            title: 'No courses available',
+            message: 'We\'re working on adding new courses. Check back soon for floristry tutorials and guides.',
+            action: {
+                text: 'Browse Articles',
+                icon: 'bi-journal',
+                onClick: () => {
+                    window.location.href = 'articles.html';
+                }
+            }
+        });
+    },
+
+    discussions() {
+        return this.create({
+            type: 'discussions',
+            title: 'No discussions yet',
+            message: 'Start a conversation! Ask questions, share tips, or connect with other flower enthusiasts.',
+            action: {
+                text: 'Start Discussion',
+                icon: 'bi-plus-circle',
+                onClick: () => {
+                    // Open new discussion modal
+                    if (typeof Modal !== 'undefined') {
+                        Modal.show({
+                            title: 'Start a Discussion',
+                            content: `
+                                <form id="newDiscussionForm">
+                                    <div class="form-group" style="margin-bottom: 1rem;">
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Title</label>
+                                        <input type="text" 
+                                               class="form-input" 
+                                               placeholder="What's on your mind?"
+                                               style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit;">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 1rem;">
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Content</label>
+                                        <textarea class="form-input" 
+                                                  placeholder="Share your thoughts..."
+                                                  rows="4"
+                                                  style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit; resize: vertical;"></textarea>
+                                    </div>
+                                </form>
+                            `,
+                            buttons: [
+                                {
+                                    text: 'Cancel',
+                                    type: 'secondary'
+                                },
+                                {
+                                    text: 'Post',
+                                    type: 'primary',
+                                    onClick: () => {
+                                        // Handle form submission
+                                        if (typeof Toast !== 'undefined') {
+                                            Toast.success('Discussion posted!');
+                                        }
+                                    }
+                                }
+                            ]
+                        });
+                    }
+                }
+            }
+        });
+    },
+
+    products() {
+        return this.create({
+            type: 'products',
+            title: 'No products found',
+            message: 'We couldn\'t find any products matching your criteria. Try adjusting your filters.',
+            action: {
+                text: 'Clear Filters',
+                icon: 'bi-funnel',
+                onClick: () => {
+                    // Clear all filters
+                    const filters = document.querySelectorAll('select');
+                    filters.forEach(f => f.value = 'all');
+                    // Trigger filter change
+                    const event = new Event('change');
+                    filters.forEach(f => f.dispatchEvent(event));
+                }
+            }
+        });
+    },
+
+    // Insert empty state into a container
+    insert(container, options) {
+        if (!container) return null;
+        
+        const emptyState = this.create(options);
+        container.innerHTML = '';
+        container.appendChild(emptyState);
+        
+        return emptyState;
+    },
+
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+};
+
+// Global functions for backward compatibility
+window.createEmptyState = (options) => EmptyState.create(options);
+window.showEmptyState = (container, options) => EmptyState.insert(container, options);
+
+// Export for module usage
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = EmptyState;
+}

@@ -1,0 +1,319 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Flower Details | Flower Ecosystem">
+    <title>Flower Details | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .fd-hero { padding:2rem 0 4rem; }
+        .fd-grid { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:start; }
+        .fd-gallery { position:sticky; top:100px; }
+        .fd-main-img-wrap { position:relative; overflow:hidden; border-radius:12px; margin-bottom:1rem; border:1px solid var(--border-color); cursor:crosshair; }
+        .fd-main-img { width:100%; height:500px; object-fit:cover; display:block; transition:transform 0.3s ease; }
+        .fd-main-img-wrap:hover .fd-main-img { transform:scale(1.5); }
+        .fd-fullscreen-btn { position:absolute; top:1rem; right:1rem; width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.9); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:var(--text-main); transition:all 0.2s; z-index:2; }
+        .fd-fullscreen-btn:hover { background:white; transform:scale(1.1); }
+        .fd-thumbs { display:flex; gap:0.75rem; }
+        .fd-thumb { width:80px; height:80px; object-fit:cover; border-radius:8px; cursor:pointer; border:2px solid transparent; transition:all 0.2s ease; }
+        .fd-thumb.active { border-color:var(--primary-color); }
+        .fd-breadcrumb { background:var(--bg-light); padding:0.75rem 0; border-bottom:1px solid var(--border-color); }
+        .fd-breadcrumb .container { font-size:0.85rem; color:var(--text-light); }
+        .fd-breadcrumb a { color:var(--text-light); }
+        .fd-breadcrumb .sep { margin:0 0.5rem; }
+        .fd-meta { font-size:0.9rem; color:var(--text-light); margin-bottom:1rem; display:flex; gap:1rem; align-items:center; flex-wrap:wrap; }
+        .fd-title { font-size:2.2rem; margin-bottom:0.5rem; line-height:1.2; }
+        .fd-rating { display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap; }
+        .fd-rating-stars { color:#f59e0b; font-size:1rem; }
+        .fd-rating-text { font-size:0.9rem; color:var(--text-light); }
+        .fd-price-row { display:flex; align-items:center; gap:1rem; margin-bottom:0.5rem; flex-wrap:wrap; }
+        .fd-price { font-size:2rem; color:var(--primary-color); font-weight:700; }
+        .fd-old-price { font-size:1.2rem; color:var(--text-light); text-decoration:line-through; }
+        .fd-discount { background:var(--primary-color); color:white; font-size:0.75rem; font-weight:700; padding:0.2rem 0.55rem; border-radius:4px; }
+        .fd-availability { font-size:0.9rem; margin-bottom:1rem; }
+        .fd-avail-in { color:var(--accent-green); }
+        .fd-avail-out { color:var(--error-color); }
+        .fd-flower-type { margin-bottom:1rem; }
+        .fd-flower-type .type-badge { display:inline-block; padding:0.25rem 0.75rem; border-radius:20px; font-size:0.8rem; font-weight:600; }
+        .fd-type-natural { background:rgba(46,125,50,0.12); color:var(--accent-green); }
+        .fd-type-artificial { background:rgba(30,64,175,0.1); color:#1e40af; }
+        .fd-type-preserved { background:rgba(172,50,80,0.1); color:var(--primary-color); }
+        .fd-type-dried { background:rgba(245,158,11,0.15); color:#b8860b; }
+        .fd-desc { font-size:1rem; color:var(--text-light); line-height:1.7; margin-bottom:2rem; }
+        .fd-qty { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; }
+        .fd-qty-btn { width:40px; height:40px; border:1px solid var(--border-color); background:var(--bg-light); border-radius:8px; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
+        .fd-qty-btn:hover { background:var(--border-color); }
+        .fd-qty-input { width:60px; height:40px; text-align:center; border:1px solid var(--border-color); border-radius:8px; font-family:var(--font-sans); font-size:1rem; font-weight:600; }
+        .fd-actions { display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1.5rem; }
+        .fd-actions .btn { width:100%; padding:0.9rem; font-size:1rem; display:flex; align-items:center; justify-content:center; gap:0.5rem; }
+        .fd-actions-row { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+        .fd-msg { text-align:center; font-weight:500; display:none; margin-bottom:0.5rem; padding:0.5rem; border-radius:6px; }
+        .fd-msg-success { color:var(--accent-green); background:rgba(46,125,50,0.08); }
+        .fd-msg-error { color:var(--error-color); background:rgba(190,38,38,0.08); }
+        .fd-seller { background:var(--bg-light); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem 1.5rem; display:flex; align-items:center; gap:1rem; }
+        .fd-seller-avatar { width:52px; height:52px; border-radius:50%; background:var(--primary-color); color:white; display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; }
+        .fd-seller-info { flex:1; }
+        .fd-seller-name { font-weight:600; font-size:1rem; margin-bottom:0.2rem; }
+        .fd-seller-meta { font-size:0.85rem; color:var(--text-light); display:flex; gap:0.75rem; flex-wrap:wrap; }
+        .fd-seller-meta span { display:flex; align-items:center; gap:0.25rem; }
+        .fd-tabs-section { margin-top:3rem; }
+        .fd-tabs { display:flex; gap:0; border-bottom:2px solid var(--border-color); overflow-x:auto; }
+        .fd-tab-btn { padding:0.85rem 1.5rem; background:none; border:none; font-size:0.9rem; font-weight:500; color:var(--text-light); cursor:pointer; position:relative; white-space:nowrap; transition:color 0.2s; }
+        .fd-tab-btn:hover { color:var(--text-main); }
+        .fd-tab-btn.active { color:var(--primary-color); }
+        .fd-tab-btn.active::after { content:''; position:absolute; bottom:-2px; left:0; width:100%; height:2px; background:var(--primary-color); }
+        .fd-tab-content { display:none; padding:2rem 0; }
+        .fd-tab-content.active { display:block; }
+        .fd-specs-table { width:100%; border-collapse:collapse; }
+        .fd-specs-table td { padding:0.65rem 1rem; border-bottom:1px solid var(--border-color); font-size:0.9rem; }
+        .fd-specs-table td:first-child { font-weight:600; color:var(--text-main); width:180px; }
+        .fd-specs-table td:last-child { color:var(--text-light); }
+        .fd-id-list { list-style:none; padding:0; }
+        .fd-id-list li { display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0; border-bottom:1px solid var(--border-color); font-size:0.9rem; }
+        .fd-id-list li .bi-check-circle-fill { color:var(--accent-green); }
+        .fd-id-list li .bi-x-circle-fill { color:var(--error-color); }
+        .fd-related { margin-top:4rem; padding-top:3rem; border-top:1px solid var(--border-color); }
+        .fd-related h2 { font-size:1.4rem; margin-bottom:1.5rem; }
+        .fd-related-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.25rem; }
+        .fd-related-item { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; overflow:hidden; transition:all 0.3s ease; text-decoration:none; color:inherit; }
+        .fd-related-item:hover { transform:translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,0.1); border-color:var(--primary-color); }
+        .fd-related-item img { width:100%; height:180px; object-fit:cover; }
+        .fd-related-item .r-body { padding:0.75rem 1rem 1rem; }
+        .fd-related-item .r-body h4 { font-size:0.95rem; margin-bottom:0.2rem; }
+        .fd-related-item .r-body .r-price { font-size:1.05rem; font-weight:600; color:var(--primary-color); }
+        .fd-care-item { display:flex; gap:0.75rem; padding:0.75rem 0; border-bottom:1px solid var(--border-color); align-items:flex-start; }
+        .fd-care-item i { font-size:1.2rem; color:var(--primary-color); margin-top:0.1rem; flex-shrink:0; }
+        .fd-care-item div { font-size:0.9rem; color:var(--text-light); }
+        .fd-care-item strong { color:var(--text-main); display:block; margin-bottom:0.15rem; }
+        .fd-auth-grid { display:grid; grid-template-columns:1fr 1fr; gap:2rem; margin-top:1rem; }
+        .fd-auth-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; padding:1.5rem; }
+        .fd-auth-card h4 { font-size:1rem; margin-bottom:1rem; }
+        .fd-auth-card.natural { border-left:3px solid var(--accent-green); }
+        .fd-auth-card.artificial { border-left:3px solid #1e40af; }
+        .fd-fullscreen-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:10000; justify-content:center; align-items:center; cursor:zoom-out; }
+        .fd-fullscreen-overlay.active { display:flex; }
+        .fd-fullscreen-overlay img { max-width:90%; max-height:90%; object-fit:contain; border-radius:8px; }
+        .fd-fullscreen-close { position:absolute; top:1.5rem; right:1.5rem; width:48px; height:48px; border-radius:50%; background:rgba(255,255,255,0.15); border:none; color:white; font-size:1.5rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
+        .fd-fullscreen-close:hover { background:rgba(255,255,255,0.3); }
+        .fd-review-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; padding:1.25rem 1.5rem; margin-bottom:0.75rem; }
+        .fd-review-card .rv-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap; gap:0.5rem; }
+        .fd-review-card .rv-author { font-weight:600; font-size:0.95rem; }
+        .fd-review-card .rv-date { font-size:0.8rem; color:var(--text-light); }
+        .fd-review-card .rv-stars { color:#f59e0b; font-size:0.9rem; }
+        .fd-review-card .rv-text { font-size:0.9rem; color:var(--text-light); line-height:1.6; }
+        .fd-missing { text-align:center; padding:4rem 2rem; }
+        .fd-missing h2 { margin-bottom:1rem; }
+        @media(max-width:900px){
+            .fd-grid { grid-template-columns:1fr; gap:2rem; }
+            .fd-main-img { height:350px; }
+            .fd-gallery { position:static; }
+            .fd-related-grid { grid-template-columns:repeat(2,1fr); }
+            .fd-auth-grid { grid-template-columns:1fr; }
+            .fd-actions-row { grid-template-columns:1fr; }
+        }
+        @media(max-width:480px){
+            .fd-related-grid { grid-template-columns:1fr; }
+            .fd-tabs { gap:0; }
+            .fd-tab-btn { padding:0.7rem 1rem; font-size:0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+    <div id="fullscreenOverlay" class="fd-fullscreen-overlay" onclick="closeFullscreen()">
+        <button class="fd-fullscreen-close" onclick="closeFullscreen()" aria-label="Close fullscreen">&times;</button>
+        <img id="fullscreenImg" src="" alt="Fullscreen flower image">
+    </div>
+
+    <div class="fd-breadcrumb">
+        <div class="container">
+            <a href="index.html">Home</a>
+            <span class="sep">›</span>
+            <a href="marketplace.html">Marketplace</a>
+            <span class="sep">›</span>
+            <span id="bcCategory" style="color:var(--text-light);"></span>
+            <span class="sep">›</span>
+            <span id="bcTitle" style="color:var(--text-main);">Flower</span>
+        </div>
+    </div>
+
+    <main class="fd-hero">
+        <div class="container fd-grid" id="mainContent">
+            <div class="fd-gallery reveal-up" id="gallerySection">
+                <div class="fd-main-img-wrap">
+                    <img id="fdMainImg" src="" alt="Flower image" class="fd-main-img" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=600&auto=format&fit=crop'">
+                    <button class="fd-fullscreen-btn" onclick="openFullscreen()" aria-label="View fullscreen" title="View fullscreen">
+                        <i class="bi bi-arrows-fullscreen"></i>
+                    </button>
+                </div>
+                <div class="fd-thumbs" id="fdThumbs"></div>
+            </div>
+
+            <div class="reveal-up" style="animation-delay:0.1s;">
+                <div class="fd-meta">
+                    <span id="fdCategory" style="text-transform:uppercase; font-weight:600; color:var(--accent-green); letter-spacing:0.05em;"></span>
+                    <span id="fdBadge" style="background:var(--primary-color); color:white; padding:0.15rem 0.5rem; border-radius:4px; font-size:0.7rem; font-weight:600; display:none;"></span>
+                </div>
+                <h1 id="fdTitle" class="fd-title">Loading...</h1>
+
+                <div class="fd-rating" id="fdRating"></div>
+
+                <div class="fd-price-row">
+                    <span class="fd-price" id="fdPrice"></span>
+                    <span class="fd-old-price" id="fdOldPrice" style="display:none;"></span>
+                    <span class="fd-discount" id="fdDiscount" style="display:none;"></span>
+                </div>
+
+                <div class="fd-availability" id="fdAvailability"></div>
+
+                <div class="fd-flower-type" id="fdFlowerType"></div>
+
+                <p class="fd-desc" id="fdDesc"></p>
+
+                <div class="fd-qty">
+                    <span style="font-weight:500;">Quantity:</span>
+                    <button class="fd-qty-btn" onclick="updateQty(-1)" aria-label="Decrease quantity">−</button>
+                    <input type="number" id="fdQty" class="fd-qty-input" value="1" min="1" aria-label="Quantity" readonly>
+                    <button class="fd-qty-btn" onclick="updateQty(1)" aria-label="Increase quantity">+</button>
+                </div>
+
+                <div class="fd-msg" id="fdMsg"></div>
+
+                <div class="fd-actions">
+                    <button class="btn btn-primary" id="fdAddBtn"><i class="bi bi-cart-plus"></i> Add to Cart</button>
+                    <div class="fd-actions-row">
+                        <button class="btn btn-outline" id="fdBuyBtn"><i class="bi bi-lightning-fill"></i> Buy Now</button>
+                        <button class="btn btn-outline" id="fdWishBtn"><i class="bi bi-heart"></i> Add to Wishlist</button>
+                    </div>
+                </div>
+
+                <div class="fd-seller" id="fdSeller">
+                    <div class="fd-seller-avatar" id="fdSellerAvatar">🌸</div>
+                    <div class="fd-seller-info">
+                        <div class="fd-seller-name" id="fdSellerName"></div>
+                        <div class="fd-seller-meta" id="fdSellerMeta"></div>
+                        <a id="fdSellerLink" href="#" style="font-size:0.85rem; color:var(--primary-color);">View Seller Profile →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container" style="margin-top:3rem;">
+            <div class="fd-tabs-section reveal-up">
+                <div class="fd-tabs" role="tablist">
+                    <button class="fd-tab-btn active" role="tab" aria-selected="true" data-tab="description">Description</button>
+                    <button class="fd-tab-btn" role="tab" aria-selected="false" data-tab="care">Care Guide</button>
+                    <button class="fd-tab-btn" role="tab" aria-selected="false" data-tab="identification">Identification</button>
+                    <button class="fd-tab-btn" role="tab" aria-selected="false" data-tab="reviews">Reviews</button>
+                </div>
+
+                <div id="tab-description" class="fd-tab-content active" role="tabpanel">
+                    <p id="tabDescText" style="font-size:0.95rem; color:var(--text-light); line-height:1.8;"></p>
+                </div>
+
+                <div id="tab-care" class="fd-tab-content" role="tabpanel">
+                    <div id="tabCareContent">
+                        <p style="color:var(--text-light);">Care instructions specific to this flower type.</p>
+                    </div>
+                </div>
+
+                <div id="tab-identification" class="fd-tab-content" role="tabpanel">
+                    <div id="tabIdContent"></div>
+                </div>
+
+                <div id="tab-reviews" class="fd-tab-content" role="tabpanel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem;">
+                        <h3 style="font-size:1.2rem; margin:0;">Customer Reviews</h3>
+                        <span id="fdReviewSummary" style="font-size:0.9rem; color:var(--text-light);"></span>
+                    </div>
+                    <div id="fdReviewList"></div>
+                    <div style="margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border-color);">
+                        <h4 style="font-size:1rem; margin-bottom:1rem;">Write a Review</h4>
+                        <form id="reviewForm" novalidate>
+                            <div style="margin-bottom:1rem;">
+                                <label style="display:block; font-weight:500; margin-bottom:0.5rem; font-size:0.9rem;">Rating *</label>
+                                <div style="display:flex; gap:0.5rem;">
+                                    <label style="cursor:pointer; font-size:1.5rem; color:var(--border-color); transition:color 0.2s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color='var(--border-color)'">
+                                        <input type="radio" name="rating" value="1" style="display:none;"> ★
+                                    </label>
+                                    <label style="cursor:pointer; font-size:1.5rem; color:var(--border-color); transition:color 0.2s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color='var(--border-color)'">
+                                        <input type="radio" name="rating" value="2" style="display:none;"> ★★
+                                    </label>
+                                    <label style="cursor:pointer; font-size:1.5rem; color:var(--border-color); transition:color 0.2s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color='var(--border-color)'">
+                                        <input type="radio" name="rating" value="3" style="display:none;"> ★★★
+                                    </label>
+                                    <label style="cursor:pointer; font-size:1.5rem; color:var(--border-color); transition:color 0.2s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color='var(--border-color)'">
+                                        <input type="radio" name="rating" value="4" style="display:none;"> ★★★★
+                                    </label>
+                                    <label style="cursor:pointer; font-size:1.5rem; color:var(--border-color); transition:color 0.2s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color='var(--border-color)'">
+                                        <input type="radio" name="rating" value="5" style="display:none;"> ★★★★★
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom:1rem;">
+                                <label for="reviewText" style="display:block; font-weight:500; margin-bottom:0.5rem; font-size:0.9rem;">Your Review *</label>
+                                <textarea id="reviewText" class="form-input" rows="4" placeholder="Share your experience with this product..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="padding:0.7rem 2rem;">Submit Review</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="reveal-up" style="margin-top:2rem;">
+                <h3 style="font-size:1.2rem; margin-bottom:1rem;">Flower Specifications</h3>
+                <table class="fd-specs-table" id="fdSpecsTable">
+                    <tbody id="fdSpecsBody"></tbody>
+                </table>
+            </div>
+
+            <div class="reveal-up" style="margin-top:3rem;">
+                <h3 style="font-size:1.2rem; margin-bottom:1rem;">🌺 Flower Authenticity</h3>
+                <p style="font-size:0.9rem; color:var(--text-light); margin-bottom:1rem;">Learn how to identify and verify this flower type.</p>
+                <div class="fd-auth-grid" id="fdAuthGrid">
+                    <div class="fd-auth-card natural">
+                        <h4 style="color:var(--accent-green);">✅ Natural Flower Indicators</h4>
+                        <ul class="fd-id-list" id="fdNaturalIndicators"></ul>
+                    </div>
+                    <div class="fd-auth-card artificial">
+                        <h4 style="color:#1e40af;">🔍 Artificial/Alternative Indicators</h4>
+                        <ul class="fd-id-list" id="fdArtificialIndicators"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container">
+            <div class="fd-related">
+                <h2>🌸 You May Also Like</h2>
+                <div class="fd-related-grid" id="fdRelated"></div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/product-detail.js"></script>
+    <script>
+        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) { e.preventDefault(); this.parentElement.classList.toggle('mobile-open'); }
+            });
+        });
+    </script>
+</body>
+</html>

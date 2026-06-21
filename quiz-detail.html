@@ -1,0 +1,283 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Take a quiz to test your floristry knowledge on Flower Ecosystem.">
+    <meta property="og:title" content="Quiz | Flower Ecosystem">
+    <meta property="og:description" content="Test your floristry knowledge with interactive quizzes.">
+    <meta property="og:type" content="website">
+    <title>Quiz - Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=17.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .quiz-hero { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); padding: 3rem 0; color: var(--white); }
+        .quiz-hero .breadcrumb { font-size: 0.85rem; opacity: 0.7; margin-bottom: 1.5rem; }
+        .quiz-hero .breadcrumb a { color: var(--white); text-decoration: underline; }
+        .quiz-hero h1 { font-family: var(--font-serif); font-size: 2.2rem; margin-bottom: 0.75rem; }
+        .quiz-hero .quiz-meta { display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 1rem 0; font-size: 0.9rem; opacity: 0.85; }
+        .quiz-hero .quiz-meta span { display: flex; align-items: center; gap: 0.35rem; }
+        .quiz-hero .quiz-description { font-size: 0.95rem; opacity: 0.8; max-width: 700px; line-height: 1.7; margin-top: 0.5rem; }
+        .quiz-body { max-width: 800px; margin: 0 auto; padding: 2rem 2rem 4rem; }
+        .quiz-card { background: var(--bg-white); border-radius: 12px; border: 1px solid var(--border-color); padding: 2rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); }
+        .quiz-card h2 { font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .quiz-card h2 .q-num { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(172,50,80,0.1); color: var(--primary-color); font-size: 0.85rem; font-weight: 600; flex-shrink: 0; }
+        .quiz-option { display: block; padding: 0.75rem 1rem; border: 2px solid var(--border-color); border-radius: 10px; margin-bottom: 0.6rem; cursor: pointer; transition: all 0.2s ease; font-size: 0.92rem; background: var(--bg-main); }
+        .quiz-option:hover { border-color: var(--primary-color); background: rgba(172,50,80,0.04); transform: translateX(4px); }
+        .quiz-option.selected { border-color: var(--primary-color); background: rgba(172,50,80,0.08); font-weight: 500; }
+        .quiz-option.correct { border-color: #27ae60; background: rgba(39,174,96,0.08); }
+        .quiz-option.correct::after { content: " \2713"; color: #27ae60; font-weight: 700; float: right; }
+        .quiz-option.incorrect { border-color: #e74c3c; background: rgba(231,76,60,0.08); }
+        .quiz-option.incorrect::after { content: " \2717"; color: #e74c3c; font-weight: 700; float: right; }
+        .quiz-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; }
+        .quiz-actions .btn { min-width: 160px; }
+        .score-section { text-align: center; padding: 2.5rem 1.5rem; border-radius: 12px; background: linear-gradient(135deg, var(--bg-white) 0%, rgba(251,250,248,0.5) 100%); border: 1px solid var(--border-color); }
+        .score-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-size: 2.5rem; font-weight: 700; font-family: var(--font-serif); border: 4px solid; }
+        .score-circle.excellent { border-color: #27ae60; color: #27ae60; }
+        .score-circle.good { border-color: #f39c12; color: #f39c12; }
+        .score-circle.needs-work { border-color: #e74c3c; color: #e74c3c; }
+        .score-heading { font-family: var(--font-serif); font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .score-feedback { color: var(--text-light); font-size: 0.95rem; max-width: 500px; margin: 0 auto 1.5rem; line-height: 1.6; }
+        .score-stats { display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem; }
+        .score-stat { text-align: center; }
+        .score-stat .num { font-size: 1.75rem; font-weight: 700; font-family: var(--font-serif); }
+        .score-stat .num.correct-num { color: #27ae60; }
+        .score-stat .num.incorrect-num { color: #e74c3c; }
+        .score-stat .label { font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em; }
+        @media (max-width: 768px) {
+            .quiz-hero h1 { font-size: 1.6rem; }
+            .quiz-body { padding: 1.5rem 1rem 3rem; }
+            .quiz-card { padding: 1.25rem; }
+            .quiz-actions { flex-direction: column; }
+            .quiz-actions .btn { width: 100%; }
+            .score-stats { gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <main>
+        <section class="quiz-hero" id="quizHero">
+            <div class="container">
+                <p class="breadcrumb"><a href="index.html">Home</a> / <a href="learning.html">Learning Center</a> / <a href="my-learning.html">Quizzes</a> / <span id="breadcrumbQuiz">Quiz</span></p>
+                <h1 id="quizTitle">Loading...</h1>
+                <p class="quiz-description" id="quizDescription"></p>
+                <div class="quiz-meta">
+                    <span><i class="bi bi-question-circle"></i> <span id="questionCount">0</span> questions</span>
+                    <span><i class="bi bi-pencil-square"></i> Multiple Choice</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="quiz-body" id="quizBody">
+                <div id="quizLoading" style="text-align:center;padding:3rem 0;">
+                    <div style="font-size:3rem;color:var(--text-light);margin-bottom:1rem;"><i class="bi bi-arrow-repeat"></i></div>
+                    <p style="color:var(--text-light);">Loading quiz...</p>
+                </div>
+                <div id="quizQuestions" style="display:none;"></div>
+                <div id="quizActions" style="display:none;">
+                    <div class="quiz-actions">
+                        <button class="btn btn-primary" id="submitQuiz"><i class="bi bi-check2-circle"></i> Submit Answers</button>
+                        <button class="btn btn-outline" id="resetQuiz"><i class="bi bi-arrow-counterclockwise"></i> Clear All</button>
+                    </div>
+                </div>
+                <div id="quizResult" style="display:none;"></div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-container"></div>
+    <div id="auth-modal-container"></div>
+
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script>
+        const allQuizzes = [
+            {
+                "id": "qz1",
+                "course_id": "c1",
+                "title": "Arrangement Fundamentals Quiz",
+                "description": "Test your knowledge of flower arrangement basics including design principles, tools, and techniques.",
+                "questions": [
+                    { "id": "qq1", "question": "Which element of floral design refers to the visual path the eye follows through an arrangement?", "options": ["Line", "Form", "Texture", "Space"], "correct": 0 },
+                    { "id": "qq2", "question": "What is the recommended stem cutting angle for optimal water absorption?", "options": ["90 degrees", "45 degrees", "30 degrees", "60 degrees"], "correct": 1 },
+                    { "id": "qq3", "question": "Which flower type is NOT suitable for a hand-tied bouquet?", "options": ["Roses", "Tulips", "Sunflowers", "Broken-stemmed flowers"], "correct": 3 },
+                    { "id": "qq4", "question": "What does the golden ratio in floral design help achieve?", "options": ["Color harmony", "Visual balance", "Faster arrangement", "Longer vase life"], "correct": 1 },
+                    { "id": "qq5", "question": "Which tool is essential for removing thorns from rose stems?", "options": ["Floral shears", "Stem stripper", "Ribbon scissors", "Floral tape"], "correct": 1 }
+                ]
+            },
+            {
+                "id": "qz2",
+                "course_id": "c2",
+                "title": "Flower Identification Test",
+                "description": "Test your ability to distinguish natural, artificial, preserved, and dried flowers using key indicators.",
+                "questions": [
+                    { "id": "qq6", "question": "Which feature usually indicates a natural flower?", "options": ["Plastic Stem", "Natural Fragrance", "Uniform Petals", "Wire Stem"], "correct": 1 },
+                    { "id": "qq7", "question": "What is the most reliable test for identifying silk flowers?", "options": ["Smell test", "Burn test", "Water test", "Weight test"], "correct": 1 },
+                    { "id": "qq8", "question": "Preserved flowers are best characterized by:", "options": ["Wire stems", "Natural flexibility", "Firm but pliable texture", "Complete rigidity"], "correct": 2 },
+                    { "id": "qq9", "question": "Which flower type has the longest lifespan without water?", "options": ["Fresh-cut", "Artificial", "Preserved", "Dried"], "correct": 1 }
+                ]
+            },
+            {
+                "id": "qz3",
+                "course_id": "c3",
+                "title": "Wedding Floristry Knowledge Check",
+                "description": "Challenge your wedding floristry expertise with questions on bouquets, pricing, and event design.",
+                "questions": [
+                    { "id": "qq10", "question": "What is the most popular bridal bouquet shape?", "options": ["Cascading", "Round", "Hand-tied", "Composite"], "correct": 1 },
+                    { "id": "qq11", "question": "What percentage of a wedding budget is typically spent on flowers?", "options": ["5-10%", "10-15%", "20-25%", "30-35%"], "correct": 1 },
+                    { "id": "qq12", "question": "Which flower is most commonly used in wedding bouquets?", "options": ["Tulips", "Roses", "Sunflowers", "Daisies"], "correct": 1 },
+                    { "id": "qq13", "question": "When should final wedding flower counts be confirmed with the florist?", "options": ["1 week before", "2-4 weeks before", "2 months before", "The day before"], "correct": 1 }
+                ]
+            }
+        ];
+
+        (() => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const quizId = urlParams.get('id');
+            const quiz = allQuizzes.find(q => q.id === quizId) || allQuizzes[0];
+            if (!quiz) {
+                document.getElementById('quizTitle').textContent = 'Quiz not found';
+                document.getElementById('quizDescription').textContent = 'The requested quiz could not be found.';
+                return;
+            }
+
+            document.title = `${quiz.title} - Flower Ecosystem`;
+            document.getElementById('breadcrumbQuiz').textContent = quiz.title;
+            document.getElementById('quizTitle').textContent = quiz.title;
+            document.getElementById('quizDescription').textContent = quiz.description;
+            document.getElementById('questionCount').textContent = quiz.questions.length;
+
+            const questionsEl = document.getElementById('quizQuestions');
+            const actionsEl = document.getElementById('quizActions');
+            const resultEl = document.getElementById('quizResult');
+            const loadingEl = document.getElementById('quizLoading');
+
+            loadingEl.style.display = 'none';
+            questionsEl.style.display = '';
+            actionsEl.style.display = '';
+
+            let submitted = false;
+
+            questionsEl.innerHTML = quiz.questions.map((q, qi) => `
+                <div class="quiz-card" data-qi="${qi}">
+                    <h2><span class="q-num">${qi + 1}</span> ${q.question}</h2>
+                    ${q.options.map((opt, oi) => `
+                        <label class="quiz-option" data-qi="${qi}" data-oi="${oi}">
+                            <input type="radio" name="q${qi}" value="${oi}" style="display:none;"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `).join('');
+
+            questionsEl.addEventListener('click', (e) => {
+                if (submitted) return;
+                const opt = e.target.closest('.quiz-option');
+                if (!opt) return;
+                const qi = parseInt(opt.dataset.qi);
+                const card = opt.closest('.quiz-card');
+                card.querySelectorAll('.quiz-option').forEach(el => el.classList.remove('selected'));
+                opt.classList.add('selected');
+                opt.querySelector('input').checked = true;
+            });
+
+            document.getElementById('submitQuiz').addEventListener('click', () => {
+                if (submitted) return;
+                const qs = quiz.questions;
+                let correct = 0;
+                qs.forEach((q, qi) => {
+                    const selected = document.querySelector(`input[name="q${qi}"]:checked`);
+                    const val = selected ? parseInt(selected.value) : -1;
+                    const opts = document.querySelectorAll(`.quiz-card[data-qi="${qi}"] .quiz-option`);
+                    opts.forEach((el, oi) => {
+                        el.classList.remove('selected', 'correct', 'incorrect');
+                        if (oi === q.correct) el.classList.add('correct');
+                        if (oi === val && val !== q.correct) el.classList.add('incorrect');
+                        if (oi === val) el.classList.add('selected');
+                    });
+                    if (val === q.correct) correct++;
+                });
+                submitted = true;
+                actionsEl.style.display = 'none';
+                resultEl.style.display = '';
+
+                const total = qs.length;
+                const pct = Math.round((correct / total) * 100);
+                let grade, circleClass, heading, feedback;
+                if (pct >= 80) {
+                    grade = 'Excellent';
+                    circleClass = 'excellent';
+                    heading = 'Excellent Work!';
+                    feedback = 'You have a strong understanding of this topic. You\'re well on your way to becoming a floristry expert!';
+                } else if (pct >= 50) {
+                    grade = 'Good';
+                    circleClass = 'good';
+                    heading = 'Good Effort!';
+                    feedback = 'You have a solid foundation, but reviewing the material could help strengthen your knowledge.';
+                } else {
+                    grade = 'Keep Studying';
+                    circleClass = 'needs-work';
+                    heading = 'Keep Studying!';
+                    feedback = 'Don\'t worry — review the lessons and try again. Practice makes perfect!';
+                }
+
+                const incorrect = total - correct;
+                resultEl.innerHTML = `
+                    <div class="score-section">
+                        <div class="score-circle ${circleClass}">${pct}%</div>
+                        <h2 class="score-heading">${heading}</h2>
+                        <p class="score-feedback">${feedback}</p>
+                        <div class="score-stats">
+                            <div class="score-stat">
+                                <div class="num correct-num">${correct}</div>
+                                <div class="label">Correct</div>
+                            </div>
+                            <div class="score-stat">
+                                <div class="num incorrect-num">${incorrect}</div>
+                                <div class="label">Incorrect</div>
+                            </div>
+                            <div class="score-stat">
+                                <div class="num" style="color:var(--primary-color);">${total}</div>
+                                <div class="label">Total</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="retryQuiz"><i class="bi bi-arrow-repeat"></i> Retry Quiz</button>
+                    </div>
+                `;
+
+                document.getElementById('retryQuiz').addEventListener('click', () => {
+                    submitted = false;
+                    resultEl.style.display = 'none';
+                    actionsEl.style.display = '';
+                    document.querySelectorAll('.quiz-option').forEach(el => el.classList.remove('selected', 'correct', 'incorrect'));
+                    document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+
+            document.getElementById('resetQuiz').addEventListener('click', () => {
+                if (submitted) return;
+                document.querySelectorAll('.quiz-option').forEach(el => el.classList.remove('selected'));
+                document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+            });
+        })();
+    </script>
+    <script>
+        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) { e.preventDefault(); this.parentElement.classList.toggle('mobile-open'); }
+            });
+        });
+    </script>
+</body>
+</html>

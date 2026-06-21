@@ -1,0 +1,40 @@
+{
+    "users": [
+        { "id": "u1", "name": "Jane Doe", "email": "jane@example.com", "role": "buyer", "joined": "Jan 2026", "status": "active", "orders": 12, "reports": 0 },
+        { "id": "u2", "name": "Ofosu Stephen", "email": "stephen@example.com", "role": "seller", "joined": "Feb 2026", "status": "active", "orders": 48, "reports": 1 },
+        { "id": "u3", "name": "Rexford Ayisi", "email": "rexford@example.com", "role": "seller", "joined": "Mar 2026", "status": "pending", "orders": 0, "reports": 0 },
+        { "id": "u4", "name": "Mary Owusu", "email": "mary@example.com", "role": "buyer", "joined": "Apr 2026", "status": "active", "orders": 5, "reports": 0 },
+        { "id": "u5", "name": "Kwame Boateng", "email": "kwame@example.com", "role": "seller", "joined": "May 2026", "status": "suspended", "orders": 3, "reports": 4 },
+        { "id": "u6", "name": "Ama Serwaa", "email": "ama@example.com", "role": "buyer", "joined": "May 2026", "status": "active", "orders": 8, "reports": 0 },
+        { "id": "u7", "name": "Yaw Asare", "email": "yaw@example.com", "role": "grower", "joined": "Jun 2026", "status": "pending", "orders": 0, "reports": 0 },
+        { "id": "u8", "name": "Efia Jackson", "email": "efia@example.com", "role": "buyer", "joined": "Jun 2026", "status": "banned", "orders": 2, "reports": 7 }
+    ],
+    "sellerVerifications": [
+        { "id": "v1", "name": "Rexford Ayisi", "email": "rexford@example.com", "business": "Tropical Blooms Co.", "applied": "10 Jun 2026", "status": "pending", "documents": true, "rating": 0 },
+        { "id": "v2", "name": "Nadia Okonkwo", "email": "nadia@example.com", "business": "Luxury Events Floristry", "applied": "8 Jun 2026", "status": "pending", "documents": true, "rating": 0 },
+        { "id": "v3", "name": "Akua Nyarko", "email": "akua@example.com", "business": "Corporate Bloom", "applied": "5 Jun 2026", "status": "reviewing", "documents": true, "rating": 0 },
+        { "id": "v4", "name": "Esi Amoako", "email": "esi@example.com", "business": "Wildflower Studio", "applied": "1 Jun 2026", "status": "approved", "documents": true, "rating": 4.6 },
+        { "id": "v5", "name": "Yaw Boateng", "email": "yaw@example.com", "business": "Orchid Paradise", "applied": "28 May 2026", "status": "approved", "documents": true, "rating": 4.8 }
+    ],
+    "productApprovals": [
+        { "id": "pa1", "name": "Premium Orchids Deluxe", "seller": "Orchid Paradise", "price": 59.99, "submitted": "12 Jun 2026", "status": "pending", "category": "orchids", "image": "https://images.unsplash.com/photo-1522926193341-e9ffd686c60f?q=80&w=200&auto=format&fit=crop" },
+        { "id": "pa2", "name": "Dried Lavender Wreath", "seller": "Provence Fields", "price": 24.99, "submitted": "11 Jun 2026", "status": "pending", "category": "wildflowers", "image": "https://images.unsplash.com/photo-1499789500731-7f1c040cd617?q=80&w=200&auto=format&fit=crop" },
+        { "id": "pa3", "name": "Rose Gift Box", "seller": "Rose Garden Co.", "price": 44.99, "submitted": "10 Jun 2026", "status": "reviewing", "category": "roses", "image": "https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?q=80&w=200&auto=format&fit=crop" },
+        { "id": "pa4", "name": "Succulent Wall Art", "seller": "Desert Blooms", "price": 32.50, "submitted": "8 Jun 2026", "status": "approved", "category": "succulents", "image": "https://images.unsplash.com/photo-1485955900006-10f4d324d411?q=80&w=200&auto=format&fit=crop" },
+        { "id": "pa5", "name": "Wedding Arch Package", "seller": "Floral Dreams Studio", "price": 199.99, "submitted": "5 Jun 2026", "status": "rejected", "category": "bouquets", "image": "https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=200&auto=format&fit=crop" }
+    ],
+    "moderation": [
+        { "id": "m1", "type": "review", "author": "Kwame A.", "content": "Great product but shipping was slow. Would buy again.", "reported": "12 Jun 2026", "status": "pending", "flags": 3, "reason": "spam" },
+        { "id": "m2", "type": "discussion", "author": "Anonymous", "content": "Check out my shop at flowers-4-u.com — best deals!", "reported": "11 Jun 2026", "status": "pending", "flags": 5, "reason": "promotion" },
+        { "id": "m3", "type": "review", "author": "FlowerLover99", "content": "These photos are stolen from my Etsy shop.", "reported": "10 Jun 2026", "status": "reviewing", "flags": 2, "reason": "copyright" },
+        { "id": "m4", "type": "discussion", "author": "GrowerJane", "content": "Does anyone know where to buy rare orchid seeds?", "reported": "8 Jun 2026", "status": "cleared", "flags": 1, "reason": "none" },
+        { "id": "m5", "type": "review", "author": "FakeReviewBot", "content": "Amazing! Best flowers ever!!! Buy now!!! www.fake-flowers.net", "reported": "7 Jun 2026", "status": "pending", "flags": 8, "reason": "spam" }
+    ],
+    "reports": [
+        { "id": "r1", "type": "User Report", "description": "User repeatedly posting spam links in discussions", "reporter": "Moderator", "date": "12 Jun 2026", "priority": "high", "status": "open" },
+        { "id": "r2", "type": "Product Report", "description": "Listed product images do not match actual item", "reporter": "Buyer", "date": "11 Jun 2026", "priority": "medium", "status": "open" },
+        { "id": "r3", "type": "Seller Report", "description": "Seller not fulfilling orders — 4 complaints this week", "reporter": "System", "date": "10 Jun 2026", "priority": "high", "status": "investigating" },
+        { "id": "r4", "type": "Content Report", "description": "Review contains offensive language", "reporter": "User", "date": "9 Jun 2026", "priority": "low", "status": "resolved" },
+        { "id": "r5", "type": "Technical Issue", "description": "Checkout page not loading on mobile devices", "reporter": "User", "date": "8 Jun 2026", "priority": "high", "status": "resolved" }
+    ]
+}

@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Share your flower success story with the community.">
+    <title>Share Your Story | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .create-form { max-width:720px; margin:0 auto; }
+        .form-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; margin-bottom:1rem; }
+        .form-card h2 { font-size:1.1rem; margin-bottom:1rem; }
+        .form-group { margin-bottom:1rem; }
+        .form-group label { display:block; font-size:0.88rem; font-weight:500; margin-bottom:0.35rem; color:var(--text-main); }
+        .form-group input[type="text"],
+        .form-group textarea,
+        .form-group select { width:100%; padding:0.6rem 0.8rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:inherit; font-size:0.9rem; background:var(--bg-main); color:var(--text-main); transition:border-color 0.2s; }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus { outline:none; border-color:var(--primary-color); }
+        .form-group textarea { min-height:250px; resize:vertical; line-height:1.7; }
+        .form-hint { font-size:0.78rem; color:var(--text-muted); margin-top:0.25rem; }
+        .upload-area { border:2px dashed var(--border-color); border-radius:var(--radius-md); padding:2rem; text-align:center; cursor:pointer; transition:all 0.2s; }
+        .upload-area:hover { border-color:var(--primary-color); background:rgba(172,50,80,0.02); }
+        .upload-area i { font-size:2rem; color:var(--text-muted); display:block; margin-bottom:0.5rem; }
+        .upload-area p { font-size:0.85rem; color:var(--text-light); }
+        .preview-grid { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.75rem; }
+        .preview-item { position:relative; width:100px; height:100px; border-radius:var(--radius-sm); overflow:hidden; border:1px solid var(--border-color); }
+        .preview-item img { width:100%; height:100%; object-fit:cover; }
+        .preview-remove { position:absolute; top:2px; right:2px; width:20px; height:20px; border-radius:50%; background:rgba(0,0,0,0.6); color:white; border:none; cursor:pointer; font-size:0.7rem; display:flex; align-items:center; justify-content:center; }
+        .guidelines { background:var(--bg-light); border-radius:var(--radius-sm); padding:1rem; margin-bottom:1rem; }
+        .guidelines h3 { font-size:0.85rem; margin-bottom:0.5rem; }
+        .guidelines ul { padding-left:1.2rem; margin:0; }
+        .guidelines li { font-size:0.82rem; color:var(--text-light); margin-bottom:0.25rem; }
+        .form-actions { display:flex; gap:0.75rem; justify-content:flex-end; margin-top:1rem; }
+        .error-msg { color:var(--error-color); font-size:0.85rem; margin-top:0.5rem; display:none; }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="section-padding" style="padding-top:2rem;">
+        <div class="container">
+            <a href="success-stories.html" class="back-link" style="display:inline-flex;align-items:center;gap:0.4rem;font-size:0.88rem;color:var(--text-light);margin-bottom:1rem;text-decoration:none;"><i class="bi bi-arrow-left"></i> Back to Stories</a>
+            <div class="create-form">
+                <div class="guidelines">
+                    <h3><i class="bi bi-lightbulb"></i> Tips for a Great Story</h3>
+                    <ul>
+                        <li>Start with a compelling title that captures your achievement</li>
+                        <li>Share the journey — what challenges did you overcome?</li>
+                        <li>Mention specific techniques or resources that helped you</li>
+                        <li>Include photos of your work, garden, or event</li>
+                        <li>Be authentic and inspiring — your story could motivate someone else!</li>
+                    </ul>
+                </div>
+
+                <div class="form-card">
+                    <h2><i class="bi bi-heart" style="color:var(--primary-color)"></i> Share Your Success Story</h2>
+                    <form id="createStoryForm">
+                        <div class="form-group">
+                            <label for="storyTitle">Title *</label>
+                            <input type="text" id="storyTitle" placeholder="e.g., From Hobby to Full-Time Florist" maxlength="255" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="storyCategory">Category</label>
+                            <select id="storyCategory">
+                                <option value="">Select a category</option>
+                                <option value="Floristry Business">Floristry Business</option>
+                                <option value="Gardening">Gardening</option>
+                                <option value="Community">Community</option>
+                                <option value="Competition">Competition</option>
+                                <option value="Education">Education</option>
+                                <option value="Personal Growth">Personal Growth</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="storyContent">Your Story *</label>
+                            <textarea id="storyContent" placeholder="Tell us about your journey, what you achieved, and how the community helped you..." required></textarea>
+                            <div class="form-hint">Write as much detail as you'd like. Line breaks will be preserved.</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Cover Photo (optional)</label>
+                            <div class="upload-area" id="uploadArea">
+                                <i class="bi bi-cloud-arrow-up"></i>
+                                <p>Click or drag a photo here</p>
+                                <p style="font-size:0.75rem;">Max 5 images, 5MB each</p>
+                            </div>
+                            <input type="file" id="fileInput" multiple accept="image/*" style="display:none;">
+                            <div class="preview-grid" id="previewGrid"></div>
+                        </div>
+                        <div class="error-msg" id="errorMsg"></div>
+                        <div class="form-actions">
+                            <a href="success-stories.html" class="btn btn-outline">Cancel</a>
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
+                                <i class="bi bi-send"></i> Publish Story
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('flower-token')) { openAuthModal('login'); return; }
+
+            let uploadedFiles = [];
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+            uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+            uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+            uploadArea.addEventListener('drop', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+            fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+            function handleFiles(files) {
+                const grid = document.getElementById('previewGrid');
+                Array.from(files).forEach(file => {
+                    if (file.size > 5 * 1024 * 1024 || !file.type.startsWith('image/') || uploadedFiles.length >= 5) return;
+                    uploadedFiles.push(file);
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const idx = uploadedFiles.length - 1;
+                        const div = document.createElement('div');
+                        div.className = 'preview-item';
+                        div.innerHTML = `<img src="${e.target.result}" alt="Preview"><button class="preview-remove" onclick="this.parentElement.remove();uploadedFiles.splice(${idx},1);"><i class="bi bi-x"></i></button>`;
+                        grid.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            document.getElementById('createStoryForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const title = document.getElementById('storyTitle').value.trim();
+                const content = document.getElementById('storyContent').value.trim();
+                const category = document.getElementById('storyCategory').value;
+                const errorMsg = document.getElementById('errorMsg');
+                const submitBtn = document.getElementById('submitBtn');
+
+                errorMsg.style.display = 'none';
+                if (!title || !content) { errorMsg.textContent = 'Title and content are required'; errorMsg.style.display = 'block'; return; }
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="auth-spinner" style="margin-right:0.5rem;"></span> Publishing...';
+
+                const formData = new FormData();
+                formData.append('title', title);
+                formData.append('content', content);
+                if (category) formData.append('category', category);
+                uploadedFiles.forEach(f => formData.append('images', f));
+
+                try {
+                    const token = localStorage.getItem('flower-token');
+                    const res = await fetch('/api/stories', {
+                        method: 'POST',
+                        headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+                        body: formData
+                    });
+                    if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Failed'); }
+                    const data = await res.json();
+                    window.location.href = `success-story-detail.html?id=${data.id}`;
+                } catch (err) {
+                    errorMsg.textContent = err.message || 'Failed to publish story';
+                    errorMsg.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="bi bi-send"></i> Publish Story';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

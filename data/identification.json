@@ -1,0 +1,38 @@
+[
+    {
+        "id": "rose-id",
+        "title": "Natural vs Artificial Roses",
+        "description": "Learn how to identify real roses from high-quality artificial roses using visual inspection, touch tests, scent evaluation, and expert techniques.",
+        "slug": "rose-id",
+        "category": "Roses",
+        "level": "Beginner",
+        "duration": "15 min"
+    },
+    {
+        "id": "tulip-id",
+        "title": "Natural vs Artificial Tulips",
+        "description": "Master the art of identifying real tulips from artificial replicas. Learn to spot the differences in stem structure, petal behavior, and color patterns.",
+        "slug": "tulip-id",
+        "category": "Tulips",
+        "level": "Beginner",
+        "duration": "12 min"
+    },
+    {
+        "id": "preserved-vs-fresh",
+        "title": "Fresh vs Preserved Flowers",
+        "description": "Understand the differences between fresh-cut flowers and preserved blooms. Learn about glycerin treatment, texture changes, and longevity expectations.",
+        "slug": "preserved-vs-fresh",
+        "category": "Preservation",
+        "level": "Intermediate",
+        "duration": "10 min"
+    },
+    {
+        "id": "dried-vs-preserved",
+        "title": "Dried vs Preserved Flowers",
+        "description": "Learn to distinguish dried flowers from preserved ones. While both are long-lasting, their care, feel, and appearance are very different.",
+        "slug": "dried-vs-preserved",
+        "category": "Preservation",
+        "level": "Intermediate",
+        "duration": "8 min"
+    }
+]

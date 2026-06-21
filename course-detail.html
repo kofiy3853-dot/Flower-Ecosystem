@@ -1,0 +1,403 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Course details - Flower Ecosystem Learning Center">
+    <meta property="og:title" content="Course | Flower Ecosystem">
+    <meta property="og:description" content="Enroll in floristry courses and learn at your own pace.">
+    <meta property="og:type" content="website">
+    <title>Course - Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=17.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .course-hero { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); padding: 3rem 0; color: var(--white); }
+        .course-hero .breadcrumb { font-size: 0.85rem; opacity: 0.7; margin-bottom: 1.5rem; }
+        .course-hero .breadcrumb a { color: var(--white); text-decoration: underline; }
+        .course-hero-grid { display: grid; grid-template-columns: 1fr 340px; gap: 2.5rem; align-items: start; }
+        .course-hero h1 { font-family: var(--font-serif); font-size: 2.2rem; margin-bottom: 0.75rem; }
+        .course-hero .course-meta { display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 1rem 0; font-size: 0.9rem; opacity: 0.85; }
+        .course-hero .course-meta span { display: flex; align-items: center; gap: 0.35rem; }
+        .course-hero .instructor { display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem; }
+        .course-hero .instructor img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.3); }
+        .course-sidebar-card { background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.15); position: sticky; top: 5.5rem; color: var(--text-color); }
+        .course-sidebar-card .sidebar-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
+        .course-sidebar-card .sidebar-body { padding: 1.25rem; }
+        .course-sidebar-card .price { font-size: 1.75rem; font-weight: 700; color: var(--primary-color); }
+        .course-sidebar-card .price small { font-size: 0.85rem; font-weight: 400; color: var(--text-light); text-decoration: line-through; margin-left: 0.5rem; }
+        .course-sidebar-card .btn-enroll { width: 100%; padding: 0.85rem; font-size: 1rem; margin-bottom: 0.75rem; }
+        .course-sidebar-card .includes { list-style: none; padding: 0; margin: 0; font-size: 0.85rem; }
+        .course-sidebar-card .includes li { padding: 0.35rem 0; display: flex; align-items: center; gap: 0.5rem; color: var(--text-light); }
+        .course-sidebar-card .includes li i { color: var(--primary-color); width: 16px; }
+        .course-layout { display: grid; grid-template-columns: 1fr 340px; gap: 2.5rem; padding: 2rem 0; }
+        .course-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border-color); margin-bottom: 1.5rem; }
+        .course-tab { padding: 0.75rem 1.5rem; border: none; background: none; cursor: pointer; font-size: 0.95rem; font-weight: 500; color: var(--text-light); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+        .course-tab:hover { color: var(--primary-color); }
+        .course-tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .lesson-list { border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
+        .lesson-item { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; }
+        .lesson-item:last-child { border-bottom: none; }
+        .lesson-item:hover { background: var(--bg-color); }
+        .lesson-item.active-lesson { background: rgba(212,175,55,0.08); border-left: 3px solid var(--primary-color); }
+        .lesson-item .lesson-num { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-color); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 600; color: var(--text-light); flex-shrink: 0; }
+        .lesson-item.active-lesson .lesson-num { background: var(--primary-color); color: var(--white); }
+        .lesson-item .lesson-info { flex: 1; }
+        .lesson-item .lesson-title { font-size: 0.95rem; font-weight: 500; }
+        .lesson-item .lesson-dur { font-size: 0.8rem; color: var(--text-light); }
+        .lesson-item .lesson-status { font-size: 0.85rem; }
+        .lesson-item .lesson-status.completed { color: #27ae60; }
+        .video-container { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 1.5rem; }
+        .video-container iframe { width: 100%; height: 100%; border: none; }
+        .lesson-content { line-height: 1.7; color: var(--text-light); }
+        .lesson-content h3 { color: var(--text-color); margin: 1.5rem 0 0.75rem; font-family: var(--font-serif); }
+        .quiz-section { background: var(--bg-color); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+        .quiz-section h3 { font-family: var(--font-serif); margin-bottom: 1rem; }
+        .quiz-question { margin-bottom: 1.25rem; }
+        .quiz-question p { font-weight: 500; margin-bottom: 0.5rem; }
+        .quiz-option { display: block; padding: 0.65rem 1rem; border: 2px solid var(--border-color); border-radius: 8px; margin-bottom: 0.4rem; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; }
+        .quiz-option:hover { border-color: var(--primary-color); background: rgba(212,175,55,0.05); }
+        .quiz-option.selected { border-color: var(--primary-color); background: rgba(212,175,55,0.1); }
+        .quiz-option.correct { border-color: #27ae60; background: rgba(39,174,96,0.1); }
+        .quiz-option.incorrect { border-color: #e74c3c; background: rgba(231,76,60,0.1); }
+        .quiz-result { text-align: center; padding: 1.5rem; }
+        .quiz-result .score { font-size: 3rem; font-weight: 700; color: var(--primary-color); }
+        .resources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+        .resource-card { border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .resource-card:hover { border-color: var(--primary-color); box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        .resource-card i { font-size: 2rem; color: var(--primary-color); margin-bottom: 0.5rem; display: block; }
+        .resource-card h4 { font-size: 0.9rem; margin-bottom: 0.25rem; }
+        .resource-card p { font-size: 0.8rem; color: var(--text-light); }
+        .progress-bar-wrap { background: var(--border-color); border-radius: 10px; height: 6px; overflow: hidden; margin: 0.75rem 0; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); border-radius: 10px; transition: width 0.5s ease; }
+        .mt-2 { margin-top: 2rem; }
+        @media (max-width: 768px) {
+            .course-hero-grid { grid-template-columns: 1fr; }
+            .course-layout { grid-template-columns: 1fr; }
+            .course-sidebar-card { position: static; }
+            .course-hero h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <main>
+        <section class="course-hero" id="courseHero">
+            <div class="container">
+                <p class="breadcrumb"><a href="index.html">Home</a> / <a href="learning.html">Learning Center</a> / <span id="breadcrumbCourse">Course</span></p>
+                <div class="course-hero-grid">
+                    <div>
+                        <h1 id="courseTitle">Loading...</h1>
+                        <div class="course-meta">
+                            <span><i class="bi bi-star-fill" style="color:#f1c40f;"></i> <span id="courseRating">0</span> (<span id="courseReviews">0</span>)</span>
+                            <span><i class="bi bi-people"></i> <span id="courseStudents">0</span> students</span>
+                            <span><i class="bi bi-clock"></i> <span id="courseDuration">0</span> hours</span>
+                            <span><i class="bi bi-bar-chart"></i> <span id="courseLevel">Beginner</span></span>
+                            <span><i class="bi bi-award"></i> <span id="courseCert">Certificate</span></span>
+                        </div>
+                        <div class="instructor">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=100&auto=format&fit=crop" alt="Instructor" id="instructorImg">
+                            <span>By <strong id="courseInstructor">Instructor</strong></span>
+                        </div>
+                        <div class="progress-bar-wrap" id="progressWrap" style="display:none;">
+                            <div class="progress-bar-fill" id="progressFill" style="width:0%;"></div>
+                        </div>
+                        <p style="font-size:0.85rem; opacity:0.7; margin-top:0.35rem;" id="progressLabel"></p>
+                    </div>
+                    <div class="course-sidebar-card" id="sidebarCard">
+                        <img class="sidebar-thumb" id="sidebarThumb" src="" alt="Course thumbnail">
+                        <div class="sidebar-body">
+                            <div class="price" id="coursePrice">Free</div>
+                            <button class="btn btn-primary btn-enroll" id="enrollBtn"><i class="bi bi-plus-circle"></i> Enroll Now — Start Learning</button>
+                            <ul class="includes">
+                                <li><i class="bi bi-play-circle"></i> <span id="lessonCount">0</span> video lessons</li>
+                                <li><i class="bi bi-file-text"></i> Downloadable resources</li>
+                                <li><i class="bi bi-trophy"></i> Certificate of completion</li>
+                                <li><i class="bi bi-infinity"></i> Full lifetime access</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="course-layout">
+                <div>
+                    <div class="course-tabs" id="courseTabs">
+                        <button class="course-tab active" data-tab="lessons"><i class="bi bi-play-circle"></i> Lessons</button>
+                        <button class="course-tab" data-tab="about"><i class="bi bi-info-circle"></i> About</button>
+                        <button class="course-tab" data-tab="quiz"><i class="bi bi-question-circle"></i> Quiz</button>
+                        <button class="course-tab" data-tab="resources"><i class="bi bi-download"></i> Resources</button>
+                    </div>
+
+                    <div id="tab-lessons" class="tab-panel">
+                        <div class="video-container" id="videoContainer">
+                            <iframe id="videoPlayer" src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div id="lessonContent"></div>
+                        <div class="lesson-list" id="lessonList"></div>
+                    </div>
+
+                    <div id="tab-about" class="tab-panel" style="display:none;">
+                        <h3 style="font-family:'Playfair Display',serif;">About This Course</h3>
+                        <p id="courseDescription" style="line-height:1.7; color:var(--text-light);"></p>
+                        <h4 style="margin-top:1.5rem; font-family:'Playfair Display',serif;">What You'll Learn</h4>
+                        <ul id="learnList" style="line-height:2;"></ul>
+                    </div>
+
+                    <div id="tab-quiz" class="tab-panel" style="display:none;">
+                        <div id="quizContainer">
+                            <p>No quiz available for this course yet.</p>
+                        </div>
+                    </div>
+
+                    <div id="tab-resources" class="tab-panel" style="display:none;">
+                        <h3 style="font-family:'Playfair Display',serif;">Downloadable Resources</h3>
+                        <p style="color:var(--text-light); margin-bottom:1rem;">Supplement your learning with these free resources.</p>
+                        <div class="resources-grid">
+                            <div class="resource-card"><i class="bi bi-filetype-pdf"></i><h4>Course Workbook</h4><p>PDF, 2.4 MB</p></div>
+                            <div class="resource-card"><i class="bi bi-filetype-pdf"></i><h4>Flower Care Checklist</h4><p>PDF, 1.1 MB</p></div>
+                            <div class="resource-card"><i class="bi bi-file-earmark-spreadsheet"></i><h4>Supply List Template</h4><p>XLSX, 0.5 MB</p></div>
+                            <div class="resource-card"><i class="bi bi-filetype-pdf"></i><h4>Practice Exercises</h4><p>PDF, 3.2 MB</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:none;" id="desktopSidebar"> <!-- empty, sidebar from hero is sticky --></div>
+            </div>
+        </div>
+
+        <section class="section-padding bg-light" id="relatedSection">
+            <div class="container">
+                <div class="flex-between reveal-up">
+                    <div>
+                        <span class="subtitle">KEEP LEARNING</span>
+                        <h2>Related Courses</h2>
+                    </div>
+                    <a href="learning.html" class="btn btn-outline">View All →</a>
+                </div>
+                <div class="product-grid reveal-up" id="relatedGrid" style="margin-top:1.5rem;"></div>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-container"></div>
+    <div id="auth-modal-container"></div>
+
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script>
+        (async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseId = urlParams.get('id');
+            if (!courseId) { document.getElementById('courseTitle').textContent = 'Course not found'; return; }
+
+            const [courses, lessons, quizzes] = await Promise.all([
+                api.fetchCourses(), api.fetchLessons(), api.fetchQuizzes()
+            ]);
+            const course = courses.find(c => c.id === courseId);
+            if (!course) { document.getElementById('courseTitle').textContent = 'Course not found'; return; }
+
+            const courseLessons = lessons.filter(l => l.course_id === courseId).sort((a, b) => a.order - b.order);
+            const courseQuiz = quizzes.find(q => q.course_id === courseId);
+
+            document.title = `${course.title} - Flower Ecosystem`;
+            document.getElementById('breadcrumbCourse').textContent = course.title;
+            document.getElementById('courseTitle').textContent = course.title;
+            document.getElementById('courseRating').textContent = course.rating;
+            document.getElementById('courseReviews').textContent = course.reviews || 0;
+            document.getElementById('courseStudents').textContent = course.students;
+            document.getElementById('courseDuration').textContent = Math.floor(course.duration / 60) + 'h ' + (course.duration % 60) + 'm';
+            document.getElementById('courseLevel').textContent = course.level;
+            document.getElementById('courseCert').textContent = course.hasCertificate ? 'Certificate' : 'No Certificate';
+            document.getElementById('courseInstructor').textContent = course.instructor;
+            document.getElementById('courseDescription').textContent = course.description;
+            document.getElementById('sidebarThumb').src = course.thumbnail;
+            document.getElementById('lessonCount').textContent = courseLessons.length;
+
+            if (course.price && course.price > 0) {
+                document.getElementById('coursePrice').innerHTML = `$${course.price.toFixed(2)}`;
+            } else {
+                document.getElementById('coursePrice').innerHTML = 'Free';
+            }
+
+            const learnItems = {
+                'c1': ['Select and evaluate fresh flowers', 'Build hand-tied bouquets', 'Apply color theory to arrangements', 'Create stunning centerpieces', 'Understand professional florist tools'],
+                'c2': ['Distinguish natural vs artificial flowers', 'Identify preserved and dried flowers', 'Perform authenticity tests', 'Evaluate flower quality like a pro'],
+                'c3': ['Design bridal bouquets', 'Install ceremony arches', 'Create reception centerpieces', 'Price wedding packages profitably', 'Manage wedding day logistics'],
+                'c4': ['Extend cut flower vase life', 'Make professional flower food', 'Dry and press flowers', 'Create resin preservation art', 'Store flowers long-term'],
+                'c5': ['Write a floristry business plan', 'Price products and services', 'Source suppliers', 'Sell flowers online', 'Scale your business'],
+                'c6': ['Prepare soil for roses', 'Plant and propagate roses', 'Prune and train rose bushes', 'Manage pests organically', 'Care for roses seasonally']
+            };
+            const items = learnItems[courseId] || ['Master core floristry skills', 'Build professional arrangements', 'Grow your floral business'];
+            document.getElementById('learnList').innerHTML = items.map(i => `<li><i class="bi bi-check-circle" style="color:var(--primary-color);margin-right:0.5rem;"></i>${i}</li>`).join('');
+
+            // Lessons
+            const listEl = document.getElementById('lessonList');
+            const player = document.getElementById('videoPlayer');
+            const contentEl = document.getElementById('lessonContent');
+
+            function renderLesson(l, idx) {
+                listEl.innerHTML = courseLessons.map((lesson, i) => `
+                    <div class="lesson-item ${lesson.id === l.id ? 'active-lesson' : ''}" data-lesson-id="${lesson.id}">
+                        <div class="lesson-num">${i + 1}</div>
+                        <div class="lesson-info">
+                            <div class="lesson-title">${lesson.title}</div>
+                            <div class="lesson-dur"><i class="bi bi-clock"></i> ${lesson.duration} min</div>
+                        </div>
+                        <div class="lesson-status ${i < idx ? 'completed' : ''}"><i class="bi ${i < idx ? 'bi-check-circle-fill' : 'bi-circle'}"></i></div>
+                    </div>`
+                ).join('');
+
+                player.src = lesson.video_url || 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+                contentEl.innerHTML = `
+                    <h3>${lesson.title}</h3>
+                    <p>${lesson.content || 'No content available for this lesson.'}</p>`;
+            }
+
+            if (courseLessons.length) {
+                renderLesson(courseLessons[0], 0);
+                listEl.addEventListener('click', (e) => {
+                    const item = e.target.closest('.lesson-item');
+                    if (!item) return;
+                    const lid = item.dataset.lessonId;
+                    const lesson = courseLessons.find(l => l.id === lid);
+                    if (lesson) renderLesson(lesson, courseLessons.indexOf(lesson));
+                });
+            } else {
+                listEl.innerHTML = '<p style="padding:1rem; color:var(--text-light);">No lessons available yet.</p>';
+            }
+
+            // Quiz
+            if (courseQuiz && courseQuiz.questions && courseQuiz.questions.length) {
+                const qContainer = document.getElementById('quizContainer');
+                let submitted = false;
+                qContainer.innerHTML = `
+                    <div class="quiz-section">
+                        <h3><i class="bi bi-pencil-square"></i> ${courseQuiz.title}</h3>
+                        <p style="color:var(--text-light);margin-bottom:1rem;">Test your knowledge with ${courseQuiz.questions.length} questions.</p>
+                        <div id="quizQuestions">
+                            ${courseQuiz.questions.map((q, qi) => `
+                                <div class="quiz-question" data-q="${qi}">
+                                    <p>${qi + 1}. ${q.question}</p>
+                                    ${q.options.map((opt, oi) => `
+                                        <label class="quiz-option" data-qi="${qi}" data-oi="${oi}">
+                                            <input type="radio" name="q${qi}" value="${oi}" style="display:none;"> ${opt}
+                                        </label>
+                                    `).join('')}
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button class="btn btn-primary" id="submitQuiz" style="margin-top:1rem;">Submit Answers</button>
+                        <div id="quizResult" style="display:none;" class="quiz-result">
+                            <div class="score" id="quizScore">0/0</div>
+                            <p id="quizFeedback"></p>
+                            <button class="btn btn-outline" id="retryQuiz" style="margin-top:0.75rem;">Retry Quiz</button>
+                        </div>
+                    </div>`;
+
+                document.getElementById('quizQuestions').addEventListener('click', (e) => {
+                    if (submitted) return;
+                    const opt = e.target.closest('.quiz-option');
+                    if (!opt) return;
+                    const qi = parseInt(opt.dataset.qi);
+                    opt.closest('.quiz-question').querySelectorAll('.quiz-option').forEach(el => el.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    opt.querySelector('input').checked = true;
+                });
+
+                document.getElementById('submitQuiz').addEventListener('click', () => {
+                    if (submitted) return;
+                    const qs = courseQuiz.questions;
+                    let correct = 0;
+                    qs.forEach((q, qi) => {
+                        const selected = document.querySelector(`input[name="q${qi}"]:checked`);
+                        const val = selected ? parseInt(selected.value) : -1;
+                        const opts = document.querySelectorAll(`.quiz-question[data-q="${qi}"] .quiz-option`);
+                        opts.forEach((el, oi) => {
+                            el.classList.remove('selected', 'correct', 'incorrect');
+                            if (oi === q.correct) el.classList.add('correct');
+                            if (oi === val && val !== q.correct) el.classList.add('incorrect');
+                            if (oi === val) el.classList.add('selected');
+                        });
+                        if (val === q.correct) correct++;
+                    });
+                    submitted = true;
+                    document.getElementById('quizScore').textContent = `${correct}/${qs.length}`;
+                    const pct = Math.round((correct / qs.length) * 100);
+                    const fb = pct >= 80 ? 'Excellent! You have a strong understanding of this topic.' : pct >= 50 ? 'Good effort! Review the material and try again.' : 'Keep studying! Review the lessons and retake the quiz.';
+                    document.getElementById('quizFeedback').textContent = fb;
+                    document.getElementById('quizResult').style.display = '';
+                    document.getElementById('submitQuiz').style.display = 'none';
+                });
+
+                document.getElementById('retryQuiz').addEventListener('click', () => {
+                    submitted = false;
+                    document.querySelectorAll('.quiz-option').forEach(el => el.classList.remove('selected', 'correct', 'incorrect'));
+                    document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+                    document.getElementById('quizResult').style.display = 'none';
+                    document.getElementById('submitQuiz').style.display = '';
+                });
+            }
+
+            // Tabs
+            document.querySelectorAll('.course-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.course-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+                    tab.classList.add('active');
+                    document.getElementById('tab-' + tab.dataset.tab).style.display = '';
+                });
+            });
+
+            // Related courses
+            const related = courses.filter(c => c.category === course.category && c.id !== courseId).slice(0, 4);
+            const grid = document.getElementById('relatedGrid');
+            if (related.length) {
+                grid.innerHTML = related.map(c => `
+                    <div class="product-card">
+                        <div class="product-img-wrap">
+                            <a href="course-detail.html?id=${c.id}">
+                                <img loading="lazy" src="${c.thumbnail}" alt="${c.title}" class="product-img" style="aspect-ratio:16/9;">
+                            </a>
+                            <span class="product-badge">${c.level}</span>
+                        </div>
+                        <div class="product-info">
+                            <a href="course-detail.html?id=${c.id}" style="text-decoration:none;color:inherit;">
+                                <h3 class="product-name">${c.title}</h3>
+                            </a>
+                            <p class="product-seller">${c.instructor}</p>
+                            <div class="product-rating" style="margin:0.25rem 0;">
+                                ${'<i class="bi bi-star-fill" style="color:#f1c40f;font-size:0.8rem;"></i>'.repeat(Math.floor(c.rating))}
+                                <span style="font-size:0.8rem;color:var(--text-light);">(${c.students} students)</span>
+                            </div>
+                            <div class="product-footer">
+                                <span class="product-price">${c.price ? '$' + c.price.toFixed(2) : 'Free'}</span>
+                                <a href="course-detail.html?id=${c.id}" class="btn btn-primary btn-sm">View Course</a>
+                            </div>
+                        </div>
+                    </div>`
+                ).join('');
+            } else {
+                grid.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:2rem 0;grid-column:1/-1;">More courses coming soon!</p>';
+            }
+        })();
+    </script>
+    <script>
+        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) { e.preventDefault(); this.parentElement.classList.toggle('mobile-open'); }
+            });
+        });
+    </script>
+</body>
+</html>

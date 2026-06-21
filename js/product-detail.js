@@ -1,0 +1,437 @@
+// js/product-detail.js
+// Product detail page — gallery, info, tabs, reviews, related
+
+let currentProduct = null;
+
+const TYPE_LABELS = { natural:'Natural Flower', artificial:'Artificial Flower', preserved:'Preserved Flower', dried:'Dried Flower' };
+const TYPE_CLASSES = { natural:'fd-type-natural', artificial:'fd-type-artificial', preserved:'fd-type-preserved', dried:'fd-type-dried' };
+
+const NATURAL_INDICATORS = [
+    'Natural fragrance present',
+    'Soft, velvety petal texture',
+    'Slight imperfections in petal color',
+    'Flexible, fibrous stem',
+    'Organic color variation from center to edge',
+    'Thorns (if applicable) are woody and irregular',
+    'Leaves have natural vein patterns',
+];
+
+const ARTIFICIAL_INDICATORS = [
+    'Silk or synthetic material feel',
+    'Smooth, uniform petal surface',
+    'Perfect, repeating color pattern',
+    'Wire or plastic stem inside wrapping',
+    'No natural fragrance (or chemical scent)',
+    'Uniform thorns (plastic)',
+    'Heat-sensitive — petals may melt',
+];
+
+const CARE_GUIDES = {
+    natural: [
+        { title:'Water every 2–3 days', desc:'Change water and trim stems at a 45° angle for maximum water uptake.', icon:'bi-droplet' },
+        { title:'Keep away from direct sunlight', desc:'Place in indirect light to prevent wilting and color fading.', icon:'bi-sun' },
+        { title:'Trim stems regularly', desc:'Cut 1–2 cm off stems every 2 days to maintain hydration.', icon:'bi-scissors' },
+        { title:'Remove wilted petals', desc:'Pluck any spent blooms to encourage remaining flowers to thrive.', icon:'bi-flower1' },
+        { title:'Use flower food', desc:'Add the provided flower food packet to nourish blooms longer.', icon:'bi-cup-straw' },
+    ],
+    artificial: [
+        { title:'Dust gently', desc:'Use a soft brush or microfiber cloth to remove dust from petals.', icon:'bi-brush' },
+        { title:'Avoid direct sunlight', desc:'Prolonged sun exposure can fade colors over time.', icon:'bi-sun' },
+        { title:'Keep away from heat', desc:'Silk flowers can warp or melt near radiators or open flames.', icon:'bi-thermometer-high' },
+        { title:'Store carefully', desc:'Keep in a dry, cool place when not on display.', icon:'bi-box' },
+    ],
+    preserved: [
+        { title:'Do not water', desc:'Preserved flowers contain glycerin — water will ruin them.', icon:'bi-droplet-slash' },
+        { title:'Keep away from humidity', desc:'Humidity can cause mold and deterioration.', icon:'bi-moisture' },
+        { title:'Avoid direct sunlight', desc:'UV rays will fade the color of preserved flowers.', icon:'bi-sun' },
+        { title:'Dust with soft brush', desc:'Use a gentle brush or low-speed hairdryer on cool setting.', icon:'bi-brush' },
+    ],
+    dried: [
+        { title:'Keep bone dry', desc:'Moisture is the enemy — dried flowers will rot in humid conditions.', icon:'bi-droplet-slash' },
+        { title:'Handle with care', desc:'Dried petals and stems are brittle and can break easily.', icon:'bi-hand-index-thumb' },
+        { title:'Keep away from sunlight', desc:'Colors fade rapidly in direct light.', icon:'bi-sun' },
+        { title:'Display in low-traffic areas', desc:'Place where they won\'t be bumped or brushed against.', icon:'bi-house' },
+    ],
+};
+
+const SPEC_FIELDS = [
+    { key:'category', label:'Category' },
+    { key:'color', label:'Color' },
+    { key:'flowerType', label:'Flower Type', fn:v=>TYPE_LABELS[v]||v },
+    { key:'stemLength', label:'Stem Length' },
+    { key:'vaseLife', label:'Vase Life' },
+    { key:'origin', label:'Origin' },
+    { key:'season', label:'Season' },
+];
+
+function renderStars(rating) {
+    const f = Math.floor(rating);
+    const h = rating - f >= 0.5;
+    let s = '';
+    for (let i = 0; i < f; i++) s += '<i class="bi bi-star-fill" style="color:var(--accent-gold);"></i>';
+    if (h) s += '<i class="bi bi-star-half" style="color:var(--accent-gold);"></i>';
+    for (let i = 0; i < 5 - f - (h ? 1 : 0); i++) s += '<i class="bi bi-star" style="color:var(--border-color);"></i>';
+    return s;
+}
+
+function setMainImg(src, thumbEl) {
+    const mainImg = document.getElementById('fdMainImg');
+    if (mainImg) mainImg.src = src;
+    document.querySelectorAll('.fd-thumb').forEach(t => t.classList.remove('active'));
+    if (thumbEl) thumbEl.classList.add('active');
+}
+
+function openFullscreen() {
+    const overlay = document.getElementById('fullscreenOverlay');
+    const img = document.getElementById('fullscreenImg');
+    const mainImg = document.getElementById('fdMainImg');
+    if (!overlay || !img || !mainImg) return;
+    img.src = mainImg.src;
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeFullscreen() {
+    const overlay = document.getElementById('fullscreenOverlay');
+    if (overlay) overlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFullscreen(); });
+
+function updateQty(delta) {
+    const inp = document.getElementById('fdQty');
+    if (!inp) return;
+    let v = parseInt(inp.value) + delta;
+    if (v < 1) v = 1;
+    inp.value = v;
+}
+
+function showMsg(text, type) {
+    const el = document.getElementById('fdMsg');
+    if (!el) return;
+    el.textContent = text;
+    el.className = 'fd-msg fd-msg-' + type;
+    el.style.display = 'block';
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.style.display = 'none'; }, 3000);
+}
+
+async function addToCart() {
+    const p = currentProduct;
+    if (!p) return;
+    const qty = parseInt(document.getElementById('fdQty')?.value || '1');
+    const btn = document.getElementById('fdAddBtn');
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Adding...'; }
+
+    try {
+        if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+            const token = localStorage.getItem('flower-token');
+            const res = await fetch('/api/cart/items', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_id: p.id, quantity: qty })
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error || 'Failed to add to cart');
+            }
+            if (typeof syncCartFromServer === 'function') await syncCartFromServer();
+        } else {
+            const cart = JSON.parse(localStorage.getItem('flower-cart') || '[]');
+            const existing = cart.find(i => i.id === p.id);
+            if (existing) { existing.qty = (existing.qty || 1) + qty; }
+            else { cart.push({ id: p.id, name: p.name, price: p.price, image: p.image, qty }); }
+            localStorage.setItem('flower-cart', JSON.stringify(cart));
+            const count = cart.reduce((s, i) => s + (i.qty || 1), 0);
+            document.querySelectorAll('.cart-count').forEach(el => el.textContent = count);
+        }
+        showMsg('Added to cart!', 'success');
+    } catch (err) {
+        showMsg(err.message || 'Failed to add to cart', 'error');
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Add to Cart'; }
+    }
+}
+
+function getFlowerType(p) {
+    if (p.flowerType) return p.flowerType.toLowerCase();
+    if (p.fresh === false) return 'artificial';
+    return 'natural';
+}
+
+async function submitReview(productId) {
+    const ratingInput = document.querySelector('#reviewForm input[name="rating"]:checked');
+    const textInput = document.getElementById('reviewText');
+    if (!ratingInput) { showMsg('Please select a rating', 'error'); return; }
+    if (!textInput?.value.trim()) { showMsg('Please write a review', 'error'); return; }
+
+    const rating = parseInt(ratingInput.value);
+    const text = textInput.value.trim();
+
+    if (!isLoggedIn()) { showMsg('Please sign in to leave a review', 'error'); return; }
+
+    const reviewList = document.getElementById('fdReviewList');
+    const reviewSummary = document.getElementById('fdReviewSummary');
+
+    const token = localStorage.getItem('flower-token');
+    let savedToServer = false;
+
+    if (token) {
+        try {
+            const res = await fetch(`/api/products/${productId}/reviews`, {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rating, review: text })
+            });
+            if (res.ok) {
+                savedToServer = true;
+            } else {
+                const err = await res.json().catch(() => ({}));
+                if (err.error === 'You have already reviewed this product') {
+                    showMsg('You have already reviewed this product', 'error');
+                    return;
+                }
+            }
+        } catch (_) {}
+    }
+
+    if (!savedToServer) {
+        const name = getCurrentUser()?.name || 'You';
+        const reviews = JSON.parse(localStorage.getItem(`reviews-${productId}`) || '[]');
+        reviews.unshift({ author: name, rating, text, date: 'Just now' });
+        localStorage.setItem(`reviews-${productId}`, JSON.stringify(reviews));
+    }
+
+    const newReview = document.createElement('div');
+    newReview.className = 'fd-review-card';
+    newReview.style.borderLeft = '3px solid var(--primary-color)';
+    newReview.innerHTML = `
+        <div class="rv-header">
+            <div><span class="rv-author">You</span><span class="rv-date"> · Just now</span></div>
+            <div class="rv-stars">${renderStars(rating)}</div>
+        </div>
+        <div class="rv-text">${escapeHtml(text)}</div>
+    `;
+    reviewList.insertBefore(newReview, reviewList.firstChild);
+
+    document.getElementById('reviewForm')?.reset();
+    showMsg('Review submitted!', 'success');
+
+    if (reviewSummary) {
+        const count = reviewList.querySelectorAll('.fd-review-card').length;
+        reviewSummary.innerHTML = `<strong>${currentProduct?.rating || 0}</strong> out of 5 · <span style="color:var(--text-light)">${count} reviews</span>`;
+    }
+}
+
+// Tab switching
+document.addEventListener('click', e => {
+    const btn = e.target.closest('.fd-tab-btn');
+    if (!btn) return;
+    document.querySelectorAll('.fd-tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+    document.querySelectorAll('.fd-tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    const tab = document.getElementById('tab-' + btn.dataset.tab);
+    if (tab) tab.classList.add('active');
+});
+
+// Wishlist toggle
+document.addEventListener('click', e => {
+    const btn = e.target.closest('#fdWishBtn');
+    if (!btn) return;
+    if (!currentProduct) return;
+    const saved = JSON.parse(localStorage.getItem('gallerySaved') || '[]');
+    const idx = saved.indexOf(currentProduct.id);
+    if (idx >= 0) { saved.splice(idx, 1); showMsg('Removed from wishlist', 'success'); }
+    else { saved.push(currentProduct.id); showMsg('Added to wishlist!', 'success'); }
+    localStorage.setItem('gallerySaved', JSON.stringify(saved));
+    const icon = btn.querySelector('i');
+    if (icon) {
+        icon.classList.toggle('bi-heart');
+        icon.classList.toggle('bi-heart-fill');
+    }
+});
+
+(async () => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if (!id) {
+        const mc = document.getElementById('mainContent');
+        if (mc) mc.innerHTML = '<div class="fd-missing" style="grid-column:1/-1;"><h2>No flower selected</h2><p style="color:var(--text-light);">Browse the marketplace to find flowers.</p><a href="marketplace.html" class="btn btn-primary">Browse Flowers →</a></div>';
+        return;
+    }
+
+    let allProducts;
+    try { allProducts = await api.fetchProducts(); } catch { allProducts = []; }
+    currentProduct = allProducts.find(p => p.id === id);
+
+    if (!currentProduct) {
+        const mc = document.getElementById('mainContent');
+        if (mc) mc.innerHTML = '<div class="fd-missing" style="grid-column:1/-1;"><h2>Flower not found</h2><p style="color:var(--text-light);">This flower may have been removed or is no longer available.</p><a href="marketplace.html" class="btn btn-primary">Browse Flowers →</a></div>';
+        return;
+    }
+
+    const p = currentProduct;
+    document.title = `${p.name} – Flower Ecosystem`;
+
+    // Breadcrumb
+    const bcCat = document.getElementById('bcCategory');
+    const bcTitle = document.getElementById('bcTitle');
+    if (bcCat) bcCat.textContent = p.category ? p.category.charAt(0).toUpperCase() + p.category.slice(1) : '';
+    if (bcTitle) bcTitle.textContent = p.name;
+
+    // Gallery
+    const imgs = (p.images && p.images.length) ? p.images : [p.image];
+    const mainImg = document.getElementById('fdMainImg');
+    if (mainImg) mainImg.src = imgs[0];
+    const thumbs = document.getElementById('fdThumbs');
+    if (thumbs) {
+        thumbs.innerHTML = imgs.map((url, i) =>
+            `<img src="${escapeHtml(url)}" alt="" class="fd-thumb ${i === 0 ? 'active' : ''}" onclick="setMainImg('${escapeHtml(url)}', this)" role="button" tabindex="0">`
+        ).join('');
+    }
+
+    // Title & price
+    const fdTitle = document.getElementById('fdTitle');
+    if (fdTitle) fdTitle.textContent = p.name;
+    const fdPrice = document.getElementById('fdPrice');
+    if (fdPrice) fdPrice.textContent = '$' + p.price.toFixed(2);
+
+    if (p.oldPrice) {
+        const oldPriceEl = document.getElementById('fdOldPrice');
+        const discEl = document.getElementById('fdDiscount');
+        if (oldPriceEl) { oldPriceEl.textContent = '$' + p.oldPrice.toFixed(2); oldPriceEl.style.display = 'inline'; }
+        if (discEl) { discEl.textContent = Math.round((1 - p.price / p.oldPrice) * 100) + '% OFF'; discEl.style.display = 'inline'; }
+    }
+
+    const fdCat = document.getElementById('fdCategory');
+    if (fdCat) fdCat.textContent = p.category || '';
+    const fdBadge = document.getElementById('fdBadge');
+    if (fdBadge && p.badge) { fdBadge.textContent = p.badge; fdBadge.style.display = 'inline'; }
+
+    // Rating
+    const ratingEl = document.getElementById('fdRating');
+    if (ratingEl && p.rating) {
+        ratingEl.innerHTML = `<span class="fd-rating-stars">${renderStars(p.rating)}</span>
+            <span class="fd-rating-text"><strong>${p.rating}</strong> (${p.reviews || 0} reviews)</span>`;
+    }
+
+    // Availability
+    const availEl = document.getElementById('fdAvailability');
+    if (availEl) {
+        if (p.stockQuantity !== undefined) {
+            availEl.innerHTML = p.stockQuantity > 0
+                ? `<span class="fd-avail-in"><i class="bi bi-check-circle-fill"></i> In Stock (${p.stockQuantity} available)</span>`
+                : '<span class="fd-avail-out"><i class="bi bi-x-circle-fill"></i> Out of Stock</span>';
+        } else {
+            availEl.innerHTML = '<span class="fd-avail-in"><i class="bi bi-check-circle-fill"></i> In Stock</span>';
+        }
+    }
+
+    // Flower type badge
+    const ft = getFlowerType(p);
+    const typeEl = document.getElementById('fdFlowerType');
+    if (typeEl) {
+        typeEl.innerHTML = `
+            <span style="font-size:0.85rem;color:var(--text-light);margin-right:0.5rem;">Flower Type:</span>
+            <span class="type-badge ${TYPE_CLASSES[ft] || 'fd-type-natural'}">${TYPE_LABELS[ft] || ft}</span>
+        `;
+    }
+
+    // Description
+    const fdDesc = document.getElementById('fdDesc');
+    if (fdDesc) fdDesc.textContent = p.description || '';
+    const tabDesc = document.getElementById('tabDescText');
+    if (tabDesc) tabDesc.textContent = p.description || 'No description available.';
+
+    // Care guide
+    const careEl = document.getElementById('tabCareContent');
+    if (careEl) {
+        const guides = CARE_GUIDES[ft] || CARE_GUIDES.natural;
+        careEl.innerHTML = guides.map(g => `
+            <div class="fd-care-item">
+                <i class="bi ${g.icon}"></i>
+                <div><strong>${escapeHtml(g.title)}</strong>${escapeHtml(g.desc)}</div>
+            </div>`).join('');
+    }
+
+    // Identification
+    const idEl = document.getElementById('fdNaturalIndicators');
+    const artEl = document.getElementById('fdArtificialIndicators');
+    if (idEl) idEl.innerHTML = NATURAL_INDICATORS.map(t => `<li><i class="bi bi-check-circle-fill"></i> ${escapeHtml(t)}</li>`).join('');
+    if (artEl) artEl.innerHTML = ARTIFICIAL_INDICATORS.map(t => `<li><i class="bi bi-x-circle-fill"></i> ${escapeHtml(t)}</li>`).join('');
+
+    // Specs
+    const specsBody = document.getElementById('fdSpecsBody');
+    if (specsBody) {
+        const specs = SPEC_FIELDS.filter(f => p[f.key] !== undefined && p[f.key] !== null).map(f => {
+            const val = f.fn ? f.fn(p[f.key]) : p[f.key];
+            return `<tr><td>${escapeHtml(f.label)}</td><td>${escapeHtml(String(val))}</td></tr>`;
+        });
+        specs.push(`<tr><td>Flower Type</td><td>${escapeHtml(TYPE_LABELS[ft] || ft)}</td></tr>`);
+        specsBody.innerHTML = specs.join('');
+    }
+
+    // Seller info
+    const sellerName = document.getElementById('fdSellerName');
+    const sellerMeta = document.getElementById('fdSellerMeta');
+    const sellerLink = document.getElementById('fdSellerLink');
+    if (sellerName) sellerName.textContent = p.seller || 'Unknown Seller';
+    if (sellerMeta) sellerMeta.innerHTML = `
+        <span><i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${p.rating || '—'}</span>
+        <span>${p.reviews || 0} reviews</span>
+        <span>${allProducts.filter(x => x.seller === p.seller).length} products</span>
+    `;
+    if (sellerLink) sellerLink.href = p.sellerId ? `florist-profile.html?id=${p.sellerId}` : 'florists.html';
+
+    // Reviews
+    const reviewList = document.getElementById('fdReviewList');
+    const reviewSummary = document.getElementById('fdReviewSummary');
+    const savedReviews = JSON.parse(localStorage.getItem(`reviews-${p.id}`) || '[]');
+    const allReviews = [...savedReviews, ...(p.reviewList || [])];
+
+    if (allReviews.length) {
+        if (reviewSummary) reviewSummary.innerHTML = `<strong>${p.rating}</strong> out of 5 · <span style="color:var(--text-light)">${allReviews.length} reviews</span>`;
+        if (reviewList) reviewList.innerHTML = allReviews.map(r => `
+            <div class="fd-review-card">
+                <div class="rv-header">
+                    <div><span class="rv-author">${escapeHtml(r.author)}</span><span class="rv-date"> · ${escapeHtml(r.date)}</span></div>
+                    <div class="rv-stars">${renderStars(r.rating)}</div>
+                </div>
+                <div class="rv-text">${escapeHtml(r.text)}</div>
+            </div>`).join('');
+    } else {
+        if (reviewSummary) reviewSummary.textContent = '';
+        if (reviewList) reviewList.innerHTML = '<p style="color:var(--text-light);">No reviews yet. Be the first to review!</p>';
+    }
+
+    // Related products
+    const related = document.getElementById('fdRelated');
+    if (related) {
+        const others = allProducts.filter(op => op.id !== p.id && (op.category === p.category || op.featured)).slice(0, 4);
+        if (others.length) {
+            related.innerHTML = others.map(op => `
+                <a href="product-detail.html?id=${escapeHtml(op.id)}" class="fd-related-item">
+                    <img loading="lazy" src="${escapeHtml(op.image)}" alt="${escapeHtml(op.name)}">
+                    <div class="r-body"><h4>${escapeHtml(op.name)}</h4><div class="r-price">$${op.price.toFixed(2)}</div></div>
+                </a>`).join('');
+        } else {
+            related.innerHTML = '<p style="color:var(--text-light);">No related flowers found.</p>';
+        }
+    }
+
+    // Button handlers
+    document.getElementById('fdAddBtn')?.addEventListener('click', addToCart);
+    document.getElementById('fdBuyBtn')?.addEventListener('click', () => {
+        addToCart();
+        window.location.href = 'checkout.html';
+    });
+
+    // Review form handler
+    document.getElementById('reviewForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        submitReview(p.id);
+    });
+})();

@@ -1,0 +1,98 @@
+// js/community.js
+// Community page — discussions, Q&A, success stories, challenges
+
+(async () => {
+    let data;
+    try {
+        data = await api.fetchJSON('community');
+    } catch (err) {
+        console.error('Failed to load community data:', err);
+        return;
+    }
+
+    // Discussions
+    const discussionList = document.getElementById('discussionList');
+    if (discussionList && data.discussions) {
+        discussionList.innerHTML = data.discussions.map(d => `
+            <div class="discussion-item${d.pinned ? ' pinned' : ''}">
+                <div class="discussion-avatar">${escapeHtml(d.avatar)}</div>
+                <div>
+                    <h4 style="font-size:1rem;margin-bottom:0.15rem;">
+                        ${d.pinned ? '<span class="pinned-badge">📌 Pinned</span>' : ''}
+                        ${escapeHtml(d.title)}
+                    </h4>
+                    <div style="font-size:0.85rem;color:var(--text-light);">
+                        by ${escapeHtml(d.author)} · <span class="category-chip">${escapeHtml(d.category)}</span>
+                    </div>
+                    <p style="font-size:0.9rem;color:var(--text-light);margin-top:0.5rem;line-height:1.5;">${escapeHtml(d.excerpt)}</p>
+                    <div class="discussion-meta">
+                        <span><i class="bi bi-chat-dots"></i> ${escapeHtml(String(d.replies))} replies</span>
+                        <span><i class="bi bi-eye"></i> ${escapeHtml(String(d.views))} views</span>
+                        <span><i class="bi bi-clock"></i> ${escapeHtml(d.lastActive)}</span>
+                    </div>
+                </div>
+                <div class="discussion-stats">
+                    <span><i class="bi bi-chat-dots"></i> ${escapeHtml(String(d.replies))}</span>
+                    <span style="font-size:0.75rem;">replies</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Q&A
+    const questionList = document.getElementById('questionList');
+    if (questionList && data.questions) {
+        questionList.innerHTML = data.questions.map(q => `
+            <div class="question-card">
+                <div>
+                    <h4>${escapeHtml(q.title)}</h4>
+                    <div class="q-meta">by ${escapeHtml(q.author)} · ${escapeHtml(q.timeAgo)} · <span class="category-chip">${escapeHtml(q.category)}</span></div>
+                </div>
+                <div class="q-stats">
+                    <strong>${escapeHtml(String(q.answers))}</strong> answers<br>
+                    <span>${escapeHtml(String(q.votes))} votes</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Success Stories
+    const storyGrid = document.getElementById('storyGrid');
+    if (storyGrid && data.successStories) {
+        storyGrid.innerHTML = data.successStories.map(s => `
+            <div class="story-card">
+                <img loading="lazy" src="${escapeHtml(s.image)}" alt="${escapeHtml(s.title)}">
+                <div class="story-body">
+                    <h3>${escapeHtml(s.title)}</h3>
+                    <div class="story-author">${escapeHtml(s.avatar)} ${escapeHtml(s.author)} · ${escapeHtml(s.role)}</div>
+                    <p>${escapeHtml(s.story)}</p>
+                    <div style="margin-top:0.75rem;display:flex;gap:1rem;font-size:0.85rem;color:var(--text-light);">
+                        <span><i class="bi bi-heart" style="color:var(--error-color);"></i> ${escapeHtml(String(s.likes))}</span>
+                        <span><i class="bi bi-chat-dots"></i> ${escapeHtml(String(s.comments))}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Challenges
+    const challengeGrid = document.getElementById('challengeGrid');
+    if (challengeGrid && data.challenges) {
+        challengeGrid.innerHTML = data.challenges.map(c => `
+            <div class="challenge-card">
+                <div class="challenge-icon">🏆</div>
+                <h3>${escapeHtml(c.name)}</h3>
+                <div class="challenge-meta">
+                    <span><i class="bi bi-people"></i> ${c.participants} participants</span> · 
+                    <span>${c.entries} entries</span> · 
+                    <span>Ends ${escapeHtml(c.endsIn)}</span>
+                </div>
+                <p>${escapeHtml(c.description)}</p>
+                <div style="margin-top:1rem;display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:0.8rem;color:var(--text-light);"><i class="bi bi-gift"></i> ${escapeHtml(c.prize)}</span>
+                    <a href="#" class="btn btn-primary btn-sm">Join Challenge</a>
+                </div>
+            </div>
+        `).join('');
+    }
+})();

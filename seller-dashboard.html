@@ -1,0 +1,235 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Seller Dashboard - Manage products, orders, reviews, and grow your flower business.">
+    <title>Seller Dashboard | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div class="dash-layout">
+        <nav class="dash-sidebar">
+            <div class="dash-sidebar-profile">
+                <div class="avatar" id="sidebarAvatar">S</div>
+                <div class="info">
+                    <h4 id="sidebarShopName">My Shop</h4>
+                    <p>Verified Seller</p>
+                </div>
+            </div>
+            <h3>Menu</h3>
+            <ul class="dash-nav">
+                <li><a href="#dashboard" class="active" data-section="dashboard"><i class="bi bi-house"></i> Dashboard</a></li>
+                <li><a href="#products" data-section="products"><i class="bi bi-box"></i> Products</a></li>
+                <li><a href="#orders" data-section="orders"><i class="bi bi-receipt"></i> Orders</a></li>
+                <li><a href="#reviews" data-section="reviews"><i class="bi bi-star"></i> Reviews</a></li>
+                <li><a href="#messages" data-section="messages"><i class="bi bi-chat-dots"></i> Messages</a></li>
+                <li><a href="#analytics" data-section="analytics"><i class="bi bi-bar-chart"></i> Analytics</a></li>
+                <li><a href="#settings" data-section="settings"><i class="bi bi-gear"></i> Settings</a></li>
+            </ul>
+        </nav>
+
+        <main class="dash-main">
+            <div id="loginPrompt" class="login-prompt" style="display:none;">
+                <i class="bi bi-person-circle" style="font-size:3rem;display:block;margin-bottom:1rem;color:var(--text-light);"></i>
+                <h2>Sign In Required</h2>
+                <p style="color:var(--text-light);">Sign in to access your seller dashboard.</p>
+                <a href="login.html" class="btn btn-primary">Sign In</a>
+            </div>
+
+            <div id="dashContent" style="display:none;">
+                <div id="section-dashboard" class="section active">
+                    <div class="welcome-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                        <div>
+                            <h2 id="welcomeTitle">Welcome Back</h2>
+                            <p>Manage your products, orders, and grow your flower business.</p>
+                        </div>
+                        <button class="btn" onclick="navigateToAddProduct()" style="background:var(--bg-white); color:var(--primary-color); border:none; font-weight:600; padding:0.75rem 1.5rem; border-radius:50px; box-shadow:0 4px 15px rgba(0,0,0,0.15); cursor:pointer; display:flex; align-items:center; gap:0.5rem; z-index:2; position:relative;"><i class="bi bi-plus-lg"></i> Add New Product</button>
+                    </div>
+                    <div class="stats-grid" id="statsGrid"></div>
+                    <div class="grid-2">
+                        <div class="section-card"><h3>Recent Orders</h3><div id="recentOrders"></div></div>
+                        <div class="section-card"><h3>Latest Reviews</h3><div id="latestReviews"></div></div>
+                    </div>
+                </div>
+
+                <div id="section-products" class="section">
+                    <div class="dash-header"><h1>📦 Products</h1><button class="btn btn-primary btn-sm" onclick="navigateToAddProduct()"><i class="bi bi-plus"></i> Add Product</button></div>
+                    <div class="section-card"><div class="table-wrap" id="productsTable"></div></div>
+                </div>
+
+                <div id="section-orders" class="section">
+                    <div class="dash-header"><h1>🧾 Orders</h1></div>
+                    <div class="section-card"><div class="table-wrap" id="ordersTable"></div></div>
+                </div>
+
+                <div id="section-reviews" class="section">
+                    <div class="dash-header"><h1>⭐ Reviews</h1></div>
+                    <div class="section-card" id="reviewsSection"></div>
+                </div>
+
+                <div id="section-messages" class="section">
+                    <div class="dash-header"><h1>💬 Messages</h1></div>
+                    <div class="section-card" id="messagesSection"></div>
+                </div>
+
+                <div id="section-analytics" class="section">
+                    <div class="dash-header"><h1>📊 Analytics</h1></div>
+                    <div id="analyticsContent"></div>
+                </div>
+
+                <div id="section-settings" class="section">
+                    <div class="dash-header"><h1>⚙️ Shop Settings</h1></div>
+                    <div class="section-card" id="settingsForm"></div>
+                </div>
+
+                <div id="section-add-product" class="section">
+                    <div class="dash-header">
+                        <h1><i class="bi bi-plus-circle"></i> Upload New Product</h1>
+                        <button class="btn btn-outline" onclick="document.querySelector('.dash-nav a[data-section=\'products\']').click()"><i class="bi bi-arrow-left"></i> Back to Products</button>
+                    </div>
+                    
+                    <div class="add-product-layout">
+                        <!-- Left Column: Details -->
+                        <div class="add-product-main">
+                            <div class="section-card">
+                                <h3>Basic Details</h3>
+                                <div class="form-group">
+                                    <label>Product Name *</label>
+                                    <input type="text" id="prodName" placeholder="e.g., Luxury Red Rose Bouquet" class="input-large">
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea id="prodDesc" rows="5" placeholder="Describe the flowers, arrangement, and feeling..."></textarea>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group"><label>Price ($) *</label><input type="number" id="prodPrice" step="0.01" placeholder="0.00"></div>
+                                    <div class="form-group"><label>Stock Quantity</label><input type="number" id="prodStock" value="10"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="section-card">
+                                <h3>Categorization</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Category</label>
+                                        <select id="prodCategory">
+                                            <option value="">Select Category</option>
+                                            <option>Roses</option><option>Tulips</option><option>Orchids</option>
+                                            <option>Sunflowers</option><option>Lilies</option><option>Bouquets</option>
+                                            <option>Succulents</option><option>Accessories</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Flower Type</label>
+                                        <select id="prodType">
+                                            <option value="">Select Type</option>
+                                            <option>Natural</option><option>Artificial</option><option>Preserved</option><option>Dried</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group"><label>Color</label><input type="text" id="prodColor" placeholder="e.g., Red, White"></div>
+                                    <div class="form-group">
+                                        <label>Occasion</label>
+                                        <select id="prodOccasion">
+                                            <option value="">Select Occasion</option>
+                                            <option>Wedding</option><option>Birthday</option><option>Anniversary</option>
+                                            <option>Sympathy</option><option>Just Because</option><option>Corporate</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column: Media & Publish -->
+                        <div class="add-product-sidebar">
+                            <div class="section-card">
+                                <h3>Product Image</h3>
+                                <input type="file" id="prodImageInput" accept="image/jpeg,image/png,image/webp" style="display:none;">
+                                <div class="image-upload-zone" id="imageUploadZone">
+                                    <i class="bi bi-cloud-arrow-up" id="uploadIcon"></i>
+                                    <img id="imagePreview" src="" alt="Preview" style="display:none; width:100%; max-height:220px; object-fit:cover; border-radius:var(--radius-sm); margin-bottom:1rem;">
+                                    <p id="uploadPromptText">Drag and drop your image here</p>
+                                    <span style="color:var(--text-light); font-size:0.9rem;">or</span>
+                                    <button class="btn btn-outline btn-sm" style="margin-top:0.75rem;" onclick="document.getElementById('prodImageInput').click()" type="button">Browse Files</button>
+                                    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.75rem;">Supports JPG, PNG, WEBP (Max 5MB)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="section-card">
+                                <h3>Publishing</h3>
+                                <div class="form-group status-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="prodActive" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <span>Active (Visible on store)</span>
+                                </div>
+                                <hr style="border:0; border-top:1px solid var(--border-light); margin:1.5rem 0;">
+                                <button class="btn btn-primary w-100" style="padding:1rem; font-size:1.1rem; border-radius:var(--radius-md);" onclick="saveProduct()"><i class="bi bi-check2-circle"></i> Save & Publish Product</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/seller-dashboard.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => initSellerDashboard());</script>
+    <script>
+        (function() {
+            function initImageUpload() {
+                const input = document.getElementById('prodImageInput');
+                const zone  = document.getElementById('imageUploadZone');
+                if (!input || !zone || zone._wired) return;
+                zone._wired = true;
+
+                function handleFile(file) {
+                    if (!file || !file.type.startsWith('image/')) return;
+                    if (file.size > 5 * 1024 * 1024) { alert('Image must be under 5MB.'); return; }
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const preview = document.getElementById('imagePreview');
+                        const icon    = document.getElementById('uploadIcon');
+                        const text    = document.getElementById('uploadPromptText');
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                        if (icon) icon.style.display = 'none';
+                        if (text) text.textContent  = file.name;
+                    };
+                    reader.readAsDataURL(file);
+                }
+
+                input.addEventListener('change', () => handleFile(input.files[0]));
+                zone.addEventListener('dragover',  (e) => { e.preventDefault(); zone.style.borderColor = 'var(--primary-color)'; });
+                zone.addEventListener('dragleave', ()  => { zone.style.borderColor = ''; });
+                zone.addEventListener('drop',      (e) => { e.preventDefault(); zone.style.borderColor = ''; handleFile(e.dataTransfer.files[0]); });
+            }
+
+            const observer = new MutationObserver(() => {
+                const sec = document.getElementById('section-add-product');
+                if (sec && sec.classList.contains('active')) initImageUpload();
+            });
+            document.addEventListener('DOMContentLoaded', () => observer.observe(document.body, { subtree: true, attributeFilter: ['class'] }));
+        })();
+    </script>
+</body>
+</html>

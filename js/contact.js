@@ -1,0 +1,113 @@
+// js/contact.js
+// Contact page — form submission, FAQ accordion
+
+function authHeaders() {
+    const token = localStorage.getItem('flower-token');
+    return token
+        ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
+        : { 'Content-Type': 'application/json' };
+}
+
+function escapeHtml(str) {
+    if (typeof str !== 'string') return String(str || '');
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+}
+
+let currentFaqCategory = '';
+
+async function initContactPage() {
+    loadFaqs();
+
+    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('contactName').value.trim();
+        const email = document.getElementById('contactEmail').value.trim();
+        const phone = document.getElementById('contactPhone').value.trim();
+        const company = document.getElementById('contactCompany').value.trim();
+        const subject = document.getElementById('contactSubject').value;
+        const message = document.getElementById('contactMessage').value.trim();
+        const msgEl = document.getElementById('formMessage');
+        const submitBtn = document.getElementById('contactSubmitBtn');
+
+        msgEl.className = 'form-message';
+        msgEl.textContent = '';
+
+        if (!name || !email || !message) {
+            msgEl.className = 'form-message error';
+            msgEl.textContent = 'Please fill in all required fields.';
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="auth-spinner" style="margin-right:0.5rem;border-color:rgba(255,255,255,0.3);border-top-color:white;"></span> Sending...';
+
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: authHeaders(),
+                body: JSON.stringify({ name, email, phone, company, subject, message })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to send');
+
+            msgEl.className = 'form-message success';
+            msgEl.innerHTML = '<i class="bi bi-check-circle-fill" style="margin-right:0.3rem;"></i> Message sent successfully! We\'ll get back to you within 24 hours.';
+            e.target.reset();
+        } catch (err) {
+            msgEl.className = 'form-message error';
+            msgEl.textContent = err.message || 'Failed to send message. Please try again.';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="bi bi-send"></i> Send Message';
+        }
+    });
+}
+
+async function loadFaqs() {
+    let faqs;
+    try {
+        const res = await fetch('/api/faqs');
+        faqs = await res.json();
+    } catch {
+        faqs = [];
+    }
+
+    if (!faqs.length) return;
+
+    const categories = [...new Set(faqs.map(f => f.category).filter(Boolean))];
+    const tabs = document.getElementById('faqTabs');
+    tabs.innerHTML = `<button class="faq-tab active" data-cat="">All</button>` +
+        categories.map(c => `<button class="faq-tab" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join('');
+
+    tabs.addEventListener('click', (e) => {
+        const tab = e.target.closest('.faq-tab');
+        if (!tab) return;
+        tabs.querySelectorAll('.faq-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentFaqCategory = tab.dataset.cat;
+        renderFaqs(faqs);
+    });
+
+    renderFaqs(faqs);
+}
+
+function renderFaqs(faqs) {
+    const filtered = currentFaqCategory
+        ? faqs.filter(f => f.category === currentFaqCategory)
+        : faqs;
+
+    const list = document.getElementById('faqList');
+    list.innerHTML = filtered.map(f => `
+        <div class="faq-item">
+            <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                <span>${escapeHtml(f.question)}</span>
+                <i class="bi bi-chevron-down"></i>
+            </div>
+            <div class="faq-answer">
+                <p>${escapeHtml(f.answer)}</p>
+            </div>
+        </div>
+    `).join('');
+}

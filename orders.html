@@ -1,0 +1,258 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View your complete order history on Flower Ecosystem. Track order status, view items, and manage deliveries.">
+    <title>My Orders | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .order-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; margin-bottom:1rem; overflow:hidden; }
+        .order-header { display:flex; align-items:center; gap:1rem; padding:1rem 1.25rem; cursor:pointer; transition:background 0.2s; }
+        .order-header:hover { background:var(--bg-light); }
+        .order-header h3 { font-size:0.95rem; margin:0; }
+        .order-header .order-meta { font-size:0.8rem; color:var(--text-light); }
+        .order-body { padding:0 1.25rem 1rem; display:none; }
+        .order-body.open { display:block; }
+        .order-item { display:flex; align-items:center; gap:0.75rem; padding:0.5rem 0; border-top:1px solid var(--border-color); }
+        .order-item:first-child { border-top:none; }
+        .order-item img { width:48px; height:48px; border-radius:6px; object-fit:cover; flex-shrink:0; }
+        .badge-pending { background:rgba(245,158,11,0.15); color:#b8860b; }
+        .badge-confirmed { background:rgba(37,99,235,0.1); color:#2563eb; }
+        .badge-processing { background:rgba(172,50,80,0.1); color:var(--primary-color); }
+        .badge-shipped { background:rgba(139,92,246,0.1); color:#7c3aed; }
+    </style>
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    <section class="page-header primary-bg text-white section-padding text-center" style="padding-top:6rem; padding-bottom:3rem;">
+        <div class="container reveal-up">
+            <span class="subtitle" style="color:rgba(255,255,255,0.7)">YOUR ORDERS</span>
+            <h1 style="color:white;">Order History</h1>
+            <p class="section-subtitle text-white">Track and manage all your flower orders in one place.</p>
+        </div>
+    </section>
+
+    <section class="section-padding bg-light" style="min-height:50vh;">
+        <div class="container">
+            <div class="learning-tabs" style="justify-content:center; margin-bottom:2rem;" id="orderFilters">
+                <button class="tab-btn active" data-filter="all">All</button>
+                <button class="tab-btn" data-filter="active">Active</button>
+                <button class="tab-btn" data-filter="completed">Completed</button>
+                <button class="tab-btn" data-filter="cancelled">Cancelled</button>
+            </div>
+
+            <div id="ordersContainer"></div>
+
+            <div class="empty-state" id="emptyState" style="display:none;">
+                <i class="bi bi-box-seam"></i>
+                <h3>No orders yet</h3>
+                <p>Start shopping and your orders will appear here.</p>
+                <a href="marketplace.html" class="btn btn-primary" style="margin-top:1rem; display:inline-block;">Browse Marketplace</a>
+            </div>
+
+            <div class="text-center mt-4" id="orderCount" style="color:var(--text-light); font-size:0.9rem;"></div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script>
+        (() => {
+            const container = document.getElementById('ordersContainer');
+            const emptyState = document.getElementById('emptyState');
+            const orderCount = document.getElementById('orderCount');
+
+            let allOrders = [];
+            let filter = 'all';
+
+            const STATUS_MAP = {
+                pending: { label: 'Pending', class: 'badge-pending', icon: 'bi-clock' },
+                confirmed: { label: 'Confirmed', class: 'badge-confirmed', icon: 'bi-check-circle' },
+                processing: { label: 'Processing', class: 'badge-processing', icon: 'bi-arrow-repeat' },
+                shipped: { label: 'Shipped', class: 'badge-shipped', icon: 'bi-truck' },
+                delivered: { label: 'Delivered', class: 'badge-delivered', icon: 'bi-check-all' },
+                cancelled: { label: 'Cancelled', class: 'badge-cancelled', icon: 'bi-x-circle' }
+            };
+
+            async function loadOrders() {
+                const token = localStorage.getItem('flower-token');
+                let serverOrders = [];
+
+                // Fetch real orders from server
+                if (token && typeof api !== 'undefined') {
+                    try {
+                        const r = await fetch('/api/orders', {
+                            headers: { 'Authorization': 'Bearer ' + token }
+                        });
+                        if (r.ok) {
+                            const data = await r.json();
+                            serverOrders = Array.isArray(data) ? data : (data.orders || []);
+                        }
+                    } catch(e) { /* use fallback */ }
+                }
+
+                // Merge with localStorage orders
+                const stored = localStorage.getItem('dash-orders');
+                let localOrders = [];
+                if (stored) {
+                    try { localOrders = JSON.parse(stored); } catch { localOrders = []; }
+                }
+
+                // Combine: server orders take precedence when IDs match
+                const serverIds = new Set(serverOrders.map(o => o.id));
+                const merged = [
+                    ...serverOrders.map(o => ({
+                        id: o.id,
+                        name: o.items?.[0]?.name || 'Order #' + o.id.slice(0, 8),
+                        total: parseFloat(o.total_amount || 0),
+                        items: o.items?.length || 1,
+                        date: o.created_at ? new Date(o.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '',
+                        status: (o.status || 'pending').toLowerCase(),
+                        image: o.items?.[0]?.image_url || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=100&auto=format&fit=crop',
+                        items_detail: o.items || []
+                    })),
+                    ...localOrders.filter(o => !serverIds.has(o.id))
+                ];
+
+                allOrders = merged.length ? merged : (!token ? [] : [
+                    { id: 'FLW-88291', name: 'Sample Order', total: 45.00, items: 1, date: '15 June 2026', status: 'pending', image: 'https://images.unsplash.com/photo-1522926193341-e9ffd686c60f?q=80&w=100&auto=format&fit=crop' }
+                ]);
+
+                if (merged.length) localStorage.setItem('dash-orders', JSON.stringify(merged));
+            }
+
+            function statusClass(s) {
+                const m = STATUS_MAP[s?.toLowerCase()];
+                return m ? m.class : 'badge-processing';
+            }
+
+            function statusLabel(s) {
+                const m = STATUS_MAP[s?.toLowerCase()];
+                return m ? m.label : (s || 'Unknown');
+            }
+
+            function render() {
+                const activeStatuses = ['pending', 'confirmed', 'processing', 'shipped'];
+
+            function render() {
+                const activeStatuses = ['pending', 'confirmed', 'processing', 'shipped'];
+                let filtered = allOrders;
+                if (filter === 'active') filtered = allOrders.filter(o => activeStatuses.includes(o.status?.toLowerCase()));
+                else if (filter === 'completed') filtered = allOrders.filter(o => o.status?.toLowerCase() === 'delivered');
+                else if (filter === 'cancelled') filtered = allOrders.filter(o => o.status?.toLowerCase() === 'cancelled');
+
+                if (!filtered.length) {
+                    container.innerHTML = '';
+                    emptyState.style.display = 'block';
+                    orderCount.textContent = '';
+                    return;
+                }
+
+                emptyState.style.display = 'none';
+                orderCount.textContent = `Showing ${filtered.length} order${filtered.length !== 1 ? 's' : ''}`;
+
+                container.innerHTML = filtered.map((o, idx) => {
+                    const canCancel = ['pending', 'confirmed'].includes(o.status?.toLowerCase());
+                    return `
+                    <div class="order-card">
+                        <div class="order-header" data-index="${idx}">
+                            <div style="flex:1;min-width:0;">
+                                <h3>${o.name || 'Order #' + (o.id || '').slice(0, 8)}</h3>
+                                <div class="order-meta">${o.id || ''} · ${o.date || ''}</div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:0.75rem;">
+                                <span style="font-weight:600;color:var(--primary-color);">$${(o.total || 0).toFixed(2)}</span>
+                                <span class="badge-status ${statusClass(o.status)}"><i class="${STATUS_MAP[o.status?.toLowerCase()]?.icon || 'bi-circle'}"></i> ${statusLabel(o.status)}</span>
+                                <i class="bi bi-chevron-down" style="color:var(--text-light);transition:transform 0.2s;"></i>
+                            </div>
+                        </div>
+                        <div class="order-body">
+                            ${(o.items_detail && o.items_detail.length ? o.items_detail : [o]).map(item => `
+                                <div class="order-item">
+                                    <img src="${item.image_url || item.image || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=100&auto=format&fit=crop'}" alt="${item.name || o.name}">
+                                    <div style="flex:1;">
+                                        <div style="font-weight:500;font-size:0.9rem;">${item.name || o.name || 'Order #' + (o.id || '').slice(0, 8)}</div>
+                                        <div style="font-size:0.8rem;color:var(--text-light);">Qty: ${item.quantity || item.qty || o.items || 1} · $${parseFloat(item.unit_price || item.price || o.total || 0).toFixed(2)}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                            <div style="margin-top:0.75rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+                                <a href="marketplace.html" class="btn btn-outline btn-sm"><i class="bi bi-bag"></i> Shop Again</a>
+                                <a href="account.html" class="btn btn-primary btn-sm"><i class="bi bi-question-circle"></i> Need Help?</a>
+                                ${canCancel ? `<button class="btn btn-outline btn-sm" style="color:var(--error-color);border-color:var(--error-color);" onclick="cancelOrder('${o.id}')"><i class="bi bi-x-circle"></i> Cancel Order</button>` : ''}
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                container.querySelectorAll('.order-header').forEach(hdr => {
+                    hdr.addEventListener('click', () => {
+                        const body = hdr.nextElementSibling;
+                        const icon = hdr.querySelector('.bi-chevron-down');
+                        body.classList.toggle('open');
+                        if (icon) icon.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : '';
+                    });
+                });
+            }
+
+            document.querySelectorAll('#orderFilters .tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#orderFilters .tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    filter = btn.dataset.filter;
+                    render();
+                });
+            });
+
+            loadOrders();
+            render();
+        })();
+
+        window.cancelOrder = async function(orderId) {
+            if (!confirm('Cancel this order? This cannot be undone.')) return;
+            const token = localStorage.getItem('flower-token');
+            try {
+                const res = await fetch('/api/orders/' + orderId + '/status', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ status: 'CANCELLED' })
+                });
+                if (!res.ok) throw new Error((await res.json()).error || 'Failed');
+                showToast('Order cancelled', 'success');
+                location.reload();
+            } catch(e) {
+                // Fall back to localStorage
+                const stored = JSON.parse(localStorage.getItem('dash-orders') || '[]');
+                const updated = stored.map(o => o.id === orderId ? { ...o, status: 'cancelled' } : o);
+                localStorage.setItem('dash-orders', JSON.stringify(updated));
+                showToast('Order cancelled (offline)', 'success');
+                location.reload();
+            }
+        };
+    </script>
+    <script>
+        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    this.parentElement.classList.toggle('mobile-open');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

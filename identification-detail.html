@@ -1,0 +1,579 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Flower identification lesson - Flower Ecosystem">
+    <title>Identification Lesson - Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .id-hero { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #2d1b4e 100%); padding: 3rem 0; color: var(--white); }
+        .id-hero .breadcrumb { font-size: 0.85rem; opacity: 0.7; margin-bottom: 1.5rem; }
+        .id-hero .breadcrumb a { color: var(--white); text-decoration: underline; }
+        .id-hero h1 { font-family: 'Playfair Display', serif; font-size: 2.4rem; margin-bottom: 0.75rem; }
+        .id-hero p { max-width: 600px; opacity: 0.85; line-height: 1.6; }
+        .id-hero .id-badges { display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
+        .id-hero .id-badges span { padding: 0.3rem 0.85rem; border-radius: 20px; font-size: 0.8rem; background: rgba(255,255,255,0.15); }
+
+        .comparison-table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+        .comparison-table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; }
+        .comparison-table th, .comparison-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .comparison-table thead th { background: var(--primary-color); color: var(--white); font-weight: 600; }
+        .comparison-table thead th:first-child { background: var(--text-color); }
+        .comparison-table tbody tr:nth-child(even) { background: var(--bg-color); }
+        .comparison-table tbody tr:hover { background: rgba(212,175,55,0.05); }
+        .comparison-table .feature-label { font-weight: 600; color: var(--text-color); }
+        .comparison-table .natural-cell { color: #27ae60; }
+        .comparison-table .artificial-cell { color: #e74c3c; }
+        .comparison-table td i { margin-right: 0.35rem; }
+
+        .video-section { background: var(--bg-color); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+        .video-section .video-container { border-radius: 8px; overflow: hidden; margin-top: 1rem; }
+        .video-section .video-meta { display: flex; gap: 1.5rem; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-light); }
+
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; }
+        .gallery-card { border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+        .gallery-card:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .gallery-card img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+        .gallery-card .gallery-label { padding: 0.5rem; font-size: 0.8rem; font-weight: 500; text-align: center; }
+        .gallery-card .gallery-label.natural { background: rgba(39,174,96,0.1); color: #27ae60; }
+        .gallery-card .gallery-label.artificial { background: rgba(231,76,60,0.1); color: #e74c3c; }
+        .gallery-section-title { font-family: 'Playfair Display', serif; margin: 2rem 0 0.5rem; }
+
+        .checklist-section { background: var(--bg-color); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+        .checklist-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 0; cursor: pointer; }
+        .checklist-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary-color); cursor: pointer; flex-shrink: 0; }
+        .checklist-item .check-text { font-size: 0.95rem; flex: 1; }
+        .checklist-item.checked .check-text { text-decoration: line-through; opacity: 0.5; }
+        .checklist-result { margin-top: 1rem; padding: 1rem; border-radius: 8px; font-weight: 500; text-align: center; display: none; }
+        .checklist-result.show { display: block; }
+        .checklist-result.likely-natural { background: rgba(39,174,96,0.1); color: #27ae60; }
+        .checklist-result.likely-artificial { background: rgba(231,76,60,0.1); color: #e74c3c; }
+
+        .id-quiz-section { background: var(--white); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+        .id-quiz-section h3 { font-family: 'Playfair Display', serif; margin-bottom: 1rem; }
+        .id-quiz-question { margin-bottom: 1.25rem; }
+        .id-quiz-question p { font-weight: 500; margin-bottom: 0.5rem; }
+        .id-quiz-option { display: block; padding: 0.65rem 1rem; border: 2px solid var(--border-color); border-radius: 8px; margin-bottom: 0.4rem; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; }
+        .id-quiz-option:hover { border-color: var(--primary-color); }
+        .id-quiz-option.selected { border-color: var(--primary-color); background: rgba(212,175,55,0.1); }
+        .id-quiz-option.correct { border-color: #27ae60; background: rgba(39,174,96,0.1); }
+        .id-quiz-option.incorrect { border-color: #e74c3c; background: rgba(231,76,60,0.1); }
+        .id-quiz-result { text-align: center; padding: 1.5rem; display: none; }
+        .id-quiz-result .score { font-size: 2.5rem; font-weight: 700; color: var(--primary-color); }
+
+        .tips-list { list-style: none; padding: 0; }
+        .tips-list li { padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.95rem; }
+        .tips-list li i { color: var(--primary-color); margin-top: 0.15rem; flex-shrink: 0; }
+        .section-subhead { font-family: 'Playfair Display', serif; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border-color); }
+        .lightbox-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; justify-content: center; align-items: center; }
+        .lightbox-overlay.open { display: flex; }
+        .lightbox-overlay img { max-width: 90vw; max-height: 90vh; border-radius: 8px; }
+        .lightbox-overlay .close-lightbox { position: absolute; top: 1rem; right: 1.5rem; color: var(--white); font-size: 2rem; cursor: pointer; background: none; border: none; }
+        @media (max-width: 768px) {
+            .id-hero h1 { font-size: 1.6rem; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+    <div class="lightbox-overlay" id="lightbox"><button class="close-lightbox" id="closeLightbox">&times;</button><img id="lightboxImg" src="" alt=""></div>
+
+    <main>
+        <section class="id-hero" id="idHero">
+            <div class="container">
+                <p class="breadcrumb"><a href="index.html">Home</a> / <a href="identification.html">Flower Identification</a> / <span id="breadcrumbTopic">Lesson</span></p>
+                <h1 id="heroTitle">Loading...</h1>
+                <p id="heroDesc"></p>
+                <div class="id-badges" id="heroBadges"></div>
+            </div>
+        </section>
+
+        <div class="container" style="padding-top:2rem;">
+            <div style="display:grid;grid-template-columns:1fr 300px;gap:2.5rem;">
+                <div>
+                    <h2 class="section-subhead"><i class="bi bi-table"></i> Side-by-Side Comparison</h2>
+                    <div class="comparison-table-wrap" id="comparisonTableWrap"></div>
+
+                    <h2 class="section-subhead"><i class="bi bi-play-circle"></i> Video Demonstration</h2>
+                    <div class="video-section" id="videoSection">
+                        <p style="color:var(--text-light);">No video available for this topic.</p>
+                    </div>
+
+                    <h2 class="section-subhead"><i class="bi bi-images"></i> Interactive Gallery</h2>
+                    <h4 class="gallery-section-title" style="color:#27ae60;">🌱 Natural Examples</h4>
+                    <div class="gallery-grid" id="naturalGallery"></div>
+                    <h4 class="gallery-section-title" style="color:#e74c3c;">🎨 Artificial Examples</h4>
+                    <div class="gallery-grid" id="artificialGallery"></div>
+
+                    <h2 class="section-subhead"><i class="bi bi-check2-square"></i> Identification Checklist</h2>
+                    <div class="checklist-section" id="checklistSection">
+                        <p style="color:var(--text-light);margin-bottom:0.75rem;">Check each characteristic you observe:</p>
+                        <div id="checklistItems"></div>
+                        <div class="checklist-result" id="checklistResult"></div>
+                    </div>
+
+                    <h2 class="section-subhead"><i class="bi bi-pencil-square"></i> Knowledge Quiz</h2>
+                    <div class="id-quiz-section" id="quizSection">
+                        <div id="quizQuestions"></div>
+                        <button class="btn btn-primary" id="submitQuiz" style="margin-top:0.75rem;">Submit Answers</button>
+                        <div class="id-quiz-result" id="quizResult">
+                            <div class="score" id="quizScore">0/0</div>
+                            <p id="quizFeedback"></p>
+                            <button class="btn btn-outline" id="retryQuiz" style="margin-top:0.75rem;">Retry</button>
+                        </div>
+                    </div>
+
+                    <h2 class="section-subhead"><i class="bi bi-lightbulb"></i> Expert Tips</h2>
+                    <ul class="tips-list" id="tipsList"></ul>
+                </div>
+
+                <div>
+                    <div style="position:sticky;top:5.5rem;">
+                        <div style="border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;">
+                            <h4 style="font-family:'Playfair Display',serif;margin-bottom:0.75rem;">Related Topics</h4>
+                            <div id="relatedTopics"></div>
+                        </div>
+                        <a href="identification.html" class="btn btn-outline" style="width:100%;margin-top:1rem;"><i class="bi bi-arrow-left"></i> Back to Guide</a>
+                        <a href="course-detail.html?id=c2" class="btn btn-primary" style="width:100%;margin-top:0.5rem;"><i class="bi bi-mortarboard"></i> Take the Course</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="section-padding bg-light" style="margin-top:2rem;">
+            <div class="container">
+                <span class="subtitle">CONTINUE LEARNING</span>
+                <h2>More Identification Guides</h2>
+                <div class="product-grid" id="moreGuides" style="margin-top:1.5rem;"></div>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script>
+        (async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const topicId = urlParams.get('id') || 'rose-id';
+
+            const identificationData = [
+                {
+                    id: 'rose-id',
+                    title: 'Natural vs Artificial Roses',
+                    description: 'Learn how to identify real roses from high-quality artificial roses using visual inspection, touch tests, scent evaluation, and expert techniques.',
+                    slug: 'rose-id',
+                    category: 'Roses',
+                    level: 'Beginner',
+                    duration: '15 min',
+                    comparison: {
+                        features: ['Fragrance', 'Petals', 'Stem', 'Color', 'Lifespan', 'Touch', 'Pollen', 'Cost'],
+                        natural: ['Sweet, natural rose scent', 'Soft, velvety with natural imperfections', 'Green, fibrous with thorns', 'Natural variation — darker center, lighter edges', '5–10 days in vase', 'Cool, slightly moist petals', 'Visible yellow pollen on stamens', '$3–$8 per stem'],
+                        artificial: ['No fragrance or chemical scent', 'Uniform, fabric-like, perfectly symmetrical', 'Wire wrapped in green tape or plastic', 'Consistent, often unnaturally bright', 'Years with proper care', 'Room temperature, fabric-like', 'No pollen or glued plastic stamens', '$2–$15 per stem (premium silk)']
+                    },
+                    video: {
+                        title: 'How to Identify a Real Rose',
+                        url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                        duration: '5 minutes',
+                        highlights: ['Petal inspection techniques', 'Stem and thorn examination', 'Scent evaluation method', 'Texture comparison', 'Common mistakes to avoid']
+                    },
+                    naturalImages: [
+                        { url: 'https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?q=80&w=400&auto=format&fit=crop', label: 'Fresh Red Rose' },
+                        { url: 'https://images.unsplash.com/photo-1526045612212-70caf35c14df?q=80&w=400&auto=format&fit=crop', label: 'Pink Garden Rose' },
+                        { url: 'https://images.unsplash.com/photo-1471899236350-e3016bf1e69e?q=80&w=400&auto=format&fit=crop', label: 'White Rose Bloom' },
+                        { url: 'https://images.unsplash.com/photo-1519378058457-4c29a1a2dfac?q=80&w=400&auto=format&fit=crop', label: 'Yellow Rose' }
+                    ],
+                    artificialImages: [
+                        { url: 'https://images.unsplash.com/photo-1598908312219-d34bb3c99d8d?q=80&w=400&auto=format&fit=crop', label: 'Silk Rose Arrangement' },
+                        { url: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=400&auto=format&fit=crop', label: 'Fabric Rose Close-up' },
+                        { url: 'https://images.unsplash.com/photo-1582791694770-cbdc9dda338f?q=80&w=400&auto=format&fit=crop', label: 'Artificial Rose Bouquet' },
+                        { url: 'https://images.unsplash.com/photo-1562832135-14a35d25edef?q=80&w=400&auto=format&fit=crop', label: 'Premium Silk Rose' }
+                    ],
+                    checklist: [
+                        { text: 'Does the flower have a natural, recognizable scent?', natural: true },
+                        { text: 'Are the petals slightly irregular with natural imperfections?', natural: true },
+                        { text: 'Does the stem feel organic with fibers or thorns?', natural: true },
+                        { text: 'Is there visible pollen on the stamens?', natural: true },
+                        { text: 'Are the colors subtly varied rather than perfectly uniform?', natural: true },
+                        { text: 'Do the petals feel cool and slightly moist to the touch?', natural: true },
+                        { text: 'Are the petals perfectly symmetrical and identical?', natural: false },
+                        { text: 'Is the stem a smooth wire wrapped in tape?', natural: false }
+                    ],
+                    quiz: [
+                        { question: 'Which characteristic is most common in artificial flowers?', options: ['Natural fragrance', 'Organic stem', 'Uniform petals', 'Seasonal blooming'], correct: 2 },
+                        { question: 'What is the best way to test if a rose is real?', options: ['Look at it from far away', 'Check the price tag', 'Touch and smell the petals', 'Count the petals'], correct: 2 },
+                        { question: 'How long do fresh-cut roses typically last in a vase?', options: ['1–2 days', '5–10 days', '3–4 weeks', 'Several months'], correct: 1 },
+                        { question: 'What material are premium artificial rose petals usually made from?', options: ['Paper', 'Plastic', 'Silk or polyester', 'Wax'], correct: 2 },
+                        { question: 'Which of these is NOT a reliable identification method?', options: ['Scent test', 'Stem examination', 'Price alone', 'Petal texture'], correct: 2 }
+                    ],
+                    tips: [
+                        'Always use multiple senses — sight, touch, and smell — when identifying flowers. No single test is foolproof.',
+                        'High-end silk roses can cost more than real ones. Don\'t let price be your only guide.',
+                        'Examine the stem cut: fresh roses have moist, angled cuts; artificial ones have dry, clean cuts.',
+                        'Under UV light, artificial flowers often glow while real flowers absorb UV and appear darker.',
+                        'Natural rose petals have a distinct velvety texture that is very difficult to replicate in fabric.'
+                    ],
+                    relatedTopics: [
+                        { id: 'tulip-id', title: 'Natural vs Artificial Tulips' },
+                        { id: 'orchid-id', title: 'Real vs Silk Orchids' },
+                        { id: 'preserved-vs-fresh', title: 'Fresh vs Preserved Flowers' },
+                        { id: 'dried-vs-preserved', title: 'Dried vs Preserved Flowers' }
+                    ]
+                },
+                {
+                    id: 'tulip-id',
+                    title: 'Natural vs Artificial Tulips',
+                    description: 'Master the art of identifying real tulips from artificial replicas. Learn to spot the differences in stem structure, petal behavior, and color patterns.',
+                    slug: 'tulip-id',
+                    category: 'Tulips',
+                    level: 'Beginner',
+                    duration: '12 min',
+                    comparison: {
+                        features: ['Stem', 'Petals', 'Growth', 'Touch', 'Lifespan', 'Color'],
+                        natural: ['Long, smooth, green, flexible', 'Pointed tips, slight curve', 'Keeps growing in vase (up to 2")', 'Smooth, slightly waxy', '5–7 days in vase', 'Solid or bi-color with natural gradients'],
+                        artificial: ['Plastic or wire wrapped in green', 'Perfectly uniform pointed shape', 'No growth, static height', 'Fabric-like, room temperature', 'Years', 'Uniform, often with visible sheen']
+                    },
+                    video: { title: 'How to Identify Real Tulips', url: 'https://www.youtube.com/embed/dQw4w9WgXcQ', duration: '4 minutes', highlights: ['Stem comparison', 'Petal shape analysis', 'Growth test demonstration'] },
+                    naturalImages: [
+                        { url: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=400&auto=format&fit=crop', label: 'Fresh Tulips' },
+                        { url: 'https://images.unsplash.com/photo-1470509037662-253afb3100f9?q=80&w=400&auto=format&fit=crop', label: 'Tulip Field' }
+                    ],
+                    artificialImages: [
+                        { url: 'https://images.unsplash.com/photo-1562832135-14a35d25edef?q=80&w=400&auto=format&fit=crop', label: 'Silk Tulips' },
+                        { url: 'https://images.unsplash.com/photo-1598908312219-d34bb3c99d8d?q=80&w=400&auto=format&fit=crop', label: 'Fabric Tulips' }
+                    ],
+                    checklist: [
+                        { text: 'Do the flowers continue to grow or move after being placed in water?', natural: true },
+                        { text: 'Are the petal edges slightly irregular when viewed up close?', natural: true },
+                        { text: 'Does the stem feel smooth but organic with slight ridges?', natural: true },
+                        { text: 'Are the petals perfectly identical in shape and size?', natural: false },
+                        { text: 'Do the flowers feel room temperature regardless of environment?', natural: false }
+                    ],
+                    quiz: [
+                        { question: 'What unique behavior do real tulips have that artificial ones cannot replicate?', options: ['They change color', 'They continue growing in the vase', 'They produce nectar', 'They close at night'], correct: 1 },
+                        { question: 'Which part of a tulip is most revealing for identification?', options: ['The bulb', 'The stem base', 'The petal tips', 'The leaf width'], correct: 2 },
+                        { question: 'How can you test if a tulip is real using water?', options: ['Drop it in water to see if it floats', 'Place the stem in water and watch for growth', 'Spray water on petals to see if they bead up', 'Submerge the whole flower'], correct: 1 }
+                    ],
+                    tips: ['Real tulips continue to grow and bend toward light after cutting — artificial ones stay rigid.', 'Run your finger along the petal edge: real tulips have a subtle organic wave, artificial ones are perfectly smooth.', 'Tulip bulbs produce a distinct earthy smell — artificial stems have no such odor.'],
+                    relatedTopics: [
+                        { id: 'rose-id', title: 'Natural vs Artificial Roses' },
+                        { id: 'orchid-id', title: 'Real vs Silk Orchids' },
+                        { id: 'preserved-vs-fresh', title: 'Fresh vs Preserved Flowers' }
+                    ]
+                },
+                {
+                    id: 'preserved-vs-fresh',
+                    title: 'Fresh vs Preserved Flowers',
+                    description: 'Understand the differences between fresh-cut flowers and preserved blooms. Learn about glycerin treatment, texture changes, and longevity expectations.',
+                    slug: 'preserved-vs-fresh',
+                    category: 'Preservation',
+                    level: 'Intermediate',
+                    duration: '10 min',
+                    comparison: {
+                        features: ['Texture', 'Stem', 'Fragrance', 'Water Need', 'Color', 'Lifespan', 'Flexibility'],
+                        natural: ['Soft, supple, natural give', 'Moist or slimy cut end', 'Natural fragrance present', 'Requires water and food', 'Natural variation, may fade', '5–14 days', 'Petals bend and move freely'],
+                        preserved: ['Slightly stiff, leathery feel', 'Dry, clean cut, no moisture', 'No fragrance or faint glycerol', 'No water needed ever', 'Retains color, may be enhanced', 'Months to years', 'Petals hold shape, limited flex']
+                    },
+                    video: { title: 'Fresh vs Preserved Flower Comparison', url: 'https://www.youtube.com/embed/dQw4w9WgXcQ', duration: '6 minutes', highlights: ['Touch test demonstration', 'Glycerin preservation process', 'Longevity comparison'] },
+                    naturalImages: [
+                        { url: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop', label: 'Fresh Bouquet' },
+                        { url: 'https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=400&auto=format&fit=crop', label: 'Fresh Roses' }
+                    ],
+                    artificialImages: [
+                        { url: 'https://images.unsplash.com/photo-1582791694770-cbdc9dda338f?q=80&w=400&auto=format&fit=crop', label: 'Preserved Arrangement' },
+                        { url: 'https://images.unsplash.com/photo-1562832135-14a35d25edef?q=80&w=400&auto=format&fit=crop', label: 'Preserved Roses' }
+                    ],
+                    checklist: [
+                        { text: 'Does the flower feel soft and supple to the touch?', natural: true },
+                        { text: 'Is the stem cut end moist or slightly slimy?', natural: true },
+                        { text: 'Does the flower have a natural fragrance?', natural: true },
+                        { text: 'Does the flower feel slightly stiff or leathery?', natural: false },
+                        { text: 'Is the stem cut end completely dry?', natural: false },
+                        { text: 'Has the flower maintained its appearance for over a month?', natural: false }
+                    ],
+                    quiz: [
+                        { question: 'What substance is commonly used to preserve flowers?', options: ['Formaldehyde', 'Glycerin', 'Alcohol', 'Vinegar'], correct: 1 },
+                        { question: 'How long can preserved flowers typically last?', options: ['1–2 weeks', '1–2 months', 'Months to years', 'Decades'], correct: 2 },
+                        { question: 'Which texture best describes preserved flower petals?', options: ['Soft and velvety', 'Crisp and brittle', 'Slightly leathery', 'Wet and slimy'], correct: 2 },
+                        { question: 'Do preserved flowers require water?', options: ['Yes, daily', 'Yes, weekly', 'Only when dry', 'No, never'], correct: 3 }
+                    ],
+                    tips: ['Gently bend a petal: if it springs back, it is likely preserved. If it cracks or feels brittle, it may be dried instead.', 'Preserved flowers feel heavier than fresh ones due to the glycerin absorbed into their cells.', 'Check the stem color — preserved flowers often have slightly darker or discolored stems from the treatment process.'],
+                    relatedTopics: [
+                        { id: 'rose-id', title: 'Natural vs Artificial Roses' },
+                        { id: 'dried-vs-preserved', title: 'Dried vs Preserved Flowers' },
+                        { id: 'orchid-id', title: 'Real vs Silk Orchids' }
+                    ]
+                },
+                {
+                    id: 'dried-vs-preserved',
+                    title: 'Dried vs Preserved Flowers',
+                    description: 'Learn to distinguish dried flowers from preserved ones. While both are long-lasting, their care, feel, and appearance are very different.',
+                    slug: 'dried-vs-preserved',
+                    category: 'Preservation',
+                    level: 'Intermediate',
+                    duration: '8 min',
+                    comparison: {
+                        features: ['Texture', 'Color', 'Stem', 'Fragility', 'Lifespan', 'Care'],
+                        natural: ['Brittle, crisp, fragile', 'Muted, faded, vintage tones', 'Dry, woody, natural', 'Breaks easily when handled', '6 months–2 years', 'Keep dry, avoid sunlight'],
+                        artificial: ['Firm, slightly pliable', 'Retains color, may be enhanced', 'Dry but flexible, treated', 'Holds shape well', '1–5 years with care', 'Dust gently, avoid moisture']
+                    },
+                    video: { title: 'Dried vs Preserved — What\'s the Difference?', url: 'https://www.youtube.com/embed/dQw4w9WgXcQ', duration: '4 minutes', highlights: ['Brittle test', 'Color comparison', 'Care differences'] },
+                    naturalImages: [
+                        { url: 'https://images.unsplash.com/photo-1499789500731-7f1c040cd617?q=80&w=400&auto=format&fit=crop', label: 'Dried Lavender' },
+                        { url: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=80&w=400&auto=format&fit=crop', label: 'Dried Bouquet' }
+                    ],
+                    artificialImages: [
+                        { url: 'https://images.unsplash.com/photo-1582791694770-cbdc9dda338f?q=80&w=400&auto=format&fit=crop', label: 'Preserved Arrangement' },
+                        { url: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=400&auto=format&fit=crop', label: 'Preserved Flowers' }
+                    ],
+                    checklist: [
+                        { text: 'Does the flower feel brittle and break when touched?', natural: true },
+                        { text: 'Are the colors muted or faded compared to fresh flowers?', natural: true },
+                        { text: 'Does the stem snap when bent?', natural: true },
+                        { text: 'Does the flower feel firm but slightly flexible?', natural: false },
+                        { text: 'Are the colors still vibrant and natural-looking?', natural: false },
+                        { text: 'Does the stem bend without breaking?', natural: false }
+                    ],
+                    quiz: [
+                        { question: 'Which type is more fragile when handled?', options: ['Dried flowers', 'Preserved flowers', 'Both are equally fragile', 'Neither is fragile'], correct: 0 },
+                        { question: 'What is a key visual difference between dried and preserved flowers?', options: ['Dried flowers are larger', 'Preserved flowers retain more color', 'Dried flowers smell stronger', 'Preserved flowers are smaller'], correct: 1 },
+                        { question: 'How should dried flowers be cared for?', options: ['Water weekly', 'Mist daily', 'Keep dry, avoid sunlight', 'Refrigerate'], correct: 2 }
+                    ],
+                    tips: ['If a flower cracks or shatters when bent, it is dried — not preserved.', 'Preserved flowers can be gently reshaped; dried flowers will break if you try.', 'Dried flowers work best in low-touch areas; preserved flowers can handle occasional handling.'],
+                    relatedTopics: [
+                        { id: 'preserved-vs-fresh', title: 'Fresh vs Preserved Flowers' },
+                        { id: 'rose-id', title: 'Natural vs Artificial Roses' },
+                        { id: 'tulip-id', title: 'Natural vs Artificial Tulips' }
+                    ]
+                }
+            ];
+
+            const topic = identificationData.find(t => t.id === topicId) || identificationData[0];
+            document.title = `${topic.title} - Flower Identification`;
+            document.getElementById('breadcrumbTopic').textContent = topic.title;
+            document.getElementById('heroTitle').textContent = topic.title;
+            document.getElementById('heroDesc').textContent = topic.description;
+            document.getElementById('heroBadges').innerHTML = `
+                <span><i class="bi bi-tag"></i> ${topic.category}</span>
+                <span><i class="bi bi-bar-chart"></i> ${topic.level}</span>
+                <span><i class="bi bi-clock"></i> ${topic.duration}</span>`;
+
+            // Comparison table
+            const c = topic.comparison;
+            document.getElementById('comparisonTableWrap').innerHTML = `
+                <table class="comparison-table">
+                    <thead><tr><th>Feature</th><th><i class="bi bi-flower1"></i> Natural</th><th><i class="bi bi-palette"></i> Artificial</th></tr></thead>
+                    <tbody>${c.features.map((f, i) => `
+                        <tr>
+                            <td class="feature-label">${f}</td>
+                            <td class="natural-cell"><i class="bi bi-check-circle-fill"></i> ${c.natural[i]}</td>
+                            <td class="artificial-cell"><i class="bi bi-x-circle-fill"></i> ${c.artificial[i]}</td>
+                        </tr>`
+                    ).join('')}</tbody>
+                </table>`;
+
+            // Video
+            const vs = document.getElementById('videoSection');
+            if (topic.video) {
+                vs.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                        <h4 style="margin:0;"><i class="bi bi-play-circle"></i> ${topic.video.title}</h4>
+                        <span style="font-size:0.85rem;color:var(--text-light);"><i class="bi bi-clock"></i> ${topic.video.duration}</span>
+                    </div>
+                    <div class="video-container"><iframe src="${topic.video.url}" width="100%" height="400" allowfullscreen loading="lazy" style="border:none;"></iframe></div>
+                    <div class="video-meta">
+                        ${topic.video.highlights.map(h => `<span><i class="bi bi-check-circle"></i> ${h}</span>`).join('')}
+                    </div>`;
+            }
+
+            // Gallery
+            function renderGallery(arr, containerId, labelClass) {
+                const el = document.getElementById(containerId);
+                el.innerHTML = arr.map(img => `
+                    <div class="gallery-card" data-src="${img.url}">
+                        <img loading="lazy" src="${img.url}" alt="${img.label}">
+                        <div class="gallery-label ${labelClass}">${img.label}</div>
+                    </div>`
+                ).join('');
+                el.querySelectorAll('.gallery-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        document.getElementById('lightboxImg').src = card.dataset.src;
+                        document.getElementById('lightbox').classList.add('open');
+                    });
+                });
+            }
+            renderGallery(topic.naturalImages || [], 'naturalGallery', 'natural');
+            renderGallery(topic.artificialImages || [], 'artificialGallery', 'artificial');
+
+            // Checklist
+            const checkEl = document.getElementById('checklistItems');
+            if (topic.checklist && topic.checklist.length) {
+                checkEl.innerHTML = topic.checklist.map((item, i) => `
+                    <label class="checklist-item" data-i="${i}">
+                        <input type="checkbox"> <span class="check-text">${item.text}</span>
+                    </label>`
+                ).join('');
+                checkEl.addEventListener('change', (e) => {
+                    const chk = e.target.closest('.checklist-item');
+                    if (!chk) return;
+                    chk.classList.toggle('checked', chk.querySelector('input').checked);
+                    const checks = [...checkEl.querySelectorAll('.checklist-item')];
+                    const anyNatural = checks.some((el, i) => {
+                        return el.querySelector('input').checked && topic.checklist[i].natural;
+                    });
+                    const anyArtificial = checks.some((el, i) => {
+                        return el.querySelector('input').checked && !topic.checklist[i].natural;
+                    });
+                    const result = document.getElementById('checklistResult');
+                    if (!checks.some(el => el.querySelector('input').checked)) {
+                        result.classList.remove('show');
+                        return;
+                    }
+                    result.classList.add('show');
+                    if (anyNatural && !anyArtificial) {
+                        result.className = 'checklist-result show likely-natural';
+                        result.textContent = '🌱 Likely Natural — Most checked indicators point to a real flower.';
+                    } else if (anyArtificial && !anyNatural) {
+                        result.className = 'checklist-result show likely-artificial';
+                        result.textContent = '🎨 Likely Artificial — Most checked indicators point to an artificial flower.';
+                    } else {
+                        result.className = 'checklist-result show';
+                        result.style.background = 'rgba(255,193,7,0.1)';
+                        result.style.color = '#f39c12';
+                        result.textContent = '⚖️ Mixed Indicators — Your results are inconclusive. Try more tests or consult an expert.';
+                    }
+                });
+            } else {
+                checkEl.innerHTML = '<p style="color:var(--text-light);">Checklist not available for this topic.</p>';
+            }
+
+            // Quiz
+            const qEl = document.getElementById('quizQuestions');
+            if (topic.quiz && topic.quiz.length) {
+                let submitted = false;
+                qEl.innerHTML = `<h3><i class="bi bi-pencil-square"></i> Test Your Knowledge</h3>
+                    <p style="color:var(--text-light);margin-bottom:1rem;">${topic.quiz.length} questions</p>
+                    ${topic.quiz.map((q, qi) => `
+                        <div class="id-quiz-question" data-q="${qi}">
+                            <p>${qi + 1}. ${q.question}</p>
+                            ${q.options.map((opt, oi) => `
+                                <label class="id-quiz-option" data-qi="${qi}" data-oi="${oi}">
+                                    <input type="radio" name="iq${qi}" value="${oi}" style="display:none;"> ${opt}
+                                </label>`
+                            ).join('')}
+                        </div>`
+                    ).join('')}`;
+                qEl.addEventListener('click', (e) => {
+                    if (submitted) return;
+                    const opt = e.target.closest('.id-quiz-option');
+                    if (!opt) return;
+                    const qi = parseInt(opt.dataset.qi);
+                    opt.closest('.id-quiz-question').querySelectorAll('.id-quiz-option').forEach(el => el.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    opt.querySelector('input').checked = true;
+                });
+                document.getElementById('submitQuiz').addEventListener('click', () => {
+                    if (submitted) return;
+                    let correct = 0;
+                    topic.quiz.forEach((q, qi) => {
+                        const sel = document.querySelector(`input[name="iq${qi}"]:checked`);
+                        const val = sel ? parseInt(sel.value) : -1;
+                        const opts = document.querySelectorAll(`.id-quiz-question[data-q="${qi}"] .id-quiz-option`);
+                        opts.forEach((el, oi) => {
+                            el.classList.remove('selected', 'correct', 'incorrect');
+                            if (oi === q.correct) el.classList.add('correct');
+                            if (oi === val && val !== q.correct) el.classList.add('incorrect');
+                            if (oi === val) el.classList.add('selected');
+                        });
+                        if (val === q.correct) correct++;
+                    });
+                    submitted = true;
+                    document.getElementById('quizScore').textContent = `${correct}/${topic.quiz.length}`;
+                    const pct = Math.round((correct / topic.quiz.length) * 100);
+                    const fb = pct >= 80 ? 'Excellent! You really know your flowers.' : pct >= 50 ? 'Good start! Review the comparison table and try again.' : 'Keep studying! Review the video and checklist above.';
+                    document.getElementById('quizFeedback').textContent = fb;
+                    document.getElementById('quizResult').style.display = '';
+                    document.getElementById('submitQuiz').style.display = 'none';
+                });
+                document.getElementById('retryQuiz').addEventListener('click', () => {
+                    submitted = false;
+                    document.querySelectorAll('.id-quiz-option').forEach(el => el.classList.remove('selected', 'correct', 'incorrect'));
+                    document.querySelectorAll('input[name^="iq"]').forEach(el => el.checked = false);
+                    document.getElementById('quizResult').style.display = 'none';
+                    document.getElementById('submitQuiz').style.display = '';
+                });
+            } else {
+                qEl.innerHTML = '<p style="color:var(--text-light);">No quiz available for this topic.</p>';
+            }
+
+            // Tips
+            const tEl = document.getElementById('tipsList');
+            if (topic.tips && topic.tips.length) {
+                tEl.innerHTML = topic.tips.map(t => `<li><i class="bi bi-lightbulb-fill"></i> ${t}</li>`).join('');
+            }
+
+            // Related topics (sidebar)
+            const rtEl = document.getElementById('relatedTopics');
+            if (topic.relatedTopics && topic.relatedTopics.length) {
+                rtEl.innerHTML = topic.relatedTopics.map(rt => `
+                    <a href="identification-detail.html?id=${rt.id}" style="display:block;padding:0.5rem 0;text-decoration:none;color:var(--text-color);border-bottom:1px solid var(--border-color);font-size:0.9rem;">
+                        <i class="bi bi-chevron-right" style="font-size:0.7rem;color:var(--primary-color);margin-right:0.35rem;"></i> ${rt.title}
+                    </a>`
+                ).join('');
+            } else {
+                rtEl.innerHTML = '<p style="color:var(--text-light);font-size:0.9rem;">No related topics.</p>';
+            }
+
+            // More guides
+            const moreGuides = identificationData.filter(t => t.id !== topicId).slice(0, 4);
+            const mgEl = document.getElementById('moreGuides');
+            mgEl.innerHTML = moreGuides.length ? moreGuides.map(t => `
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        <a href="identification-detail.html?id=${t.id}">
+                            <img loading="lazy" src="${t.naturalImages?.[0]?.url || t.artificialImages?.[0]?.url || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=600&auto=format&fit=crop'}" alt="${t.title}" class="product-img" style="aspect-ratio:16/9;">
+                        </a>
+                        <span class="product-badge">${t.level}</span>
+                    </div>
+                    <div class="product-info">
+                        <a href="identification-detail.html?id=${t.id}" style="text-decoration:none;color:inherit;">
+                            <h3 class="product-name">${t.title}</h3>
+                        </a>
+                        <p class="product-seller">${t.category} · ${t.duration}</p>
+                        <div class="product-footer">
+                            <a href="identification-detail.html?id=${t.id}" class="btn btn-primary btn-sm" style="width:100%;">Start Lesson</a>
+                        </div>
+                    </div>
+                </div>`
+            ).join('') : '';
+
+            // Lightbox
+            document.getElementById('closeLightbox').addEventListener('click', () => document.getElementById('lightbox').classList.remove('open'));
+            document.getElementById('lightbox').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) document.getElementById('lightbox').classList.remove('open');
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+            });
+        })();
+    </script>
+    <script>
+        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) { e.preventDefault(); this.parentElement.classList.toggle('mobile-open'); }
+            });
+        });
+    </script>
+</body>
+</html>

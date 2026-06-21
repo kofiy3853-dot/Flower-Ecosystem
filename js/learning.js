@@ -1,0 +1,174 @@
+// js/learning.js
+// Learning Center page — courses, articles, videos, quizzes, search, filter
+
+const LEARNING_CATEGORIES = [
+    { name: 'Beginner Floristry', icon: '🌱', desc: 'Start your floristry journey with the basics', color: '#5a7a60' },
+    { name: 'Flower Care', icon: '💧', desc: 'Keep your blooms fresh and healthy', color: '#4a90d9' },
+    { name: 'Arrangement Techniques', icon: '✂️', desc: 'Master the art of floral design', color: '#ac3250' },
+    { name: 'Business Skills', icon: '💼', desc: 'Build and grow your floral business', color: '#d4af37' },
+    { name: 'Wedding Floristry', icon: '💍', desc: 'Design stunning wedding flowers', color: '#e8998d' },
+    { name: 'Event Decorations', icon: '🎉', desc: 'Transform spaces with floral decor', color: '#8c6ba8' }
+];
+
+function renderStars(rating) {
+    const f = Math.floor(rating);
+    const h = rating - f >= 0.5;
+    let s = '';
+    for (let i = 0; i < f; i++) s += '<i class="bi bi-star-fill" style="color:var(--accent-gold);"></i>';
+    if (h) s += '<i class="bi bi-star-half" style="color:var(--accent-gold);"></i>';
+    for (let i = 0; i < 5 - f - (h ? 1 : 0); i++) s += '<i class="bi bi-star" style="color:var(--border-color);"></i>';
+    return s;
+}
+
+(async () => {
+    let courses, articles, videos, quizzes;
+    try {
+        [courses, articles, videos, quizzes] = await Promise.all([
+            api.fetchCourses(),
+            api.fetchArticles(),
+            api.fetchVideos(),
+            api.fetchQuizzes()
+        ]);
+    } catch (err) {
+        console.error('Learning data load failed:', err);
+        return;
+    }
+
+    // Featured courses grid
+    const courseGrid = document.getElementById('courseGrid');
+    if (courseGrid) {
+        const featured = (courses.filter(c => c.featured).length ? courses.filter(c => c.featured) : courses).slice(0, 4);
+        courseGrid.innerHTML = featured.length ? featured.map(c => `
+            <div class="product-card">
+                <div class="product-img-wrap">
+                    <a href="course-detail.html?id=${escapeHtml(c.id)}">
+                        <img loading="lazy" src="${escapeHtml(c.thumbnail)}" alt="${escapeHtml(c.title)}" class="product-img" style="aspect-ratio:16/9;">
+                    </a>
+                    <span class="product-badge">${escapeHtml(c.level || 'All Levels')}</span>
+                </div>
+                <div class="product-info">
+                    <a href="course-detail.html?id=${escapeHtml(c.id)}" style="text-decoration:none;color:inherit;">
+                        <h3 class="product-name">${escapeHtml(c.title)}</h3>
+                    </a>
+                    <p class="product-seller">${escapeHtml(c.instructor)}</p>
+                    <div class="product-rating" style="margin:0.25rem 0;">
+                        ${renderStars(c.rating)}
+                        <span style="font-size:0.8rem;color:var(--text-light);">(${c.students || 0} students)</span>
+                    </div>
+                    <div class="product-footer">
+                        <span class="product-price">${c.price ? '$' + c.price.toFixed(2) : 'Free'}</span>
+                        <a href="course-detail.html?id=${escapeHtml(c.id)}" class="btn btn-primary btn-sm">Start Course</a>
+                    </div>
+                </div>
+            </div>`
+        ).join('') : '<p style="grid-column:1/-1;text-align:center;color:var(--text-light);padding:2rem 0;">Courses coming soon!</p>';
+    }
+
+    // Categories
+    const catGrid = document.getElementById('categoryGrid');
+    if (catGrid) {
+        catGrid.innerHTML = LEARNING_CATEGORIES.map(c => `
+            <a href="#content" class="category-card" data-category="${escapeHtml(c.name)}" style="text-decoration:none;cursor:pointer;">
+                <div class="category-img" style="background:${c.color}15;display:flex;align-items:center;justify-content:center;height:100px;font-size:2.5rem;">
+                    ${c.icon}
+                </div>
+                <div class="category-overlay" style="background:linear-gradient(to top,rgba(0,0,0,0.7),transparent);">
+                    <h3>${escapeHtml(c.name)}</h3>
+                    <p style="font-size:0.8rem;opacity:0.85;">${escapeHtml(c.desc)}</p>
+                </div>
+            </a>`
+        ).join('');
+
+        catGrid.addEventListener('click', (e) => {
+            const card = e.target.closest('[data-category]');
+            if (card) {
+                const cat = card.dataset.category;
+                const tab = document.querySelector('[data-tab="articles"]');
+                if (tab) tab.click();
+                setTimeout(() => {
+                    document.querySelectorAll('.article-card, .video-card').forEach(el => {
+                        el.style.display = (el.dataset.category === cat) ? '' : 'none';
+                    });
+                }, 50);
+            }
+        });
+    }
+
+    // Resource count
+    const rc = document.getElementById('resourceCount');
+    if (rc) rc.textContent = `${articles.length} articles · ${videos.length} videos · ${quizzes.length} quizzes`;
+
+    // Articles
+    const aC = document.getElementById('articlesContainer');
+    if (aC) {
+        aC.innerHTML = articles.map(a => `
+            <div class="article-card reveal-up active" data-category="${escapeHtml(a.category || '')}">
+                <a href="article-detail.html?id=${escapeHtml(a.id)}" style="text-decoration:none;color:inherit;">
+                    <img loading="lazy" src="${escapeHtml(a.image)}" alt="${escapeHtml(a.title)}">
+                    <div class="article-content">
+                        <span class="article-tag">${escapeHtml(a.tag)}</span>
+                        <span style="font-size:0.75rem;color:var(--text-light);margin-left:0.5rem;">${escapeHtml(a.category || '')}</span>
+                        <h3>${escapeHtml(a.title)}</h3>
+                        <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:0.5rem;">${escapeHtml(a.readTime || '')} · by ${escapeHtml(a.author || '')}</p>
+                        <p>${escapeHtml(a.description)}</p>
+                        <span class="link-arrow">Read More →</span>
+                    </div>
+                </a>
+            </div>`
+        ).join('');
+    }
+
+    // Videos
+    const vC = document.getElementById('videosContainer');
+    if (vC) {
+        vC.innerHTML = videos.map(v => {
+            const link = v.tag === 'Tutorial' ? `tutorial-detail.html?id=${escapeHtml(v.id)}` : `video-detail.html?id=${escapeHtml(v.id)}`;
+            const btnLabel = v.tag === 'Tutorial' ? 'Start Tutorial' : 'Watch Now';
+            return `
+            <div class="video-card reveal-up active" data-category="${escapeHtml(v.category || '')}">
+                <a href="${link}" style="text-decoration:none;color:inherit;">
+                    <div class="video-thumbnail">
+                        <img loading="lazy" src="${escapeHtml(v.image)}" alt="${escapeHtml(v.title)}">
+                        <div class="play-button">▶</div>
+                    </div>
+                    <div class="video-content">
+                        <span class="video-tag">${escapeHtml(v.tag)}</span>
+                        <span style="font-size:0.75rem;color:var(--text-light);margin-left:0.5rem;">${escapeHtml(v.category || '')}</span>
+                        <h3>${escapeHtml(v.title)}</h3>
+                        <p class="video-duration"><i class="bi bi-clock"></i> ${escapeHtml(v.duration)}</p>
+                        <p class="video-desc">${escapeHtml(v.description)}</p>
+                        <span class="btn btn-primary btn-sm" style="margin-top:0.75rem;display:inline-block;">${btnLabel}</span>
+                    </div>
+                </a>
+            </div>`;
+        }).join('');
+    }
+
+    // Quizzes
+    const qC = document.getElementById('quizContainer');
+    if (qC && quizzes.length) {
+        qC.innerHTML = quizzes.map(q => `
+            <div class="article-card reveal-up active">
+                <a href="quiz-detail.html?id=${escapeHtml(q.id)}" style="text-decoration:none;color:inherit;">
+                    <div style="background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));height:180px;display:flex;align-items:center;justify-content:center;font-size:4rem;">
+                        🧠
+                    </div>
+                    <div class="article-content">
+                        <span class="article-tag">${q.questions ? q.questions.length + ' questions' : 'Quiz'}</span>
+                        <h3>${escapeHtml(q.title)}</h3>
+                        <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:0.5rem;">Course: ${escapeHtml(q.course_id || 'Standalone')}</p>
+                        <p style="font-size:0.85rem;color:var(--text-light);">${escapeHtml(q.description || 'Test your knowledge with this interactive quiz.')}</p>
+                        <span class="btn btn-primary btn-sm" style="margin-top:0.75rem;">Take Quiz →</span>
+                    </div>
+                </a>
+            </div>`
+        ).join('');
+    }
+
+    // Tab switching
+    document.querySelectorAll('.learning-tabs .tab-btn, .tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.article-card, .video-card').forEach(el => { el.style.display = ''; });
+        });
+    });
+})();

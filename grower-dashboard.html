@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Grower Dashboard - Manage flower cultivation, harvests, and wholesale orders.">
+    <title>Grower Dashboard | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        /* Grower dashboard accent overrides */
+        .welcome-card { background: linear-gradient(135deg, #2d6a4f, #40916c) !important; box-shadow: 0 10px 30px rgba(45, 106, 79, 0.2) !important; }
+        .dash-sidebar-profile .avatar { background: linear-gradient(135deg, #2d6a4f, #40916c) !important; }
+        .dash-nav li a.active { color: #40916c !important; border-left-color: #40916c !important; background: linear-gradient(90deg, rgba(64,145,108,0.1), transparent) !important; }
+        .stat-card .icon { background: rgba(64, 145, 108, 0.1) !important; color: #40916c !important; }
+        /* Growth bars */
+        .growth-bar { height:8px; background:var(--bg-light); border-radius:4px; overflow:hidden; width:120px; }
+        .growth-fill { height:100%; border-radius:4px; transition:width 0.3s; }
+        .growth-seed { background:var(--accent-gold); }
+        .growth-germination { background:#a3e635; }
+        .growth-vegetative { background:var(--accent-green); }
+        .growth-budding { background:#34d399; }
+        .growth-flowering { background:var(--primary-color); }
+        .growth-harvest { background:#10b981; }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div class="dash-layout">
+        <nav class="dash-sidebar">
+            <div class="dash-sidebar-profile">
+                <div class="avatar" id="growerSidebarAvatar">G</div>
+                <div class="info">
+                    <h4 id="growerSidebarName">My Farm</h4>
+                    <p>Grower</p>
+                </div>
+            </div>
+            <h3>Menu</h3>
+            <ul class="dash-nav">
+                <li><a href="#dashboard" class="active" data-section="dashboard"><i class="bi bi-house"></i> Dashboard</a></li>
+                <li><a href="#crops" data-section="crops"><i class="bi bi-flower1"></i> Flower Crops</a></li>
+                <li><a href="#harvests" data-section="harvests"><i class="bi bi-basket"></i> Harvests</a></li>
+                <li><a href="#orders" data-section="orders"><i class="bi bi-box-seam"></i> Bulk Orders</a></li>
+                <li><a href="#listings" data-section="listings"><i class="bi bi-shop"></i> Marketplace Listings</a></li>
+                <li><a href="#analytics" data-section="analytics"><i class="bi bi-bar-chart"></i> Analytics</a></li>
+                <li><a href="#settings" data-section="settings"><i class="bi bi-gear"></i> Settings</a></li>
+            </ul>
+        </nav>
+
+        <main class="dash-main">
+            <div id="loginPrompt" class="login-prompt" style="display:none;">
+                <i class="bi bi-person-circle" style="font-size:3rem;display:block;margin-bottom:1rem;color:var(--text-light);"></i>
+                <h2>Sign In Required</h2>
+                <p style="color:var(--text-light);">Sign in to access your grower dashboard.</p>
+                <a href="login.html" class="btn btn-primary">Sign In</a>
+            </div>
+
+            <div id="dashContent" style="display:none;">
+                <!-- Dashboard -->
+                <div id="section-dashboard" class="section active">
+                    <div class="welcome-card"><h2 id="welcomeTitle">Welcome Back</h2><p>Manage your flower production, harvests, and wholesale orders.</p></div>
+                    <div class="stats-grid" id="statsGrid"></div>
+                    <div class="grid-2">
+                        <div class="section-card"><h3>Recent Crops</h3><div id="recentCrops"></div></div>
+                        <div class="section-card"><h3>Pending Orders</h3><div id="pendingOrders"></div></div>
+                    </div>
+                </div>
+
+                <!-- Crops -->
+                <div id="section-crops" class="section">
+                    <div class="dash-header"><h1>🌸 Flower Crops</h1><button class="btn btn-primary btn-sm" onclick="showModal('cropModal')"><i class="bi bi-plus"></i> Add Crop</button></div>
+                    <div class="section-card"><div class="table-wrap" id="cropsTable"></div></div>
+                </div>
+
+                <!-- Harvests -->
+                <div id="section-harvests" class="section">
+                    <div class="dash-header"><h1>🌾 Harvests</h1><button class="btn btn-primary btn-sm" onclick="showModal('harvestModal')"><i class="bi bi-plus"></i> Record Harvest</button></div>
+                    <div class="section-card"><div class="table-wrap" id="harvestsTable"></div></div>
+                </div>
+
+                <!-- Orders -->
+                <div id="section-orders" class="section">
+                    <div class="dash-header"><h1>📦 Bulk Orders</h1></div>
+                    <div class="section-card"><div class="table-wrap" id="ordersTable"></div></div>
+                </div>
+
+                <!-- Listings -->
+                <div id="section-listings" class="section">
+                    <div class="dash-header"><h1>🏪 Marketplace Listings</h1><button class="btn btn-primary btn-sm" onclick="showModal('listingModal')"><i class="bi bi-plus"></i> New Listing</button></div>
+                    <div class="section-card"><div class="table-wrap" id="listingsTable"></div></div>
+                </div>
+
+                <!-- Analytics -->
+                <div id="section-analytics" class="section">
+                    <div class="dash-header"><h1>📊 Farm Analytics</h1></div>
+                    <div id="analyticsContent"></div>
+                </div>
+
+                <!-- Settings -->
+                <div id="section-settings" class="section">
+                    <div class="dash-header"><h1>⚙️ Farm Settings</h1></div>
+                    <div class="section-card" id="settingsForm"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="cropModal"><div class="modal"><h3>Add New Crop</h3><div class="form-group"><label>Flower Name *</label><input type="text" id="cropName"></div><div class="form-row"><div class="form-group"><label>Variety</label><input type="text" id="cropVariety"></div><div class="form-group"><label>Quantity</label><input type="number" id="cropQty" value="0"></div></div><div class="form-row"><div class="form-group"><label>Growth Stage</label><select id="cropStage"><option>Seed</option><option>Germination</option><option>Vegetative</option><option>Budding</option><option>Flowering</option><option>Harvest Ready</option></select></div><div class="form-group"><label>Status</label><select id="cropStatus"><option>Healthy</option><option>Needs Attention</option><option>Diseased</option><option>Pest Issue</option></select></div></div><div class="form-row"><div class="form-group"><label>Planting Date</label><input type="date" id="cropPlantDate"></div><div class="form-group"><label>Expected Harvest</label><input type="date" id="cropHarvestDate"></div></div><div class="form-group"><label>Field Location</label><input type="text" id="cropField"></div><div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;"><button class="btn btn-outline btn-sm" onclick="hideModal('cropModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="saveCrop()">Save Crop</button></div></div></div>
+
+    <div class="modal-overlay" id="harvestModal"><div class="modal"><h3>Record Harvest</h3><div class="form-group"><label>Crop *</label><select id="harvestCrop"></select></div><div class="form-row"><div class="form-group"><label>Quantity *</label><input type="number" id="harvestQty"></div><div class="form-group"><label>Date</label><input type="date" id="harvestDate"></div></div><div class="form-group"><label>Quality Grade</label><select id="harvestGrade"><option value="">Select</option><option>A+</option><option>A</option><option>B+</option><option>B</option><option>C</option></select></div><div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;"><button class="btn btn-outline btn-sm" onclick="hideModal('harvestModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="saveHarvest()">Save</button></div></div></div>
+
+    <div class="modal-overlay" id="listingModal"><div class="modal"><h3>New Marketplace Listing</h3><div class="form-group"><label>Flower Name *</label><input type="text" id="listFlower"></div><div class="form-row"><div class="form-group"><label>Price Per Unit *</label><input type="number" id="listPrice" step="0.01"></div><div class="form-group"><label>Unit Type</label><select id="listUnit"><option value="stem">Per Stem</option><option value="bunch">Per Bunch</option><option value="box">Per Box</option><option value="kg">Per Kg</option></select></div></div><div class="form-row"><div class="form-group"><label>Available Quantity</label><input type="number" id="listQty"></div><div class="form-group"><label>Min Order</label><input type="number" id="listMin" value="100"></div></div><div class="form-group"><label>Quality Grade</label><select id="listGrade"><option>A+</option><option>A</option><option>B+</option><option>B</option></select></div><div class="form-group"><label>Description</label><textarea id="listDesc" rows="2"></textarea></div><div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;"><button class="btn btn-outline btn-sm" onclick="hideModal('listingModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="saveListing()">Publish</button></div></div></div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/grower-dashboard.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => initGrowerDashboard());</script>
+</body>
+</html>

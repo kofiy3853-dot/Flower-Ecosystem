@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse and find top florists and growers on Flower Ecosystem. Filter by location, specialty, rating, and reviews.">
+    <meta property="og:title" content="Florists Directory | Flower Ecosystem">
+    <meta property="og:description" content="Browse and find top florists and growers. Filter by location, specialty, rating, and reviews.">
+    <meta property="og:type" content="website">
+    <title>Florists Directory | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=17.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- ===== COMPACT DIRECTORY HERO ===== -->
+    <section class="dir-hero">
+        <div class="container">
+            <div class="dir-hero-inner reveal-up">
+                <h1 class="dir-hero-title">&#x1F338; Find Trusted Florists</h1>
+                <p class="dir-hero-sub">Discover local florists, wedding specialists, event decorators, and flower growers.</p>
+
+                <!-- Search -->
+                <div class="mkt-search-wrap">
+                    <i class="bi bi-search mkt-search-icon"></i>
+                    <input type="text" id="floristSearch" class="mkt-search-input" placeholder="Search by name, location, or specialty...">
+                    <button class="btn btn-primary mkt-search-btn" id="floristSearchBtn">Search</button>
+                </div>
+
+                <!-- Specialty pills -->
+                <div class="mkt-cat-pills" id="specialtyPills">
+                    <button class="mkt-cat-pill dir-spec-pill active" data-spec="">All Florists</button>
+                    <button class="mkt-cat-pill dir-spec-pill" data-spec="Wedding">&#x1F492; Wedding</button>
+                    <button class="mkt-cat-pill dir-spec-pill" data-spec="Bouquet">&#x1F490; Bouquets</button>
+                    <button class="mkt-cat-pill dir-spec-pill" data-spec="Event">&#x1F389; Events</button>
+                    <button class="mkt-cat-pill dir-spec-pill" data-spec="Luxury">&#x2728; Luxury</button>
+                    <button class="mkt-cat-pill dir-spec-pill" data-spec="Orchid">&#x1F338; Orchids</button>
+                    <button class="mkt-cat-pill dir-spec-pill" data-spec="Tropical">&#x1F33A; Tropical</button>
+                    <button class="mkt-cat-pill dir-spec-pill" data-spec="Indoor">&#x1FAB4; Indoor Plants</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== DIRECTORY TOOLBAR ===== -->
+    <div class="mkt-filter-bar">
+        <div class="container">
+            <div class="dir-toolbar">
+                <p id="floristCount" class="dir-count"></p>
+                <div class="dir-toolbar-right">
+                    <div class="loc-filter-inline" id="locFilter"></div>
+                    <select id="floristSort" aria-label="Sort florists" class="form-select mkt-filter-select">
+                        <option value="rating">Top Rated</option>
+                        <option value="reviews">Most Reviewed</option>
+                        <option value="name">Name A–Z</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FLORIST GRID ===== -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="dir-grid reveal-up" id="floristGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===== CTA ===== -->
+    <section class="section-padding primary-bg text-white text-center">
+        <div class="container reveal-up">
+            <h2 class="text-white">Are You a Florist?</h2>
+            <p class="text-white" style="opacity:0.85; margin-bottom:2rem;">Join thousands of florists already growing their business on our platform.</p>
+            <a href="sell.html" class="btn" style="background:white; color:var(--primary-color); font-weight:600;">Start Selling Free &#x2192;</a>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <div id="auth-modal-container"></div>
+
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script>
+        (async () => {
+            let allFlorists = await api.fetchFlorists();
+            let activeSpec = '';
+            let activeLoc  = '';
+
+            function stars(rating) {
+                const full  = Math.floor(rating);
+                const half  = rating % 1 >= 0.5 ? 1 : 0;
+                const empty = 5 - full - half;
+                return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
+            }
+
+            function getLocations(list) {
+                const set = new Set();
+                list.forEach(f => {
+                    const parts = f.location.split(',');
+                    set.add(parts[parts.length - 1].trim());
+                });
+                return [...set].sort();
+            }
+
+            function render(list) {
+                const grid  = document.getElementById('floristGrid');
+                const count = document.getElementById('floristCount');
+                count.textContent = `${list.length} florist${list.length !== 1 ? 's' : ''} found`;
+                if (!list.length) {
+                    grid.innerHTML = '<div class="dir-empty"><i class="bi bi-search"></i><h3>No florists found</h3><p>Try adjusting your search or filters.</p></div>';
+                    return;
+                }
+                grid.innerHTML = list.map(f => `
+                    <div class="dir-card">
+                        <div class="dir-img-wrap">
+                            <img loading="lazy" src="${f.image}" alt="${f.name}">
+                            <div class="dir-rating-badge"><span style="color:#f59e0b;">${stars(f.rating)}</span> ${f.rating}</div>
+                        </div>
+                        <div class="dir-body">
+                            <h3>${f.name}</h3>
+                            <div class="dir-location"><i class="bi bi-geo-alt-fill"></i> ${f.location}</div>
+                            <span class="dir-specialty">${f.specialty}</span>
+                            <div class="dir-desc">${f.description}</div>
+                            <div class="dir-portfolio">
+                                ${f.portfolio.slice(0, 3).map(p => `<img loading="lazy" src="${p}" alt="Portfolio">`).join('')}
+                                ${f.portfolio.length > 3 ? `<span class="dir-portfolio-more">+${f.portfolio.length - 3}</span>` : ''}
+                            </div>
+                            <div class="dir-meta">
+                                <span><i class="bi bi-chat-dots"></i> ${f.reviews} reviews</span>
+                                <span><i class="bi bi-box-seam"></i> ${f.products} products</span>
+                            </div>
+                            <div class="dir-footer">
+                                <a href="florist-profile.html?id=${f.id}" class="btn btn-primary btn-sm" style="text-decoration:none;display:block;">View Profile</a>
+                                <button class="btn btn-outline btn-sm" onclick="window.location.href='mailto:${f.email}'"><i class="bi bi-envelope"></i> Contact</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            function filterAndSort() {
+                const q    = document.getElementById('floristSearch').value.toLowerCase().trim();
+                const sort = document.getElementById('floristSort').value;
+                let list = allFlorists.filter(f => {
+                    const matchSearch = !q || f.name.toLowerCase().includes(q) || f.location.toLowerCase().includes(q) || f.specialty.toLowerCase().includes(q);
+                    const matchSpec   = !activeSpec || f.specialty.toLowerCase().includes(activeSpec.toLowerCase());
+                    const matchLoc    = !activeLoc  || f.location.includes(activeLoc);
+                    return matchSearch && matchSpec && matchLoc;
+                });
+                if (sort === 'rating')  list.sort((a, b) => b.rating - a.rating);
+                else if (sort === 'reviews') list.sort((a, b) => b.reviews - a.reviews);
+                else if (sort === 'name')    list.sort((a, b) => a.name.localeCompare(b.name));
+                render(list);
+            }
+
+            // Specialty pills
+            document.getElementById('specialtyPills').addEventListener('click', e => {
+                const pill = e.target.closest('.dir-spec-pill');
+                if (!pill) return;
+                document.querySelectorAll('.dir-spec-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                activeSpec = pill.dataset.spec;
+                filterAndSort();
+            });
+
+            // Location chips (populated from data)
+            const locFilter = document.getElementById('locFilter');
+            const locations = getLocations(allFlorists);
+            locFilter.innerHTML = '<button class="loc-chip active" data-loc="">All</button>' +
+                locations.map(l => `<button class="loc-chip" data-loc="${l}">${l}</button>`).join('');
+            locFilter.addEventListener('click', e => {
+                const chip = e.target.closest('.loc-chip');
+                if (!chip) return;
+                locFilter.querySelectorAll('.loc-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                activeLoc = chip.dataset.loc;
+                filterAndSort();
+            });
+
+            document.getElementById('floristSearch').addEventListener('input', filterAndSort);
+            document.getElementById('floristSearchBtn').addEventListener('click', filterAndSort);
+            document.getElementById('floristSearch').addEventListener('keydown', e => { if (e.key === 'Enter') filterAndSort(); });
+            document.getElementById('floristSort').addEventListener('change', filterAndSort);
+
+            filterAndSort();
+        })();
+    </script>
+</body>
+</html>

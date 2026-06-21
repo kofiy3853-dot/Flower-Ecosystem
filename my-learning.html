@@ -1,0 +1,215 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="My Learning Dashboard - Flower Ecosystem">
+    <meta property="og:title" content="My Learning | Flower Ecosystem">
+    <meta property="og:description" content="Track your floristry learning progress and enrolled courses.">
+    <meta property="og:type" content="website">
+    <title>My Learning - Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=17.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .dash-header { background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); padding: 2.5rem 0; color: var(--white); }
+        .dash-header .greeting { font-family: var(--font-serif); font-size: 1.8rem; }
+        .dash-header .greeting small { font-size: 0.9rem; opacity: 0.8; display: block; font-family: var(--font-sans); font-weight: 300; }
+        .dash-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: -1.5rem; position: relative; z-index: 2; }
+        .stat-card { background: var(--white); border-radius: 12px; padding: 1.25rem; box-shadow: 0 4px 15px rgba(0,0,0,0.06); text-align: center; }
+        .stat-card .stat-icon { font-size: 1.5rem; color: var(--primary-color); margin-bottom: 0.35rem; }
+        .stat-card .stat-num { font-size: 1.75rem; font-weight: 700; }
+        .stat-card .stat-label { font-size: 0.8rem; color: var(--text-light); }
+        .dash-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border-color); margin: 1.5rem 0; }
+        .dash-tab { padding: 0.7rem 1.5rem; border: none; background: none; cursor: pointer; font-size: 0.9rem; font-weight: 500; color: var(--text-light); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+        .dash-tab:hover { color: var(--primary-color); }
+        .dash-tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .dash-panel { display: none; }
+        .dash-panel.active { display: block; }
+        .course-progress-card { display: flex; gap: 1.25rem; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; transition: box-shadow 0.2s; }
+        .course-progress-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .course-progress-card .thumb { width: 180px; min-height: 100px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+        .course-progress-card .info { flex: 1; }
+        .course-progress-card .info h3 { font-size: 1rem; margin-bottom: 0.25rem; }
+        .course-progress-card .info .meta { font-size: 0.8rem; color: var(--text-light); }
+        .course-progress-card .info .progress-text { font-size: 0.85rem; font-weight: 500; margin-top: 0.5rem; }
+        .progress-bar-mini { background: var(--border-color); border-radius: 6px; height: 6px; overflow: hidden; margin-top: 0.35rem; }
+        .progress-bar-mini .fill { height: 100%; background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); border-radius: 6px; transition: width 0.5s ease; }
+        .cert-card { border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; text-align: center; transition: box-shadow 0.2s; }
+        .cert-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .cert-card .cert-icon { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 0.5rem; }
+        .cert-card h4 { font-size: 0.95rem; }
+        .cert-card .cert-date { font-size: 0.8rem; color: var(--text-light); }
+        .cert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+        .saved-card { border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
+        .saved-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+        .saved-card .body { padding: 1rem; }
+        .saved-card .body h4 { font-size: 0.95rem; margin-bottom: 0.25rem; }
+        .saved-card .body p { font-size: 0.8rem; color: var(--text-light); }
+        .empty-state { text-align: center; padding: 3rem 0; color: var(--text-light); }
+        .empty-state i { font-size: 3rem; display: block; margin-bottom: 0.75rem; }
+        @media (max-width: 768px) {
+            .course-progress-card { flex-direction: column; }
+            .course-progress-card .thumb { width: 100%; height: 140px; }
+            .dash-stats { grid-template-columns: repeat(2, 1fr); margin-top: -1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <main>
+        <section class="dash-header">
+            <div class="container">
+                <div class="greeting" id="greeting">My Learning <small>Track your courses, certificates, and progress</small></div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="dash-stats" id="statCards">
+                <div class="stat-card"><div class="stat-icon"><i class="bi bi-play-circle"></i></div><div class="stat-num" id="statInProgress">0</div><div class="stat-label">In Progress</div></div>
+                <div class="stat-card"><div class="stat-icon"><i class="bi bi-check-circle"></i></div><div class="stat-num" id="statCompleted">0</div><div class="stat-label">Completed</div></div>
+                <div class="stat-card"><div class="stat-icon"><i class="bi bi-award"></i></div><div class="stat-num" id="statCertificates">0</div><div class="stat-label">Certificates</div></div>
+                <div class="stat-card"><div class="stat-icon"><i class="bi bi-bookmark"></i></div><div class="stat-num" id="statSaved">0</div><div class="stat-label">Saved</div></div>
+            </div>
+
+            <div class="dash-tabs" id="dashTabs">
+                <button class="dash-tab active" data-panel="in-progress"><i class="bi bi-play-circle"></i> In Progress</button>
+                <button class="dash-tab" data-panel="completed"><i class="bi bi-check-circle"></i> Completed</button>
+                <button class="dash-tab" data-panel="certificates"><i class="bi bi-award"></i> Certificates</button>
+                <button class="dash-tab" data-panel="saved"><i class="bi bi-bookmark"></i> Saved</button>
+            </div>
+
+            <div class="dash-panel active" id="panel-in-progress">
+                <div id="inProgressList"></div>
+            </div>
+
+            <div class="dash-panel" id="panel-completed">
+                <div id="completedList"></div>
+            </div>
+
+            <div class="dash-panel" id="panel-certificates">
+                <div class="cert-grid" id="certList"></div>
+            </div>
+
+            <div class="dash-panel" id="panel-saved">
+                <div id="savedList"></div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-container"></div>
+    <div id="auth-modal-container"></div>
+
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script>
+        (() => {
+            const dashData = {
+                inProgress: [
+                    { id: 'c1', title: 'Flower Arrangement Basics', instructor: 'Maria Chen', progress: 70, thumbnail: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=400&auto=format&fit=crop', lessons: 6, completed: 4 },
+                    { id: 'c4', title: 'Flower Care & Preservation', instructor: 'Dr. James Whitfield', progress: 35, thumbnail: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop', lessons: 5, completed: 2 }
+                ],
+                completed: [
+                    { id: 'c2', title: 'Natural vs Artificial Flowers', instructor: 'David Okonkwo', progress: 100, thumbnail: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop', lessons: 4, completed: 4 },
+                ],
+                certificates: [
+                    { id: 'c2', title: 'Natural vs Artificial Flowers', issued: 'June 12, 2026', certId: 'CERT-2026-0042' }
+                ],
+                saved: [
+                    { id: 'c3', title: 'Wedding Floristry Masterclass', instructor: 'Sophie Laurent', thumbnail: 'https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=400&auto=format&fit=crop' },
+                    { id: 'c5', title: 'Floristry Business Startup', instructor: 'Amara Sterling', thumbnail: 'https://images.unsplash.com/photo-1664575602276-acd073f104c1?q=80&w=400&auto=format&fit=crop' }
+                ]
+            };
+
+            document.getElementById('statInProgress').textContent = dashData.inProgress.length;
+            document.getElementById('statCompleted').textContent = dashData.completed.length;
+            document.getElementById('statCertificates').textContent = dashData.certificates.length;
+            document.getElementById('statSaved').textContent = dashData.saved.length;
+
+            function renderCourseList(arr, containerId, showProgress) {
+                const el = document.getElementById(containerId);
+                if (!arr.length) {
+                    el.innerHTML = '<div class="empty-state"><i class="bi bi-journal"></i><h3>Nothing here yet</h3><p>Enroll in a course to get started!</p><a href="learning.html" class="btn btn-primary" style="margin-top:0.75rem;">Browse Courses</a></div>';
+                    return;
+                }
+                el.innerHTML = arr.map(c => `
+                    <a href="course-detail.html?id=${c.id}" style="text-decoration:none;color:inherit;display:block;">
+                        <div class="course-progress-card">
+                            <img class="thumb" src="${c.thumbnail}" alt="${c.title}" loading="lazy">
+                            <div class="info">
+                                <h3>${c.title}</h3>
+                                <div class="meta">${c.instructor} · ${c.completed}/${c.lessons} lessons</div>
+                                ${showProgress ? `
+                                    <div class="progress-text">${c.progress}% complete</div>
+                                    <div class="progress-bar-mini"><div class="fill" style="width:${c.progress}%"></div></div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </a>`
+                ).join('');
+            }
+
+            renderCourseList(dashData.inProgress, 'inProgressList', true);
+            renderCourseList(dashData.completed, 'completedList', false);
+
+            const certEl = document.getElementById('certList');
+            if (dashData.certificates.length) {
+                certEl.innerHTML = dashData.certificates.map(c => `
+                    <div class="cert-card">
+                        <div class="cert-icon"><i class="bi bi-award-fill"></i></div>
+                        <h4>${c.title}</h4>
+                        <p class="cert-date">Issued ${c.issued} · ID: ${c.certId}</p>
+                        <button class="btn btn-outline btn-sm" style="margin-top:0.75rem;"><i class="bi bi-download"></i> Download PDF</button>
+                    </div>`
+                ).join('');
+            } else {
+                certEl.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem 0;color:var(--text-light);"><i class="bi bi-award" style="font-size:2rem;display:block;margin-bottom:0.75rem;"></i><h3>No certificates yet</h3><p>Complete a course to earn your certificate.</p></div>';
+            }
+
+            const savedEl = document.getElementById('savedList');
+            if (dashData.saved.length) {
+                savedEl.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;">${
+                    dashData.saved.map(c => `
+                        <a href="course-detail.html?id=${c.id}" style="text-decoration:none;color:inherit;">
+                            <div class="saved-card">
+                                <img src="${c.thumbnail}" alt="${c.title}" loading="lazy">
+                                <div class="body">
+                                    <h4>${c.title}</h4>
+                                    <p>${c.instructor}</p>
+                                </div>
+                            </div>
+                        </a>`
+                    ).join('')
+                }</div>`;
+            } else {
+                savedEl.innerHTML = '<div class="empty-state"><i class="bi bi-bookmark"></i><h3>No saved courses</h3><p>Save courses to access them later.</p></div>';
+            }
+
+            // Tabs
+            document.querySelectorAll('.dash-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+                });
+            });
+        })();
+    </script>
+    <script>
+        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) { e.preventDefault(); this.parentElement.classList.toggle('mobile-open'); }
+            });
+        });
+    </script>
+</body>
+</html>

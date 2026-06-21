@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse upcoming floristry events, workshops, webinars, flower shows, exhibitions and competitions on Flower Ecosystem.">
+    <title>Events & Workshops | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .events-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
+        .events-search { display:flex; gap:0.5rem; flex:1; max-width:400px; }
+        .events-search input { flex:1; padding:0.6rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.9rem; background:var(--bg-white); color:var(--text-main); }
+        .events-search input:focus { outline:none; border-color:var(--primary-color); }
+        .events-actions { display:flex; gap:0.5rem; }
+        .category-tabs { display:flex; gap:0.5rem; overflow-x:auto; padding-bottom:0.5rem; margin-bottom:1.5rem; scrollbar-width:thin; }
+        .category-tab { padding:0.5rem 1rem; border:1px solid var(--border-color); border-radius:20px; font-size:0.85rem; white-space:nowrap; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; }
+        .category-tab:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .category-tab.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+        .featured-banner { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; margin-bottom:2rem; display:grid; grid-template-columns:1fr 1fr; }
+        .featured-img { height:100%; min-height:300px; object-fit:cover; }
+        .featured-info { padding:2rem; display:flex; flex-direction:column; justify-content:center; }
+        .featured-badge { display:inline-flex; align-items:center; gap:0.3rem; background:var(--accent-gold); color:white; font-size:0.7rem; font-weight:600; padding:0.25rem 0.75rem; border-radius:12px; margin-bottom:0.75rem; width:fit-content; }
+        .featured-info h2 { font-size:1.5rem; margin-bottom:0.5rem; }
+        .featured-meta { display:flex; gap:1.5rem; flex-wrap:wrap; margin:0.75rem 0; }
+        .featured-meta span { display:flex; align-items:center; gap:0.3rem; font-size:0.88rem; color:var(--text-light); }
+        .featured-desc { font-size:0.9rem; color:var(--text-light); line-height:1.6; margin-bottom:1rem; }
+        .featured-footer { display:flex; gap:0.75rem; align-items:center; }
+        .view-toggle { display:flex; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.2rem; }
+        .view-btn { padding:0.4rem 0.75rem; border:none; background:none; border-radius:var(--radius-sm); cursor:pointer; font-size:0.85rem; color:var(--text-light); transition:all 0.2s; }
+        .view-btn.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
+        .sort-tabs { display:flex; gap:0.25rem; margin-bottom:1rem; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.25rem; }
+        .sort-tab { padding:0.4rem 0.75rem; border-radius:var(--radius-sm); font-size:0.8rem; cursor:pointer; color:var(--text-light); transition:all 0.2s; border:none; background:none; }
+        .sort-tab.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
+        .events-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
+        .event-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; transition:all 0.3s; display:flex; flex-direction:column; cursor:pointer; }
+        .event-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
+        .event-img-wrap { position:relative; height:180px; overflow:hidden; }
+        .event-img-wrap img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .event-card:hover .event-img-wrap img { transform:scale(1.05); }
+        .event-date-badge { position:absolute; top:0.75rem; left:0.75rem; background:var(--primary-color); color:white; padding:0.5rem 0.75rem; border-radius:8px; text-align:center; min-width:52px; line-height:1.2; }
+        .event-date-badge .day { font-size:1.3rem; font-weight:700; display:block; }
+        .event-date-badge .month { font-size:0.65rem; text-transform:uppercase; opacity:0.85; }
+        .event-type-badge { position:absolute; top:0.75rem; right:0.75rem; background:rgba(0,0,0,0.6); color:white; font-size:0.7rem; padding:0.2rem 0.5rem; border-radius:4px; }
+        .event-body { padding:1rem 1.25rem 1.25rem; flex-grow:1; display:flex; flex-direction:column; }
+        .event-category { display:inline-block; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-green); margin-bottom:0.3rem; }
+        .event-body h3 { font-size:1rem; margin-bottom:0.4rem; line-height:1.3; }
+        .event-meta { display:flex; gap:0.75rem; flex-wrap:wrap; font-size:0.8rem; color:var(--text-light); margin-bottom:0.5rem; }
+        .event-meta span { display:flex; align-items:center; gap:0.2rem; }
+        .event-desc { font-size:0.85rem; color:var(--text-light); line-height:1.5; flex-grow:1; margin-bottom:0.75rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .event-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid var(--border-light); }
+        .event-price { font-weight:600; color:var(--primary-color); }
+        .event-price.free { color:var(--accent-green); }
+        .events-list { display:flex; flex-direction:column; gap:0.75rem; }
+        .event-list-item { display:grid; grid-template-columns:auto 1fr auto; gap:1rem; padding:1rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s; }
+        .event-list-item:hover { border-color:var(--primary-color); box-shadow:var(--shadow-sm); }
+        .event-list-date { width:60px; text-align:center; background:var(--primary-light); border-radius:var(--radius-sm); padding:0.5rem; flex-shrink:0; }
+        .event-list-date .day { font-size:1.2rem; font-weight:700; color:var(--primary-color); display:block; }
+        .event-list-date .month { font-size:0.7rem; color:var(--primary-color); text-transform:uppercase; }
+        .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; }
+        .calendar-header { padding:0.75rem; text-align:center; font-weight:600; font-size:0.8rem; background:var(--bg-light); color:var(--text-light); }
+        .calendar-day { min-height:100px; padding:0.5rem; border:1px solid var(--border-light); font-size:0.85rem; }
+        .calendar-day.other-month { opacity:0.4; }
+        .calendar-day .day-num { font-weight:500; margin-bottom:0.25rem; }
+        .calendar-event { font-size:0.7rem; padding:0.15rem 0.3rem; border-radius:3px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+        .calendar-event.workshop { background:rgba(16,185,129,0.15); color:var(--accent-green); }
+        .calendar-event.webinar { background:rgba(14,165,233,0.15); color:var(--accent-blue); }
+        .calendar-event.exhibition { background:rgba(172,50,80,0.15); color:var(--primary-color); }
+        .calendar-nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+        .calendar-nav h3 { font-size:1.1rem; }
+        .calendar-nav button { background:none; border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:0.4rem 0.75rem; cursor:pointer; font-size:0.85rem; }
+        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); grid-column:1/-1; }
+        .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
+        .pagination { display:flex; justify-content:center; gap:0.25rem; margin-top:1.5rem; }
+        .page-btn { padding:0.4rem 0.75rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.85rem; cursor:pointer; background:var(--bg-white); color:var(--text-main); transition:all 0.2s; }
+        .page-btn.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+        .host-cta { display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:center; }
+        .host-features { display:flex; flex-direction:column; gap:1.25rem; background:var(--bg-white); padding:2rem; border-radius:var(--radius-md); border:1px solid var(--border-color); }
+        .host-feature { display:flex; gap:1rem; align-items:flex-start; }
+        .host-feature .icon { font-size:1.5rem; min-width:40px; }
+        .host-feature h4 { margin-bottom:0.25rem; }
+        .host-feature p { color:var(--text-light); font-size:0.9rem; }
+        @media(max-width:1024px) { .events-grid { grid-template-columns:repeat(2,1fr); } .featured-banner { grid-template-columns:1fr; } .featured-img { min-height:200px; } }
+        @media(max-width:768px) { .events-grid { grid-template-columns:1fr; } .host-cta { grid-template-columns:1fr; } .calendar-day { min-height:60px; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="page-header primary-bg text-white section-padding text-center" style="padding-top:5rem; padding-bottom:2.5rem;">
+        <div class="container reveal-up">
+            <span class="subtitle" style="color:rgba(255,255,255,0.7)">JOIN US LIVE</span>
+            <h1 style="color:white;">Events & Workshops</h1>
+            <p class="section-subtitle text-white">Discover flower exhibitions, floristry workshops, webinars, competitions, and community events</p>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div id="featuredBanner"></div>
+
+            <div class="events-header reveal-up">
+                <div class="events-search">
+                    <input type="text" id="eventSearch" placeholder="Search events..." aria-label="Search events">
+                    <button class="btn btn-primary btn-sm" id="eventSearchBtn"><i class="bi bi-search"></i></button>
+                </div>
+                <div class="events-actions">
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid" title="Grid View"><i class="bi bi-grid-3x3-gap"></i></button>
+                        <button class="view-btn" data-view="list" title="List View"><i class="bi bi-list-ul"></i></button>
+                        <button class="view-btn" data-view="calendar" title="Calendar View"><i class="bi bi-calendar3"></i></button>
+                    </div>
+                    <a href="create-event.html" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Create Event</a>
+                </div>
+            </div>
+
+            <div class="category-tabs reveal-up" id="categoryTabs"></div>
+
+            <div class="sort-tabs reveal-up" id="sortTabs">
+                <button class="sort-tab active" data-sort="date">By Date</button>
+                <button class="sort-tab" data-sort="newest">Newest</button>
+                <button class="sort-tab" data-sort="price_low">Price: Low</button>
+                <button class="sort-tab" data-sort="price_high">Price: High</button>
+                <button class="sort-tab" data-sort="popular">Most Popular</button>
+            </div>
+
+            <div id="eventsContainer" class="events-grid reveal-up"></div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </section>
+
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="host-cta reveal-up">
+                <div>
+                    <span class="subtitle">HOST WITH US</span>
+                    <h2>Want to Host Your Own Event?</h2>
+                    <p style="color:var(--text-light); line-height:1.7; margin-bottom:1.5rem;">Share your expertise with our community of 89,000+ flower lovers. We handle promotion, registration, and payment processing — you just bring the knowledge.</p>
+                    <a href="contact.html" class="btn btn-primary">Get In Touch →</a>
+                </div>
+                <div class="host-features">
+                    <div class="host-feature"><div class="icon">📣</div><div><h4>We Promote Your Event</h4><p>Reach our full audience through email, social, and the platform.</p></div></div>
+                    <div class="host-feature"><div class="icon">🎟️</div><div><h4>Easy Registration</h4><p>Attendees register through our platform — no setup needed.</p></div></div>
+                    <div class="host-feature"><div class="icon">💰</div><div><h4>Keep 85% of Revenue</h4><p>We take just a small platform fee. The rest is yours.</p></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/events.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initEventsPage();
+        });
+    </script>
+</body>
+</html>

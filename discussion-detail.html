@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discussion detail - Community conversations about flowers, gardening, and floristry.">
+    <title>Discussion | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .detail-layout { display:grid; grid-template-columns:1fr 280px; gap:1.5rem; }
+        .detail-main { min-width:0; }
+        .detail-sidebar { display:flex; flex-direction:column; gap:1.25rem; }
+        .back-link { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.88rem; color:var(--text-light); margin-bottom:1rem; text-decoration:none; }
+        .back-link:hover { color:var(--primary-color); }
+        .disc-detail-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; margin-bottom:1.5rem; }
+        .disc-detail-header { display:flex; align-items:start; gap:1rem; margin-bottom:1rem; }
+        .disc-detail-avatar { width:48px; height:48px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; overflow:hidden; }
+        .disc-detail-avatar img { width:100%; height:100%; object-fit:cover; }
+        .disc-detail-meta h1 { font-size:1.4rem; font-weight:700; margin-bottom:0.3rem; line-height:1.3; }
+        .disc-detail-meta .author-info { font-size:0.85rem; color:var(--text-light); display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+        .disc-detail-meta .author-name { font-weight:500; color:var(--primary-color); }
+        .expert-badge { background:var(--accent-gold); color:white; font-size:0.65rem; padding:0.1rem 0.4rem; border-radius:3px; font-weight:500; }
+        .disc-detail-content { font-size:0.95rem; line-height:1.7; color:var(--text-main); margin-bottom:1rem; white-space:pre-wrap; }
+        .disc-detail-images { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; }
+        .disc-detail-images img { max-width:300px; max-height:200px; border-radius:var(--radius-sm); object-fit:cover; cursor:pointer; border:1px solid var(--border-color); }
+        .disc-detail-tags { display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:1rem; }
+        .disc-detail-footer { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; padding-top:1rem; border-top:1px solid var(--border-light); }
+        .disc-detail-stats { display:flex; gap:1rem; font-size:0.85rem; color:var(--text-light); }
+        .disc-detail-stats span { display:flex; align-items:center; gap:0.3rem; }
+        .vote-controls { display:flex; align-items:center; gap:0.5rem; }
+        .vote-btn { width:32px; height:32px; border:1px solid var(--border-color); border-radius:var(--radius-sm); background:var(--bg-white); color:var(--text-light); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+        .vote-btn:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .vote-btn.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+        .vote-count { font-weight:600; font-size:0.95rem; min-width:24px; text-align:center; }
+        .comments-section { margin-top:1.5rem; }
+        .comments-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+        .comment-card { display:grid; grid-template-columns:auto 1fr auto; gap:0.75rem; padding:1rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-sm); margin-bottom:0.75rem; }
+        .comment-card.best-answer { border-color:var(--accent-green); background:rgba(16,185,129,0.03); border-left:3px solid var(--accent-green); }
+        .comment-avatar { width:36px; height:36px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; overflow:hidden; }
+        .comment-avatar img { width:100%; height:100%; object-fit:cover; }
+        .comment-body { min-width:0; }
+        .comment-meta { font-size:0.8rem; color:var(--text-light); margin-bottom:0.3rem; display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+        .comment-meta .author-name { font-weight:500; color:var(--text-main); }
+        .comment-content { font-size:0.9rem; line-height:1.6; color:var(--text-main); white-space:pre-wrap; }
+        .best-answer-badge { display:inline-flex; align-items:center; gap:0.25rem; background:var(--accent-green); color:white; font-size:0.7rem; padding:0.15rem 0.5rem; border-radius:3px; font-weight:500; }
+        .comment-actions { display:flex; align-items:center; gap:0.5rem; margin-top:0.4rem; }
+        .comment-actions button { font-size:0.8rem; color:var(--text-light); background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:0.2rem; }
+        .comment-actions button:hover { color:var(--primary-color); }
+        .reply-box { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; margin-top:1rem; }
+        .reply-box textarea { width:100%; min-height:100px; padding:0.75rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:inherit; font-size:0.9rem; resize:vertical; background:var(--bg-main); color:var(--text-main); }
+        .reply-box textarea:focus { outline:none; border-color:var(--primary-color); }
+        .reply-box-footer { display:flex; justify-content:space-between; align-items:center; margin-top:0.75rem; }
+        .login-prompt { text-align:center; padding:2rem; color:var(--text-light); }
+        .login-prompt a { color:var(--primary-color); text-decoration:underline; }
+        .sidebar-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; }
+        .sidebar-card h3 { font-size:0.95rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
+        .related-list { list-style:none; padding:0; margin:0; }
+        .related-list li { padding:0.4rem 0; border-bottom:1px solid var(--border-light); }
+        .related-list li:last-child { border-bottom:none; }
+        .related-list a { font-size:0.85rem; color:var(--text-main); text-decoration:none; display:block; }
+        .related-list a:hover { color:var(--primary-color); }
+        @media(max-width:1024px) { .detail-layout { grid-template-columns:1fr; } .detail-sidebar { display:none; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="section-padding" style="padding-top:2rem;">
+        <div class="container">
+            <a href="discussions.html" class="back-link"><i class="bi bi-arrow-left"></i> Back to Discussions</a>
+            <div class="detail-layout">
+                <div class="detail-main">
+                    <div id="discussionContent"></div>
+                    <div class="comments-section" id="commentsSection"></div>
+                </div>
+                <div class="detail-sidebar">
+                    <div class="sidebar-card" id="relatedDiscussions">
+                        <h3><i class="bi bi-link-45deg" style="color:var(--primary-color)"></i> Related Discussions</h3>
+                        <ul class="related-list" id="relatedList"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/discussions.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initDiscussionDetail();
+        });
+    </script>
+</body>
+</html>

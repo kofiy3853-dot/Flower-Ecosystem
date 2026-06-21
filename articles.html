@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Expert-written articles, flower guides, care instructions, medicinal uses, identification tips, and floristry knowledge.">
+    <meta property="og:title" content="Articles & Guides | Flower Ecosystem">
+    <meta property="og:description" content="Expert-written flower articles, care guides, and floristry knowledge.">
+    <meta property="og:type" content="website">
+    <title>Articles & Guides | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=17.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .articles-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
+        .articles-search { display:flex; gap:0.5rem; flex:1; max-width:400px; }
+        .articles-search input { flex:1; padding:0.6rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.9rem; background:var(--bg-white); color:var(--text-main); }
+        .articles-search input:focus { outline:none; border-color:var(--primary-color); }
+        .category-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:2rem; }
+        .cat-card { display:flex; align-items:center; gap:0.75rem; padding:1rem 1.25rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); cursor:pointer; transition:all 0.2s; }
+        .cat-card:hover { border-color:var(--primary-color); transform:translateY(-2px); box-shadow:var(--shadow-sm); }
+        .cat-card.active { border-color:var(--primary-color); background:rgba(172,50,80,0.03); }
+        .cat-icon { font-size:1.5rem; }
+        .cat-name { font-weight:500; font-size:0.9rem; }
+        .featured-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; margin-bottom:2rem; }
+        .featured-card { position:relative; border-radius:var(--radius-md); overflow:hidden; height:280px; cursor:pointer; }
+        .featured-card img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .featured-card:hover img { transform:scale(1.05); }
+        .featured-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 50%); display:flex; flex-direction:column; justify-content:flex-end; padding:1.5rem; }
+        .featured-cat { display:inline-block; background:var(--primary-color); color:white; font-size:0.7rem; font-weight:600; padding:0.2rem 0.5rem; border-radius:4px; margin-bottom:0.5rem; width:fit-content; }
+        .featured-overlay h3 { color:white; font-size:1.15rem; margin-bottom:0.3rem; }
+        .featured-overlay .meta { color:rgba(255,255,255,0.8); font-size:0.8rem; }
+        .sort-tabs { display:flex; gap:0.25rem; margin-bottom:1rem; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.25rem; width:fit-content; }
+        .sort-tab { padding:0.4rem 0.75rem; border-radius:var(--radius-sm); font-size:0.8rem; cursor:pointer; color:var(--text-light); transition:all 0.2s; border:none; background:none; }
+        .sort-tab.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
+        .articles-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
+        .article-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; transition:all 0.3s; cursor:pointer; }
+        .article-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
+        .article-img { height:180px; overflow:hidden; }
+        .article-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .article-card:hover .article-img img { transform:scale(1.05); }
+        .article-body { padding:1.25rem; }
+        .article-cat { display:inline-flex; align-items:center; gap:0.25rem; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-green); margin-bottom:0.3rem; }
+        .article-body h3 { font-size:1rem; margin-bottom:0.4rem; line-height:1.3; }
+        .article-excerpt { font-size:0.85rem; color:var(--text-light); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin-bottom:0.75rem; }
+        .article-meta { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid var(--border-light); font-size:0.78rem; color:var(--text-muted); }
+        .article-meta span { display:flex; align-items:center; gap:0.2rem; }
+        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); grid-column:1/-1; }
+        .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
+        .pagination { display:flex; justify-content:center; gap:0.25rem; margin-top:1.5rem; }
+        .page-btn { padding:0.4rem 0.75rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.85rem; cursor:pointer; background:var(--bg-white); color:var(--text-main); transition:all 0.2s; }
+        .page-btn.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+        .cta-banner { background:linear-gradient(135deg, var(--primary-color), #c1235f); border-radius:var(--radius-md); padding:2.5rem; text-align:center; color:white; }
+        .cta-banner h2 { color:white; margin-bottom:0.5rem; }
+        .cta-banner p { color:rgba(255,255,255,0.85); margin-bottom:1.25rem; max-width:500px; margin-left:auto; margin-right:auto; }
+        @media(max-width:1024px) { .articles-grid, .category-cards { grid-template-columns:repeat(2,1fr); } .featured-grid { grid-template-columns:1fr; } }
+        @media(max-width:640px) { .articles-grid, .category-cards { grid-template-columns:1fr; } .featured-card { height:200px; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="page-header primary-bg text-white section-padding text-center" style="padding-top:5rem; padding-bottom:2.5rem;">
+        <div class="container reveal-up">
+            <span class="subtitle" style="color:rgba(255,255,255,0.7)">KNOWLEDGE HUB</span>
+            <h1 style="color:white;">Articles & Guides</h1>
+            <p class="section-subtitle text-white">Expert-written articles, flower guides, care instructions, medicinal uses, identification tips, and floristry knowledge</p>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="articles-header reveal-up">
+                <div class="articles-search">
+                    <input type="text" id="articleSearch" placeholder="Search articles, guides, flowers..." aria-label="Search articles">
+                    <button class="btn btn-primary btn-sm" id="articleSearchBtn"><i class="bi bi-search"></i></button>
+                </div>
+            </div>
+
+            <div class="category-cards reveal-up" id="categoryCards"></div>
+
+            <div id="featuredSection"></div>
+
+            <div class="sort-tabs reveal-up" id="sortTabs">
+                <button class="sort-tab active" data-sort="newest">Latest</button>
+                <button class="sort-tab" data-sort="popular">Most Read</button>
+                <button class="sort-tab" data-sort="reading_time">Quick Reads</button>
+            </div>
+
+            <div class="articles-grid reveal-up" id="articlesGrid"></div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="cta-banner reveal-up">
+                <h2>Share Your Knowledge</h2>
+                <p>Have expertise to share? Contribute an article or guide to help fellow flower enthusiasts.</p>
+                <a href="contact.html" class="btn" style="background:white;color:var(--primary-color);font-weight:600;">Become a Contributor →</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+    <div id="auth-modal-container"></div>
+
+    <script src="js/shared/components.js"></script>
+    <script src="js/shared/auth.js"></script>
+    <script src="js/shared/theme.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js"></script>
+    <script src="js/shared/cart.js"></script>
+    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/animations.js"></script>
+    <script src="js/articles.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initArticlesPage();
+        });
+    </script>
+</body>
+</html>

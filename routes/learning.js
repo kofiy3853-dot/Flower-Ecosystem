@@ -1,0 +1,283 @@
+const router = require('express').Router();
+const path = require('path');
+const { pool, asyncHandler, dbAvailable, readJSON, queryWithFallback, requireAuth, requireInstructor } = require('./middleware');
+
+router.get('/courses', asyncHandler(async (_, res) => {
+    return queryWithFallback(
+        async () => {
+            const r = await pool.query('SELECT * FROM learning.courses WHERE is_published = true ORDER BY created_at DESC');
+            return r.rows;
+        },
+        'courses', res
+    );
+}));
+
+router.get('/courses/:id', asyncHandler(async (req, res) => {
+    return queryWithFallback(
+        async () => {
+            const course = await pool.query('SELECT * FROM learning.courses WHERE id = $1', [req.params.id]);
+            if (!course.rows.length) return null;
+            const lessons = await pool.query('SELECT * FROM learning.lessons WHERE course_id = $1 ORDER BY sort_order', [req.params.id]);
+            return { ...course.rows[0], lessons: lessons.rows };
+        },
+        'courses', res
+    );
+}));
+
+router.post('/courses', requireInstructor, asyncHandler(async (req, res) => {
+    const { title, description, instructor, level, price, category } = req.body;
+    if (!title) return res.status(400).json({ error: 'Title is required' });
+    const r = await pool.query(
+        `INSERT INTO learning.courses (title, description, instructor, level, price, category, is_published)
+         VALUES ($1, $2, $3, $4, $5, $6, false) RETURNING *`,
+        [title, description || '', instructor || req.user.email, level || 'Beginner', price || 0, category || '']
+    );
+    res.status(201).json(r.rows[0]);
+}));
+
+router.put('/courses/:id', requireInstructor, asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { title, description, instructor, level, price, category, is_published } = req.body;
+    const r = await pool.query(
+        `UPDATE learning.courses SET title = COALESCE($1, title), description = COALESCE($2, description),
+         instructor = COALESCE($3, instructor), level = COALESCE($4, level), price = COALESCE($5, price),
+         category = COALESCE($6, category), is_published = COALESCE($7, is_published)
+         WHERE id = $8 RETURNING *`,
+        [title, description, instructor, level, price, category, is_published, id]
+    );
+    if (!r.rows.length) return res.status(404).json({ error: 'Course not found' });
+    res.json(r.rows[0]);
+}));
+
+router.delete('/courses/:id', requireInstructor, asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const r = await pool.query('DELETE FROM learning.courses WHERE id = $1 RETURNING id', [id]);
+    if (!r.rows.length) return res.status(404).json({ error: 'Course not found' });
+    res.json({ message: 'Course deleted' });
+}));
+
+router.get('/courses/:id/enroll', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id } = req.params;
+    const course = await pool.query('SELECT id FROM learning.courses WHERE id = $1', [id]);
+    if (!course.rows.length) return res.status(404).json({ error: 'Course not found' });
+    try {
+        const r = await pool.query(
+            'INSERT INTO learning.enrollments (user_id, course_id) VALUES ($1, $2) RETURNING *',
+            [req.user.id, id]
+        );
+        res.status(201).json(r.rows[0]);
+    } catch (dbErr) {
+        if (dbErr.code === '23505') {
+            return res.status(409).json({ error: 'Already enrolled' });
+        }
+        throw dbErr;
+    }
+}));
+
+router.post('/courses/:id/enroll', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id } = req.params;
+    const course = await pool.query('SELECT id FROM learning.courses WHERE id = $1', [id]);
+    if (!course.rows.length) return res.status(404).json({ error: 'Course not found' });
+    try {
+        const r = await pool.query(
+            'INSERT INTO learning.enrollments (user_id, course_id) VALUES ($1, $2) RETURNING *',
+            [req.user.id, id]
+        );
+        res.status(201).json(r.rows[0]);
+    } catch (dbErr) {
+        if (dbErr.code === '23505') {
+            return res.status(409).json({ error: 'Already enrolled' });
+        }
+        throw dbErr;
+    }
+}));
+
+router.get('/lessons', asyncHandler(async (_, res) => {
+    return queryWithFallback(
+        async () => {
+            const r = await pool.query('SELECT * FROM learning.lessons ORDER BY course_id, sort_order');
+            return r.rows;
+        },
+        'lessons', res
+    );
+}));
+
+router.get('/quizzes', asyncHandler(async (_, res) => {
+    return queryWithFallback(
+        async () => {
+            const r = await pool.query(
+                `SELECT q.*, json_agg(qq.* ORDER BY qq.id) AS questions
+                 FROM learning.quizzes q
+                 LEFT JOIN learning.quiz_questions qq ON qq.quiz_id = q.id
+                 GROUP BY q.id`
+            );
+            return r.rows;
+        },
+        'quizzes', res
+    );
+}));
+
+router.get('/articles/categories', asyncHandler(async (_, res) => {
+    if (await dbAvailable()) {
+        try {
+            const r = await pool.query('SELECT * FROM learning.article_categories ORDER BY sort_order');
+            if (r.rows.length) return res.json(r.rows);
+        } catch {}
+    }
+    res.json([
+        { id: 1, name: 'Flower Identification', slug: 'flower-identification', icon: '🌹' },
+        { id: 2, name: 'Medicinal Flowers', slug: 'medicinal-flowers', icon: '🌿' },
+        { id: 3, name: 'Floristry', slug: 'floristry', icon: '💐' },
+        { id: 4, name: 'Gardening', slug: 'gardening', icon: '🌱' },
+        { id: 5, name: 'Palm Trees', slug: 'palm-trees', icon: '🌴' },
+        { id: 6, name: 'Flower Care', slug: 'flower-care', icon: '🌸' },
+        { id: 7, name: 'Perfume Flowers', slug: 'perfume-flowers', icon: '🧴' },
+        { id: 8, name: 'Landscaping', slug: 'landscaping', icon: '🏡' },
+        { id: 9, name: 'Edible Flowers', slug: 'edible-flowers', icon: '🍵' }
+    ]);
+}));
+
+router.get('/articles', asyncHandler(async (req, res) => {
+    const { category, search, sort = 'newest', page = 1, limit = 20, featured } = req.query;
+    const pg = Math.max(1, parseInt(page, 10) || 1);
+    const lim = Math.min(100, Math.max(1, parseInt(limit, 10) || 20));
+    const offset = (pg - 1) * lim;
+
+    if (await dbAvailable()) {
+        try {
+            const conditions = ['a.is_published = true'];
+            const values = [];
+            let idx = 1;
+
+            if (category) { conditions.push(`ac.slug = $${idx}`); values.push(category); idx++; }
+            if (search) { conditions.push(`(a.title ILIKE $${idx} OR a.excerpt ILIKE $${idx} OR a.content ILIKE $${idx})`); values.push(`%${search}%`); idx++; }
+            if (featured === 'true') { conditions.push(`a.is_featured = true`); }
+
+            const where = 'WHERE ' + conditions.join(' AND ');
+            const sortMap = { newest: 'a.published_at DESC', popular: 'a.views DESC', reading_time: 'a.reading_time ASC' };
+            const orderBy = sortMap[sort] || 'a.published_at DESC';
+
+            const countQ = `SELECT COUNT(*) FROM learning.articles a LEFT JOIN learning.article_categories ac ON ac.id = a.category_id ${where}`;
+            const countR = await pool.query(countQ, values);
+            const total = parseInt(countR.rows[0].count, 10);
+
+            values.push(lim);
+            values.push(offset);
+
+            const dataQ = `
+                SELECT a.id, a.title, a.slug, a.excerpt, a.thumbnail_url, a.author_name, a.author_title,
+                       a.reading_time, a.is_featured, a.views, a.published_at, a.table_of_contents,
+                       ac.name AS category_name, ac.slug AS category_slug, ac.icon AS category_icon
+                FROM learning.articles a
+                LEFT JOIN learning.article_categories ac ON ac.id = a.category_id
+                ${where}
+                ORDER BY a.is_featured DESC, ${orderBy}
+                LIMIT $${idx} OFFSET $${idx + 1}`;
+
+            const dataR = await pool.query(dataQ, values);
+            return res.json({ articles: dataR.rows, total, page: pg, limit: lim, pages: Math.ceil(total / lim) });
+        } catch (err) {
+            console.error('Articles query error:', err.message);
+        }
+    }
+
+    const fallback = readJSON(path.join(__dirname, '..', 'data', 'articles.json'));
+    const filtered = category ? fallback.filter(a => (a.category || '').toLowerCase().includes(category.toLowerCase())) : fallback;
+    res.json({ articles: filtered.slice(offset, offset + lim), total: filtered.length, page: pg, limit: lim, pages: 1 });
+}));
+
+router.get('/articles/featured', asyncHandler(async (_, res) => {
+    if (await dbAvailable()) {
+        try {
+            const r = await pool.query(`
+                SELECT a.*, ac.name AS category_name, ac.icon AS category_icon
+                FROM learning.articles a
+                LEFT JOIN learning.article_categories ac ON ac.id = a.category_id
+                WHERE a.is_featured = true AND a.is_published = true
+                ORDER BY a.published_at DESC LIMIT 4`);
+            if (r.rows.length) return res.json(r.rows);
+        } catch {}
+    }
+    const fallback = readJSON(path.join(__dirname, '..', 'data', 'articles.json'));
+    res.json(fallback.filter(a => a.tag === 'Guide' || a.tag === 'Identification').slice(0, 4));
+}));
+
+router.get('/articles/:id', asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    if (await dbAvailable()) {
+        try {
+            const r = await pool.query(`
+                SELECT a.*, ac.name AS category_name, ac.slug AS category_slug, ac.icon AS category_icon
+                FROM learning.articles a
+                LEFT JOIN learning.article_categories ac ON ac.id = a.category_id
+                WHERE a.id = $1 OR a.slug = $1`, [id]);
+
+            if (!r.rows.length) return res.status(404).json({ error: 'Article not found' });
+
+            await pool.query('UPDATE learning.articles SET views = views + 1 WHERE id = $1', [r.rows[0].id]);
+
+            const images = await pool.query('SELECT image_url, caption FROM learning.article_images WHERE article_id = $1 ORDER BY sort_order', [r.rows[0].id]);
+            const videos = await pool.query('SELECT video_url, title, duration FROM learning.article_videos WHERE article_id = $1 ORDER BY sort_order', [r.rows[0].id]);
+            const downloads = await pool.query('SELECT file_name, file_url, file_type, file_size FROM learning.article_downloads WHERE article_id = $1', [r.rows[0].id]);
+
+            return res.json({ ...r.rows[0], images: images.rows, videos: videos.rows, downloads: downloads.rows });
+        } catch (err) {
+            console.error('Article detail error:', err.message);
+        }
+    }
+
+    const fallback = readJSON(path.join(__dirname, '..', 'data', 'articles.json'));
+    const article = fallback.find(a => a.id === id || a.slug === id);
+    article ? res.json(article) : res.status(404).json({ error: 'Article not found' });
+}));
+
+router.get('/articles/:id/related', asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    if (await dbAvailable()) {
+        try {
+            const current = await pool.query('SELECT category_id FROM learning.articles WHERE id = $1', [id]);
+            if (current.rows.length && current.rows[0].category_id) {
+                const r = await pool.query(`
+                    SELECT a.id, a.title, a.slug, a.excerpt, a.thumbnail_url, a.reading_time, a.published_at,
+                           ac.name AS category_name, ac.icon AS category_icon
+                    FROM learning.articles a
+                    LEFT JOIN learning.article_categories ac ON ac.id = a.category_id
+                    WHERE a.category_id = $1 AND a.id != $2 AND a.is_published = true
+                    ORDER BY a.published_at DESC LIMIT 4`, [current.rows[0].category_id, id]);
+                if (r.rows.length) return res.json(r.rows);
+            }
+            const r2 = await pool.query(`
+                SELECT a.id, a.title, a.slug, a.excerpt, a.thumbnail_url, a.reading_time, a.published_at,
+                       ac.name AS category_name, ac.icon AS category_icon
+                FROM learning.articles a
+                LEFT JOIN learning.article_categories ac ON ac.id = a.category_id
+                WHERE a.id != $1 AND a.is_published = true
+                ORDER BY a.views DESC LIMIT 4`, [id]);
+            return res.json(r2.rows);
+        } catch {}
+    }
+
+    const fallback = readJSON(path.join(__dirname, '..', 'data', 'articles.json'));
+    res.json(fallback.filter(a => a.id !== id).slice(0, 4));
+}));
+
+router.get('/videos', asyncHandler(async (_, res) => {
+    const data = readJSON(path.join(__dirname, '..', 'data', 'videos.json'));
+    res.json(data);
+}));
+
+router.get('/flowers', asyncHandler(async (_, res) => {
+    return queryWithFallback(
+        async () => {
+            const r = await pool.query('SELECT * FROM learning.flower_library ORDER BY common_name');
+            return r.rows;
+        },
+        'identification', res
+    );
+}));
+
+module.exports = router;
