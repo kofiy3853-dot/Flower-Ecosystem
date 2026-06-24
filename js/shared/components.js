@@ -32,16 +32,16 @@ async function loadComponent(url, targetId) {
 // Automatically load shared components if their containers exist
 function initComponents() {
     if (document.getElementById('preloader-container')) {
-        loadComponent('components/preloader.html', 'preloader-container');
+        loadComponent('/components/preloader.html', 'preloader-container');
     }
     if (document.getElementById('auth-modal-container')) {
-        loadComponent('components/auth-modal.html', 'auth-modal-container');
+        loadComponent('/components/auth-modal.html', 'auth-modal-container');
     }
     if (document.getElementById('header-container')) {
-        loadComponent('components/header.html', 'header-container');
+        loadComponent('/components/header.html', 'header-container');
     }
     if (document.getElementById('footer-container')) {
-        loadComponent('components/footer.html', 'footer-container');
+        loadComponent('/components/footer.html', 'footer-container');
     }
 }
 

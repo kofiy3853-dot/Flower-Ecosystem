@@ -2,9 +2,12 @@
 // Checkout page — cart summary, form validation, order placement via server API
 
 (function () {
-    const cartData = JSON.parse(localStorage.getItem('flower-cart') || '[]');
-    let discount = parseFloat(sessionStorage.getItem('cart-discount') || '0');
-    let appliedCoupon = sessionStorage.getItem('cart-coupon') || null;
+    let cartData;
+    try { cartData = JSON.parse(localStorage.getItem('flower-cart') || '[]'); } catch { cartData = []; }
+    let discount;
+    try { discount = parseFloat(sessionStorage.getItem('cart-discount') || '0'); } catch { discount = 0; }
+    let appliedCoupon;
+    try { appliedCoupon = sessionStorage.getItem('cart-coupon') || null; } catch { appliedCoupon = null; }
     const itemsContainer = document.getElementById('checkoutItems');
     const placeBtn = document.getElementById('placeOrderBtn');
 
@@ -139,7 +142,7 @@
     });
 
     function authHeaders() {
-        const token = localStorage.getItem('flower-token');
+        let token; try { token = localStorage.getItem('flower-token'); } catch { token = null; }
         return token ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
     }
 
@@ -167,7 +170,7 @@
             placeBtn.disabled = true;
             placeBtn.innerHTML = '<span class="chk-spinner"></span> Processing...';
 
-            const token = localStorage.getItem('flower-token');
+            let token; try { token = localStorage.getItem('flower-token'); } catch { token = null; }
 
             if (token) {
                 try {
@@ -242,7 +245,8 @@
                 dateFormatted: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
             };
 
-            const orders = JSON.parse(localStorage.getItem('dash-orders') || '[]');
+            let orders;
+            try { orders = JSON.parse(localStorage.getItem('dash-orders') || '[]'); } catch { orders = []; }
             order.items.forEach(item => {
                 orders.push({
                     id: orderId,

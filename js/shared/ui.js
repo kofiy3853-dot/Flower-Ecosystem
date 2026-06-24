@@ -50,7 +50,7 @@ function initUI() {
             if (searchInput) {
                 const query = searchInput.value.trim();
                 if (query) {
-                    window.location.href = 'search.html?q=' + encodeURIComponent(query);
+                    window.location.href = '/marketplace?q=' + encodeURIComponent(query);
                 } else {
                     searchInput.focus();
                 }
@@ -86,7 +86,7 @@ function initUI() {
             if (searchInput && document.activeElement === searchInput) {
                 const query = searchInput.value.trim();
                 if (query) {
-                    window.location.href = 'search.html?q=' + encodeURIComponent(query);
+                    window.location.href = '/marketplace?q=' + encodeURIComponent(query);
                 }
             }
         }

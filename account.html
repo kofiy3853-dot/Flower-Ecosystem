@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/main.css?v=2.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         .acc-layout { display:grid; grid-template-columns:220px 1fr; gap:2rem; margin-top:2rem; }
@@ -47,7 +47,7 @@
 
     <section class="section-padding">
         <div class="container">
-            <h1 style="margin-bottom:0.25rem;">⚙️ Account Settings</h1>
+            <h1 style="margin-bottom:0.25rem;">?? Account Settings</h1>
             <p style="color:var(--text-light); margin-bottom:0;">Manage your profile, security, and preferences</p>
 
             <div id="accLoading" class="acc-loading">
@@ -78,7 +78,7 @@
                         <div id="section-profile" class="acc-section">
                             <form id="accProfileForm" onsubmit="return saveProfile(event)">
                                 <div class="acc-card">
-                                    <h2>👤 Profile Information</h2>
+                                    <h2>?? Profile Information</h2>
                                     <p>Update your name and personal details</p>
                                     <div class="form-group">
                                         <label>Profile Picture</label>
@@ -117,7 +117,7 @@
                         <div id="section-security" class="acc-section" style="display:none;">
                             <form id="accPasswordForm" onsubmit="return changePassword(event)">
                                 <div class="acc-card">
-                                    <h2>🔒 Change Password</h2>
+                                    <h2>?? Change Password</h2>
                                     <p>Update your account password</p>
                                     <div class="form-group">
                                         <label for="accCurrentPw">Current Password</label>
@@ -136,7 +136,7 @@
                             </form>
 
                             <div class="acc-card">
-                                <h2>🗑️ Danger Zone</h2>
+                                <h2>??? Danger Zone</h2>
                                 <p>Irreversible actions. Proceed with caution.</p>
                                 <button class="btn btn-outline" style="color:var(--error-color);border-color:var(--error-color);" onclick="if(confirm('Are you sure? This cannot be undone.')) deleteAccount()"><i class="bi bi-trash"></i> Delete Account</button>
                             </div>
@@ -156,13 +156,13 @@
 
     <div id="footer-container"></div>
 
-    <script src="js/shared/api.js"></script>
-    <script src="js/shared/theme.js"></script>
-    <script src="js/shared/auth.js"></script>
-    <script src="js/shared/ui.js"></script>
-    <script src="js/shared/cart.js"></script>
-    <script src="js/shared/components.js"></script>
-    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js?v=2.0"></script>
+    <script src="js/shared/theme.js?v=2.0"></script>
+    <script src="js/shared/auth.js?v=2.0"></script>
+    <script src="js/shared/ui.js?v=2.0"></script>
+    <script src="js/shared/cart.js?v=2.0"></script>
+    <script src="js/shared/components.js?v=2.0"></script>
+    <script src="js/shared/animations.js?v=2.0"></script>
     <script src="js/shared/validation.js"></script>
     <script src="js/shared/image-upload.js"></script>
     <script>

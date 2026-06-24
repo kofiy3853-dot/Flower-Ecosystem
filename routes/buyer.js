@@ -33,7 +33,7 @@ router.put('/profile', requireAuth, asyncHandler(async (req, res) => {
             [req.user.id, business_name || 'My Business', business_type || null, description || null, location || null, phone || null]
         );
         res.status(201).json(r.rows[0]);
-    } catch { res.json({ business_name: business_name || 'My Business', user_id: req.user.id }); }
+    } catch (err) { console.error('Buyer profile update error:', err.message); res.status(500).json({ error: 'Failed to update profile' }); }
 }));
 
 router.get('/purchases', requireAuth, asyncHandler(async (req, res) => {

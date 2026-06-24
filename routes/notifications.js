@@ -50,8 +50,9 @@ router.post('/conversations', requireAuth, asyncHandler(async (req, res) => {
     const { user_id } = req.body;
     if (!user_id) return res.status(400).json({ error: 'User ID required' });
     if (user_id === req.user.id) return res.status(400).json({ error: 'Cannot message yourself' });
-    const p1 = [req.user.id, user_id].sort()[0];
-    const p2 = [req.user.id, user_id].sort()[1];
+    const ids = [Number(req.user.id), Number(user_id)].sort((a, b) => a - b);
+    const p1 = ids[0];
+    const p2 = ids[1];
     try {
         const existing = await pool.query('SELECT id FROM platform.conversations WHERE participant_1 = $1 AND participant_2 = $2', [p1, p2]);
         if (existing.rows.length) return res.json({ id: existing.rows[0].id });

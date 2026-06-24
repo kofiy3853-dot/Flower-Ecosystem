@@ -32,7 +32,7 @@ router.put('/profile', requireAuth, asyncHandler(async (req, res) => {
             [req.user.id, farm_name || 'My Farm', description || null, location || null, acreage || null, specialties || null]
         );
         res.status(201).json(r.rows[0]);
-    } catch (err) { res.json({ farm_name: farm_name || 'My Farm', user_id: req.user.id }); }
+    } catch (err) { console.error('Grower profile update error:', err.message); res.status(500).json({ error: 'Failed to update profile' }); }
 }));
 
 router.get('/crops', requireAuth, asyncHandler(async (req, res) => {

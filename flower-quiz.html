@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/main.css?v=17.0">
+    <link rel="stylesheet" href="styles/main.css?v=2.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
         .qz-hero { background:linear-gradient(135deg, #e74c3c, #8e44ad); padding:3rem 0 2rem; color:white; text-align:center; }
@@ -73,7 +73,7 @@
 
     <section class="qz-hero">
         <div class="container">
-            <h1>🧠 Flower Knowledge Quiz</h1>
+            <h1>?? Flower Knowledge Quiz</h1>
             <p>Test your knowledge about medicinal uses, scientific names, care tips, and more</p>
         </div>
     </section>
@@ -102,16 +102,16 @@
             <div id="qzQuestion" class="qz-question">
                 <div class="qz-q-header">
                     <span class="qz-progress" id="qzProgress"></span>
-                    <span class="qz-score" id="qzScore">✅ 0</span>
+                    <span class="qz-score" id="qzScore">? 0</span>
                 </div>
                 <h2 id="qzQText"></h2>
                 <div class="qz-answers" id="qzAnswers"></div>
                 <div class="qz-feedback" id="qzFeedback"></div>
-                <button class="qz-next" id="qzNextBtn" onclick="nextQuestion()">Next →</button>
+                <button class="qz-next" id="qzNextBtn" onclick="nextQuestion()">Next ?</button>
             </div>
 
             <div class="qz-results" id="qzResults">
-                <div class="qz-big" id="qzResultEmoji">🏆</div>
+                <div class="qz-big" id="qzResultEmoji">??</div>
                 <h2 id="qzResultTitle">Great job!</h2>
                 <p class="qz-sub" id="qzResultSub">You scored X out of Y</p>
                 <div class="qz-stat">
@@ -120,9 +120,9 @@
                     <div class="qz-stat-item"><span class="num" id="qzStatPct">0%</span><span class="lbl">Accuracy</span></div>
                 </div>
                 <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
-                    <button class="btn btn-primary" onclick="startQuiz()" style="border-radius:50px;">🔄 Try Again</button>
-                    <button class="btn btn-outline" id="qzShowReviewBtn" onclick="toggleReview()" style="border-radius:50px;">📋 Review Answers</button>
-                    <a href="flower-knowledge-hub.html" class="btn btn-outline" style="border-radius:50px;">🌸 Browse Flowers</a>
+                    <button class="btn btn-primary" onclick="startQuiz()" style="border-radius:50px;">?? Try Again</button>
+                    <button class="btn btn-outline" id="qzShowReviewBtn" onclick="toggleReview()" style="border-radius:50px;">?? Review Answers</button>
+                    <a href="flower-knowledge-hub.html" class="btn btn-outline" style="border-radius:50px;">?? Browse Flowers</a>
                 </div>
             </div>
 
@@ -133,13 +133,13 @@
     <div id="footer-container"></div>
     <div id="auth-modal-container"></div>
 
-    <script src="js/shared/components.js"></script>
-    <script src="js/shared/auth.js"></script>
-    <script src="js/shared/theme.js"></script>
-    <script src="js/shared/animations.js"></script>
-    <script src="js/shared/api.js"></script>
-    <script src="js/shared/cart.js"></script>
-    <script src="js/shared/ui.js"></script>
+    <script src="js/shared/components.js?v=2.0"></script>
+    <script src="js/shared/auth.js?v=2.0"></script>
+    <script src="js/shared/theme.js?v=2.0"></script>
+    <script src="js/shared/animations.js?v=2.0"></script>
+    <script src="js/shared/api.js?v=2.0"></script>
+    <script src="js/shared/cart.js?v=2.0"></script>
+    <script src="js/shared/ui.js?v=2.0"></script>
     <script>
         let allFlowers = [], categories = [], questions = [], currentQ = 0, score = 0, answers = [], totalQ = 5;
 
@@ -208,7 +208,7 @@
                         const benefits = correct.benefits || [];
                         if (!benefits.length) { i--; continue; }
                         const b = benefits[Math.floor(Math.random() * benefits.length)];
-                        qText = `"${b.description}" — which flower has this ${b.benefit_type.toLowerCase()} benefit?`;
+                        qText = `"${b.description}" � which flower has this ${b.benefit_type.toLowerCase()} benefit?`;
                         options = shuffle([correct.common_name, ...wrongs.map(w => w.common_name)]);
                         answer = correct.common_name;
                         break;
@@ -217,7 +217,7 @@
                         const tips = correct.care_tips || [];
                         if (!tips.length) { i--; continue; }
                         const t = tips[Math.floor(Math.random() * tips.length)];
-                        qText = `"${t.description}" — which flower does this care tip apply to?`;
+                        qText = `"${t.description}" � which flower does this care tip apply to?`;
                         options = shuffle([correct.common_name, ...wrongs.map(w => w.common_name)]);
                         answer = correct.common_name;
                         break;
@@ -264,7 +264,7 @@
             const q = questions[currentQ];
             document.getElementById('qzQuestion').classList.add('active');
             document.getElementById('qzProgress').textContent = `Question ${currentQ + 1} of ${questions.length}`;
-            document.getElementById('qzScore').textContent = `✅ ${score}`;
+            document.getElementById('qzScore').textContent = `? ${score}`;
             document.getElementById('qzQText').innerHTML = q.question;
 
             const container = document.getElementById('qzAnswers');
@@ -292,13 +292,13 @@
 
             const fb = document.getElementById('qzFeedback');
             fb.innerHTML = isCorrect
-                ? `<strong>✅ Correct!</strong> ${q.flower.emoji} ${q.flower.common_name}`
-                : `<strong>❌ Oops!</strong> The answer is "${q.answer}". ${q.flower.emoji} ${q.flower.common_name}`;
+                ? `<strong>? Correct!</strong> ${q.flower.emoji} ${q.flower.common_name}`
+                : `<strong>? Oops!</strong> The answer is "${q.answer}". ${q.flower.emoji} ${q.flower.common_name}`;
             fb.className = `qz-feedback show ${isCorrect ? 'correct' : 'wrong'}`;
 
             answers.push({ question: q, selected, correct: isCorrect });
             document.getElementById('qzNextBtn').classList.add('show');
-            document.getElementById('qzNextBtn').textContent = currentQ < questions.length - 1 ? 'Next →' : 'See Results 🏆';
+            document.getElementById('qzNextBtn').textContent = currentQ < questions.length - 1 ? 'Next ?' : 'See Results ??';
         }
 
         function nextQuestion() {
@@ -317,10 +317,10 @@
             document.getElementById('qzStatPct').textContent = pct + '%';
 
             let emoji, title, sub;
-            if (pct >= 90) { emoji = '🏆'; title = 'Flower Master!'; sub = 'You really know your flowers!'; }
-            else if (pct >= 70) { emoji = '🌺'; title = 'Great Job!'; sub = 'You have solid flower knowledge.'; }
-            else if (pct >= 50) { emoji = '🌸'; title = 'Not Bad!'; sub = 'Keep learning and you\'ll be a pro.'; }
-            else { emoji = '🌱'; title = 'Keep Growing!'; sub = 'Time to study the flower encyclopedia.'; }
+            if (pct >= 90) { emoji = '??'; title = 'Flower Master!'; sub = 'You really know your flowers!'; }
+            else if (pct >= 70) { emoji = '??'; title = 'Great Job!'; sub = 'You have solid flower knowledge.'; }
+            else if (pct >= 50) { emoji = '??'; title = 'Not Bad!'; sub = 'Keep learning and you\'ll be a pro.'; }
+            else { emoji = '??'; title = 'Keep Growing!'; sub = 'Time to study the flower encyclopedia.'; }
 
             document.getElementById('qzResultEmoji').textContent = emoji;
             document.getElementById('qzResultTitle').textContent = title;
@@ -334,7 +334,7 @@
             const review = document.getElementById('qzReview');
             if (review.style.display === 'block') {
                 review.style.display = 'none';
-                document.getElementById('qzShowReviewBtn').textContent = '📋 Review Answers';
+                document.getElementById('qzShowReviewBtn').textContent = '?? Review Answers';
                 return;
             }
             review.innerHTML = answers.map((a, i) => `
@@ -348,7 +348,7 @@
                 </div>
             `).join('');
             review.style.display = 'block';
-            document.getElementById('qzShowReviewBtn').textContent = '🙈 Hide Review';
+            document.getElementById('qzShowReviewBtn').textContent = '?? Hide Review';
         }
 
         function shuffle(arr) {

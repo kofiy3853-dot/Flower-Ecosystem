@@ -61,7 +61,7 @@
                         <span style="font-size:0.8rem;color:var(--text-light);">(${escapeHtml(String(p.reviews))})</span>
                     </div>
                     <div class="product-footer">
-                        <span class="product-price">$${p.price.toFixed(2)}</span>
+                        <span class="product-price">$${Number(p.price).toFixed(2)}</span>
                         <button class="btn btn-primary btn-sm add-to-cart-btn wl-cart-btn"
                             data-id="${escapeHtml(p.id)}" data-name="${escapeHtml(p.name)}" data-price="${p.price}" data-image="${escapeHtml(p.image)}">
                             Add to Cart

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/main.css?v=2.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         .gallery-masonry { column-count:4; column-gap:1.25rem; margin-top:2rem; }
@@ -71,11 +71,11 @@
             </div>
             <div class="category-tabs reveal-up" id="categoryTabs">
                 <button class="category-tab active" data-category="all">All Designs</button>
-                <button class="category-tab" data-category="Wedding Flowers">💍 Wedding</button>
-                <button class="category-tab" data-category="Birthday Arrangements">🎂 Birthday</button>
-                <button class="category-tab" data-category="Luxury Bouquets">💎 Luxury</button>
-                <button class="category-tab" data-category="Home Decoration">🏠 Home</button>
-                <button class="category-tab" data-category="Corporate Events">🏢 Corporate</button>
+                <button class="category-tab" data-category="Wedding Flowers">?? Wedding</button>
+                <button class="category-tab" data-category="Birthday Arrangements">?? Birthday</button>
+                <button class="category-tab" data-category="Luxury Bouquets">?? Luxury</button>
+                <button class="category-tab" data-category="Home Decoration">?? Home</button>
+                <button class="category-tab" data-category="Corporate Events">?? Corporate</button>
             </div>
             <div class="gallery-masonry reveal-up" id="galleryGrid"></div>
         </div>
@@ -86,19 +86,19 @@
         <div class="container">
             <div class="identification-grid reveal-up" style="grid-template-columns:repeat(3,1fr); margin-top:0;">
                 <div class="id-card">
-                    <div class="id-icon">🏛️</div>
+                    <div class="id-icon">???</div>
                     <h3>Masonry Gallery</h3>
                     <p class="id-subtitle">Browse in style</p>
                     <p style="font-size:0.9rem; color:var(--text-light); line-height:1.6;">A beautiful masonry layout that adapts to every image size. Scroll through hundreds of floral designs organized by category.</p>
                 </div>
                 <div class="id-card">
-                    <div class="id-icon">❤️</div>
+                    <div class="id-icon">??</div>
                     <h3>Save Inspiration</h3>
                     <p class="id-subtitle">Build your collection</p>
                     <p style="font-size:0.9rem; color:var(--text-light); line-height:1.6;">Click the heart icon to save your favorite designs. All saved items are stored locally so you can revisit them anytime.</p>
                 </div>
                 <div class="id-card">
-                    <div class="id-icon">📤</div>
+                    <div class="id-icon">??</div>
                     <h3>Share Designs</h3>
                     <p class="id-subtitle">Spread the beauty</p>
                     <p style="font-size:0.9rem; color:var(--text-light); line-height:1.6;">Share any design with friends, clients, or collaborators. Use the share button to copy a link or share via your device's share menu.</p>
@@ -112,13 +112,13 @@
     <!-- Toast notification -->
     <div class="toast" id="toast"></div>
 
-    <script src="js/shared/api.js"></script>
-    <script src="js/shared/theme.js"></script>
-    <script src="js/shared/auth.js"></script>
-    <script src="js/shared/ui.js"></script>
-    <script src="js/shared/cart.js"></script>
-    <script src="js/shared/components.js"></script>
-    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js?v=2.0"></script>
+    <script src="js/shared/theme.js?v=2.0"></script>
+    <script src="js/shared/auth.js?v=2.0"></script>
+    <script src="js/shared/ui.js?v=2.0"></script>
+    <script src="js/shared/cart.js?v=2.0"></script>
+    <script src="js/shared/components.js?v=2.0"></script>
+    <script src="js/shared/animations.js?v=2.0"></script>
     <script>
         (async () => {
             const items = await api.fetchJSON('data/gallery.json');
@@ -147,11 +147,11 @@
                     const isSaved = savedIds.has(item.id);
                     return `
                         <div class="gallery-item" data-id="${item.id}">
-                            ${item.featured ? '<span class="featured-badge">⭐ Featured</span>' : ''}
+                            ${item.featured ? '<span class="featured-badge">? Featured</span>' : ''}
                             <img loading="lazy" src="${item.image}" alt="${item.title}">
                             <div class="gallery-body">
                                 <h3>${item.title}</h3>
-                                <div class="author">${item.author} · <span style="color:var(--primary-color);">${item.category}</span></div>
+                                <div class="author">${item.author} � <span style="color:var(--primary-color);">${item.category}</span></div>
                                 <div class="desc">${item.description}</div>
                                 <div class="gallery-actions">
                                     <button class="save-btn ${isSaved ? 'saved' : ''}" data-id="${item.id}" aria-label="${isSaved ? 'Unsave' : 'Save'} design">
@@ -214,7 +214,7 @@
                 if (btn.classList.contains('share-btn')) {
                     const id = btn.dataset.id;
                     const title = btn.dataset.title;
-                    const shareData = { title: `${title} – Flower Ecosystem`, url: `${window.location.origin}/gallery.html?id=${id}` };
+                    const shareData = { title: `${title} � Flower Ecosystem`, url: `${window.location.origin}/gallery.html?id=${id}` };
                     if (navigator.share) {
                         navigator.share(shareData).catch(() => {});
                     } else {

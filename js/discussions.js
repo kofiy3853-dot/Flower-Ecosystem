@@ -7,14 +7,14 @@ let currentPage = 1;
 let totalPages = 1;
 
 function authHeaders() {
-    const token = localStorage.getItem('flower-token');
+    let token; try { token = localStorage.getItem('flower-token'); } catch { token = null; }
     return token
         ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
         : { 'Content-Type': 'application/json' };
 }
 
 function userLoggedIn() {
-    return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token');
+    try { return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token'); } catch { return false; }
 }
 
 function formatNumber(n) {
@@ -347,7 +347,7 @@ function getCurrentUserId() {
             return payload.id;
         }
     } catch {}
-    const user = JSON.parse(localStorage.getItem('flower-auth') || 'null');
+    let user; try { user = JSON.parse(localStorage.getItem('flower-auth') || 'null'); } catch { user = null; }
     return user?.id || null;
 }
 
@@ -359,7 +359,7 @@ function getCurrentUserRole() {
             return payload.role;
         }
     } catch {}
-    const user = JSON.parse(localStorage.getItem('flower-auth') || 'null');
+    let user; try { user = JSON.parse(localStorage.getItem('flower-auth') || 'null'); } catch { user = null; }
     return user?.role || null;
 }
 

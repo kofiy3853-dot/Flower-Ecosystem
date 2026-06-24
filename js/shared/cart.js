@@ -4,7 +4,7 @@
 const CART_KEY = 'flower-cart';
 
 function getCart() {
-    return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+    try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch { return []; }
 }
 
 function saveCart(cart) {
@@ -26,12 +26,12 @@ function updateAllBadges() {
 }
 
 function authHeaders() {
-    const token = localStorage.getItem('flower-token');
+    let token; try { token = localStorage.getItem('flower-token'); } catch { token = null; }
     return token ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
 }
 
 function isLoggedIn() {
-    return !!localStorage.getItem('flower-token');
+    try { return !!localStorage.getItem('flower-token'); } catch { return false; }
 }
 
 async function syncCartFromServer() {

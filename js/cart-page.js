@@ -3,8 +3,9 @@
 // Server-backed when logged in, localStorage fallback when not
 
 function renderCart() {
-    const cartData = JSON.parse(localStorage.getItem('flower-cart') || '[]');
-    const savedData = JSON.parse(localStorage.getItem('flower-saved') || '[]');
+    let cartData, savedData;
+    try { cartData = JSON.parse(localStorage.getItem('flower-cart')) || []; } catch { cartData = []; }
+    try { savedData = JSON.parse(localStorage.getItem('flower-saved')) || []; } catch { savedData = []; }
     const emptyEl = document.getElementById('cartEmpty');
     const contentEl = document.getElementById('cartContent');
     const itemsEl = document.getElementById('cartItems');
@@ -41,7 +42,7 @@ function renderCartItems(cartData, container) {
                 <div class="cart-item-top">
                     <div>
                         <a href="product-detail.html?id=${escapeHtml(String(item.id))}" class="cart-item-name">${escapeHtml(item.name)}</a>
-                        <p class="cart-item-price">$${item.price.toFixed(2)} each</p>
+                        <p class="cart-item-price">$${Number(item.price).toFixed(2)} each</p>
                     </div>
                     <button class="cart-item-remove" data-action="remove" data-idx="${idx}" data-cart-item-id="${item.cartItemId || ''}" aria-label="Remove item" title="Remove">
                         <i class="bi bi-trash"></i>
@@ -73,7 +74,7 @@ function renderSavedItems(savedData, container) {
                 <div class="cart-item-top">
                     <div>
                         <a href="product-detail.html?id=${escapeHtml(String(item.id))}" class="cart-item-name">${escapeHtml(item.name)}</a>
-                        <p class="cart-item-price">$${item.price.toFixed(2)}</p>
+                        <p class="cart-item-price">$${Number(item.price).toFixed(2)}</p>
                     </div>
                     <button class="cart-item-remove" data-action="unsave" data-idx="${idx}" aria-label="Remove from saved" title="Remove">
                         <i class="bi bi-x"></i>
@@ -116,7 +117,8 @@ function updateSummary(cartData) {
 }
 
 function updateCartBadge() {
-    const cart = JSON.parse(localStorage.getItem('flower-cart') || '[]');
+    let cart;
+    try { cart = JSON.parse(localStorage.getItem('flower-cart')) || []; } catch { cart = []; }
     const count = cart.reduce((s, i) => s + (i.qty || 1), 0);
     document.querySelectorAll('.cart-count').forEach(el => el.textContent = count);
 }
@@ -131,8 +133,9 @@ function userLoggedIn() {
 }
 
 async function handleCartAction(action, idx, delta) {
-    const cart = JSON.parse(localStorage.getItem('flower-cart') || '[]');
-    const saved = JSON.parse(localStorage.getItem('flower-saved') || '[]');
+    let cart, saved;
+    try { cart = JSON.parse(localStorage.getItem('flower-cart')) || []; } catch { cart = []; }
+    try { saved = JSON.parse(localStorage.getItem('flower-saved')) || []; } catch { saved = []; }
     const btn = document.querySelector(`[data-action="${action}"][data-idx="${idx}"]`);
     const cartItemId = btn?.dataset?.cartItemId;
 
@@ -207,7 +210,8 @@ function applyPromoCode() {
     const discount = promos[code];
 
     if (discount) {
-        const cart = JSON.parse(localStorage.getItem('flower-cart') || '[]');
+        let cart;
+        try { cart = JSON.parse(localStorage.getItem('flower-cart')) || []; } catch { cart = []; }
         const subtotal = cart.reduce((sum, item) => sum + item.price * (item.qty || 1), 0);
         const discountAmount = Math.min(subtotal * (discount / 100), subtotal);
         sessionStorage.setItem('cart-discount', discountAmount.toFixed(2));

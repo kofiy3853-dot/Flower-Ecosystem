@@ -1,4 +1,4 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/main.css?v=2.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         .auth-input { width:100%; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:6px; font-family:var(--font-sans); font-size:0.95rem; background:var(--bg-main); color:var(--text-main); transition:border-color 0.2s; }
@@ -42,7 +42,7 @@
                 <div style="margin-bottom:1.25rem;">
                     <label for="loginPassword" style="display:block; font-weight:500; margin-bottom:0.5rem; font-size:0.9rem;">Password</label>
                     <div style="position:relative;">
-                        <input type="password" id="loginPassword" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" class="auth-input" style="padding-right:2.5rem;" required>
+                        <input type="password" id="loginPassword" placeholder="••••••••" class="auth-input" style="padding-right:2.5rem;" required>
                         <button type="button" id="toggle-loginPw" class="password-toggle" aria-label="Toggle password visibility"><i class="bi bi-eye"></i></button>
                     </div>
                     <div class="chk-field-error" id="loginPasswordError"></div>
@@ -63,13 +63,13 @@
 
     <div id="footer-container"></div>
 
-    <script src="js/shared/api.js"></script>
-    <script src="js/shared/theme.js"></script>
-    <script src="js/shared/auth.js"></script>
-    <script src="js/shared/ui.js"></script>
-    <script src="js/shared/cart.js"></script>
-    <script src="js/shared/components.js"></script>
-    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js?v=2.0"></script>
+    <script src="js/shared/theme.js?v=2.0"></script>
+    <script src="js/shared/auth.js?v=2.0"></script>
+    <script src="js/shared/ui.js?v=2.0"></script>
+    <script src="js/shared/cart.js?v=2.0"></script>
+    <script src="js/shared/components.js?v=2.0"></script>
+    <script src="js/shared/animations.js?v=2.0"></script>
     <script src="js/auth-pages.js"></script>
     <script>
         const loginForm = document.getElementById('loginPageForm');

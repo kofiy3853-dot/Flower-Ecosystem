@@ -6,7 +6,8 @@
     try {
         allFlorists = await api.fetchFlorists();
     } catch (err) {
-        console.error('Failed to load florists:', err);
+        const el = document.getElementById('floristGrid');
+        if (el) el.innerHTML = '<div class="empty-state"><p>Failed to load florists. <button class="btn btn-sm btn-outline" onclick="location.reload()">Retry</button></p></div>';
         return;
     }
 

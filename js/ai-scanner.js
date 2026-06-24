@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.append('image', selectedFile);
 
     try {
-      const resp = await fetch('/api/openrouter/analyze-flower', {
+      const resp = await fetch('/api/openai/analyze-flower', {
         method: 'POST',
         body: form,
       });

@@ -23,6 +23,7 @@ const orderStatuses = { pending: 'badge-pending', confirmed: 'badge-confirmed', 
 let currentSection = 'dashboard';
 let profile = null;
 let crops = [];
+let editingCropId = null;
 
 async function initGrowerDashboard() {
     if (!localStorage.getItem('flower-token')) {
@@ -206,11 +207,28 @@ function loadSettings() {
     `;
 }
 
+function editCrop(id) {
+    const crop = crops.find(c => c.id === id || c.crop_id === id);
+    if (!crop) return;
+    editingCropId = id;
+    document.getElementById('cropName').value = crop.flower_name || '';
+    document.getElementById('cropVariety').value = crop.variety || '';
+    document.getElementById('cropQty').value = crop.quantity || 0;
+    document.getElementById('cropStage').value = crop.growth_stage || 'Seed';
+    document.getElementById('cropStatus').value = crop.status || 'Healthy';
+    document.getElementById('cropPlantDate').value = crop.planting_date || '';
+    document.getElementById('cropHarvestDate').value = crop.expected_harvest || '';
+    document.getElementById('cropField').value = crop.field_location || '';
+    document.querySelector('#cropModal .modal h3').textContent = 'Edit Crop';
+    document.querySelector('#cropModal .modal .btn-primary').textContent = 'Update Crop';
+    showModal('cropModal');
+}
+
 async function saveCrop() {
     const name = document.getElementById('cropName').value.trim();
     if (!name) return;
     try {
-        await fetch('/api/grower/crops', { method: 'POST', headers: authHeaders(), body: JSON.stringify({
+        const payload = {
             flower_name: name, variety: document.getElementById('cropVariety').value.trim(),
             quantity: parseInt(document.getElementById('cropQty').value) || 0,
             growth_stage: document.getElementById('cropStage').value,
@@ -218,7 +236,15 @@ async function saveCrop() {
             planting_date: document.getElementById('cropPlantDate').value || null,
             expected_harvest: document.getElementById('cropHarvestDate').value || null,
             field_location: document.getElementById('cropField').value.trim() || null
-        })});
+        };
+        if (editingCropId) {
+            await fetch('/api/grower/crops/' + editingCropId, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(payload) });
+            editingCropId = null;
+        } else {
+            await fetch('/api/grower/crops', { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
+        }
+        document.querySelector('#cropModal .modal h3').textContent = 'Add New Crop';
+        document.querySelector('#cropModal .modal .btn-primary').textContent = 'Save Crop';
         hideModal('cropModal');
         loadCrops();
         loadDashboard();

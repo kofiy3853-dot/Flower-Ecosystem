@@ -9,14 +9,14 @@ let totalPages = 1;
 let calendarMonth, calendarYear;
 
 function authHeaders() {
-    const token = localStorage.getItem('flower-token');
+    let token; try { token = localStorage.getItem('flower-token'); } catch { token = null; }
     return token
         ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
         : { 'Content-Type': 'application/json' };
 }
 
 function userLoggedIn() {
-    return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token');
+    try { return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token'); } catch { return false; }
 }
 
 function formatNumber(n) {

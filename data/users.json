@@ -12,5 +12,26 @@
         "email": "seller@example.com",
         "role": "seller",
         "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop"
+    },
+    {
+        "id": "u3",
+        "name": "Bloom & Co.",
+        "email": "seller1@example.com",
+        "role": "seller",
+        "avatar": ""
+    },
+    {
+        "id": "u4",
+        "name": "Golden Petals Farm",
+        "email": "seller2@example.com",
+        "role": "seller",
+        "avatar": ""
+    },
+    {
+        "id": "u5",
+        "name": "Orchid Paradise",
+        "email": "seller3@example.com",
+        "role": "seller",
+        "avatar": ""
     }
 ]

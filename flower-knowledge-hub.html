@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Flower Knowledge Encyclopedia — explore flowers by medicinal uses, perfume, ornamental, edible, and more.">
+    <meta name="description" content="Flower Knowledge Encyclopedia � explore flowers by medicinal uses, perfume, ornamental, edible, and more.">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#8b5cf6">
     <title>Flower Knowledge Encyclopedia | Flower Ecosystem</title>
@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="dns-prefetch" href="https://images.unsplash.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/main.css?v=2.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         .fk-hero { background:linear-gradient(135deg, var(--primary-color), #6b2fa0); padding:3rem 0 2rem; color:white; text-align:center; position:relative; overflow:hidden; }
@@ -121,7 +121,7 @@
 
     <section class="fk-hero">
         <div class="container">
-            <h1>🌸 Flower Knowledge Encyclopedia</h1>
+            <h1>?? Flower Knowledge Encyclopedia</h1>
             <p style="opacity:0.85; font-size:1rem; max-width:550px; margin:0 auto;">Discover the medicinal, ornamental, culinary, and cultural uses of flowers from around the world</p>
             <div class="fk-search">
                 <i class="bi bi-search"></i>
@@ -131,10 +131,10 @@
             <a id="fkRandomWidget" class="fk-random-widget" href="#" onclick="event.preventDefault();" aria-label="View random flower of the day">
                 <img id="fkRandomImg" src="" alt="Random flower">
                 <div class="r-info">
-                    <strong id="fkRandomName">🌺 Random Flower</strong>
+                    <strong id="fkRandomName">?? Random Flower</strong>
                     <span id="fkRandomSci"></span>
                 </div>
-                <span class="r-refresh" id="fkRandomRefresh" title="Show another random flower" role="button" tabindex="0" aria-label="Show another random flower" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();shuffleRandomFlower()}">↻</span>
+                <span class="r-refresh" id="fkRandomRefresh" title="Show another random flower" role="button" tabindex="0" aria-label="Show another random flower" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();shuffleRandomFlower()}">?</span>
             </a>
             <div class="fk-hero-stats" id="fkStats"><span>Loading...</span></div>
             <div style="margin-top:0.75rem;display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;">
@@ -147,7 +147,7 @@
     <section class="section-padding" id="favoritesScreen" style="display:none;">
         <div class="container">
             <div class="fk-section-title">
-                <h2>❤️ My Favorite Flowers</h2>
+                <h2>?? My Favorite Flowers</h2>
                 <button class="fk-btn-sm" onclick="showCategories()" style="margin-left:auto;">Browse All</button>
             </div>
             <div id="fkFavGrid" class="fk-fav-grid"></div>
@@ -206,7 +206,7 @@
         <div class="container">
             <div class="reveal-up">
                 <div class="fk-section-title">
-                    <h2>🕐 Recently Viewed</h2>
+                    <h2>?? Recently Viewed</h2>
                     <button class="fk-btn-sm" onclick="clearRecentlyViewed()" style="font-size:0.75rem;"><i class="bi bi-trash"></i> Clear</button>
                 </div>
                 <div class="fk-flower-grid" id="fkRecentlyGrid"></div>
@@ -217,20 +217,27 @@
     <div id="fkCompareOverlay" class="fk-compare-overlay">
         <div class="fk-compare-modal">
             <button class="fk-close-modal" onclick="closeCompare()">&times;</button>
-            <h2>📊 Compare Flowers</h2>
+            <h2>?? Compare Flowers</h2>
             <div id="fkCompareContent"></div>
         </div>
     </div>
 
     <div id="footer-container"></div>
 
-    <script src="js/shared/api.js"></script>
-    <script src="js/shared/theme.js"></script>
-    <script src="js/shared/auth.js"></script>
-    <script src="js/shared/ui.js"></script>
-    <script src="js/shared/components.js"></script>
+    <script src="js/shared/api.js?v=2.0"></script>
+    <script src="js/shared/theme.js?v=2.0"></script>
+    <script src="js/shared/auth.js?v=2.0"></script>
+    <script src="js/shared/ui.js?v=2.0"></script>
+    <script src="js/shared/components.js?v=2.0"></script>
     <script>
         let allFlowers = [], categories = [], compareSet = [], userFavs = [];
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
 
         document.addEventListener('componentLoaded', async () => {
             try {
@@ -240,7 +247,7 @@
                 ]);
                 renderCategories();
                 renderRandomFlower();
-                document.getElementById('fkStats').innerHTML = `<span>${allFlowers.length} Flowers</span><span>${categories.length} Categories</span>`;
+                document.getElementById('fkStats').innerHTML = `<span>${escapeHtml(allFlowers.length)} Flowers</span><span>${escapeHtml(categories.length)} Categories</span>`;
                 await loadFavorites();
                 renderRecentlyViewed();
             } catch(e) { console.error('Failed to load flower knowledge:', e); document.getElementById('fkStats').innerHTML = 'Failed to load'; }
@@ -261,11 +268,11 @@
             const grid = document.getElementById('fkCategoryGrid');
             if (!grid) return;
             grid.innerHTML = categories.map(c => `
-                <a href="#" class="fk-cat-card" onclick="showCategory('${c.slug}'); return false;">
-                    <div class="fk-cat-icon">${c.icon}</div>
+                <a href="#" class="fk-cat-card" onclick="showCategory('${escapeHtml(c.slug)}'); return false;">
+                    <div class="fk-cat-icon">${escapeHtml(c.icon)}</div>
                     <div class="fk-cat-info">
-                        <h3>${c.name}</h3>
-                        <p>${c.description}</p>
+                        <h3>${escapeHtml(c.name)}</h3>
+                        <p>${escapeHtml(c.description)}</p>
                     </div>
                 </a>
             `).join('');
@@ -282,18 +289,18 @@
                 const selected = compareSet.includes(f.slug);
                 return `
                 <div class="fk-flower-card" style="position:relative;">
-                    <div class="fk-compare-check ${selected?'selected':''}" onclick="toggleCompare('${f.slug}',this);event.stopPropagation();" role="checkbox" aria-checked="${selected}" aria-label="Compare ${f.common_name}" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
+                    <div class="fk-compare-check ${selected?'selected':''}" onclick="toggleCompare('${escapeHtml(f.slug)}',this);event.stopPropagation();" role="checkbox" aria-checked="${selected}" aria-label="Compare ${escapeHtml(f.common_name)}" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
                         <i class="bi bi-check-lg"></i>
                     </div>
-                    <a href="flower-knowledge.html?slug=${f.slug}" style="text-decoration:none;color:inherit;">
-                        <img loading="lazy" src="${f.image_url}" alt="${f.common_name}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'">
+                    <a href="flower-knowledge.html?slug=${escapeHtml(f.slug)}" style="text-decoration:none;color:inherit;">
+                        <img loading="lazy" src="${escapeHtml(f.image_url)}" alt="${escapeHtml(f.common_name)}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'">
                         <div class="fk-body">
-                            <h3>${f.emoji} ${f.common_name}</h3>
-                            <div class="fk-sci">${f.scientific_name}</div>
+                            <h3>${escapeHtml(f.emoji)} ${escapeHtml(f.common_name)}</h3>
+                            <div class="fk-sci">${escapeHtml(f.scientific_name)}</div>
                             <div class="fk-tags">
                                 ${(f.category_ids || []).map(id => {
                                     const c = categories.find(cat => cat.id === id);
-                                    return c ? `<span class="fk-tag">${c.name}</span>` : '';
+                                    return c ? `<span class="fk-tag">${escapeHtml(c.name)}</span>` : '';
                                 }).join('')}
                             </div>
                         </div>
@@ -337,7 +344,7 @@
             if (!allFlowers.length) return;
             const f = allFlowers[Math.floor(Math.random() * allFlowers.length)];
             document.getElementById('fkRandomImg').src = f.image_url;
-            document.getElementById('fkRandomName').innerHTML = `${f.emoji || '🌸'} ${f.common_name}`;
+            document.getElementById('fkRandomName').innerHTML = `${escapeHtml(f.emoji || '??')} ${escapeHtml(f.common_name)}`;
             document.getElementById('fkRandomSci').textContent = f.scientific_name || '';
             document.getElementById('fkRandomWidget').dataset.slug = f.slug;
         }
@@ -375,12 +382,12 @@
                 };
                 return map[field] || '-';
             };
-            let html = `<table class="fk-compare-table"><thead><tr><th>Property</th>${flowers.map(f => `<th><img src="${f.image_url}" alt="${f.common_name}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'"><br>${f.emoji} ${f.common_name}</th>`).join('')}</tr></thead><tbody>`;
+            let html = `<table class="fk-compare-table"><thead><tr><th>Property</th>${flowers.map(f => `<th><img src="${escapeHtml(f.image_url)}" alt="${escapeHtml(f.common_name)}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'"><br>${escapeHtml(f.emoji)} ${escapeHtml(f.common_name)}</th>`).join('')}</tr></thead><tbody>`;
             fields.forEach(field => {
-                html += `<tr><td>${field}</td>${flowers.map(f => `<td>${getVal(f, field)}</td>`).join('')}</tr>`;
+                html += `<tr><td>${field}</td>${flowers.map(f => `<td>${escapeHtml(getVal(f, field))}</td>`).join('')}</tr>`;
             });
             const cats = flowers.map(f => (f.category_ids || []).map(id => { const c = categories.find(cat => cat.id === id); return c ? c.name : ''; }).filter(Boolean).join(', '));
-            html += `<tr><td>Categories</td>${cats.map(c => `<td>${c}</td>`).join('')}</tr>`;
+            html += `<tr><td>Categories</td>${cats.map(c => `<td>${escapeHtml(c)}</td>`).join('')}</tr>`;
             html += '</tbody></table>';
             document.getElementById('fkCompareContent').innerHTML = html;
             document.getElementById('fkCompareOverlay').classList.add('show');
@@ -408,11 +415,11 @@
                 return;
             }
             grid.innerHTML = favFlowers.map(f => `
-                <a href="flower-knowledge.html?slug=${f.slug}" class="fk-flower-card" style="text-decoration:none;color:inherit;">
-                    <img loading="lazy" src="${f.image_url}" alt="${f.common_name}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'" style="height:120px;">
+                <a href="flower-knowledge.html?slug=${escapeHtml(f.slug)}" class="fk-flower-card" style="text-decoration:none;color:inherit;">
+                    <img loading="lazy" src="${escapeHtml(f.image_url)}" alt="${escapeHtml(f.common_name)}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'" style="height:120px;">
                     <div class="fk-body">
-                        <h3>${f.emoji} ${f.common_name}</h3>
-                        <div class="fk-sci">${f.scientific_name}</div>
+                        <h3>${escapeHtml(f.emoji)} ${escapeHtml(f.common_name)}</h3>
+                        <div class="fk-sci">${escapeHtml(f.scientific_name)}</div>
                     </div>
                 </a>
             `).join('');
@@ -437,10 +444,10 @@
             ).slice(0, 8);
             if (!matches.length) { box.classList.remove('show'); return; }
             box.innerHTML = matches.map(f => `
-                <a href="flower-knowledge.html?slug=${f.slug}" class="fk-ac-item" onclick="closeAutocomplete()">
-                    <img loading="lazy" src="${f.image_url}" alt="${f.common_name}" onerror="this.style.display='none'">
+                <a href="flower-knowledge.html?slug=${escapeHtml(f.slug)}" class="fk-ac-item" onclick="closeAutocomplete()">
+                    <img loading="lazy" src="${escapeHtml(f.image_url)}" alt="${escapeHtml(f.common_name)}" onerror="this.style.display='none'">
                     <div class="ac-info">
-                        <strong>${f.emoji} ${highlight(f.common_name, q)}</strong>
+                        <strong>${escapeHtml(f.emoji)} ${highlight(f.common_name, q)}</strong>
                         <span>${highlight(f.scientific_name || '', q)}</span>
                     </div>
                 </a>
@@ -472,7 +479,7 @@
             }
             catScreen.style.display = 'none';
             screen.style.display = 'block';
-            document.getElementById('fkCategoryIcon').textContent = '🔍';
+            document.getElementById('fkCategoryIcon').textContent = '??';
             document.getElementById('fkCategoryTitle').textContent = 'Search Results';
             document.getElementById('fkCategoryDesc').textContent = `Showing results for "${q}"`;
             const ql = q.toLowerCase();
@@ -498,9 +505,9 @@
             const screen = document.getElementById('flowerScreen');
             catScreen.style.display = 'none';
             screen.style.display = 'block';
-            document.getElementById('fkCategoryIcon').textContent = '🔍';
+            document.getElementById('fkCategoryIcon').textContent = '??';
             document.getElementById('fkCategoryTitle').textContent = `Filtered (${f.length})`;
-            document.getElementById('fkCategoryDesc').textContent = diff || sun ? `Difficulty: ${diff || 'Any'} · Sunlight: ${sun || 'Any'}` : 'All flowers';
+            document.getElementById('fkCategoryDesc').textContent = diff || sun ? `Difficulty: ${diff || 'Any'} � Sunlight: ${sun || 'Any'}` : 'All flowers';
             renderFlowerGrid(f);
         }
 
@@ -534,11 +541,11 @@
             if (!flowers.length) return;
             document.getElementById('fkRecentlySection').style.display = 'block';
             document.getElementById('fkRecentlyGrid').innerHTML = flowers.map(f => `
-                <a href="flower-knowledge.html?slug=${f.slug}" class="fk-flower-card" style="text-decoration:none;color:inherit;">
-                    <img loading="lazy" src="${f.image_url}" alt="${f.common_name}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'" style="height:120px;">
+                <a href="flower-knowledge.html?slug=${escapeHtml(f.slug)}" class="fk-flower-card" style="text-decoration:none;color:inherit;">
+                    <img loading="lazy" src="${escapeHtml(f.image_url)}" alt="${escapeHtml(f.common_name)}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'" style="height:120px;">
                     <div class="fk-body">
-                        <h3>${f.emoji || '🌸'} ${f.common_name}</h3>
-                        <div class="fk-sci">${f.scientific_name || ''}</div>
+                        <h3>${escapeHtml(f.emoji || '??')} ${escapeHtml(f.common_name)}</h3>
+                        <div class="fk-sci">${escapeHtml(f.scientific_name || '')}</div>
                     </div>
                 </a>
             `).join('');

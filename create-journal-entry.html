@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/main.css?v=2.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         .create-form { max-width:720px; margin:0 auto; }
@@ -72,29 +72,29 @@
                                 <label for="entryWeather">Weather</label>
                                 <select id="entryWeather">
                                     <option value="">Select weather</option>
-                                    <option value="Sunny">☀️ Sunny</option>
-                                    <option value="Partly Cloudy">⛅ Partly Cloudy</option>
-                                    <option value="Cloudy">☁️ Cloudy</option>
-                                    <option value="Rainy">🌧️ Rainy</option>
-                                    <option value="Stormy">⛈️ Stormy</option>
-                                    <option value="Snowy">❄️ Snowy</option>
-                                    <option value="Windy">💨 Windy</option>
+                                    <option value="Sunny">?? Sunny</option>
+                                    <option value="Partly Cloudy">? Partly Cloudy</option>
+                                    <option value="Cloudy">?? Cloudy</option>
+                                    <option value="Rainy">??? Rainy</option>
+                                    <option value="Stormy">?? Stormy</option>
+                                    <option value="Snowy">?? Snowy</option>
+                                    <option value="Windy">?? Windy</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="entryTemp">Temperature</label>
-                                <input type="text" id="entryTemp" placeholder="e.g., 72°F">
+                                <input type="text" id="entryTemp" placeholder="e.g., 72�F">
                             </div>
                         </div>
                         <div class="form-group">
                             <label>How are you feeling?</label>
                             <div class="mood-options" id="moodOptions">
-                                <button type="button" class="mood-btn" data-mood="Happy">😊 Happy</button>
-                                <button type="button" class="mood-btn" data-mood="Excited">🎉 Excited</button>
-                                <button type="button" class="mood-btn" data-mood="Proud">💪 Proud</button>
-                                <button type="button" class="mood-btn" data-mood="Peaceful">😌 Peaceful</button>
-                                <button type="button" class="mood-btn" data-mood="Curious">🤔 Curious</button>
-                                <button type="button" class="mood-btn" data-mood="Concerned">😟 Concerned</button>
+                                <button type="button" class="mood-btn" data-mood="Happy">?? Happy</button>
+                                <button type="button" class="mood-btn" data-mood="Excited">?? Excited</button>
+                                <button type="button" class="mood-btn" data-mood="Proud">?? Proud</button>
+                                <button type="button" class="mood-btn" data-mood="Peaceful">?? Peaceful</button>
+                                <button type="button" class="mood-btn" data-mood="Curious">?? Curious</button>
+                                <button type="button" class="mood-btn" data-mood="Concerned">?? Concerned</button>
                             </div>
                         </div>
                         <div class="form-group">
@@ -142,13 +142,13 @@
 
     <div id="footer-container"></div>
 
-    <script src="js/shared/api.js"></script>
-    <script src="js/shared/theme.js"></script>
-    <script src="js/shared/auth.js"></script>
-    <script src="js/shared/ui.js"></script>
-    <script src="js/shared/cart.js"></script>
-    <script src="js/shared/components.js"></script>
-    <script src="js/shared/animations.js"></script>
+    <script src="js/shared/api.js?v=2.0"></script>
+    <script src="js/shared/theme.js?v=2.0"></script>
+    <script src="js/shared/auth.js?v=2.0"></script>
+    <script src="js/shared/ui.js?v=2.0"></script>
+    <script src="js/shared/cart.js?v=2.0"></script>
+    <script src="js/shared/components.js?v=2.0"></script>
+    <script src="js/shared/animations.js?v=2.0"></script>
     <script>
         let uploadedFiles = [];
         let selectedMood = '';

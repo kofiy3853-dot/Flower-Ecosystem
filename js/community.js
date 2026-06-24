@@ -6,7 +6,8 @@
     try {
         data = await api.fetchJSON('community');
     } catch (err) {
-        console.error('Failed to load community data:', err);
+        const el = document.getElementById('discussionList') || document.getElementById('questionList');
+        if (el) el.innerHTML = '<div class="empty-state"><p>Failed to load community data. <button class="btn btn-sm btn-outline" onclick="location.reload()">Retry</button></p></div>';
         return;
     }
 

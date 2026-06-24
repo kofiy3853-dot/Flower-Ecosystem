@@ -1,5 +1,3 @@
-// js/index.js — Homepage dynamic content loader
-
 document.addEventListener('DOMContentLoaded', () => {
     loadFeaturedProducts();
     loadArticles();
@@ -11,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initNewsletter();
 });
 
-// ── Fetch helper ──────────────────────────────────────────────────────────────
 async function fetchJSON(path) {
     try {
         const res = await fetch(path);
@@ -23,42 +20,43 @@ async function fetchJSON(path) {
     }
 }
 
-// ── Stars helper ──────────────────────────────────────────────────────────────
 function stars(rating) {
     const full = Math.floor(rating);
     const half = rating % 1 >= 0.5 ? 1 : 0;
     return `${'<i class="bi bi-star-fill"></i>'.repeat(full)}${half ? '<i class="bi bi-star-half"></i>' : ''}`;
 }
 
-// ── Featured Products ─────────────────────────────────────────────────────────
 async function loadFeaturedProducts() {
     const grid = document.getElementById('featuredProducts');
     if (!grid) return;
-    const data = await fetchJSON('data/products.json');
+    const data = await fetchJSON('/api/products?limit=8');
     if (!data) return;
-    const items = (Array.isArray(data) ? data : data.products || [])
-        .filter(p => p.featured || p.bestSeller)
-        .slice(0, 8);
+    const items = (Array.isArray(data) ? data : data.products || []).slice(0, 8);
     if (!items.length) return;
     grid.innerHTML = items.map(p => `
         <div class="product-card">
             <div class="product-img-wrap">
-                <img src="${p.image}" alt="${p.name}" loading="lazy">
-                ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
+                <a href="/products/${encodeURIComponent(p.id)}">
+                    <img src="${p.image || '/images/placeholder.svg'}" alt="${escapeHtml(p.name)}" loading="lazy">
+                </a>
+                ${p.badge ? `<span class="product-badge">${escapeHtml(p.badge)}</span>` : ''}
                 <button class="wishlist-btn" aria-label="Add to wishlist">
                     <i class="bi bi-heart"></i>
                 </button>
             </div>
             <div class="product-info">
-                <h3 class="product-name">${p.name}</h3>
-                <p class="product-seller">by ${p.seller || 'Flower Ecosystem'}</p>
+                <a href="/products/${encodeURIComponent(p.id)}" style="text-decoration:none;color:inherit;">
+                    <h3 class="product-name">${escapeHtml(p.name)}</h3>
+                </a>
+                <p class="product-seller">by ${escapeHtml(p.seller || 'Flower Ecosystem')}</p>
                 <div style="color:var(--accent-gold);font-size:0.8rem;margin-bottom:0.5rem;">
                     ${stars(p.rating || 0)}
                     <span style="color:var(--text-muted);font-size:0.75rem;"> (${p.reviews || 0})</span>
                 </div>
                 <div class="product-footer">
                     <span class="product-price">$${Number(p.price).toFixed(2)}</span>
-                    <button class="btn btn-primary btn-sm add-to-cart-btn">
+                    <button class="btn btn-primary btn-sm add-to-cart-btn"
+                        data-id="${p.id}" data-name="${escapeHtml(p.name)}" data-price="${p.price}" data-image="${p.image || '/images/placeholder.svg'}">
                         <i class="bi bi-cart-plus"></i> Add
                     </button>
                 </div>
@@ -67,7 +65,6 @@ async function loadFeaturedProducts() {
     `).join('');
 }
 
-// ── Articles ──────────────────────────────────────────────────────────────────
 async function loadArticles() {
     const grid = document.getElementById('articleGrid');
     if (!grid) return;
@@ -76,15 +73,15 @@ async function loadArticles() {
     const items = (Array.isArray(data) ? data : data.articles || []).slice(0, 3);
     if (!items.length) return;
     grid.innerHTML = items.map(a => `
-        <a href="article-detail.html?id=${a.id}" class="article-card">
-            <img src="${a.image}" alt="${a.title}" loading="lazy">
+        <a href="article-detail.html?id=${encodeURIComponent(a.id)}" class="article-card">
+            <img src="${a.image}" alt="${escapeHtml(a.title)}" loading="lazy">
             <div class="article-content">
-                <span class="article-tag">${a.category || a.tag || 'Guide'}</span>
-                <h3>${a.title}</h3>
-                <p>${a.description || ''}</p>
+                <span class="article-tag">${escapeHtml(a.category || a.tag || 'Guide')}</span>
+                <h3>${escapeHtml(a.title)}</h3>
+                <p>${escapeHtml(a.description || '')}</p>
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:0.75rem;">
                     <small style="color:var(--text-muted);">
-                        <i class="bi bi-clock"></i> ${a.readTime || '5 min read'}
+                        <i class="bi bi-clock"></i> ${escapeHtml(a.readTime || '5 min read')}
                     </small>
                     <span class="link-arrow">Read more →</span>
                 </div>
@@ -93,7 +90,6 @@ async function loadArticles() {
     `).join('');
 }
 
-// ── Videos ────────────────────────────────────────────────────────────────────
 async function loadVideos() {
     const grid = document.getElementById('videoGrid');
     if (!grid) return;
@@ -104,7 +100,7 @@ async function loadVideos() {
     grid.innerHTML = items.map(v => `
         <div class="article-card">
             <div style="position:relative;overflow:hidden;">
-                <img src="${v.image}" alt="${v.title}" loading="lazy"
+                <img src="${v.image}" alt="${escapeHtml(v.title)}" loading="lazy"
                      style="height:175px;width:100%;object-fit:cover;display:block;">
                 <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
                             background:rgba(0,0,0,0.15);">
@@ -116,54 +112,50 @@ async function loadVideos() {
                 </div>
                 <span style="position:absolute;bottom:0.6rem;right:0.6rem;background:rgba(0,0,0,0.7);
                              color:white;font-size:0.72rem;padding:0.2rem 0.5rem;border-radius:4px;">
-                    ${v.duration || ''}
+                    ${escapeHtml(v.duration || '')}
                 </span>
             </div>
             <div class="article-content">
-                <span class="article-tag">${v.category || v.tag || 'Tutorial'}</span>
-                <h3>${v.title}</h3>
-                <p>${v.description || ''}</p>
+                <span class="article-tag">${escapeHtml(v.category || v.tag || 'Tutorial')}</span>
+                <h3>${escapeHtml(v.title)}</h3>
+                <p>${escapeHtml(v.description || '')}</p>
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:0.75rem;">
                     <small style="color:var(--text-muted);">
                         <i class="bi bi-eye"></i> ${(v.views || 0).toLocaleString()} views
                     </small>
-                    <span class="link-arrow">Watch now →</span>
                 </div>
             </div>
         </div>
     `).join('');
 }
 
-// ── Courses ───────────────────────────────────────────────────────────────────
 async function loadCourses() {
     const grid = document.getElementById('courseGrid');
     if (!grid) return;
     const data = await fetchJSON('data/courses.json');
     if (!data) return;
-    const items = (Array.isArray(data) ? data : data.courses || []).slice(0, 3);
+    const items = (Array.isArray(data) ? data : data.courses || []).slice(0, 4);
     if (!items.length) return;
     grid.innerHTML = items.map(c => `
-        <a href="course-detail.html?id=${c.id}" class="article-card">
-            <img src="${c.thumbnail || c.image}" alt="${c.title}" loading="lazy">
-            <div class="article-content">
-                <span class="article-tag">${c.level || 'Beginner'}</span>
-                <h3>${c.title}</h3>
-                <p>${c.description || ''}</p>
-                <div style="display:flex;align-items:center;justify-content:space-between;
-                            margin-top:auto;padding-top:0.75rem;">
-                    <span style="font-weight:700;color:var(--primary-color);">
-                        ${c.price === 0 ? 'Free' : c.price ? `$${Number(c.price).toFixed(2)}` : 'Free'}
-                    </span>
-                    <small style="color:var(--text-muted);">
-                        <i class="bi bi-people"></i> ${(c.students || 0).toLocaleString()} students
-                    </small>
+        <a href="course-detail.html?id=${encodeURIComponent(c.id)}" class="course-card">
+            <img src="${c.thumbnail}" alt="${escapeHtml(c.title)}" loading="lazy">
+            <div class="course-badge">${escapeHtml(c.level || 'Beginner')}</div>
+            <div class="course-info">
+                <h4>${escapeHtml(c.title)}</h4>
+                <p>${escapeHtml(c.instructor || '')}</p>
+                <div style="color:var(--accent-gold);font-size:0.75rem;margin:0.5rem 0;">
+                    ${stars(c.rating || 0)}
+                    <span style="color:var(--text-muted);"> (${c.students || 0})</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-weight:600;">${c.price > 0 ? '$' + c.price : 'Free'}</span>
+                    <span style="font-size:0.8rem;color:var(--text-muted);">${escapeHtml(c.duration || '')}</span>
                 </div>
             </div>
         </a>
     `).join('');
 }
 
-// ── Florists ──────────────────────────────────────────────────────────────────
 async function loadFlorists() {
     const grid = document.getElementById('floristGrid');
     if (!grid) return;
@@ -172,80 +164,69 @@ async function loadFlorists() {
     const items = (Array.isArray(data) ? data : data.florists || []).slice(0, 4);
     if (!items.length) return;
     grid.innerHTML = items.map(f => `
-        <a href="florists.html" class="florist-card">
-            <img class="florist-img" src="${f.image}" alt="${f.name}" loading="lazy">
+        <div class="florist-card">
+            <img src="${f.image}" alt="${escapeHtml(f.name)}" loading="lazy">
             <div class="florist-info">
-                <h3>${f.name}</h3>
-                <p class="florist-location"><i class="bi bi-geo-alt"></i> ${f.location}</p>
-                <p class="florist-specialty">${f.specialty}</p>
-                <div class="florist-stats">
-                    <span style="color:var(--accent-gold);">
-                        <i class="bi bi-star-fill"></i> ${f.rating}
-                        <span style="color:var(--text-muted);">(${f.reviews})</span>
-                    </span>
-                    <span><i class="bi bi-bag"></i> ${f.products} listings</span>
-                </div>
+                <h4>${escapeHtml(f.name)}</h4>
+                <p>${escapeHtml(f.location || '')}</p>
+                <div style="color:var(--accent-gold);font-size:0.75rem;">${stars(f.rating || 0)}</div>
+                <span><i class="bi bi-bag"></i> ${f.products || 0} listings</span>
             </div>
-        </a>
+        </div>
     `).join('');
 }
 
-// ── Events ────────────────────────────────────────────────────────────────────
 async function loadEvents() {
-    const grid = document.getElementById('eventsGrid');
+    const grid = document.getElementById('eventGrid');
     if (!grid) return;
     const data = await fetchJSON('data/events.json');
     if (!data) return;
     const items = (Array.isArray(data) ? data : data.events || []).slice(0, 3);
     if (!items.length) return;
     grid.innerHTML = items.map(e => `
-        <a href="events.html" class="event-card">
-            <div class="event-date">
-                <span class="event-day">${e.day}</span>
-                <span class="event-month">${e.month}</span>
+        <div class="event-card">
+            <img src="${e.image}" alt="${escapeHtml(e.title)}" loading="lazy">
+            <div class="event-date-badge">
+                <strong>${escapeHtml(e.day || '')}</strong>
+                <span>${escapeHtml(e.month || '')}</span>
             </div>
             <div class="event-info">
-                <span class="article-tag" style="margin-bottom:0.4rem;">${e.category || 'Event'}</span>
-                <h3>${e.title}</h3>
-                <p><i class="bi bi-geo-alt"></i> ${e.location}</p>
-                <p><i class="bi bi-tag"></i> ${e.price}</p>
+                <span class="article-tag">${escapeHtml(e.category || 'Event')}</span>
+                <h4>${escapeHtml(e.title)}</h4>
+                <p><i class="bi bi-geo-alt"></i> ${escapeHtml(e.location || 'Online')}</p>
             </div>
-            <span class="btn btn-outline btn-sm" style="white-space:nowrap;align-self:center;">
-                Register →
-            </span>
-        </a>
+        </div>
     `).join('');
 }
 
-// ── Tabs ──────────────────────────────────────────────────────────────────────
 function initTabs() {
-    document.querySelectorAll('.learning-tabs .tab-btn').forEach(btn => {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.learning-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             btn.classList.add('active');
-            const target = document.getElementById(`tab-${btn.dataset.tab}`);
-            if (target) target.classList.add('active');
+            const tab = document.getElementById('tab-' + btn.dataset.tab);
+            if (tab) tab.classList.add('active');
         });
     });
 }
 
-// ── Newsletter ────────────────────────────────────────────────────────────────
 function initNewsletter() {
     const form = document.getElementById('newsletterForm');
-    const msg  = document.getElementById('newsletterMsg');
     if (!form) return;
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = form.querySelector('input[type="email"]').value;
+        const input = form.querySelector('[type="email"]');
+        if (!input || !input.value.trim()) return;
         try {
-            await fetch('/api/newsletter/subscribe', {
+            const res = await fetch('/api/newsletter/subscribe', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify({ email: input.value.trim() })
             });
-        } catch (_) {}
-        form.classList.add('hidden');
-        if (msg) msg.classList.remove('hidden');
+            if (res.ok) {
+                form.innerHTML = '<p style="color:var(--accent-green);font-weight:500;">Thanks for subscribing! 🌸</p>';
+            }
+        } catch {}
     });
 }

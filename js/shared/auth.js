@@ -4,7 +4,7 @@ const AUTH_KEY = 'flower-auth';
 const TOKEN_KEY = 'flower-token';
 
 function isLoggedIn() {
-    return !!localStorage.getItem(TOKEN_KEY) || !!localStorage.getItem(AUTH_KEY);
+    try { return !!localStorage.getItem(TOKEN_KEY) || !!localStorage.getItem(AUTH_KEY); } catch { return false; }
 }
 
 function getCurrentUser() {
@@ -20,7 +20,7 @@ function getCurrentUser() {
 }
 
 function getToken() {
-    return localStorage.getItem(TOKEN_KEY);
+    try { return localStorage.getItem(TOKEN_KEY); } catch { return null; }
 }
 
 function setLoggedIn(user, token) {
@@ -35,7 +35,7 @@ function logout() {
 
 async function apiLogin(email, password) {
     const res = await fetch('/api/auth/login', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
         body: JSON.stringify({ email, password })
     });
     if (!res.ok) {

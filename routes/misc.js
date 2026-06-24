@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const path = require('path');
-const { pool, JWT_SECRET, upload, rateLimiter, asyncHandler, escapeHtml, dbAvailable, requireAuth } = require('./middleware');
+const { pool, JWT_SECRET, upload, uploadVideo, rateLimiter, asyncHandler, escapeHtml, dbAvailable, requireAuth } = require('./middleware');
 
 // Newsletter
 router.post('/newsletter/subscribe', asyncHandler(async (req, res) => {
@@ -40,6 +40,13 @@ router.post('/upload', requireAuth, upload.array('images', 10), asyncHandler(asy
     if (!req.files || req.files.length === 0) return res.status(400).json({ error: 'No image files provided' });
     const urls = req.files.map(f => `/uploads/${f.filename}`);
     res.status(201).json({ images: urls });
+}));
+
+// Video Upload
+router.post('/upload/video', requireAuth, uploadVideo.single('video'), asyncHandler(async (req, res) => {
+    if (!req.file) return res.status(400).json({ error: 'No video file provided' });
+    const url = `/uploads/${req.file.filename}`;
+    res.status(201).json({ url });
 }));
 
 // Contact & FAQ

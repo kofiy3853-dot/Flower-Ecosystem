@@ -30,7 +30,8 @@ function renderStars(rating) {
             api.fetchQuizzes()
         ]);
     } catch (err) {
-        console.error('Learning data load failed:', err);
+        const el = document.getElementById('courseGrid');
+        if (el) el.innerHTML = '<div class="empty-state"><p>Failed to load learning content. <button class="btn btn-sm btn-outline" onclick="location.reload()">Retry</button></p></div>';
         return;
     }
 
@@ -56,7 +57,7 @@ function renderStars(rating) {
                         <span style="font-size:0.8rem;color:var(--text-light);">(${c.students || 0} students)</span>
                     </div>
                     <div class="product-footer">
-                        <span class="product-price">${c.price ? '$' + c.price.toFixed(2) : 'Free'}</span>
+                        <span class="product-price">${c.price ? '$' + Number(c.price).toFixed(2) : 'Free'}</span>
                         <a href="course-detail.html?id=${escapeHtml(c.id)}" class="btn btn-primary btn-sm">Start Course</a>
                     </div>
                 </div>

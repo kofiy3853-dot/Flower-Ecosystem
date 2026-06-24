@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/main.css?v=2.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         .fk-detail-hero { padding:2rem 0 3rem; }
@@ -100,9 +100,9 @@
     <div class="fk-breadcrumb">
         <div class="container">
             <a href="index.html">Home</a>
-            <span class="sep">›</span>
+            <span class="sep">�</span>
             <a href="flower-knowledge-hub.html">Flower Knowledge</a>
-            <span class="sep">›</span>
+            <span class="sep">�</span>
             <span id="fkBcName" style="color:var(--text-main);">Flower</span>
         </div>
     </div>
@@ -135,12 +135,12 @@
                 </div>
 
                 <div class="fk-detail-tabs" role="tablist" id="fkTabs">
-                    <button class="fk-detail-tab-btn active" role="tab" aria-selected="true" data-tab="medicinal">💊 Medicinal</button>
-                    <button class="fk-detail-tab-btn" role="tab" aria-selected="false" data-tab="health">❤️ Health</button>
-                    <button class="fk-detail-tab-btn" role="tab" aria-selected="false" data-tab="perfume">🧴 Perfume</button>
-                    <button class="fk-detail-tab-btn" role="tab" aria-selected="false" data-tab="ornamental">🎨 Ornamental</button>
-                    <button class="fk-detail-tab-btn" role="tab" aria-selected="false" data-tab="care">🌱 Care Guide</button>
-                    <button class="fk-detail-tab-btn" role="tab" aria-selected="false" data-tab="marketplace">🛒 Marketplace</button>
+                    <button class="fk-detail-tab-btn active" role="tab" aria-selected="true" data-tab="medicinal">?? Medicinal</button>
+                    <button class="fk-detail-tab-btn" role="tab" aria-selected="false" data-tab="health">?? Health</button>
+                    <button class="fk-detail-tab-btn" role="tab" aria-selected="false" data-tab="perfume">?? Perfume</button>
+                    <button class="fk-detail-tab-btn" role="tab" aria-selected="false" data-tab="ornamental">?? Ornamental</button>
+                    <button class="fk-detail-tab-btn" role="tab" aria-selected="false" data-tab="care">?? Care Guide</button>
+                    <button class="fk-detail-tab-btn" role="tab" aria-selected="false" data-tab="marketplace">?? Marketplace</button>
                 </div>
 
                 <div id="tab-medicinal" class="fk-detail-tab-content active" role="tabpanel"></div>
@@ -152,12 +152,12 @@
             </div>
 
             <div id="fkSimilarSection" class="reveal-up" style="margin-top:2rem;padding-top:2rem;border-top:1px solid var(--border-color);display:none;">
-                <h3 style="font-size:1.1rem;margin-bottom:1rem;">🔗 Similar Flowers</h3>
+                <h3 style="font-size:1.1rem;margin-bottom:1rem;">?? Similar Flowers</h3>
                 <div class="fk-flower-grid" id="fkSimilarGrid"></div>
             </div>
 
             <div id="fkCommunitySection" class="reveal-up" style="margin-top:2rem;padding-top:2rem;border-top:1px solid var(--border-color);">
-                <h3 style="font-size:1.1rem;margin-bottom:0.5rem;">💬 Community Discussions & Ratings</h3>
+                <h3 style="font-size:1.1rem;margin-bottom:0.5rem;">?? Community Discussions & Ratings</h3>
                 <div id="fkRatingSummary" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;padding:1rem;background:var(--bg-light);border-radius:10px;"></div>
                 <form id="fkCommentForm" style="margin-bottom:1.5rem;" onsubmit="return submitComment(event)">
                     <textarea id="fkCommentInput" placeholder="Share your experience with this flower..." style="width:100%;padding:0.75rem 1rem;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-white);color:var(--text-main);font-family:inherit;font-size:0.95rem;resize:vertical;min-height:80px;box-sizing:border-box;" required></textarea>
@@ -165,11 +165,11 @@
                         <div style="display:flex;align-items:center;gap:0.3rem;">
                             <span style="font-size:0.85rem;color:var(--text-light);">Rating:</span>
                             <div id="fkStarRating" style="display:inline-flex;gap:0.2rem;cursor:pointer;">
-                                <span data-star="1" style="font-size:1.5rem;color:var(--border-color);transition:color 0.15s;">★</span>
-                                <span data-star="2" style="font-size:1.5rem;color:var(--border-color);transition:color 0.15s;">★</span>
-                                <span data-star="3" style="font-size:1.5rem;color:var(--border-color);transition:color 0.15s;">★</span>
-                                <span data-star="4" style="font-size:1.5rem;color:var(--border-color);transition:color 0.15s;">★</span>
-                                <span data-star="5" style="font-size:1.5rem;color:var(--border-color);transition:color 0.15s;">★</span>
+                                <span data-star="1" style="font-size:1.5rem;color:var(--border-color);transition:color 0.15s;">?</span>
+                                <span data-star="2" style="font-size:1.5rem;color:var(--border-color);transition:color 0.15s;">?</span>
+                                <span data-star="3" style="font-size:1.5rem;color:var(--border-color);transition:color 0.15s;">?</span>
+                                <span data-star="4" style="font-size:1.5rem;color:var(--border-color);transition:color 0.15s;">?</span>
+                                <span data-star="5" style="font-size:1.5rem;color:var(--border-color);transition:color 0.15s;">?</span>
                             </div>
                             <span id="fkRatingLabel" style="font-size:0.85rem;color:var(--text-light);margin-left:0.3rem;">None</span>
                         </div>
@@ -183,17 +183,24 @@
 
     <div id="footer-container"></div>
 
-    <script src="js/shared/api.js"></script>
-    <script src="js/shared/theme.js"></script>
-    <script src="js/shared/auth.js"></script>
-    <script src="js/shared/ui.js"></script>
-    <script src="js/shared/cart.js"></script>
-    <script src="js/shared/components.js"></script>
+    <script src="js/shared/api.js?v=2.0"></script>
+    <script src="js/shared/theme.js?v=2.0"></script>
+    <script src="js/shared/auth.js?v=2.0"></script>
+    <script src="js/shared/ui.js?v=2.0"></script>
+    <script src="js/shared/cart.js?v=2.0"></script>
+    <script src="js/shared/components.js?v=2.0"></script>
     <script>
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
         const CATEGORY_ICONS = {
-            'Medicinal': '💊', 'Ornamental': '🎨', 'Perfume': '🧴', 'Edible': '🍽️',
-            'Religious': '🕯️', 'Landscaping': '🏡', 'Indoor Plants': '🪴',
-            'Palm Trees': '🌴', 'Succulents': '🌵', 'Tropical Plants': '🌺'
+            'Medicinal': '??', 'Ornamental': '??', 'Perfume': '??', 'Edible': '???',
+            'Religious': '???', 'Landscaping': '??', 'Indoor Plants': '??',
+            'Palm Trees': '??', 'Succulents': '??', 'Tropical Plants': '??'
         };
         let currentFlower = null;
 
@@ -221,17 +228,17 @@
                 document.getElementById('fkLoading').style.display = 'none';
                 document.getElementById('fkContent').style.display = 'block';
 
-                document.title = `${flower.emoji || '🌸'} ${flower.common_name} | Flower Knowledge | Flower Ecosystem`;
+                document.title = `${flower.emoji || '??'} ${flower.common_name} | Flower Knowledge | Flower Ecosystem`;
                 document.getElementById('fkBcName').textContent = flower.common_name;
                 document.getElementById('fkDetailImg').src = flower.image_url;
                 document.getElementById('fkDetailImg').alt = flower.common_name;
-                document.getElementById('fkDetailTitle').textContent = `${flower.emoji || '🌸'} ${flower.common_name}`;
+                document.getElementById('fkDetailTitle').textContent = `${flower.emoji || '??'} ${flower.common_name}`;
                 document.getElementById('fkSciName').textContent = flower.scientific_name || '';
                 document.getElementById('fkDetailDesc').textContent = flower.description;
 
                 const catMeta = document.getElementById('fkDetailCategories');
                 const flowerCats = flower.categories || categories.filter(c => (flower.category_ids || []).includes(c.id));
-                catMeta.innerHTML = flowerCats.map(c => `<span class="fk-badge" style="background:var(--bg-light);color:var(--text-main);border:1px solid var(--border-color);">${c.icon || CATEGORY_ICONS[c.name] || '🌸'} ${c.name}</span>`).join('');
+                catMeta.innerHTML = flowerCats.map(c => `<span class="fk-badge" style="background:var(--bg-light);color:var(--text-main);border:1px solid var(--border-color);">${escapeHtml(c.icon || CATEGORY_ICONS[c.name] || '??')} ${escapeHtml(c.name)}</span>`).join('');
 
                 const specs = document.getElementById('fkSpecs');
                 const specData = [
@@ -246,8 +253,8 @@
                 ].filter(s => s.value);
                 specs.innerHTML = specData.map(s => `
                     <div class="fk-spec">
-                        <div class="fk-spec-label">${s.label}</div>
-                        <div class="fk-spec-value">${s.value}</div>
+                        <div class="fk-spec-label">${escapeHtml(s.label)}</div>
+                        <div class="fk-spec-value">${escapeHtml(s.value)}</div>
                     </div>
                 `).join('');
 
@@ -262,7 +269,7 @@
                             tab.innerHTML = '<div class="fk-no-data">No information available for this category.</div>';
                             return;
                         }
-                        tab.innerHTML = `<div class="fk-benefit-group"><h3>${CATEGORY_ICONS[type] || '🌸'} ${type} Uses</h3><ul class="fk-benefit-list">${items.map(b => `<li><i class="bi bi-check-circle-fill"></i> ${b.description}</li>`).join('')}</ul></div>`;
+                        tab.innerHTML = `<div class="fk-benefit-group"><h3>${escapeHtml(CATEGORY_ICONS[type] || '??')} ${escapeHtml(type)} Uses</h3><ul class="fk-benefit-list">${items.map(b => `<li><i class="bi bi-check-circle-fill"></i> ${escapeHtml(b.description)}</li>`).join('')}</ul></div>`;
                     }
                 });
 
@@ -274,7 +281,7 @@
                     careTab.innerHTML = `<div class="fk-care-list">${careTips.map(t => `
                         <div class="fk-care-item">
                             <i class="bi bi-info-circle-fill"></i>
-                            <div><h4>${t.title}</h4><p>${t.description}</p></div>
+                            <div><h4>${escapeHtml(t.title)}</h4><p>${escapeHtml(t.description)}</p></div>
                         </div>
                     `).join('')}</div>`;
                 }
@@ -297,14 +304,14 @@
                 const r = await api.apiFetch('/api/knowledge/flowers/' + slug + '/related', '');
                 const related = Array.isArray(r) ? r : [];
                 if (related.length === 0) {
-                    marketTab.innerHTML = '<div class="fk-no-data">No marketplace products found for this flower. <a href="marketplace.html" style="color:var(--primary-color);">Browse all products →</a></div>';
+                    marketTab.innerHTML = '<div class="fk-no-data">No marketplace products found for this flower. <a href="marketplace.html" style="color:var(--primary-color);">Browse all products ?</a></div>';
                 } else {
-                    marketTab.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;margin-bottom:1rem;"><h3 style="font-size:1.1rem;margin:0;">Available Products</h3><a href="marketplace.html?search=${encodeURIComponent(currentFlower.common_name)}" style="font-size:0.85rem;color:var(--primary-color);">View all →</a></div><div class="fk-marketplace-grid">${related.map(p => `
-                        <a href="product-detail.html?id=${p.id}" class="fk-flower-card" style="text-decoration:none;color:inherit;background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;overflow:hidden;transition:all 0.2s;">
-                            <img loading="lazy" src="${p.image}" alt="${p.name}" style="width:100%;height:140px;object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'">
+                    marketTab.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;margin-bottom:1rem;"><h3 style="font-size:1.1rem;margin:0;">Available Products</h3><a href="marketplace.html?search=${encodeURIComponent(currentFlower.common_name)}" style="font-size:0.85rem;color:var(--primary-color);">View all ?</a></div><div class="fk-marketplace-grid">${related.map(p => `
+                        <a href="product-detail.html?id=${escapeHtml(p.id)}" class="fk-flower-card" style="text-decoration:none;color:inherit;background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;overflow:hidden;transition:all 0.2s;">
+                            <img loading="lazy" src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" style="width:100%;height:140px;object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'">
                             <div style="padding:0.75rem 1rem 1rem;">
-                                <h4 style="font-size:0.9rem;margin-bottom:0.25rem;">${p.name}</h4>
-                                <span style="font-size:1rem;font-weight:600;color:var(--primary-color);">$${(p.price || 0).toFixed(2)}</span>
+                                <h4 style="font-size:0.9rem;margin-bottom:0.25rem;">${escapeHtml(p.name)}</h4>
+                                <span style="font-size:1rem;font-weight:600;color:var(--primary-color);">$${escapeHtml((p.price || 0).toFixed(2))}</span>
                             </div>
                         </a>
                     `).join('')}</div>`;
@@ -363,11 +370,11 @@
             if (!similar.length) { return; }
             section.style.display = 'block';
             grid.innerHTML = similar.map(f => `
-                <a href="flower-knowledge.html?slug=${f.slug}" class="fk-flower-card" style="text-decoration:none;color:inherit;">
-                    <img loading="lazy" src="${f.image_url}" alt="${f.common_name}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'">
+                <a href="flower-knowledge.html?slug=${escapeHtml(f.slug)}" class="fk-flower-card" style="text-decoration:none;color:inherit;">
+                    <img loading="lazy" src="${escapeHtml(f.image_url)}" alt="${escapeHtml(f.common_name)}" onerror="this.src='https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop'">
                     <div class="fk-body">
-                        <h4>${f.emoji || '🌸'} ${f.common_name}</h4>
-                        <div class="fk-sci-sm">${f.scientific_name || ''}</div>
+                        <h4>${escapeHtml(f.emoji || '??')} ${escapeHtml(f.common_name)}</h4>
+                        <div class="fk-sci-sm">${escapeHtml(f.scientific_name || '')}</div>
                     </div>
                 </a>
             `).join('');
@@ -382,7 +389,7 @@
             document.querySelectorAll('#fkStarRating span').forEach((s, i) => {
                 s.style.color = i < fkUserRating ? '#f59e0b' : 'var(--border-color)';
             });
-            document.getElementById('fkRatingLabel').textContent = fkUserRating + ' ★';
+            document.getElementById('fkRatingLabel').textContent = fkUserRating + ' ?';
         });
 
         async function loadComments(slug) {
@@ -397,8 +404,8 @@
                 const count = rating ? rating.count : 0;
                 if (avg > 0) {
                     summary.innerHTML =
-                        '<div style="display:flex;align-items:center;gap:0.5rem;"><span style="font-size:1.5rem;color:#f59e0b;">★</span><span style="font-size:1.25rem;font-weight:600;">' + avg + '</span><span style="font-size:0.85rem;color:var(--text-light);">(' + count + ' rating' + (count !== 1 ? 's' : '') + ')</span></div>' +
-                        '<div style="font-size:0.85rem;color:var(--text-light);">' + (count > 0 ? Math.round(avg * 20) + '% recommend' : 'No ratings yet') + '</div>';
+                        '<div style="display:flex;align-items:center;gap:0.5rem;"><span style="font-size:1.5rem;color:#f59e0b;">?</span><span style="font-size:1.25rem;font-weight:600;">' + escapeHtml(avg) + '</span><span style="font-size:0.85rem;color:var(--text-light);">(' + escapeHtml(count) + ' rating' + (count !== 1 ? 's' : '') + ')</span></div>' +
+                        '<div style="font-size:0.85rem;color:var(--text-light);">' + (count > 0 ? escapeHtml(Math.round(avg * 20)) + '% recommend' : 'No ratings yet') + '</div>';
                 } else {
                     summary.innerHTML = '<span style="font-size:0.9rem;color:var(--text-light);">No ratings yet. Be the first to rate!</span>';
                 }
@@ -407,12 +414,12 @@
                         <div style="padding:1rem;margin-bottom:0.75rem;background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;flex-wrap:wrap;gap:0.5rem;">
                                 <div style="display:flex;align-items:center;gap:0.75rem;">
-                                    <strong style="font-size:0.9rem;">${c.display_name || 'Anonymous'}</strong>
-                                    ${c.rating ? '<span style="color:#f59e0b;">' + '★'.repeat(c.rating) + '☆'.repeat(5 - c.rating) + '</span>' : ''}
+                                    <strong style="font-size:0.9rem;">${escapeHtml(c.display_name || 'Anonymous')}</strong>
+                                    ${c.rating ? '<span style="color:#f59e0b;">' + '?'.repeat(escapeHtml(c.rating)) + '?'.repeat(escapeHtml(5 - c.rating)) + '</span>' : ''}
                                 </div>
-                                <span style="font-size:0.75rem;color:var(--text-light);">${new Date(c.created_at).toLocaleDateString()}</span>
+                                <span style="font-size:0.75rem;color:var(--text-light);">${escapeHtml(new Date(c.created_at).toLocaleDateString())}</span>
                             </div>
-                            <p style="margin:0;font-size:0.95rem;line-height:1.5;color:var(--text-main);">${c.comment}</p>
+                            <p style="margin:0;font-size:0.95rem;line-height:1.5;color:var(--text-main);">${escapeHtml(c.comment)}</p>
                         </div>
                     `).join('');
                 } else {
