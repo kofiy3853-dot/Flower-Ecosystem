@@ -225,7 +225,7 @@ function afterAuth() {
         window.location.href = 'seller-dashboard.html';
         return;
     }
-    window.location.href = '/index.html';
+    window.location.href = 'buyer-dashboard.html';
 }
 
 function handleAuthSubmit(formId, apiFn, getData) {
@@ -334,7 +334,7 @@ function initAuth() {
                 } else if (['seller', 'florist', 'grower'].includes(role)) {
                     window.location.href = 'seller-dashboard.html';
                 } else {
-                    window.location.href = 'account.html';
+                    window.location.href = 'buyer-dashboard.html';
                 }
             } else {
                 openAuthModal('login');
