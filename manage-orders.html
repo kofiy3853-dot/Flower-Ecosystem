@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/main.css?v=2.0">
+    <link rel="stylesheet" href="styles/landing-redesign.css?v=2.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         .manage-table-wrap { overflow-x:auto; background:var(--bg-white); border-radius:12px; border:1px solid var(--border-color); }
@@ -146,7 +147,7 @@
                             <tbody>
                                 ${filtered.map((o, idx) => `
                                     <tr>
-                                        <td><strong>${o.id || '—'}</strong></td>
+                                        <td><strong>${o.id || 'ï¿½'}</strong></td>
                                         <td>${o.customer || 'Customer'}</td>
                                         <td>${o.items || 1}</td>
                                         <td><strong>$${(o.total || 0).toFixed(2)}</strong></td>
@@ -162,7 +163,7 @@
                                         <td colspan="7"><div class="expanded-content" id="row-${idx}">
                                             <div class="order-item">
                                                 <img src="${o.image || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=100&auto=format&fit=crop'}" alt="">
-                                                <div><strong>${o.product || 'Product'}</strong> · Qty: ${o.items || 1} · $${(o.total || 0).toFixed(2)}</div>
+                                                <div><strong>${o.product || 'Product'}</strong> ï¿½ Qty: ${o.items || 1} ï¿½ $${(o.total || 0).toFixed(2)}</div>
                                             </div>
                                             <div style="margin-top:0.5rem;display:flex;gap:0.5rem;">
                                                 <a href="product-detail.html?ref=order" class="btn btn-outline btn-sm">View Product</a>

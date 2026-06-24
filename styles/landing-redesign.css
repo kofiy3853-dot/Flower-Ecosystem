@@ -3,8 +3,8 @@
    ============================================================================= */
 :root {
     /* Color Palette Override */
-    --bg-main: #FFF8FB;
-    --bg-main-rgb: 255, 248, 251;
+    --bg-main: #FFFFFF;
+    --bg-main-rgb: 255, 255, 255;
     --primary-color: #FF5FA2;
     --primary-rgb: 255, 95, 162;
     --primary-light: #FFDCEB;
@@ -116,91 +116,95 @@ h1, h2, h3, h4, .logo, .hero-title {
    ============================================================================= */
 .hero-section {
     min-height: 100vh;
-    background: var(--bg-main);
+    background: #ffffff;
     display: flex;
     align-items: center;
     position: relative;
     overflow: hidden;
 }
 
-.hero-section::before, .hero-section::after {
-    display: none; /* remove old pseudo elements */
+/* Full-bleed background image with right-side mask fade */
+.hero-section .hero-image {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 75%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    z-index: 1;
+    -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        black 30%,
+        black 100%
+    );
+    mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        black 30%,
+        black 100%
+    );
 }
 
-/* Decorative blurred circles */
+/* Left-to-right gradient overlay so text stays readable */
+.hero-section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        #ffffff 0%,
+        rgba(255, 255, 255, 0.97) 28%,
+        rgba(255, 255, 255, 0.80) 48%,
+        rgba(255, 255, 255, 0.20) 68%,
+        transparent 100%
+    );
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Decorative blurred circles — subtle accent only */
 .hero-bg-circle-1 {
     position: absolute;
-    width: 600px;
-    height: 600px;
+    width: 400px;
+    height: 400px;
     background: var(--primary-light);
     border-radius: 50%;
-    filter: blur(100px);
-    top: -10%;
-    right: -10%;
-    opacity: 0.6;
+    filter: blur(120px);
+    top: -5%;
+    left: -5%;
+    opacity: 0.35;
     z-index: 0;
 }
 
 .hero-bg-circle-2 {
     position: absolute;
-    width: 500px;
-    height: 500px;
-    background: #FFF0F5;
+    width: 350px;
+    height: 350px;
+    background: #FFE8F4;
     border-radius: 50%;
-    filter: blur(80px);
+    filter: blur(100px);
     bottom: -5%;
-    left: -5%;
-    opacity: 0.7;
+    left: 20%;
+    opacity: 0.3;
     z-index: 0;
 }
 
 .hero-wrapper {
     position: relative;
-    z-index: 2;
+    z-index: 3;
     width: 100%;
-    max-width: var(--container-width);
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 8rem 2rem 5rem;
+    padding: 9rem 5rem 6rem;
     display: flex;
-    justify-content: space-between;
     align-items: center;
 }
 
 .hero-left {
-    max-width: 50%;
-    padding-right: 4rem;
+    max-width: 55%;
     z-index: 3;
-}
-
-.hero-image-wrapper {
-    width: 50%;
-    position: relative;
-    z-index: 2;
-    animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-    100% { transform: translateY(0px); }
-}
-
-.hero-image-inner {
-    position: relative;
-    border-radius: 40px;
-    overflow: hidden;
-    box-shadow: 0 30px 60px rgba(90, 36, 68, 0.15);
-    aspect-ratio: 4/5;
-}
-
-.hero-section .hero-image {
-    position: static;
-    width: 100%;
-    height: 100%;
-    transform: none;
-    -webkit-mask-image: none;
-    mask-image: none;
-    border-radius: 40px;
 }
 
 .hero-badge {
@@ -417,55 +421,69 @@ h2 {
    ============================================================================= */
 @media (max-width: 1024px) {
     .hero-wrapper {
-        flex-direction: column;
-        padding-top: 10rem;
+        padding: 9rem 3rem 5rem;
     }
-    
+
     .hero-left {
-        max-width: 100%;
-        padding-right: 0;
-        text-align: center;
-        margin-bottom: 4rem;
+        max-width: 65%;
     }
-    
-    .hero-stats {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    
-    .hero-badge {
-        margin: 0 auto;
-    }
-    
-    .hero-cta {
-        justify-content: center;
-    }
-    
-    .hero-image-wrapper {
-        width: 80%;
+
+    .hero-section .hero-image {
+        width: 60%;
     }
 }
 
 @media (max-width: 768px) {
+    .hero-wrapper {
+        padding: 8rem 2rem 4rem;
+    }
+
+    .hero-left {
+        max-width: 100%;
+        text-align: center;
+    }
+
     .hero-title {
         font-size: 2.5rem;
     }
-    
-    .hero-image-wrapper {
-        width: 100%;
+
+    .hero-stats {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
     }
-    
+
+    .hero-badge {
+        margin: 0 auto;
+    }
+
+    .hero-cta {
+        justify-content: center;
+    }
+
+    /* On mobile, dim the image heavily so text is always readable */
+    .hero-section .hero-image {
+        width: 100%;
+        opacity: 0.15;
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+
+    .hero-section::after {
+        background: rgba(255, 255, 255, 0.6);
+    }
+
     .newsletter-section {
         margin: 2rem 1rem;
         padding: 4rem 1rem;
     }
-    
+
     .newsletter-form {
         display: flex;
         flex-direction: column;
         gap: 1rem;
     }
-    
+
     .newsletter-form input,
     .newsletter-form button {
         border-radius: 50px;

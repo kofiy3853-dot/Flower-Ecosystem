@@ -253,14 +253,17 @@ function handleAuthSubmit(formId, apiFn, getData) {
 
 function updateAccountUI() {
     const btn = document.getElementById('globalAccountLink');
+    const logoutBtn = document.getElementById('globalLogoutBtn');
     if (!btn) return;
     const user = getCurrentUser();
     if (user) {
         btn.innerHTML = `<i class="bi bi-person-check-fill"></i>`;
         btn.title = `Signed in as ${user.name || user.email || 'User'}`;
+        if (logoutBtn) logoutBtn.style.display = 'inline-flex';
     } else {
         btn.innerHTML = `<i class="bi bi-person-circle"></i>`;
         btn.title = 'My Account';
+        if (logoutBtn) logoutBtn.style.display = 'none';
     }
     // Show/hide seller-only navigation links based on role
     const sellLink = document.getElementById('navSellLink');
@@ -312,6 +315,14 @@ function initAuth() {
     );
 
     document.addEventListener('click', (e) => {
+        const logoutBtn = e.target.closest('#globalLogoutBtn');
+        if (logoutBtn) {
+            e.preventDefault();
+            logout();
+            window.location.href = '/index.html';
+            return;
+        }
+
         const accountBtn = e.target.closest('#globalAccountLink');
         if (accountBtn) {
             e.preventDefault();
@@ -418,7 +429,7 @@ function initAuth() {
 }
 
 function shouldInitAuth() {
-    return !window.location.pathname.match(/\/(admin[^/]*|seller-dashboard)(\.html)?$/);
+    return true;
 }
 
 if (document.readyState === 'loading') {

@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/main.css?v=2.0">
+    <link rel="stylesheet" href="styles/landing-redesign.css?v=2.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 </head>
 <body>
@@ -56,7 +57,7 @@
                     <select id="floristSort" aria-label="Sort florists" class="form-select mkt-filter-select">
                         <option value="rating">Top Rated</option>
                         <option value="reviews">Most Reviewed</option>
-                        <option value="name">Name A–Z</option>
+                        <option value="name">Name Aï¿½Z</option>
                     </select>
                 </div>
             </div>
@@ -99,7 +100,7 @@
                 const full  = Math.floor(rating);
                 const half  = rating % 1 >= 0.5 ? 1 : 0;
                 const empty = 5 - full - half;
-                return '?'.repeat(full) + (half ? '½' : '') + '?'.repeat(empty);
+                return '?'.repeat(full) + (half ? 'ï¿½' : '') + '?'.repeat(empty);
             }
 
             function getLocations(list) {

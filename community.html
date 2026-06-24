@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Connect with florists and flower enthusiasts worldwide. Discussions, Q&A, success stories, photo sharing, and flower challenges.">
-    <title>Community – Connect with Florists | Flower Ecosystem</title>
+    <title>Community ï¿½ Connect with Florists | Flower Ecosystem</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/main.css?v=2.0">
+    <link rel="stylesheet" href="styles/landing-redesign.css?v=2.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         .feature-icon { font-size:2.2rem; margin-bottom:0.75rem; }
@@ -215,7 +216,7 @@
                             ${d.title}
                         </h4>
                         <div style="font-size:0.85rem; color:var(--text-light);">
-                            by ${d.author} · <span class="category-chip">${d.category}</span>
+                            by ${d.author} ï¿½ <span class="category-chip">${d.category}</span>
                         </div>
                         <p style="font-size:0.9rem; color:var(--text-light); margin-top:0.5rem; line-height:1.5;">${d.excerpt}</p>
                         <div class="discussion-meta">
@@ -237,7 +238,7 @@
                 <div class="question-card">
                     <div>
                         <h4>${q.title}</h4>
-                        <div class="q-meta">by ${q.author} · ${q.timeAgo} · <span class="category-chip">${q.category}</span></div>
+                        <div class="q-meta">by ${q.author} ï¿½ ${q.timeAgo} ï¿½ <span class="category-chip">${q.category}</span></div>
                     </div>
                     <div class="q-stats">
                         <strong>${q.answers}</strong> answers<br>
@@ -253,7 +254,7 @@
                     <img loading="lazy" src="${s.image}" alt="${s.title}">
                     <div class="story-body">
                         <h3>${s.title}</h3>
-                        <div class="story-author">${s.avatar} ${s.author} · ${s.role}</div>
+                        <div class="story-author">${s.avatar} ${s.author} ï¿½ ${s.role}</div>
                         <p>${s.story}</p>
                         <div style="margin-top:0.75rem; display:flex; gap:1rem; font-size:0.85rem; color:var(--text-light);">
                             <span><i class="bi bi-heart" style="color:var(--error-color);"></i> ${s.likes}</span>
@@ -270,8 +271,8 @@
                     <div class="challenge-icon">??</div>
                     <h3>${c.name}</h3>
                     <div class="challenge-meta">
-                        <span><i class="bi bi-people"></i> ${c.participants} participants</span> · 
-                        <span>${c.entries} entries</span> · 
+                        <span><i class="bi bi-people"></i> ${c.participants} participants</span> ï¿½ 
+                        <span>${c.entries} entries</span> ï¿½ 
                         <span>Ends ${c.endsIn}</span>
                     </div>
                     <p>${c.description}</p>
