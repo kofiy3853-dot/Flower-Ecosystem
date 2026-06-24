@@ -17,7 +17,7 @@ function productCardHTML(p) {
     return `
     <div class="product-card">
         <div class="product-img-wrap">
-            <a href="/products/${escapeHtml(p.id)}">
+            <a href="/product-detail.html?id=${escapeHtml(p.id)}">
                 <img loading="lazy" src="${escapeHtml(p.image || '/images/placeholder.svg')}" alt="${escapeHtml(p.name)}" class="product-img">
             </a>
             ${p.badge ? `<span class="product-badge">${escapeHtml(p.badge)}</span>` : ''}
@@ -27,7 +27,7 @@ function productCardHTML(p) {
             </button>
         </div>
         <div class="product-info">
-            <a href="/products/${escapeHtml(p.id)}" style="text-decoration:none;color:inherit;">
+            <a href="/product-detail.html?id=${escapeHtml(p.id)}" style="text-decoration:none;color:inherit;">
                 <h3 class="product-name">${escapeHtml(p.name)}</h3>
             </a>
             <p class="product-seller">by ${escapeHtml(p.seller)}</p>
@@ -467,7 +467,7 @@ function showGridSpinner(targetGrid) {
     function selectSuggestion(el) {
         const id = el.dataset.id;
         if (id) {
-            window.location.href = '/products/' + encodeURIComponent(id);
+            window.location.href = '/product-detail.html?id=' + encodeURIComponent(id);
         } else if (el.dataset.action === 'view-all') {
             hideSuggestions();
             applyFilters();

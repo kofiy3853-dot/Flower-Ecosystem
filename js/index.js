@@ -36,8 +36,8 @@ async function loadFeaturedProducts() {
     grid.innerHTML = items.map(p => `
         <div class="product-card">
             <div class="product-img-wrap">
-                <a href="/products/${encodeURIComponent(p.id)}">
-                    <img src="${p.image || '/images/placeholder.svg'}" alt="${escapeHtml(p.name)}" loading="lazy">
+                <a href="/product-detail.html?id=${encodeURIComponent(p.id)}">
+                    <img loading="lazy" src="${escapeHtml(p.image || '/images/placeholder.svg')}" alt="${escapeHtml(p.name)}" class="product-img">
                 </a>
                 ${p.badge ? `<span class="product-badge">${escapeHtml(p.badge)}</span>` : ''}
                 <button class="wishlist-btn" aria-label="Add to wishlist">
@@ -45,7 +45,7 @@ async function loadFeaturedProducts() {
                 </button>
             </div>
             <div class="product-info">
-                <a href="/products/${encodeURIComponent(p.id)}" style="text-decoration:none;color:inherit;">
+                <a href="/product-detail.html?id=${encodeURIComponent(p.id)}" style="text-decoration:none;color:inherit;">
                     <h3 class="product-name">${escapeHtml(p.name)}</h3>
                 </a>
                 <p class="product-seller">by ${escapeHtml(p.seller || 'Flower Ecosystem')}</p>
