@@ -145,8 +145,12 @@
                 return;
             }
             const params = new URLSearchParams(window.location.search);
-            const redirect = params.get('redirect') || 'account.html';
-            setTimeout(() => { window.location.href = redirect; }, 800);
+            const explicitRedirect = params.get('redirect');
+            if (explicitRedirect) {
+                setTimeout(() => { window.location.href = explicitRedirect; }, 800);
+            } else {
+                afterAuth();
+            }
         });
 
         document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {

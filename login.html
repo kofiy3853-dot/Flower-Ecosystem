@@ -42,7 +42,7 @@
                 <div style="margin-bottom:1.25rem;">
                     <label for="loginPassword" style="display:block; font-weight:500; margin-bottom:0.5rem; font-size:0.9rem;">Password</label>
                     <div style="position:relative;">
-                        <input type="password" id="loginPassword" placeholder="••••••••" class="auth-input" style="padding-right:2.5rem;" required>
+                        <input type="password" id="loginPassword" placeholder="ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" class="auth-input" style="padding-right:2.5rem;" required>
                         <button type="button" id="toggle-loginPw" class="password-toggle" aria-label="Toggle password visibility"><i class="bi bi-eye"></i></button>
                     </div>
                     <div class="chk-field-error" id="loginPasswordError"></div>
@@ -120,8 +120,12 @@
                 return;
             }
             const params = new URLSearchParams(window.location.search);
-            const redirect = params.get('redirect') || 'index.html';
-            setTimeout(() => { window.location.href = redirect; }, 800);
+            const explicitRedirect = params.get('redirect');
+            if (explicitRedirect) {
+                setTimeout(() => { window.location.href = explicitRedirect; }, 800);
+            } else {
+                afterAuth();
+            }
         });
 
         document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
