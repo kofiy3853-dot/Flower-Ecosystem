@@ -24,7 +24,7 @@ async function initSellerDashboard() {
     }
     document.getElementById('dashContent').style.display = 'block';
 
-    document.querySelectorAll('.dash-nav a').forEach(link => {
+    document.querySelectorAll('.dash-nav a[data-section]').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const section = link.dataset.section;
