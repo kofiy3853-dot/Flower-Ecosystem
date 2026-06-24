@@ -12,33 +12,33 @@ CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
 -- 2. ENUMS
 -- =============================================================================
-DO $ BEGIN
+DO $$ BEGIN
     CREATE TYPE flower_condition AS ENUM ('NATURAL', 'ARTIFICIAL', 'PRESERVED', 'DRIED');
 EXCEPTION
     WHEN duplicate_object THEN null;
-END $;
+END $$;
 
-DO $ BEGIN
+DO $$ BEGIN
     CREATE TYPE user_role AS ENUM ('ADMIN', 'CUSTOMER', 'SELLER', 'FLORIST', 'GROWER', 'INSTRUCTOR', 'MODERATOR', 'SUPERADMIN');
 EXCEPTION
     WHEN duplicate_object THEN null;
-END $;
+END $$;
 
-DO $ BEGIN
+DO $$ BEGIN
     CREATE TYPE order_status AS ENUM (
     'PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'
 );
 EXCEPTION
     WHEN duplicate_object THEN null;
-END $;
+END $$;
 
-DO $ BEGIN
+DO $$ BEGIN
     CREATE TYPE event_type AS ENUM (
     'WORKSHOP', 'WEBINAR', 'FLOWER_SHOW', 'EXHIBITION', 'TRAINING'
 );
 EXCEPTION
     WHEN duplicate_object THEN null;
-END $;
+END $$;
 
 -- 3. SCHEMAS
 -- =============================================================================
