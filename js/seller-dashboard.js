@@ -39,6 +39,7 @@ async function initSellerDashboard() {
     });
 
     await loadProfile();
+    await initCategoryDropdown();
     loadSection('dashboard');
 }
 
@@ -47,11 +48,21 @@ async function loadProfile() {
     const shopName = profile.shop_name || 'My Shop';
     document.getElementById('welcomeTitle').textContent = `Welcome Back, ${escapeHtml(shopName)}`;
     
-    // Update sidebar profile if it exists
     const sidebarShopName = document.getElementById('sidebarShopName');
     const sidebarAvatar = document.getElementById('sidebarAvatar');
     if (sidebarShopName) sidebarShopName.textContent = shopName;
     if (sidebarAvatar) sidebarAvatar.textContent = shopName.charAt(0).toUpperCase();
+}
+
+async function initCategoryDropdown() {
+    const sel = document.getElementById('prodCategory');
+    if (!sel) return;
+    try {
+        const cats = await fetch('/api/products/list/categories').then(r => r.json());
+        if (Array.isArray(cats) && cats.length) {
+            sel.innerHTML = '<option value="">Select Category</option>' + cats.map(c => `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
+        }
+    } catch {}
 }
 
 async function loadSection(section) {
@@ -111,17 +122,27 @@ async function loadProducts() {
     try { products = await fetch('/api/seller/products', { headers: authHeaders() }).then(r => r.json()); } catch { products = []; }
     const el = document.getElementById('productsTable');
     if (!products.length) { el.innerHTML = '<div class="empty-state"><i class="bi bi-box"></i><p>No products yet. Add your first product!</p></div>'; return; }
-    el.innerHTML = `<table class="data-table"><thead><tr><th>Product</th><th>Price</th><th>Stock</th><th>Category</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead><tbody>${products.map(p => `
-        <tr>
+    el.innerHTML = `<table class="data-table"><thead><tr><th>Product</th><th>Price</th><th>Stock</th><th>Category</th><th>Type</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead><tbody>${products.map(p => {
+        let expiryHtml = '<span style="color:var(--text-light)">—</span>';
+        if (p.harvest_date && p.shelf_life_days) {
+            const harvest = new Date(p.harvest_date);
+            const expires = new Date(harvest.getTime() + p.shelf_life_days * 86400000);
+            const daysLeft = Math.ceil((expires - new Date()) / 86400000);
+            if (daysLeft < 0) expiryHtml = '<span style="color:var(--error-color);font-weight:600;">Expired</span>';
+            else if (daysLeft <= 2) expiryHtml = `<span style="color:#e67e22;font-weight:600;">${daysLeft}d left</span>`;
+            else expiryHtml = `<span style="color:var(--text-light)">${daysLeft}d left</span>`;
+        }
+        return `<tr>
             <td><strong>${escapeHtml(p.name)}</strong></td>
-            <td>$${(p.price || 0).toFixed(2)}</td>
+            <td>$${Number(p.price || 0).toFixed(2)}</td>
             <td>${p.stock_quantity || 0}</td>
-            <td>${escapeHtml(p.category || '—')}</td>
-            <td>${escapeHtml(p.flower_type || '—')}</td>
+            <td>${escapeHtml(p.category_name || p.category || '—')}</td>
+            <td>${escapeHtml(p.flower_cond || '—')}</td>
+            <td>${expiryHtml}</td>
             <td><span class="badge ${p.is_active ? 'badge-active' : 'badge-inactive'}">${p.is_active ? 'Active' : 'Inactive'}</span></td>
             <td><button class="btn-action" onclick="editProduct('${p.id}')"><i class="bi bi-pencil"></i></button> <button class="btn-action" onclick="deleteProduct('${p.id}')"><i class="bi bi-trash"></i></button></td>
-        </tr>
-    `).join('')}</tbody></table>`;
+        </tr>`;
+    }).join('')}</tbody></table>`;
 }
 
 async function loadOrders() {
@@ -223,6 +244,37 @@ function navigateToAddProduct() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+let editingProductId = null;
+
+async function editProduct(id) {
+    try {
+        const products = await fetch('/api/seller/products', { headers: authHeaders() }).then(r => r.json());
+        const p = products.find(x => x.id === id);
+        if (!p) { alert('Product not found'); return; }
+        editingProductId = id;
+        document.getElementById('prodName').value = p.name || '';
+        document.getElementById('prodPrice').value = p.price || '';
+        document.getElementById('prodDesc').value = p.description || '';
+        document.getElementById('prodStock').value = p.stock_quantity || 0;
+        if (document.getElementById('prodCategory') && (p.category_name || p.category)) {
+            const catOpt = Array.from(document.getElementById('prodCategory').options).find(o => o.value.toLowerCase() === (p.category_name || p.category).toLowerCase());
+            if (catOpt) catOpt.selected = true;
+        }
+        if (document.getElementById('prodType')) {
+            const fc = p.flower_cond || '';
+            document.getElementById('prodType').value = fc.charAt(0).toUpperCase() + fc.slice(1).toLowerCase();
+        }
+        document.getElementById('prodColor').value = p.color || '';
+        if (document.getElementById('prodOccasion') && p.occasion) {
+            const occOpt = Array.from(document.getElementById('prodOccasion').options).find(o => o.value.toLowerCase() === p.occasion.toLowerCase());
+            if (occOpt) occOpt.selected = true;
+        }
+        const formTitle = document.getElementById('formTitle');
+        if (formTitle) formTitle.textContent = 'Edit Product';
+        navigateToAddProduct();
+    } catch { alert('Failed to load product'); }
+}
+
 async function saveProduct() {
     const name = document.getElementById('prodName').value.trim();
     const price = parseFloat(document.getElementById('prodPrice').value);
@@ -231,37 +283,42 @@ async function saveProduct() {
         return;
     }
     
-    const isActive = document.getElementById('prodActive') ? document.getElementById('prodActive').checked : true;
+    const catField = document.getElementById('prodCategory');
+    const typeField = document.getElementById('prodType');
+    const catName = catField ? catField.value : '';
+    const flowerCond = typeField ? typeField.value : '';
+    
+    const method = editingProductId ? 'PUT' : 'POST';
+    const url = editingProductId ? `/api/products/${editingProductId}` : '/api/products';
     
     try {
-        await fetch('/api/seller/products', { method: 'POST', headers: authHeaders(), body: JSON.stringify({
+        const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify({
             name, price, description: document.getElementById('prodDesc').value.trim() || null,
-            category: document.getElementById('prodCategory').value || null,
+            category: catName || null,
             stock_quantity: parseInt(document.getElementById('prodStock').value) || 0,
-            flower_type: document.getElementById('prodType').value || null,
-            color: document.getElementById('prodColor').value.trim() || null,
-            occasion: document.getElementById('prodOccasion').value || null,
-            is_active: isActive
+            flower_cond: flowerCond || null,
+            color: document.getElementById('prodColor')?.value?.trim() || null,
+            occasion: document.getElementById('prodOccasion')?.value || null
         })});
+        if (!res.ok) { const err = await res.json().catch(() => {}); alert(err?.error || 'Failed to save product'); return; }
         
-        // Clear inputs
+        editingProductId = null;
+        document.getElementById('formTitle').textContent = 'Add New Product';
         document.getElementById('prodName').value = '';
         document.getElementById('prodPrice').value = '';
         document.getElementById('prodDesc').value = '';
         document.getElementById('prodStock').value = '10';
         
-        // Go back to products list
         const productsLink = document.querySelector('.dash-nav a[data-section="products"]');
         if (productsLink) productsLink.click();
     } catch (err) {
-        console.error(err);
         alert('Failed to save product');
     }
 }
 
 async function deleteProduct(id) {
     if (!confirm('Delete this product?')) return;
-    try { await fetch(`/api/seller/products/${id}`, { method: 'DELETE', headers: authHeaders() }); loadProducts(); loadDashboard(); } catch {}
+    try { await fetch(`/api/products/${id}`, { method: 'DELETE', headers: authHeaders() }); loadProducts(); loadDashboard(); } catch {}
 }
 
 async function updateOrder(id, status) {

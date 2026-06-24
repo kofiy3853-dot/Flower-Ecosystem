@@ -14,10 +14,19 @@ router.put('/users/:id/role', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(a
     const { id } = req.params;
     const { role } = req.body;
     if (!role) return res.status(400).json({ error: 'Role is required' });
-    const validRoles = ['ADMIN', 'CUSTOMER', 'SELLER', 'FLORIST', 'INSTRUCTOR', 'MODERATOR', 'SUPERADMIN'];
+    const validRoles = ['ADMIN', 'CUSTOMER', 'SELLER', 'FLORIST', 'GROWER', 'INSTRUCTOR', 'MODERATOR', 'SUPERADMIN'];
     if (!validRoles.includes(role.toUpperCase())) return res.status(400).json({ error: `Invalid role. Must be one of: ${validRoles.join(', ')}` });
+    const existing = await pool.query('SELECT role FROM auth.users WHERE id = $1', [id]);
+    if (!existing.rows.length) return res.status(404).json({ error: 'User not found' });
+    const oldRole = existing.rows[0].role;
     const r = await pool.query('UPDATE auth.users SET role = $1 WHERE id = $2 RETURNING id, first_name, last_name, email, role', [role.toUpperCase(), id]);
-    if (!r.rows.length) return res.status(404).json({ error: 'User not found' });
+    try {
+        await pool.query(
+            `INSERT INTO admin.audit_log (user_id, action, entity_type, entity_id, details)
+             VALUES ($1, 'role_change', 'user', $2, $3)`,
+            [req.user.id, id, JSON.stringify({ old_role: oldRole, new_role: role.toUpperCase() })]
+        );
+    } catch {}
     res.json(r.rows[0]);
 }));
 
@@ -32,7 +41,7 @@ router.put('/users/:id/status', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler
 router.put('/users/:id', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
     const { name, email, role, location, description } = req.body;
-    const validRoles = ['ADMIN', 'CUSTOMER', 'SELLER', 'FLORIST', 'INSTRUCTOR', 'MODERATOR', 'SUPERADMIN'];
+    const validRoles = ['ADMIN', 'CUSTOMER', 'SELLER', 'FLORIST', 'GROWER', 'INSTRUCTOR', 'MODERATOR', 'SUPERADMIN'];
     if (role && !validRoles.includes(role.toUpperCase())) return res.status(400).json({ error: `Invalid role. Must be one of: ${validRoles.join(', ')}` });
     const existing = await pool.query('SELECT id FROM auth.users WHERE id = $1', [req.params.id]);
     if (!existing.rows.length) return res.status(404).json({ error: 'User not found' });
@@ -99,7 +108,7 @@ router.get('/sellers', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (r
         const fallback = readJSON(path.join(__dirname, '..', 'data', 'admin.json'));
         return res.json(fallback.sellerVerifications || []);
     }
-    const r = await pool.query(`SELECT id, first_name || ' ' || last_name AS name, email, role, is_active, created_at FROM auth.users WHERE role IN ('SELLER','FLORIST') ORDER BY created_at DESC`);
+    const r = await pool.query(`SELECT id, first_name || ' ' || last_name AS name, email, role, is_active, created_at FROM auth.users WHERE role IN ('SELLER','FLORIST','GROWER') ORDER BY created_at DESC`);
     res.json(r.rows);
 }));
 

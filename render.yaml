@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: flower-ecosystem
+    runtime: node
+    plan: free
+    buildCommand: npm install && mkdir -p uploads
+    startCommand: node db-init.js && node server.js
+    healthCheckPath: /api/products?limit=1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PG_HOST
+        fromDatabase:
+          name: flower-db
+          property: host
+      - key: PG_PORT
+        fromDatabase:
+          name: flower-db
+          property: port
+      - key: PG_DATABASE
+        fromDatabase:
+          name: flower-db
+          property: database
+      - key: PG_USER
+        fromDatabase:
+          name: flower-db
+          property: user
+      - key: PG_PASSWORD
+        fromDatabase:
+          name: flower-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: https://flower-ecosystem.onrender.com
+
+databases:
+  - name: flower-db
+    plan: free
+    databaseName: flower_ecosystem

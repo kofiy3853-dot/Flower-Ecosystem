@@ -1522,6 +1522,7 @@ function apiFetchWithBody(url, method, body) {
 
 const api = {
     fetchProducts() { return apiFetch('/api/products', 'products'); },
+    fetchProduct(id) { return apiFetch('/api/products/' + encodeURIComponent(id)); },
     fetchCategories() { return apiFetch('/api/products/list/categories', 'categories'); },
     fetchFlorists() { return apiFetch('/api/products/list/florists', 'florists'); },
     fetchArticles() { return apiFetch('/api/articles', 'articles'); },

@@ -5,7 +5,7 @@ const BASE = 'localhost:3000';
 
 function request(method, path, body, token) {
   return new Promise((resolve, reject) => {
-    const headers = { 'Content-Type': 'application/json' };
+    const headers = { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
     if (token) headers['Authorization'] = 'Bearer ' + token;
     const options = { hostname: 'localhost', port: 3000, path, method, headers, timeout: 10000 };
     const req = http.request(options, res => {
@@ -89,10 +89,11 @@ async function test(name, fn) {
 
   let testProduct;
   await test('GET /api/products/:id returns single product', async () => {
-    testProduct = products[0];
+    testProduct = products.find(p => p.stock_quantity >= 10) || products[0];
     const res = await request('GET', `/api/products/${testProduct.id}`);
     assert.strictEqual(res.status, 200);
     assert.ok(res.body.id || res.body.name, 'Expected product data');
+    assert.ok(testProduct.stock_quantity >= 10, `Test product needs stock >= 10, got ${testProduct.stock_quantity}`);
   });
 
   // ── Cart ──────────────────────────────────────────────────────────────
@@ -142,11 +143,12 @@ async function test(name, fn) {
   });
 
   await test('POST /api/cart/items adds second product', async () => {
-    const secondProduct = products.find(p => p.id !== testProduct.id) || products[0];
+    const secondProduct = products.find(p => p.id !== testProduct.id && p.stock_quantity >= 1) || products.find(p => p.stock_quantity >= 1);
+    assert.ok(secondProduct, 'Need a second product with stock >= 1');
     const res = await request('POST', '/api/cart/items', {
       product_id: secondProduct.id, quantity: 1
     }, token);
-    assert.ok([200, 201].includes(res.status), `Expected 200/201, got ${res.status}`);
+    assert.ok([200, 201].includes(res.status), `Expected 200/201, got ${res.status}: ${JSON.stringify(res.body)}`);
   });
 
   await test('GET /api/cart has multiple items', async () => {

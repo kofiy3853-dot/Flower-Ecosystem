@@ -11,16 +11,16 @@ router.get('/', asyncHandler(async (req, res) => {
             const values = [];
             let idx = 1;
 
-            if (search) { conditions.push(`(p.name ILIKE $${idx} OR p.description ILIKE $${idx})`); values.push(`%${search}%`); idx++; }
+            if (search) { conditions.push(`(p.name ILIKE $${idx} OR p.description ILIKE $${idx})`); values.push(`%${search.replace(/[%_]/g, '\\$&')}%`); idx++; }
             if (category) { conditions.push(`c.name ILIKE $${idx}`); values.push(category); idx++; }
-            if (min_price) { conditions.push(`p.price >= $${idx}`); values.push(Number(min_price)); idx++; }
-            if (max_price) { conditions.push(`p.price <= $${idx}`); values.push(Number(max_price)); idx++; }
-            if (color) { conditions.push(`p.color ILIKE $${idx}`); values.push(`%${color}%`); idx++; }
-            if (occasion) { conditions.push(`p.occasion ILIKE $${idx}`); values.push(`%${occasion}%`); idx++; }
+            if (min_price) { const mp = Number(min_price); if (!isNaN(mp)) { conditions.push(`p.price >= $${idx}`); values.push(mp); idx++; } }
+            if (max_price) { const mp = Number(max_price); if (!isNaN(mp)) { conditions.push(`p.price <= $${idx}`); values.push(mp); idx++; } }
+            if (color) { conditions.push(`p.color ILIKE $${idx}`); values.push(`%${color.replace(/[%_]/g, '\\$&')}%`); idx++; }
+            if (occasion) { conditions.push(`p.occasion ILIKE $${idx}`); values.push(`%${occasion.replace(/[%_]/g, '\\$&')}%`); idx++; }
             if (flower_cond) { conditions.push(`p.flower_cond = $${idx}`); values.push(flower_cond.toUpperCase()); idx++; }
-            if (featured === 'true') { conditions.push('p.is_featured = true'); }
-            if (best_seller === 'true') { conditions.push('p.is_best_seller = true'); }
-            if (new_arrival === 'true') { conditions.push('p.is_new_arrival = true'); }
+            if (featured === 'true') { conditions.push('p.featured = true'); }
+            if (best_seller === 'true') { conditions.push('p.best_seller = true'); }
+            if (new_arrival === 'true') { conditions.push('p.new_arrival = true'); }
 
             const sortMap = { price_asc: 'p.price ASC', price_desc: 'p.price DESC', rating: 'p.avg_rating DESC', newest: 'p.created_at DESC', name: 'p.name ASC' };
             const orderBy = sortMap[sort] || 'p.created_at DESC';
@@ -38,14 +38,24 @@ router.get('/', asyncHandler(async (req, res) => {
             values.push(lim);
             values.push(offset);
             const dataQ = `
-                SELECT p.*, c.name AS category_name, c.id AS category_id,
+                SELECT p.id, p.name, p.description, p.price, p.stock_quantity, p.flower_cond,
+                    p.is_active, p.badge, p.occasion, p.color, p.fresh, p.featured,
+                    p.best_seller AS "bestSeller", p.new_arrival AS "newArrival",
+                    p.image_url, p.images, p.video_url, p.harvest_date, p.shelf_life_days, p.created_at, p.updated_at,
+                    p.seller_id, p.category_id,
+                    c.name AS category_name,
+                    u.first_name || ' ' || u.last_name AS seller,
+                    COALESCE(AVG(pr.rating)::numeric(2,1), 0) AS rating,
+                    COUNT(DISTINCT pr.id)::int AS reviews,
                     (SELECT image_url FROM marketplace.product_images WHERE product_id = p.id ORDER BY sort_order LIMIT 1) AS image,
-                    COALESCE(json_agg(pi.image_url) FILTER (WHERE pi.image_url IS NOT NULL), '[]') AS images
+                    COALESCE(json_agg(DISTINCT pi.image_url) FILTER (WHERE pi.image_url IS NOT NULL), '[]') AS images
                 FROM marketplace.products p
                 JOIN marketplace.categories c ON c.id = p.category_id
+                JOIN auth.users u ON u.id = p.seller_id
                 LEFT JOIN marketplace.product_images pi ON pi.product_id = p.id
+                LEFT JOIN marketplace.product_reviews pr ON pr.product_id = p.id
                 ${where}
-                GROUP BY p.id, c.name, c.id
+                GROUP BY p.id, c.name, c.id, u.first_name, u.last_name
                 ORDER BY ${orderBy}
                 LIMIT $${idx} OFFSET $${idx + 1}`;
             const dataR = await pool.query(dataQ, values);
@@ -102,16 +112,21 @@ router.get('/:id', asyncHandler(async (req, res) => {
     return queryWithFallback(
         async () => {
             const r = await pool.query(
-                `SELECT p.*, c.name AS category_name,
+                `SELECT p.id, p.name, p.description, p.price, p.stock_quantity, p.flower_cond,
+                        p.is_active, p.badge, p.occasion, p.color, p.fresh, p.featured,
+                        p.best_seller AS "bestSeller", p.new_arrival AS "newArrival",
+                        p.image_url, p.images, p.video_url, p.harvest_date, p.shelf_life_days, p.created_at, p.updated_at,
+                        p.seller_id, p.category_id,
+                        c.name AS category_name,
                         (SELECT image_url FROM marketplace.product_images WHERE product_id = p.id ORDER BY sort_order LIMIT 1) AS image,
-                        COALESCE(json_agg(pi.image_url) FILTER (WHERE pi.image_url IS NOT NULL), '[]') AS images,
-                        COALESCE(json_agg(json_build_object('rating', pr.rating, 'review', pr.review, 'user_id', pr.user_id)) FILTER (WHERE pr.id IS NOT NULL), '[]') AS reviews
+                        (SELECT COALESCE(json_agg(image_url ORDER BY sort_order), '[]') FROM marketplace.product_images WHERE product_id = p.id) AS images,
+                        (SELECT COALESCE(json_agg(json_build_object('rating', rating, 'text', review, 'author', u2.first_name || ' ' || u2.last_name, 'date', to_char(pr2.created_at, 'Mon DD, YYYY')) ORDER BY pr2.created_at DESC), '[]')
+                         FROM marketplace.product_reviews pr2
+                         LEFT JOIN auth.users u2 ON u2.id = pr2.user_id
+                         WHERE pr2.product_id = p.id) AS reviews
                  FROM marketplace.products p
                  JOIN marketplace.categories c ON c.id = p.category_id
-                 LEFT JOIN marketplace.product_images pi ON pi.product_id = p.id
-                 LEFT JOIN marketplace.product_reviews pr ON pr.product_id = p.id
-                 WHERE p.id = $1
-                 GROUP BY p.id, c.name`,
+                 WHERE p.id = $1`,
                 [req.params.id]
             );
             if (!r.rows.length) {
@@ -127,7 +142,11 @@ router.get('/:id', asyncHandler(async (req, res) => {
 }));
 
 router.post('/', requireSeller, asyncHandler(async (req, res) => {
-    const { name, description, price, stock_quantity, category_id, flower_cond, images } = req.body;
+    const {
+        name, description, price, stock_quantity, category_id, category,
+        flower_cond, images, image_url, video_url, harvest_date, shelf_life_days,
+        badge, occasion, color, fresh, featured, best_seller, new_arrival
+    } = req.body;
     if (!name || !price) {
         return res.status(400).json({ error: 'Name and price are required' });
     }
@@ -144,20 +163,48 @@ router.post('/', requireSeller, asyncHandler(async (req, res) => {
     if (flower_cond && !validConds.includes(flower_cond.toUpperCase())) {
         return res.status(400).json({ error: `Invalid flower condition. Must be one of: ${validConds.join(', ')}` });
     }
-    const product = await pool.query(
-        `INSERT INTO marketplace.products (seller_id, name, description, price, stock_quantity, category_id, flower_cond)
-         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-        [req.user.id, escapeHtml(name).slice(0, 255), escapeHtml(description || '').slice(0, 2000), price, stock_quantity || 0, category_id, flower_cond || null]
-    );
-    if (images && Array.isArray(images) && images.length > 0) {
-        for (const url of images) {
-            await pool.query(
-                'INSERT INTO marketplace.product_images (product_id, image_url) VALUES ($1, $2)',
-                [product.rows[0].id, url]
-            );
-        }
+
+    let resolvedCategoryId = category_id || null;
+    if (!resolvedCategoryId && category) {
+        try {
+            const catR = await pool.query('SELECT id FROM marketplace.categories WHERE name ILIKE $1', [category]);
+            if (catR.rows.length) resolvedCategoryId = catR.rows[0].id;
+        } catch {}
     }
-    res.status(201).json(product.rows[0]);
+
+    const firstImage = image_url || (Array.isArray(images) && images.length > 0 ? images[0] : null);
+
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        const product = await client.query(
+            `INSERT INTO marketplace.products
+                (seller_id, name, description, price, stock_quantity, category_id, flower_cond,
+                 badge, occasion, color, fresh, featured, best_seller, new_arrival,
+                 image_url, video_url, harvest_date, shelf_life_days)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING *`,
+            [req.user.id, escapeHtml(name).slice(0, 255), escapeHtml(description || '').slice(0, 2000),
+             price, stock_quantity || 0, resolvedCategoryId, flower_cond ? flower_cond.toUpperCase() : null,
+             badge || null, occasion || null, color || null, fresh || false,
+             featured || false, best_seller || false, new_arrival || false,
+             firstImage, video_url || null, harvest_date || null, shelf_life_days || 7]
+        );
+        if (images && Array.isArray(images) && images.length > 0) {
+            for (let i = 0; i < images.length; i++) {
+                await client.query(
+                    'INSERT INTO marketplace.product_images (product_id, image_url, sort_order) VALUES ($1, $2, $3)',
+                    [product.rows[0].id, images[i], i]
+                );
+            }
+        }
+        await client.query('COMMIT');
+        res.status(201).json(product.rows[0]);
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+    }
 }));
 
 router.put('/:id', requireSeller, asyncHandler(async (req, res) => {
@@ -166,25 +213,70 @@ router.put('/:id', requireSeller, asyncHandler(async (req, res) => {
     try {
         existing = await pool.query('SELECT * FROM marketplace.products WHERE id = $1', [id]);
     } catch {
-        return res.status(404).json({ error: 'Product not found' });
+        return res.status(503).json({ error: 'Database error' });
     }
     if (!existing.rows.length) return res.status(404).json({ error: 'Product not found' });
     if (existing.rows[0].seller_id !== req.user.id && req.user.role !== 'ADMIN') {
         return res.status(403).json({ error: 'Not authorized to update this product' });
     }
-    const { name, description, price, stock_quantity, category_id, flower_cond } = req.body;
+    const {
+        name, description, price, stock_quantity, category_id, category,
+        flower_cond, images, image_url, video_url,
+        badge, occasion, color, fresh, featured, best_seller, new_arrival
+    } = req.body;
     if (name !== undefined && (typeof name !== 'string' || name.trim().length === 0 || name.length > 255)) {
         return res.status(400).json({ error: 'Name must be a non-empty string under 255 characters' });
     }
-    const r = await pool.query(
-        `UPDATE marketplace.products
-         SET name = COALESCE($1, name), description = COALESCE($2, description), price = COALESCE($3, price),
-             stock_quantity = COALESCE($4, stock_quantity), category_id = COALESCE($5, category_id),
-             flower_cond = COALESCE($6, flower_cond)
-         WHERE id = $7 RETURNING *`,
-        [name ? escapeHtml(name).slice(0, 255) : null, description ? escapeHtml(description).slice(0, 2000) : null, price, stock_quantity, category_id, flower_cond, id]
-    );
-    res.json(r.rows[0]);
+    if (price !== undefined && (typeof price !== 'number' || price < 0)) {
+        return res.status(400).json({ error: 'Price must be a non-negative number' });
+    }
+
+    let resolvedCategoryId = category_id || null;
+    if (!resolvedCategoryId && category) {
+        try {
+            const catR = await pool.query('SELECT id FROM marketplace.categories WHERE name ILIKE $1', [category]);
+            if (catR.rows.length) resolvedCategoryId = catR.rows[0].id;
+        } catch {}
+    }
+
+    const firstImage = image_url || (Array.isArray(images) && images.length > 0 ? images[0] : null);
+
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        const r = await client.query(
+            `UPDATE marketplace.products
+             SET name = COALESCE($1, name), description = COALESCE($2, description), price = COALESCE($3, price),
+                 stock_quantity = COALESCE($4, stock_quantity), category_id = COALESCE($5, category_id),
+                 flower_cond = COALESCE($6, flower_cond), badge = COALESCE($7, badge),
+                 occasion = COALESCE($8, occasion), color = COALESCE($9, color),
+                 fresh = COALESCE($10, fresh), featured = COALESCE($11, featured),
+                 best_seller = COALESCE($12, best_seller), new_arrival = COALESCE($13, new_arrival),
+                 image_url = COALESCE($14, image_url), video_url = COALESCE($15, video_url)
+             WHERE id = $16 RETURNING *`,
+            [name ? escapeHtml(name).slice(0, 255) : null, description ? escapeHtml(description).slice(0, 2000) : null,
+             price, stock_quantity, resolvedCategoryId,
+             flower_cond ? flower_cond.toUpperCase() : null,
+             badge, occasion, color, fresh, featured, best_seller, new_arrival,
+             firstImage, video_url, id]
+        );
+        if (images && Array.isArray(images) && images.length > 0) {
+            await client.query('DELETE FROM marketplace.product_images WHERE product_id = $1', [id]);
+            for (let i = 0; i < images.length; i++) {
+                await client.query(
+                    'INSERT INTO marketplace.product_images (product_id, image_url, sort_order) VALUES ($1, $2, $3)',
+                    [id, images[i], i]
+                );
+            }
+        }
+        await client.query('COMMIT');
+        res.json(r.rows[0]);
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+    }
 }));
 
 router.delete('/:id', requireSeller, asyncHandler(async (req, res) => {
@@ -193,7 +285,7 @@ router.delete('/:id', requireSeller, asyncHandler(async (req, res) => {
     try {
         existing = await pool.query('SELECT * FROM marketplace.products WHERE id = $1', [id]);
     } catch {
-        return res.status(404).json({ error: 'Product not found' });
+        return res.status(503).json({ error: 'Database error' });
     }
     if (!existing.rows.length) return res.status(404).json({ error: 'Product not found' });
     if (existing.rows[0].seller_id !== req.user.id && req.user.role !== 'ADMIN') {
@@ -213,7 +305,7 @@ router.post('/:id/reviews', requireAuth, asyncHandler(async (req, res) => {
     try {
         product = await pool.query('SELECT id FROM marketplace.products WHERE id = $1 AND is_active = true', [id]);
     } catch {
-        return res.status(404).json({ error: 'Product not found' });
+        return res.status(503).json({ error: 'Database error' });
     }
     if (!product.rows.length) return res.status(404).json({ error: 'Product not found' });
     try {

@@ -12,6 +12,7 @@ const pool = new Pool({
     database: process.env.PG_DATABASE || 'flower_ecosystem',
     user: process.env.PG_USER || 'postgres',
     password: process.env.PG_PASSWORD || '',
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -37,33 +38,44 @@ const upload = multer({
     }
 });
 
-function rateLimiter(maxRequests = 100, windowMs = 60000) {
-    const rateLimitStore = new Map();
-
-    setInterval(() => {
-        const now = Date.now();
-        for (const [ip, timestamps] of rateLimitStore.entries()) {
-            const valid = timestamps.filter(t => now - t < windowMs);
-            if (valid.length === 0) {
-                rateLimitStore.delete(ip);
-            } else {
-                rateLimitStore.set(ip, valid);
-            }
+const uploadVideo = multer({
+    storage,
+    limits: { fileSize: 100 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+        const allowed = /\.(mp4|webm|mov|avi|mkv)$/i;
+        const videoMimes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska'];
+        if (allowed.test(path.extname(file.originalname)) || videoMimes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only video files (mp4, webm, mov, avi, mkv) are allowed'));
         }
-    }, windowMs);
+    }
+});
+
+function rateLimiter(maxRequests = 100, windowMs = 60000) {
+    const store = new Map();
 
     return (req, res, next) => {
         const ip = req.ip || req.connection.remoteAddress || 'unknown';
         const now = Date.now();
-        if (!rateLimitStore.has(ip)) {
-            rateLimitStore.set(ip, []);
+        let timestamps = store.get(ip);
+        if (!timestamps) {
+            timestamps = [];
+            store.set(ip, timestamps);
         }
-        const timestamps = rateLimitStore.get(ip).filter(t => now - t < windowMs);
+        const valid = timestamps.filter(t => now - t < windowMs);
+        if (valid.length === 0) {
+            store.delete(ip);
+        } else {
+            if (valid.length !== timestamps.length) {
+                store.set(ip, valid);
+                timestamps = valid;
+            }
+        }
         if (timestamps.length >= maxRequests) {
             return res.status(429).json({ error: 'Too many requests, please try again later' });
         }
         timestamps.push(now);
-        rateLimitStore.set(ip, timestamps);
         next();
     };
 }
@@ -73,7 +85,8 @@ function asyncHandler(fn) {
 }
 
 function escapeHtml(str) {
-    if (typeof str !== 'string') return String(str || '');
+    if (str === null || str === undefined) return '';
+    if (typeof str !== 'string') return String(str);
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 
@@ -107,7 +120,9 @@ async function queryWithFallback(queryFn, jsonKey, res, single = false, fallback
             console.error('Query fallback error:', err.message.split('\n')[0].slice(0, 120));
         }
     }
-    const fallback = readJSON(path.join(__dirname, '..', 'data', jsonKey + '.json'));
+    const filePath = path.join(__dirname, '..', 'data', jsonKey + '.json');
+    const fallback = readJSON(filePath);
+    console.warn(`⚠️  Fallback [${jsonKey}] — DB unavailable or query failed, serving stale data from ${filePath}`);
     res.json(fallbackFn ? fallbackFn(fallback) : fallback);
 }
 
@@ -148,7 +163,7 @@ function requireRole(...allowedRoles) {
 }
 
 function requireSeller(req, res, next) {
-    requireRole('SELLER', 'FLORIST', 'ADMIN', 'SUPERADMIN')(req, res, next);
+    requireRole('SELLER', 'FLORIST', 'GROWER', 'ADMIN', 'SUPERADMIN')(req, res, next);
 }
 
 function requireInstructor(req, res, next) {
@@ -167,6 +182,7 @@ module.exports = {
     pool,
     JWT_SECRET,
     upload,
+    uploadVideo,
     rateLimiter,
     asyncHandler,
     escapeHtml,

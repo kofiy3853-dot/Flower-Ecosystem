@@ -4,13 +4,11 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { pool, JWT_SECRET, upload, rateLimiter, asyncHandler, dbAvailable, requireAuth } = require('./middleware');
 
-const resetTokens = new Map();
-
-setInterval(() => {
-    const now = Date.now();
-    for (const [token, data] of resetTokens.entries()) {
-        if (data.expires < now) resetTokens.delete(token);
-    }
+// Clean expired reset tokens periodically
+setInterval(async () => {
+    try {
+        await pool.query("DELETE FROM auth.password_resets WHERE expires_at < CURRENT_TIMESTAMP");
+    } catch {}
 }, 300000);
 
 router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncHandler(async (req, res) => {
@@ -27,9 +25,9 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
         return res.status(400).json({ error: 'Invalid input types' });
     }
 
-    const roleMap = { buyer: 'CUSTOMER', seller: 'SELLER', florist: 'FLORIST', grower: 'SELLER', customer: 'CUSTOMER' };
+    const roleMap = { buyer: 'CUSTOMER', seller: 'SELLER', florist: 'FLORIST', grower: 'GROWER', customer: 'CUSTOMER' };
     const dbRole = roleMap[(role || '').toLowerCase()] || 'CUSTOMER';
-    const isActive = ['SELLER', 'FLORIST'].includes(dbRole) ? false : true;
+    const isActive = ['SELLER', 'FLORIST', 'GROWER'].includes(dbRole) ? false : true;
 
     if (!(await dbAvailable())) {
         return res.status(503).json({ error: 'Service unavailable — database not connected' });
@@ -74,7 +72,7 @@ router.post('/login', rateLimiter(20, 60000), asyncHandler(async (req, res) => {
 
     let user;
     try {
-        const r = await pool.query('SELECT id, first_name, email, password_hash, role, profile_image FROM auth.users WHERE email = $1', [email]);
+        const r = await pool.query('SELECT id, first_name, email, password_hash, role, is_active, profile_image FROM auth.users WHERE email = $1', [email]);
         if (!r.rows.length) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
@@ -84,6 +82,9 @@ router.post('/login', rateLimiter(20, 60000), asyncHandler(async (req, res) => {
             return res.status(503).json({ error: 'Database schema not initialized' });
         }
         throw dbErr;
+    }
+    if (user.is_active === false) {
+        return res.status(403).json({ error: 'Account has been deactivated. Please contact support.' });
     }
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
@@ -112,10 +113,13 @@ router.post('/forgot-password', rateLimiter(5, 60000), asyncHandler(async (req, 
     if (!(await dbAvailable())) {
         return res.status(503).json({ error: 'Service unavailable' });
     }
-    const user = await pool.query('SELECT id FROM auth.users WHERE email = $1', [email]);
-    if (user.rows.length) {
+    const user = await pool.query('SELECT id, is_active FROM auth.users WHERE email = $1', [email]);
+    if (user.rows.length && user.rows[0].is_active !== false) {
         const token = crypto.randomBytes(32).toString('hex');
-        resetTokens.set(token, { email, expires: Date.now() + 3600000 });
+        await pool.query(
+            'INSERT INTO auth.password_resets (token, email, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL \'1 hour\')',
+            [token, email]
+        );
     }
     res.json({ message: 'If the email exists, a reset link has been sent.' });
 }));
@@ -128,17 +132,19 @@ router.post('/reset-password', rateLimiter(5, 60000), asyncHandler(async (req, r
     if (typeof password !== 'string' || password.length < 8) {
         return res.status(400).json({ error: 'Password must be at least 8 characters' });
     }
-    const stored = resetTokens.get(token);
-    if (!stored || stored.expires < Date.now()) {
-        resetTokens.delete(token);
-        return res.status(400).json({ error: 'Invalid or expired token' });
-    }
     if (!(await dbAvailable())) {
         return res.status(503).json({ error: 'Service unavailable' });
     }
+    const r = await pool.query(
+        'SELECT email FROM auth.password_resets WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP AND used = FALSE',
+        [token]
+    );
+    if (!r.rows.length) {
+        return res.status(400).json({ error: 'Invalid or expired token' });
+    }
     const hash = await bcrypt.hash(password, 12);
-    await pool.query('UPDATE auth.users SET password_hash = $1 WHERE email = $2', [hash, stored.email]);
-    resetTokens.delete(token);
+    await pool.query('UPDATE auth.users SET password_hash = $1 WHERE email = $2', [hash, r.rows[0].email]);
+    await pool.query('UPDATE auth.password_resets SET used = TRUE WHERE token = $1', [token]);
     res.json({ message: 'Password reset successfully' });
 }));
 

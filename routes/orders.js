@@ -79,7 +79,7 @@ router.get('/', requireAuth, asyncHandler(async (req, res) => {
             `SELECT o.*, COALESCE(json_agg(json_build_object(
                 'id', oi.id, 'product_id', oi.product_id, 'quantity', oi.quantity, 'unit_price', oi.unit_price,
                 'name', p.name, 'image_url', (SELECT image_url FROM marketplace.product_images WHERE product_id = p.id ORDER BY sort_order LIMIT 1)
-            ) ORDER BY oi.created_at) FILTER (WHERE oi.id IS NOT NULL), '[]') AS items
+            )) FILTER (WHERE oi.id IS NOT NULL), '[]') AS items
              FROM marketplace.orders o
              LEFT JOIN marketplace.order_items oi ON oi.order_id = o.id
              LEFT JOIN marketplace.products p ON p.id = oi.product_id
@@ -100,7 +100,7 @@ router.get('/:id', requireAuth, asyncHandler(async (req, res) => {
             `SELECT o.*, COALESCE(json_agg(json_build_object(
                 'id', oi.id, 'product_id', oi.product_id, 'quantity', oi.quantity, 'unit_price', oi.unit_price,
                 'name', p.name, 'image_url', (SELECT image_url FROM marketplace.product_images WHERE product_id = p.id ORDER BY sort_order LIMIT 1)
-            ) ORDER BY oi.created_at) FILTER (WHERE oi.id IS NOT NULL), '[]') AS items
+            )) FILTER (WHERE oi.id IS NOT NULL), '[]') AS items
              FROM marketplace.orders o
              LEFT JOIN marketplace.order_items oi ON oi.order_id = o.id
              LEFT JOIN marketplace.products p ON p.id = oi.product_id

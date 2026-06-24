@@ -8,7 +8,7 @@ function request(method, path, body) {
       port: 3000,
       path,
       method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
       timeout: 5000,
     };
     const req = http.request(options, res => {

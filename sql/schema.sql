@@ -14,7 +14,7 @@ CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 -- =============================================================================
 CREATE TYPE flower_condition AS ENUM ('NATURAL', 'ARTIFICIAL', 'PRESERVED', 'DRIED');
 
-CREATE TYPE user_role AS ENUM ('ADMIN', 'CUSTOMER', 'SELLER', 'FLORIST', 'INSTRUCTOR', 'MODERATOR', 'SUPERADMIN');
+CREATE TYPE user_role AS ENUM ('ADMIN', 'CUSTOMER', 'SELLER', 'FLORIST', 'GROWER', 'INSTRUCTOR', 'MODERATOR', 'SUPERADMIN');
 
 CREATE TYPE order_status AS ENUM (
     'PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'
@@ -90,6 +90,18 @@ CREATE TABLE marketplace.products (
     stock_quantity  INT DEFAULT 0 CHECK (stock_quantity >= 0),
     flower_cond     flower_condition,
     is_active       BOOLEAN DEFAULT TRUE,
+    badge           VARCHAR(50),
+    occasion        VARCHAR(100),
+    color           VARCHAR(50),
+    fresh           BOOLEAN DEFAULT FALSE,
+    featured        BOOLEAN DEFAULT FALSE,
+    best_seller     BOOLEAN DEFAULT FALSE,
+    new_arrival     BOOLEAN DEFAULT FALSE,
+    image_url       TEXT,
+    images          TEXT[] DEFAULT '{}',
+    video_url       TEXT,
+    harvest_date    DATE DEFAULT CURRENT_DATE,
+    shelf_life_days INT DEFAULT 7 CHECK (shelf_life_days > 0),
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

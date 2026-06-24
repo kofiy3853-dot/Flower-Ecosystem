@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/main.css?v=eb1758d4">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         .pd-hero { padding:2rem 0 4rem; }
@@ -159,7 +159,6 @@
     <script src="js/shared/animations.js"></script>
     <script>
         let currentProduct = null;
-        let allProducts = [];
 
         function setMainImg(src, el) {
             document.getElementById('pdMainImg').src = src;
@@ -175,8 +174,9 @@
         }
 
         function renderStars(rating) {
-            const f = Math.floor(rating);
-            const h = rating - f >= 0.5;
+            const r = Number(rating) || 0;
+            const f = Math.floor(r);
+            const h = r - f >= 0.5;
             let s = '';
             for (let i = 0; i < f; i++) s += '<i class="bi bi-star-fill" style="color:#f59e0b;"></i>';
             if (h) s += '<i class="bi bi-star-half" style="color:#f59e0b;"></i>';
@@ -204,136 +204,168 @@
                 <div class="pd-review-card">
                     <div class="rv-header">
                         <div>
-                            <span class="rv-author">${r.author}</span>
-                            <span class="rv-date"> · ${r.date}</span>
+                            <span class="rv-author">${escapeHtml(r.author || r.reviewer_name || 'Anonymous')}</span>
+                            <span class="rv-date"> · ${r.date || (r.created_at ? new Date(r.created_at).toLocaleDateString() : '')}</span>
                         </div>
                         <div class="rv-stars">${renderStars(r.rating)}</div>
                     </div>
-                    <div class="rv-text">${r.text}</div>
+                    <div class="rv-text">${escapeHtml(r.text || r.review || '')}</div>
                 </div>
             `).join('');
         }
 
         (async () => {
             const params = new URLSearchParams(window.location.search);
-            const id = params.get('id') || 'p1';
-            allProducts = await api.fetchProducts();
-            currentProduct = allProducts.find(p => p.id === id) || allProducts[0];
-            const p = currentProduct;
+            const id = params.get('id');
+            if (!id) { window.location.href = 'marketplace.html'; return; }
 
-            if (p) {
-                document.title = `${p.name} – Flower Ecosystem`;
-                document.getElementById('breadcrumbTitle').textContent = p.name;
+            let p;
+            try {
+                p = await api.fetchProduct(id);
+                if (!p || p.error) throw new Error(p?.error || 'Not found');
+            } catch (e) {
+                document.getElementById('pdTitle').textContent = 'Product Not Found';
+                document.getElementById('pdDesc').textContent = 'The product you\'re looking for doesn\'t exist or has been removed.';
+                return;
+            }
 
-                // Gallery
-                const imgs = p.images || [p.image];
-                document.getElementById('pdMainImg').src = imgs[0];
-                const thumbsHtml = imgs.map((url, i) =>
-                    `<img src="${url}" alt="Product thumbnail" class="pd-thumb ${i === 0 ? 'active' : ''}" onclick="setMainImg('${url}', this)" role="button" tabindex="0">`
+            currentProduct = p;
+            const price = Number(p.price) || 0;
+            const rating = Number(p.rating) || 0;
+            const reviewCount = Number(p.reviews) || 0;
+            const categoryName = p.category_name || p.category || '';
+            const sellerName = p.seller || 'Seller';
+            const sellerId = p.seller_id || '';
+            const videoUrl = p.video_url || p.videoUrl || null;
+            const images = (p.images && p.images.length) ? p.images : (p.image ? [p.image] : []);
+
+            document.title = `${p.name} – Flower Ecosystem`;
+            document.getElementById('breadcrumbTitle').textContent = p.name;
+
+            // Gallery
+            if (images.length) {
+                document.getElementById('pdMainImg').src = images[0];
+                document.getElementById('pdThumbs').innerHTML = images.map((url, i) =>
+                    `<img src="${escapeHtml(url)}" alt="Product thumbnail" class="pd-thumb ${i === 0 ? 'active' : ''}" onclick="setMainImg('${escapeHtml(url)}', this)" role="button" tabindex="0">`
                 ).join('');
-                document.getElementById('pdThumbs').innerHTML = thumbsHtml;
+            }
 
-                // Video
-                const videoDiv = document.getElementById('pdVideo');
-                const videoIframe = document.getElementById('pdVideoIframe');
-                if (p.videoUrl) {
-                    const embed = getVideoEmbedUrl(p.videoUrl);
-                    if (embed) {
-                        videoIframe.src = embed;
-                        videoDiv.style.display = 'block';
+            // Video
+            const videoDiv = document.getElementById('pdVideo');
+            const videoIframe = document.getElementById('pdVideoIframe');
+            if (videoUrl) {
+                const embed = getVideoEmbedUrl(videoUrl);
+                if (embed) {
+                    videoIframe.src = embed;
+                    videoDiv.style.display = 'block';
+                }
+            }
+
+            // Info
+            document.getElementById('pdTitle').textContent = p.name;
+            document.getElementById('pdPrice').textContent = '$' + price.toFixed(2);
+            document.getElementById('pdDesc').textContent = p.description || '';
+            document.getElementById('pdCategory').textContent = categoryName;
+            document.getElementById('pdSeller').textContent = sellerName;
+
+            // Seller link
+            const sellerLink = document.getElementById('pdSellerLink');
+            sellerLink.href = sellerId ? `florist-profile.html?id=${sellerId}` : 'florists.html';
+
+            // Badge
+            const badgeEl = document.getElementById('pdBadge');
+            if (p.badge) {
+                badgeEl.textContent = p.badge;
+                badgeEl.style.display = 'inline';
+            }
+
+            // Rating
+            const ratingEl = document.getElementById('pdRating');
+            if (rating > 0) {
+                ratingEl.innerHTML = `${renderStars(rating)} <span style="font-size:0.85rem; color:var(--text-light);">${rating.toFixed(1)} (${reviewCount} reviews)</span>`;
+            }
+
+            // Reviews section
+            const reviews = p.reviewList || p.reviews || [];
+            if (reviews.length) {
+                document.getElementById('pdReviewSummary').innerHTML =
+                    `<strong>${rating.toFixed(1)}</strong> out of 5 · <span style="color:var(--text-light)">${reviewCount} reviews</span>`;
+            }
+            renderReviews(reviews);
+
+            // Stock
+            const stockEl = document.getElementById('pdStock');
+            if (p.stock_quantity <= 0) {
+                stockEl.innerHTML = '<i class="bi bi-x-circle-fill" style="color:var(--error-color);"></i> Out of Stock';
+                document.getElementById('pdAddBtn').disabled = true;
+                document.getElementById('pdAddBtn').style.opacity = '0.5';
+            } else if (p.fresh) {
+                stockEl.innerHTML = '<i class="bi bi-check-circle-fill" style="color:var(--accent-green);"></i> Fresh — In Stock (' + p.stock_quantity + ' available)';
+            } else {
+                stockEl.innerHTML = '<i class="bi bi-check-circle-fill" style="color:var(--accent-green);"></i> In Stock (' + p.stock_quantity + ' available)';
+            }
+
+            // Add to cart
+            document.getElementById('pdAddBtn').addEventListener('click', async () => {
+                const qty = parseInt(document.getElementById('pdQty').value);
+                const btn = document.getElementById('pdAddBtn');
+                btn.disabled = true;
+
+                try {
+                    if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+                        await serverAddToCart(p.id, qty);
+                        await syncCartFromServer();
                     } else {
-                        videoDiv.style.display = 'none';
+                        const cartData = JSON.parse(localStorage.getItem('flower-cart') || '[]');
+                        const existing = cartData.find(i => i.id === p.id);
+                        if (existing) {
+                            existing.qty += qty;
+                        } else {
+                            cartData.push({
+                                id: p.id, name: p.name, price: price,
+                                image: images[0] || '', qty
+                            });
+                        }
+                        localStorage.setItem('flower-cart', JSON.stringify(cartData));
+                        if (typeof updateAllBadges === 'function') updateAllBadges();
                     }
-                } else {
-                    videoDiv.style.display = 'none';
-                }
-
-                // Info
-                document.getElementById('pdTitle').textContent = p.name;
-                document.getElementById('pdPrice').textContent = '$' + p.price.toFixed(2);
-                document.getElementById('pdDesc').textContent = p.description;
-                document.getElementById('pdCategory').textContent = p.category;
-                document.getElementById('pdSeller').textContent = p.seller;
-
-                // Seller link
-                const sellerLink = document.getElementById('pdSellerLink');
-                if (p.sellerId) {
-                    sellerLink.href = 'florist-profile.html?id=' + p.sellerId;
-                } else {
-                    sellerLink.href = 'florists.html';
-                }
-
-                // Badge
-                const badgeEl = document.getElementById('pdBadge');
-                if (p.badge) {
-                    badgeEl.textContent = p.badge;
-                    badgeEl.style.display = 'inline';
-                }
-
-                // Rating
-                const ratingEl = document.getElementById('pdRating');
-                if (p.rating) {
-                    ratingEl.innerHTML = `${renderStars(p.rating)} <span style="font-size:0.85rem; color:var(--text-light);">${p.rating} (${p.reviews || 0} reviews)</span>`;
-                }
-
-                // Reviews section
-                if (p.reviewList && p.reviewList.length) {
-                    document.getElementById('pdReviewSummary').innerHTML =
-                        `<strong>${p.rating}</strong> out of 5 · <span style="color:var(--text-light)">${p.reviews} reviews</span>`;
-                    renderReviews(p.reviewList);
-                } else {
-                    document.getElementById('pdReviewSummary').textContent = '';
-                    renderReviews([]);
-                }
-
-                // Stock
-                const stockEl = document.getElementById('pdStock');
-                if (p.fresh !== undefined) {
-                    stockEl.innerHTML = p.fresh
-                        ? '<i class="bi bi-check-circle-fill" style="color:var(--accent-green);"></i> Fresh — In Stock'
-                        : '<i class="bi bi-check-circle-fill" style="color:var(--accent-green);"></i> Long-lasting — In Stock';
-                }
-
-                // Add to cart
-                document.getElementById('pdAddBtn').addEventListener('click', () => {
-                    const qty = parseInt(document.getElementById('pdQty').value);
-                    const item = { ...p, qty };
-                    const cartData = JSON.parse(localStorage.getItem('flower-cart') || '[]');
-                    const existing = cartData.find(i => i.id === item.id);
-                    if (existing) {
-                        existing.qty += item.qty;
-                    } else {
-                        cartData.push(item);
-                    }
-                    localStorage.setItem('flower-cart', JSON.stringify(cartData));
-
-                    const badge = document.getElementById('globalCartCount');
-                    if (badge) badge.textContent = cartData.reduce((s, i) => s + (i.qty || 1), 0);
-
                     const msg = document.getElementById('pdCartMsg');
                     msg.style.display = 'block';
                     clearTimeout(msg._t);
                     msg._t = setTimeout(() => msg.style.display = 'none', 3000);
-                });
+                } catch (err) {
+                    alert(err.message || 'Failed to add to cart');
+                } finally {
+                    btn.disabled = false;
+                }
+            });
 
-                // Related products (same category, exclude current)
+            // Related products — fetch from listing and filter by category
+            try {
+                const allData = await api.fetchProducts();
+                const allProducts = Array.isArray(allData) ? allData : (allData.products || []);
                 const related = allProducts
-                    .filter(r => r.category === p.category && r.id !== p.id)
+                    .filter(r => (r.category_name || r.category) === categoryName && r.id !== p.id)
                     .slice(0, 4);
                 const relatedGrid = document.getElementById('pdRelated');
                 if (related.length) {
-                    relatedGrid.innerHTML = related.map(r => `
-                        <a href="product-detail.html?id=${r.id}" class="pd-related-item">
-                            <img loading="lazy" src="${r.image}" alt="${r.name}">
-                            <div class="r-body">
-                                <h4>${r.name}</h4>
-                                <div class="r-price">$${r.price.toFixed(2)}</div>
-                            </div>
-                        </a>
-                    `).join('');
+                    relatedGrid.innerHTML = related.map(r => {
+                        const rPrice = Number(r.price) || 0;
+                        const rImg = r.image || (r.images && r.images[0]) || '';
+                        return `
+                            <a href="product-detail.html?id=${r.id}" class="pd-related-item">
+                                <img loading="lazy" src="${escapeHtml(rImg)}" alt="${escapeHtml(r.name)}">
+                                <div class="r-body">
+                                    <h4>${escapeHtml(r.name)}</h4>
+                                    <div class="r-price">$${rPrice.toFixed(2)}</div>
+                                </div>
+                            </a>`;
+                    }).join('');
                 } else {
                     relatedGrid.innerHTML = '<p style="color:var(--text-light); grid-column:1/-1;">No related products found.</p>';
                 }
+            } catch (_) {
+                document.getElementById('pdRelated').innerHTML = '<p style="color:var(--text-light); grid-column:1/-1;">Could not load related products.</p>';
             }
         })();
     </script>
