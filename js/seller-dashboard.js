@@ -343,4 +343,10 @@ function hideModal(id) { document.getElementById(id).classList.remove('show'); }
 
 document.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('show');
+
+    if (e.target.closest('#sellerLogout')) {
+        e.preventDefault();
+        if (typeof logout === 'function') logout();
+        window.location.href = '/index.html';
+    }
 });
