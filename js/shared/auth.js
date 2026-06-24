@@ -217,6 +217,10 @@ function afterAuth() {
     }
     const user = getCurrentUser();
     const role = (user?.role || '').toLowerCase();
+    if (['admin', 'superadmin'].includes(role)) {
+        window.location.href = 'admin.html';
+        return;
+    }
     if (['seller', 'florist', 'grower'].includes(role)) {
         window.location.href = 'seller-dashboard.html';
         return;
@@ -314,7 +318,9 @@ function initAuth() {
             if (isLoggedIn()) {
                 const user = getCurrentUser();
                 const role = (user?.role || '').toLowerCase();
-                if (['seller', 'florist', 'grower'].includes(role)) {
+                if (['admin', 'superadmin'].includes(role)) {
+                    window.location.href = 'admin.html';
+                } else if (['seller', 'florist', 'grower'].includes(role)) {
                     window.location.href = 'seller-dashboard.html';
                 } else {
                     window.location.href = 'account.html';
