@@ -313,6 +313,8 @@ router.post('/plans', requireAuth, asyncHandler(async (req, res) => {
 
 router.post('/plans/:id/items', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const plan = await pool.query('SELECT id FROM learning.user_garden_plans WHERE id = $1 AND user_id = $2', [req.params.id, req.user.id]);
+    if (!plan.rows.length) return res.status(404).json({ error: 'Plan not found' });
     const { flower_slug, quantity, notes } = req.body;
     if (!flower_slug) return res.status(400).json({ error: 'flower_slug required' });
     const r = await pool.query('INSERT INTO learning.garden_plan_items (plan_id, flower_slug, quantity, notes) VALUES ($1, $2, $3, $4) RETURNING id', [req.params.id, flower_slug, quantity || 1, notes || '']);
@@ -321,13 +323,16 @@ router.post('/plans/:id/items', requireAuth, asyncHandler(async (req, res) => {
 
 router.delete('/plans/:planId/items/:itemId', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const plan = await pool.query('SELECT id FROM learning.user_garden_plans WHERE id = $1 AND user_id = $2', [req.params.planId, req.user.id]);
+    if (!plan.rows.length) return res.status(404).json({ error: 'Plan not found' });
     await pool.query('DELETE FROM learning.garden_plan_items WHERE id = $1 AND plan_id = $2', [req.params.itemId, req.params.planId]);
     res.json({ success: true });
 }));
 
 router.delete('/plans/:id', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    await pool.query('DELETE FROM learning.user_garden_plans WHERE id = $1', [req.params.id]);
+    const r = await pool.query('DELETE FROM learning.user_garden_plans WHERE id = $1 AND user_id = $2 RETURNING id', [req.params.id, req.user.id]);
+    if (!r.rows.length) return res.status(404).json({ error: 'Plan not found' });
     res.json({ success: true });
 }));
 

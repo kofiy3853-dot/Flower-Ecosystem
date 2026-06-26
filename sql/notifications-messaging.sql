@@ -5,6 +5,14 @@
 --   psql -U postgres -d flower_ecosystem -f sql/notifications-messaging.sql
 -- =============================================================================
 
+-- Create schema if not exists
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'platform') THEN
+        CREATE SCHEMA platform;
+    END IF;
+END $$;
+
 -- Notifications
 CREATE TABLE IF NOT EXISTS platform.notifications (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -64,11 +72,3 @@ CREATE TABLE IF NOT EXISTS platform.reviews (
 CREATE INDEX IF NOT EXISTS idx_reviews_product ON platform.reviews(product_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_seller ON platform.reviews(seller_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_user ON platform.reviews(user_id);
-
--- Create schema if not exists
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'platform') THEN
-        CREATE SCHEMA platform;
-    END IF;
-END $$;

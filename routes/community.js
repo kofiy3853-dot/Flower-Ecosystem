@@ -279,10 +279,25 @@ router.post('/discussions/:id/vote', requireAuth, asyncHandler(async (req, res) 
     if (!['up', 'down'].includes(vote_type)) return res.status(400).json({ error: 'Vote type must be up or down' });
     const discussion = await pool.query('SELECT id FROM community.discussions WHERE id = $1', [id]);
     if (!discussion.rows.length) return res.status(404).json({ error: 'Discussion not found' });
+    const client = await pool.connect();
     try {
-        await pool.query('INSERT INTO community.discussion_votes (discussion_id, user_id, vote_type) VALUES ($1, $2, $3) ON CONFLICT (discussion_id, user_id) DO UPDATE SET vote_type = $3', [id, req.user.id, vote_type]);
+        await client.query('BEGIN');
+        const existing = await client.query('SELECT id, vote_type FROM community.discussion_votes WHERE discussion_id = $1 AND user_id = $2', [id, req.user.id]);
+        if (existing.rows.length) {
+            if (existing.rows[0].vote_type === vote_type) {
+                await client.query('DELETE FROM community.discussion_votes WHERE id = $1', [existing.rows[0].id]);
+            } else {
+                await client.query('UPDATE community.discussion_votes SET vote_type = $1 WHERE id = $2', [vote_type, existing.rows[0].id]);
+            }
+        } else {
+            await client.query('INSERT INTO community.discussion_votes (discussion_id, user_id, vote_type) VALUES ($1, $2, $3)', [id, req.user.id, vote_type]);
+        }
+        await client.query('COMMIT');
     } catch (err) {
-        if (err.code === '23505') { await pool.query('DELETE FROM community.discussion_votes WHERE discussion_id = $1 AND user_id = $2', [id, req.user.id]); } else { throw err; }
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
     }
     const v = await pool.query("SELECT SUM(CASE WHEN vote_type = 'up' THEN 1 ELSE -1 END) AS vote_count FROM community.discussion_votes WHERE discussion_id = $1", [id]);
     res.json({ vote_count: parseInt(v.rows[0].vote_count) || 0 });
@@ -295,10 +310,25 @@ router.post('/discussions/comments/:id/vote', requireAuth, asyncHandler(async (r
     if (!['up', 'down'].includes(vote_type)) return res.status(400).json({ error: 'Vote type must be up or down' });
     const comment = await pool.query('SELECT id FROM community.discussion_comments WHERE id = $1', [id]);
     if (!comment.rows.length) return res.status(404).json({ error: 'Comment not found' });
+    const client = await pool.connect();
     try {
-        await pool.query('INSERT INTO community.discussion_votes (comment_id, user_id, vote_type) VALUES ($1, $2, $3) ON CONFLICT (comment_id, user_id) DO UPDATE SET vote_type = $3', [id, req.user.id, vote_type]);
+        await client.query('BEGIN');
+        const existing = await client.query('SELECT id, vote_type FROM community.discussion_votes WHERE comment_id = $1 AND user_id = $2', [id, req.user.id]);
+        if (existing.rows.length) {
+            if (existing.rows[0].vote_type === vote_type) {
+                await client.query('DELETE FROM community.discussion_votes WHERE id = $1', [existing.rows[0].id]);
+            } else {
+                await client.query('UPDATE community.discussion_votes SET vote_type = $1 WHERE id = $2', [vote_type, existing.rows[0].id]);
+            }
+        } else {
+            await client.query('INSERT INTO community.discussion_votes (comment_id, user_id, vote_type) VALUES ($1, $2, $3)', [id, req.user.id, vote_type]);
+        }
+        await client.query('COMMIT');
     } catch (err) {
-        if (err.code === '23505') { await pool.query('DELETE FROM community.discussion_votes WHERE comment_id = $1 AND user_id = $2', [id, req.user.id]); } else { throw err; }
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
     }
     const v = await pool.query("SELECT SUM(CASE WHEN vote_type = 'up' THEN 1 ELSE -1 END) AS vote_count FROM community.discussion_votes WHERE comment_id = $1", [id]);
     res.json({ vote_count: parseInt(v.rows[0].vote_count) || 0 });

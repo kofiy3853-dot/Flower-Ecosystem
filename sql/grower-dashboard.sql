@@ -5,6 +5,14 @@
 --   psql -U postgres -d flower_ecosystem -f sql/grower-dashboard.sql
 -- =============================================================================
 
+-- Create schema if not exists
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'growers') THEN
+        CREATE SCHEMA growers;
+    END IF;
+END $$;
+
 -- Grower Profiles
 CREATE TABLE IF NOT EXISTS growers.profiles (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

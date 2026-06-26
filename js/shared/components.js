@@ -1,5 +1,27 @@
 // js/shared/components.js
 
+function ProductCard(product) {
+    const image = product.image || (product.images && product.images[0]) || 'https://via.placeholder.com/300x200?text=No+Image';
+    const name = (product.name || 'Untitled Product').replace(/</g, '&lt;');
+    const price = typeof product.price === 'number' ? product.price.toFixed(2) : '0.00';
+    const rating = product.rating || 0;
+    const reviews = product.reviews || product.review_count || 0;
+    const id = product.id || '';
+    return `
+        <div class="product-card">
+            <a href="product-detail.html?id=${id}">
+                <div class="product-img"><img loading="lazy" src="${image}" alt="${name}"></div>
+                <div class="product-info">
+                    <h3 class="product-name">${name}</h3>
+                    <div class="product-rating">${'&#9733;'.repeat(Math.round(rating))} (${reviews})</div>
+                    <div class="product-price">$${price}</div>
+                </div>
+            </a>
+            <button class="btn btn-primary btn-sm add-to-cart" data-id="${id}">Add to Cart</button>
+        </div>
+    `;
+}
+
 /**
  * Loads a component HTML file and injects it into a specified element
  * @param {string} url - Path to the component HTML file
@@ -50,3 +72,5 @@ if (document.readyState === 'loading') {
 } else {
     initComponents();
 }
+
+export { ProductCard, loadComponent, initComponents };

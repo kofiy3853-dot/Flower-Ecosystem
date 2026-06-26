@@ -1,6 +1,4 @@
 // Product Detail Page - Image gallery, quantity selector, reviews
-import { api } from '../shared/api.js';
-import { toast } from '../shared/toast.js';
 
 class ProductDetailPage {
     constructor() {
@@ -23,7 +21,7 @@ class ProductDetailPage {
     }
 
     async loadProduct() {
-        this.product = await api.getProductById(this.productId);
+        this.product = await api.fetchProduct(this.productId);
         document.title = this.product.name;
         document.getElementById('product-name').textContent = this.product.name;
         document.getElementById('product-price').textContent = `$${this.product.price.toFixed(2)}`;
@@ -52,14 +50,14 @@ class ProductDetailPage {
     setupAddToCart() {
         document.getElementById('add-to-cart').addEventListener('click', () => {
             const qty = Number(document.getElementById('quantity-input').value);
-            api.addToCart(this.productId, qty);
-            toast.show('Added to cart');
+            api.addCartItem({ product_id: this.productId, quantity: qty });
+            Toast.show('Added to cart');
         });
     }
 
     async renderReviews() {
         const reviewsContainer = document.getElementById('reviews');
-        const reviews = await api.getReviews(this.productId);
+        const reviews = await api.fetchJSON('/api/products/' + this.productId + '/reviews');
         reviewsContainer.innerHTML = reviews.map(r => `
             <div class="review">
                 <strong>${r.user}</strong> <span class="rating">${'★'.repeat(r.rating)}</span>
@@ -72,5 +70,3 @@ class ProductDetailPage {
 document.addEventListener('DOMContentLoaded', () => {
     new ProductDetailPage();
 });
-
-export { ProductDetailPage };

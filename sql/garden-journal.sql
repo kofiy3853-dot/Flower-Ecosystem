@@ -5,6 +5,14 @@
 --   psql -U postgres -d flower_ecosystem -f sql/garden-journal.sql
 -- =============================================================================
 
+-- Create schema if not exists
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'garden') THEN
+        CREATE SCHEMA garden;
+    END IF;
+END $$;
+
 -- Garden Journal Entries
 CREATE TABLE IF NOT EXISTS garden.journal_entries (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -63,11 +71,3 @@ CREATE TABLE IF NOT EXISTS garden.journal_reminders (
 
 CREATE INDEX IF NOT EXISTS idx_journal_reminders_user ON garden.journal_reminders(user_id);
 CREATE INDEX IF NOT EXISTS idx_journal_reminders_date ON garden.journal_reminders(reminder_date);
-
--- Create schema if not exists
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'garden') THEN
-        CREATE SCHEMA garden;
-    END IF;
-END $$;

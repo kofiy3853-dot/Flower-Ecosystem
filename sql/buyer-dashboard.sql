@@ -5,6 +5,14 @@
 --   psql -U postgres -d flower_ecosystem -f sql/buyer-dashboard.sql
 -- =============================================================================
 
+-- Create schema if not exists
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'buyers') THEN
+        CREATE SCHEMA buyers;
+    END IF;
+END $$;
+
 -- Buyer Profiles
 CREATE TABLE IF NOT EXISTS buyers.profiles (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -81,11 +89,3 @@ CREATE TABLE IF NOT EXISTS buyers.delivery_schedule (
 );
 
 CREATE INDEX IF NOT EXISTS idx_delivery_schedule_user ON buyers.delivery_schedule(user_id);
-
--- Create schema if not exists
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'buyers') THEN
-        CREATE SCHEMA buyers;
-    END IF;
-END $$;

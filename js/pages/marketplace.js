@@ -1,6 +1,4 @@
 // Marketplace Page - Filters, Sorting, Pagination
-import { api } from '../shared/api.js';
-import { ProductCard } from '../shared/components.js';
 
 class MarketplacePage {
     constructor() {
@@ -24,7 +22,7 @@ class MarketplacePage {
     }
 
     async loadProducts() {
-        this.products = await api.getProducts();
+        this.products = await api.fetchProducts();
         this.filteredProducts = [...this.products];
     }
 
@@ -116,5 +114,3 @@ class MarketplacePage {
 document.addEventListener('DOMContentLoaded', () => {
     new MarketplacePage();
 });
-
-export { MarketplacePage };

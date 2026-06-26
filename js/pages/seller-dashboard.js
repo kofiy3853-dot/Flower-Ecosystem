@@ -1,6 +1,4 @@
 // Seller Dashboard - Manage listings and orders
-import { api } from '../shared/api.js';
-import { toast } from '../shared/toast.js';
 
 class SellerDashboard {
     constructor() {
@@ -18,11 +16,11 @@ class SellerDashboard {
     }
 
     async loadListings() {
-        this.listings = await api.getSellerListings();
+        this.listings = await api.fetchSellerProducts();
     }
 
     async loadOrders() {
-        this.orders = await api.getSellerOrders();
+        this.orders = await api.fetchSellerOrders();
     }
 
     renderListings() {
@@ -65,13 +63,12 @@ class SellerDashboard {
     }
 
     editListing(id) {
-        // Navigate to edit page (placeholder)
         window.location.href = `create-listing.html?id=${id}`;
     }
 
     async deleteListing(id) {
-        await api.deleteListing(id);
-        toast.show('Listing deleted');
+        await api.deleteProduct(id);
+        Toast.show('Listing deleted');
         this.listings = this.listings.filter(l => l.id !== id);
         this.renderListings();
     }
@@ -85,5 +82,3 @@ class SellerDashboard {
 document.addEventListener('DOMContentLoaded', () => {
     new SellerDashboard();
 });
-
-export { SellerDashboard };

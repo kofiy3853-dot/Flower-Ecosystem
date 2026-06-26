@@ -1,9 +1,7 @@
 // Events Page - Calendar and registration handling
-import { api } from '../shared/api.js';
-import { toast } from '../shared/toast.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const events = await api.getEvents();
+    const events = await api.fetchEvents();
     const container = document.getElementById('events-grid');
     if (container) {
         container.innerHTML = events.map(ev => `
@@ -16,10 +14,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelectorAll('.register-btn').forEach(btn => {
             btn.addEventListener('click', async () => {
                 await api.registerEvent(btn.dataset.id);
-                toast.show('Registered for event');
+                Toast.show('Registered for event');
             });
         });
     }
 });
-
-export {};

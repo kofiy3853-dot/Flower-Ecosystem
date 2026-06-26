@@ -5,6 +5,14 @@
 --   psql -U postgres -d flower_ecosystem -f sql/qa-system.sql
 -- =============================================================================
 
+-- Create schema if not exists
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'qa') THEN
+        CREATE SCHEMA qa;
+    END IF;
+END $$;
+
 -- Q&A Categories
 CREATE TABLE IF NOT EXISTS qa.categories (
     id              SERIAL PRIMARY KEY,
@@ -91,11 +99,3 @@ CREATE TABLE IF NOT EXISTS qa.user_points (
     best_answers    INTEGER DEFAULT 0,
     UNIQUE(user_id)
 );
-
--- Create schema if not exists
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'qa') THEN
-        CREATE SCHEMA qa;
-    END IF;
-END $$;

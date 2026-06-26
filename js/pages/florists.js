@@ -1,5 +1,4 @@
 // Florists Page - Search, filters, map view
-import { api } from '../shared/api.js';
 
 class FloristsPage {
     constructor() {
@@ -14,7 +13,7 @@ class FloristsPage {
     }
 
     async loadFlorists() {
-        this.florists = await api.getFlorists();
+        this.florists = await api.fetchFlorists();
     }
 
     renderList() {
@@ -50,5 +49,3 @@ class FloristsPage {
 document.addEventListener('DOMContentLoaded', () => {
     new FloristsPage();
 });
-
-export { FloristsPage };
