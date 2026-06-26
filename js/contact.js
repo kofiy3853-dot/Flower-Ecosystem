@@ -1,20 +1,6 @@
 // js/contact.js
 // Contact page — form submission, FAQ accordion
 
-function authHeaders() {
-    const token = localStorage.getItem('flower-token');
-    return token
-        ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
-        : { 'Content-Type': 'application/json' };
-}
-
-function escapeHtml(str) {
-    if (typeof str !== 'string') return String(str || '');
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-}
-
 let currentFaqCategory = '';
 
 async function initContactPage() {

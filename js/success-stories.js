@@ -6,38 +6,13 @@ let currentSort = 'newest';
 let currentPage = 1;
 let totalPages = 1;
 
-function authHeaders() {
-    const token = localStorage.getItem('flower-token');
-    return token
-        ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
-        : { 'Content-Type': 'application/json' };
-}
-
 function userLoggedIn() {
     return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token');
-}
-
-function escapeHtml(str) {
-    if (typeof str !== 'string') return String(str || '');
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
 }
 
 function formatNumber(n) {
     if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
     return String(n);
-}
-
-function timeAgo(dateStr) {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diff = Math.floor((now - date) / 1000);
-    if (diff < 60) return 'just now';
-    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
-    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
-    if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
-    return date.toLocaleDateString();
 }
 
 function getAvatarHtml(avatar, name) {
@@ -302,24 +277,6 @@ async function initStoryDetail() {
             </div>
         </div>
     `;
-}
-
-function getCurrentUserId() {
-    try {
-        const token = localStorage.getItem('flower-token');
-        if (token) { const p = JSON.parse(atob(token.split('.')[1])); return p.id; }
-    } catch {}
-    const user = JSON.parse(localStorage.getItem('flower-auth') || 'null');
-    return user?.id || null;
-}
-
-function getCurrentUserRole() {
-    try {
-        const token = localStorage.getItem('flower-token');
-        if (token) { const p = JSON.parse(atob(token.split('.')[1])); return p.role; }
-    } catch {}
-    const user = JSON.parse(localStorage.getItem('flower-auth') || 'null');
-    return user?.role || null;
 }
 
 async function toggleLike(storyId) {

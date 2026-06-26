@@ -25,11 +25,6 @@ function updateAllBadges() {
     });
 }
 
-function authHeaders() {
-    let token; try { token = localStorage.getItem('flower-token'); } catch { token = null; }
-    return token ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
-}
-
 function isLoggedIn() {
     try { return !!localStorage.getItem('flower-token'); } catch { return false; }
 }

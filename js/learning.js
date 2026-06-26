@@ -10,16 +10,6 @@ const LEARNING_CATEGORIES = [
     { name: 'Event Decorations', icon: '🎉', desc: 'Transform spaces with floral decor', color: '#8c6ba8' }
 ];
 
-function renderStars(rating) {
-    const f = Math.floor(rating);
-    const h = rating - f >= 0.5;
-    let s = '';
-    for (let i = 0; i < f; i++) s += '<i class="bi bi-star-fill" style="color:var(--accent-gold);"></i>';
-    if (h) s += '<i class="bi bi-star-half" style="color:var(--accent-gold);"></i>';
-    for (let i = 0; i < 5 - f - (h ? 1 : 0); i++) s += '<i class="bi bi-star" style="color:var(--border-color);"></i>';
-    return s;
-}
-
 (async () => {
     let courses, articles, videos, quizzes;
     try {

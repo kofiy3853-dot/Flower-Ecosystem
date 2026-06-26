@@ -3,16 +3,6 @@
 
 const PER_PAGE = 6;
 
-function renderStars(rating) {
-    const full = Math.floor(rating);
-    const half = rating - full >= 0.5;
-    let s = '';
-    for (let i = 0; i < full; i++) s += '<i class="bi bi-star-fill" style="color:var(--accent-gold);"></i>';
-    if (half) s += '<i class="bi bi-star-half" style="color:var(--accent-gold);"></i>';
-    for (let i = 0; i < 5 - full - (half ? 1 : 0); i++) s += '<i class="bi bi-star" style="color:var(--border-color);"></i>';
-    return s;
-}
-
 function productCardHTML(p) {
     return `
     <div class="product-card">

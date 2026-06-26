@@ -16,16 +16,6 @@
         return JSON.parse(localStorage.getItem('gallerySaved') || '[]');
     }
 
-    function renderStars(rating) {
-        const f = Math.floor(rating);
-        const h = rating - f >= 0.5;
-        let s = '';
-        for (let i = 0; i < f; i++) s += '<i class="bi bi-star-fill" style="color:var(--accent-gold);"></i>';
-        if (h) s += '<i class="bi bi-star-half" style="color:var(--accent-gold);"></i>';
-        for (let i = 0; i < 5 - f - (h ? 1 : 0); i++) s += '<i class="bi bi-star" style="color:var(--border-color);"></i>';
-        return s;
-    }
-
     function render() {
         const savedIds = getSavedIds();
         const favorites = allProducts.filter(p => savedIds.includes(p.id));

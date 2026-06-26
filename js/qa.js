@@ -6,20 +6,7 @@ let currentSort = 'newest';
 let currentPage = 1;
 let totalPages = 1;
 
-function authHeaders() {
-    const token = localStorage.getItem('flower-token');
-    return token ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
-}
-
-function escapeHtml(str) {
-    if (typeof str !== 'string') return String(str || '');
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-}
-
 function formatNumber(n) { return n >= 1000 ? (n / 1000).toFixed(1) + 'K' : String(n); }
-function timeAgo(d) { const diff = Math.floor((Date.now() - new Date(d)) / 1000); if (diff < 60) return 'just now'; if (diff < 3600) return Math.floor(diff / 60) + 'm ago'; if (diff < 86400) return Math.floor(diff / 3600) + 'h ago'; return Math.floor(diff / 86400) + 'd ago'; }
 
 function isExpert(role) { return ['FLORIST', 'INSTRUCTOR', 'ADMIN', 'SUPERADMIN'].includes((role || '').toUpperCase()); }
 
@@ -217,12 +204,6 @@ async function initQuestionDetail() {
     `;
 
     loadLeaderboard();
-}
-
-function getCurrentUserId() {
-    try { const t = localStorage.getItem('flower-token'); if (t) return JSON.parse(atob(t.split('.')[1])).id; } catch {}
-    const u = JSON.parse(localStorage.getItem('flower-auth') || 'null');
-    return u?.id || null;
 }
 
 async function submitAnswer(questionId) {

@@ -141,11 +141,6 @@
         }
     });
 
-    function authHeaders() {
-        let token; try { token = localStorage.getItem('flower-token'); } catch { token = null; }
-        return token ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
-    }
-
     if (placeBtn) {
         placeBtn.addEventListener('click', async () => {
             let valid = true;

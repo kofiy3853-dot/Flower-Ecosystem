@@ -7,13 +7,6 @@ let currentSort = 'newest';
 let currentPage = 1;
 let totalPages = 1;
 
-function escapeHtml(str) {
-    if (typeof str !== 'string') return String(str || '');
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-}
-
 function formatNumber(n) {
     if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
     return String(n);

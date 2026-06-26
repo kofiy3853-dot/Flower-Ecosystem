@@ -6,13 +6,6 @@ let currentSort = 'newest';
 let currentPage = 1;
 let totalPages = 1;
 
-function authHeaders() {
-    let token; try { token = localStorage.getItem('flower-token'); } catch { token = null; }
-    return token
-        ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
-        : { 'Content-Type': 'application/json' };
-}
-
 function userLoggedIn() {
     try { return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token'); } catch { return false; }
 }
@@ -20,17 +13,6 @@ function userLoggedIn() {
 function formatNumber(n) {
     if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
     return String(n);
-}
-
-function timeAgo(dateStr) {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diff = Math.floor((now - date) / 1000);
-    if (diff < 60) return 'just now';
-    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
-    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
-    if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
-    return date.toLocaleDateString();
 }
 
 function getAvatarHtml(avatar, name) {
@@ -339,30 +321,6 @@ function renderReplyBox(discussion) {
     }
 }
 
-function getCurrentUserId() {
-    try {
-        const token = localStorage.getItem('flower-token');
-        if (token) {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            return payload.id;
-        }
-    } catch {}
-    let user; try { user = JSON.parse(localStorage.getItem('flower-auth') || 'null'); } catch { user = null; }
-    return user?.id || null;
-}
-
-function getCurrentUserRole() {
-    try {
-        const token = localStorage.getItem('flower-token');
-        if (token) {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            return payload.role;
-        }
-    } catch {}
-    let user; try { user = JSON.parse(localStorage.getItem('flower-auth') || 'null'); } catch { user = null; }
-    return user?.role || null;
-}
-
 async function submitReply(discussionId) {
     const content = document.getElementById('replyContent').value.trim();
     if (!content) return;
@@ -390,7 +348,7 @@ async function voteDiscussion(id, voteType) {
         const data = await res.json();
         document.getElementById('discVoteCount').textContent = data.vote_count;
         document.querySelectorAll('.vote-controls .vote-btn').forEach(btn => btn.classList.remove('active'));
-    } catch {}
+    } catch (err) { handleError(err, 'Failed to vote'); }
 }
 
 async function voteComment(commentId, voteType) {
@@ -401,7 +359,7 @@ async function voteComment(commentId, voteType) {
             headers: authHeaders(),
             body: JSON.stringify({ vote_type: voteType })
         });
-    } catch {}
+    } catch (err) { handleError(err, 'Failed to vote on comment'); }
 }
 
 async function markBestAnswer(discussionId, commentId) {
@@ -413,7 +371,7 @@ async function markBestAnswer(discussionId, commentId) {
             body: JSON.stringify({ best_answer_id: commentId })
         });
         window.location.reload();
-    } catch {}
+    } catch (err) { handleError(err, 'Failed to mark best answer'); }
 }
 
 async function deleteComment(commentId, discussionId) {
@@ -424,7 +382,7 @@ async function deleteComment(commentId, discussionId) {
             headers: authHeaders()
         });
         window.location.reload();
-    } catch {}
+    } catch (err) { handleError(err, 'Failed to delete comment'); }
 }
 
 async function loadRelatedDiscussions(categorySlug, currentId) {

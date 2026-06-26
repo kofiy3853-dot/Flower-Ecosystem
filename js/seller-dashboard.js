@@ -1,20 +1,6 @@
 // js/seller-dashboard.js
 // Seller Dashboard — products, orders, reviews, messages, analytics
 
-function authHeaders() {
-    const token = localStorage.getItem('flower-token');
-    return token ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
-}
-
-function escapeHtml(str) {
-    if (typeof str !== 'string') return String(str || '');
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-}
-
-function formatDate(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'; }
-
 let profile = null;
 
 async function initSellerDashboard() {
@@ -318,11 +304,11 @@ async function saveProduct() {
 
 async function deleteProduct(id) {
     if (!confirm('Delete this product?')) return;
-    try { await fetch(`/api/products/${id}`, { method: 'DELETE', headers: authHeaders() }); loadProducts(); loadDashboard(); } catch {}
+    try { await fetch(`/api/products/${id}`, { method: 'DELETE', headers: authHeaders() }); loadProducts(); loadDashboard(); } catch (err) { handleError(err, 'Failed to delete product'); }
 }
 
 async function updateOrder(id, status) {
-    try { await fetch(`/api/seller/orders/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ status }) }); loadOrders(); loadDashboard(); } catch {}
+    try { await fetch(`/api/seller/orders/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ status }) }); loadOrders(); loadDashboard(); } catch (err) { handleError(err, 'Failed to update order'); }
 }
 
 async function saveSettings() {
@@ -335,7 +321,7 @@ async function saveSettings() {
         })});
         await loadProfile();
         alert('Settings saved!');
-    } catch {}
+    } catch (err) { handleError(err, 'Failed to save settings'); }
 }
 
 function showModal(id) { document.getElementById(id).classList.add('show'); }

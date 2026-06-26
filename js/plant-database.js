@@ -9,13 +9,6 @@ let currentLight = '';
 let currentOrigin = '';
 let currentSort = 'name';
 
-function escapeHtml(str) {
-    if (typeof str !== 'string') return String(str || '');
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-}
-
 async function initPlantDatabase() {
     try {
         const res = await fetch('/api/knowledge/flowers');

@@ -11,13 +11,6 @@ let currentMonth = new Date().getMonth() + 1;
 let allFlowers = [];
 let currentBloomSeason = 'all';
 
-function escapeHtml(str) {
-    if (typeof str !== 'string') return String(str || '');
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-}
-
 async function initPlantingCalendar() {
     const season = seasonNames[currentMonth];
     document.getElementById('currentSeason').innerHTML = `${seasonEmojis[season]} Current Season: ${season} · ${monthNames[currentMonth - 1]}`;

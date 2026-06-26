@@ -123,11 +123,6 @@ function updateCartBadge() {
     document.querySelectorAll('.cart-count').forEach(el => el.textContent = count);
 }
 
-function authHeaders() {
-    const token = localStorage.getItem('flower-token');
-    return token ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
-}
-
 function userLoggedIn() {
     return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token');
 }
@@ -149,7 +144,7 @@ async function handleCartAction(action, idx, delta) {
                     headers: authHeaders(),
                     body: JSON.stringify({ quantity: newQty })
                 });
-            } catch (_) {}
+            } catch (err) { handleError(err, 'Failed to update cart'); }
         }
         cart[idx].qty = newQty;
         localStorage.setItem('flower-cart', JSON.stringify(cart));
@@ -161,7 +156,7 @@ async function handleCartAction(action, idx, delta) {
                     method: 'DELETE',
                     headers: authHeaders()
                 });
-            } catch (_) {}
+            } catch (err) { handleError(err, 'Failed to remove item'); }
         }
         cart.splice(idx, 1);
         localStorage.setItem('flower-cart', JSON.stringify(cart));
@@ -185,7 +180,7 @@ async function handleCartAction(action, idx, delta) {
                     headers: authHeaders(),
                     body: JSON.stringify({ product_id: item.id, quantity: item.qty || 1 })
                 });
-            } catch (_) {}
+            } catch (err) { handleError(err, 'Failed to add item'); }
         }
         const existing = cart.find(i => i.id === item.id);
         if (existing) { existing.qty = (existing.qty || 1) + (item.qty || 1); }

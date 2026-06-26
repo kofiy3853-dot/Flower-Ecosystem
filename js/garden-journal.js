@@ -1,36 +1,6 @@
 // js/garden-journal.js
 // Garden Journal — entries list, reminders, stats
 
-function authHeaders() {
-    const token = localStorage.getItem('flower-token');
-    return token
-        ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
-        : { 'Content-Type': 'application/json' };
-}
-
-function escapeHtml(str) {
-    if (typeof str !== 'string') return String(str || '');
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-}
-
-function formatDate(dateStr) {
-    if (!dateStr) return '';
-    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
-function timeAgo(dateStr) {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diff = Math.floor((now - date) / 1000);
-    if (diff < 60) return 'just now';
-    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
-    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
-    if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
-    return date.toLocaleDateString();
-}
-
 const weatherEmojis = { 'Sunny': '☀️', 'Partly Cloudy': '⛅', 'Cloudy': '☁️', 'Rainy': '🌧️', 'Stormy': '⛈️', 'Snowy': '❄️', 'Windy': '💨' };
 const moodEmojis = { 'Happy': '😊', 'Excited': '🎉', 'Proud': '💪', 'Peaceful': '😌', 'Curious': '🤔', 'Concerned': '😟' };
 
@@ -175,7 +145,7 @@ async function addReminder() {
         document.getElementById('addReminderForm').style.display = 'none';
         loadReminders();
         loadStats();
-    } catch {}
+    } catch (err) { handleError(err, 'Failed to add reminder'); }
 }
 
 async function toggleReminder(id, completed) {
@@ -187,7 +157,7 @@ async function toggleReminder(id, completed) {
         });
         loadReminders();
         loadStats();
-    } catch {}
+    } catch (err) { handleError(err, 'Failed to update reminder'); }
 }
 
 async function deleteReminder(id) {
@@ -196,7 +166,7 @@ async function deleteReminder(id) {
         await fetch(`/api/journal/reminders/${id}`, { method: 'DELETE', headers: authHeaders() });
         loadReminders();
         loadStats();
-    } catch {}
+    } catch (err) { handleError(err, 'Failed to delete reminder'); }
 }
 
 async function deleteEntry(id) {
@@ -205,5 +175,5 @@ async function deleteEntry(id) {
         await fetch(`/api/journal/entries/${id}`, { method: 'DELETE', headers: authHeaders() });
         loadEntries();
         loadStats();
-    } catch {}
+    } catch (err) { handleError(err, 'Failed to delete entry'); }
 }

@@ -1,20 +1,6 @@
 // js/grower-dashboard.js
 // Grower Dashboard — crops, harvests, orders, listings, analytics, settings
 
-function authHeaders() {
-    const token = localStorage.getItem('flower-token');
-    return token ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
-}
-
-function escapeHtml(str) {
-    if (typeof str !== 'string') return String(str || '');
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-}
-
-function formatDate(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'; }
-
 const growthStages = ['Seed', 'Germination', 'Vegetative', 'Budding', 'Flowering', 'Harvest Ready'];
 const growthPercentages = { Seed: 10, Germination: 25, Vegetative: 50, Budding: 70, Flowering: 85, 'Harvest Ready': 100 };
 const statusBadges = { Healthy: 'badge-healthy', 'Needs Attention': 'badge-warning', Diseased: 'badge-danger', 'Pest Issue': 'badge-warning' };

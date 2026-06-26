@@ -1,13 +1,6 @@
 // js/arrangements.js
 // Flower Arrangements — categories, occasions, featured, care tips
 
-function escapeHtml(str) {
-    if (typeof str !== 'string') return String(str || '');
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-}
-
 const arrangementCategories = [
     { name: 'Bouquets', icon: '💐', desc: 'Hand-tied and wrapped bouquets for gifting', count: '24+ styles', img: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=400&auto=format&fit=crop' },
     { name: 'Centerpieces', icon: '🕯️', desc: 'Table focal points for events and dining', count: '18+ styles', img: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=400&auto=format&fit=crop' },

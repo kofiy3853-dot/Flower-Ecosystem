@@ -1,13 +1,6 @@
 // js/gardening.js
 // Gardening Hub — season info, tasks, bloom preview, stats
 
-function escapeHtml(str) {
-    if (typeof str !== 'string') return String(str || '');
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-}
-
 const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const seasonNames = { 1:'Winter', 2:'Winter', 3:'Spring', 4:'Spring', 5:'Spring', 6:'Summer', 7:'Summer', 8:'Summer', 9:'Fall', 10:'Fall', 11:'Fall', 12:'Winter' };
 const seasonEmojis = { Spring:'🌷', Summer:'☀️', Fall:'🍂', Winter:'❄️' };

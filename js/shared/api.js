@@ -1489,6 +1489,89 @@ function escapeHtml(str) {
     return div.innerHTML;
 }
 
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d)) return dateStr;
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function formatNumber(n) {
+    if (n == null) return '0';
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+    return String(n);
+}
+
+function timeAgo(dateStr) {
+    if (!dateStr) return '';
+    const now = Date.now();
+    const then = new Date(dateStr).getTime();
+    if (isNaN(then)) return dateStr;
+    const seconds = Math.floor((now - then) / 1000);
+    if (seconds < 60) return 'just now';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return minutes + 'm ago';
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return hours + 'h ago';
+    const days = Math.floor(hours / 24);
+    if (days < 30) return days + 'd ago';
+    const months = Math.floor(days / 30);
+    return months + 'mo ago';
+}
+
+function renderStars(rating) {
+    const full = Math.floor(rating || 0);
+    const half = (rating || 0) - full >= 0.5 ? 1 : 0;
+    const empty = 5 - full - half;
+    return '&#9733;'.repeat(full) + (half ? '&#9734;' : '') + '&#9734;'.repeat(empty);
+}
+
+function getCurrentUserId() {
+    try {
+        const token = window.getToken ? window.getToken() : null;
+        if (!token) return null;
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.id || payload.sub || null;
+    } catch { return null; }
+}
+
+function getCurrentUserRole() {
+    try {
+        const token = window.getToken ? window.getToken() : null;
+        if (!token) return null;
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return (payload.role || '').toUpperCase();
+    } catch { return null; }
+}
+
+function authHeaders() {
+    const headers = { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
+    const token = window.getToken ? window.getToken() : null;
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    return headers;
+}
+
+window.escapeHtml = escapeHtml;
+window.formatDate = formatDate;
+window.formatNumber = formatNumber;
+window.timeAgo = timeAgo;
+window.renderStars = renderStars;
+window.getCurrentUserId = getCurrentUserId;
+window.getCurrentUserRole = getCurrentUserRole;
+window.authHeaders = authHeaders;
+
+window.handleError = function(err, context) {
+    const msg = err?.message || String(err) || 'Something went wrong';
+    if (typeof Toast !== 'undefined') {
+        Toast.error(context ? context + ': ' + msg : msg);
+    } else if (typeof ErrorHandler !== 'undefined') {
+        ErrorHandler.handleApiError(err, context);
+    } else {
+        console.error(context ? context + ': ' + msg : msg);
+    }
+};
+
 async function apiFetch(url, fallbackKey) {
     try {
         const res = await fetch(url);
