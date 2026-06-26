@@ -151,7 +151,7 @@
                             <img loading="lazy" src="${item.image}" alt="${item.title}">
                             <div class="gallery-body">
                                 <h3>${item.title}</h3>
-                                <div class="author">${item.author} � <span style="color:var(--primary-color);">${item.category}</span></div>
+                                <div class="author">${item.author} — <span style="color:var(--primary-color);">${item.category}</span></div>
                                 <div class="desc">${item.description}</div>
                                 <div class="gallery-actions">
                                     <button class="save-btn ${isSaved ? 'saved' : ''}" data-id="${item.id}" aria-label="${isSaved ? 'Unsave' : 'Save'} design">
@@ -214,7 +214,7 @@
                 if (btn.classList.contains('share-btn')) {
                     const id = btn.dataset.id;
                     const title = btn.dataset.title;
-                    const shareData = { title: `${title} � Flower Ecosystem`, url: `${window.location.origin}/gallery.html?id=${id}` };
+                    const shareData = { title: `${title} — Flower Ecosystem`, url: `${window.location.origin}/gallery.html?id=${id}` };
                     if (navigator.share) {
                         navigator.share(shareData).catch(() => {});
                     } else {

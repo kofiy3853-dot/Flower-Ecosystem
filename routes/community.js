@@ -335,7 +335,7 @@ router.post('/discussions/comments/:id/vote', requireAuth, asyncHandler(async (r
 }));
 
 router.get('/discussions/stats/overview', asyncHandler(async (_, res) => {
-    if (!(await dbAvailable())) return res.json({ members: 15000, discussions: 3200, replies: 12000 });
+    if (!(await dbAvailable())) return res.json({ members: 0, discussions: 0, replies: 0 });
     const [members, discussions, replies] = await Promise.all([
         pool.query('SELECT COUNT(*) FROM auth.users'),
         pool.query('SELECT COUNT(*) FROM community.discussions'),

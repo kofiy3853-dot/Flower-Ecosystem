@@ -146,7 +146,7 @@
                             <img class="thumb" src="${c.thumbnail}" alt="${c.title}" loading="lazy">
                             <div class="info">
                                 <h3>${c.title}</h3>
-                                <div class="meta">${c.instructor} � ${c.completed}/${c.lessons} lessons</div>
+                                <div class="meta">${c.instructor} — ${c.completed}/${c.lessons} lessons</div>
                                 ${showProgress ? `
                                     <div class="progress-text">${c.progress}% complete</div>
                                     <div class="progress-bar-mini"><div class="fill" style="width:${c.progress}%"></div></div>
@@ -166,7 +166,7 @@
                     <div class="cert-card">
                         <div class="cert-icon"><i class="bi bi-award-fill"></i></div>
                         <h4>${c.title}</h4>
-                        <p class="cert-date">Issued ${c.issued} � ID: ${c.certId}</p>
+                        <p class="cert-date">Issued ${c.issued} — ID: ${c.certId}</p>
                         <button class="btn btn-outline btn-sm" style="margin-top:0.75rem;"><i class="bi bi-download"></i> Download PDF</button>
                     </div>`
                 ).join('');

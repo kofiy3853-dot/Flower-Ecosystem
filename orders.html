@@ -172,7 +172,7 @@
                         <div class="order-header" data-index="${idx}">
                             <div style="flex:1;min-width:0;">
                                 <h3>${o.name || 'Order #' + (o.id || '').slice(0, 8)}</h3>
-                                <div class="order-meta">${o.id || ''} � ${o.date || ''}</div>
+                                <div class="order-meta">${o.id || ''} — ${o.date || ''}</div>
                             </div>
                             <div style="display:flex;align-items:center;gap:0.75rem;">
                                 <span style="font-weight:600;color:var(--primary-color);">$${(o.total || 0).toFixed(2)}</span>
@@ -186,7 +186,7 @@
                                     <img src="${item.image_url || item.image || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=100&auto=format&fit=crop'}" alt="${item.name || o.name}">
                                     <div style="flex:1;">
                                         <div style="font-weight:500;font-size:0.9rem;">${item.name || o.name || 'Order #' + (o.id || '').slice(0, 8)}</div>
-                                        <div style="font-size:0.8rem;color:var(--text-light);">Qty: ${item.quantity || item.qty || o.items || 1} � $${parseFloat(item.unit_price || item.price || o.total || 0).toFixed(2)}</div>
+                                        <div style="font-size:0.8rem;color:var(--text-light);">Qty: ${item.quantity || item.qty || o.items || 1} — $${parseFloat(item.unit_price || item.price || o.total || 0).toFixed(2)}</div>
                                     </div>
                                 </div>
                             `).join('')}

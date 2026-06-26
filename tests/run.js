@@ -1,5 +1,5 @@
 async function runTests() {
-  const files = ['api.test.js', 'data.test.js', 'validation.test.js', 'auth.test.js', 'cart.test.js', 'products.test.js'];
+  const files = ['api.test.js', 'data.test.js', 'validation.test.js', 'auth.test.js', 'cart.test.js', 'products.test.js', 'cart-checkout.test.js', 'product-upload-e2e.test.js'];
   let passed = 0, failed = 0;
   for (const file of files) {
     try {

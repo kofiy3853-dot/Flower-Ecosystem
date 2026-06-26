@@ -146,7 +146,7 @@
                             <tbody>
                                 ${filtered.map((o, idx) => `
                                     <tr>
-                                        <td><strong>${o.id || '�'}</strong></td>
+                                        <td><strong>${o.id || '—'}</strong></td>
                                         <td>${o.customer || 'Customer'}</td>
                                         <td>${o.items || 1}</td>
                                         <td><strong>$${(o.total || 0).toFixed(2)}</strong></td>
@@ -162,7 +162,7 @@
                                         <td colspan="7"><div class="expanded-content" id="row-${idx}">
                                             <div class="order-item">
                                                 <img src="${o.image || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=100&auto=format&fit=crop'}" alt="">
-                                                <div><strong>${o.product || 'Product'}</strong> � Qty: ${o.items || 1} � $${(o.total || 0).toFixed(2)}</div>
+                                                <div><strong>${o.product || 'Product'}</strong> — Qty: ${o.items || 1} — $${(o.total || 0).toFixed(2)}</div>
                                             </div>
                                             <div style="margin-top:0.5rem;display:flex;gap:0.5rem;">
                                                 <a href="product-detail.html?ref=order" class="btn btn-outline btn-sm">View Product</a>

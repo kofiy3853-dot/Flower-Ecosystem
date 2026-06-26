@@ -13,4 +13,4 @@ EXPOSE 3000
 
 ENV NODE_ENV=production
 
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "node db-init.js && node server.js"]

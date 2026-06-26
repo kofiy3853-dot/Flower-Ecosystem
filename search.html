@@ -102,7 +102,7 @@
                     title: p.name,
                     description: p.description || '',
                     link: `product-detail.html?id=${p.id}`,
-                    meta: `$${p.price?.toFixed(2)} � ${p.seller || ''}`
+                    meta: `$${p.price?.toFixed(2)} — ${p.seller || ''}`
                 }));
 
                 const courseHits = courses.filter(c =>
@@ -117,7 +117,7 @@
                     title: c.title,
                     description: c.description || '',
                     link: `course-detail.html?id=${c.id}`,
-                    meta: `${c.level || 'All Levels'} � ${c.price ? '$' + c.price.toFixed(2) : 'Free'}`
+                    meta: `${c.level || 'All Levels'} — ${c.price ? '$' + c.price.toFixed(2) : 'Free'}`
                 }));
 
                 const communityHits = articles.filter(a =>
@@ -133,7 +133,7 @@
                     title: a.title,
                     description: a.description || '',
                     link: `article-detail.html?id=${a.id}`,
-                    meta: `${a.readTime || ''} � ${a.author || ''}`
+                    meta: `${a.readTime || ''} — ${a.author || ''}`
                 }));
 
                 allResults = [...productHits, ...courseHits, ...communityHits];

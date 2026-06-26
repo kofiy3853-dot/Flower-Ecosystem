@@ -208,7 +208,7 @@
                         const benefits = correct.benefits || [];
                         if (!benefits.length) { i--; continue; }
                         const b = benefits[Math.floor(Math.random() * benefits.length)];
-                        qText = `"${b.description}" � which flower has this ${b.benefit_type.toLowerCase()} benefit?`;
+                        qText = `"${b.description}" — which flower has this ${b.benefit_type.toLowerCase()} benefit?`;
                         options = shuffle([correct.common_name, ...wrongs.map(w => w.common_name)]);
                         answer = correct.common_name;
                         break;
@@ -217,7 +217,7 @@
                         const tips = correct.care_tips || [];
                         if (!tips.length) { i--; continue; }
                         const t = tips[Math.floor(Math.random() * tips.length)];
-                        qText = `"${t.description}" � which flower does this care tip apply to?`;
+                        qText = `"${t.description}" — which flower does this care tip apply to?`;
                         options = shuffle([correct.common_name, ...wrongs.map(w => w.common_name)]);
                         answer = correct.common_name;
                         break;

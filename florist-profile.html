@@ -86,7 +86,7 @@
             const f = florists.find(x => x.id === id) || florists[0];
 
             if (f) {
-                document.title = `${f.name} � Florist Profile`;
+                document.title = `${f.name} — Florist Profile`;
                 document.getElementById('floristName').textContent = f.name;
                 document.getElementById('floristImage').src = f.image;
                 document.getElementById('floristLoc').textContent = f.location;
