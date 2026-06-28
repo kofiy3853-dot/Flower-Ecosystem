@@ -17,6 +17,10 @@
         .image-preview .thumb { width:80px; height:80px; border-radius:8px; object-fit:cover; border:1px solid var(--border-color); }
         .image-preview .thumb-wrap { position:relative; display:inline-block; }
         .image-preview .thumb-wrap .remove-img { position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:var(--error-color); color:white; border:none; font-size:0.7rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+        .image-preview .thumb-wrap.dragging { opacity:0.4; transform:scale(0.95); }
+        .image-preview .thumb-wrap.drag-over { outline:2px dashed var(--primary-color); outline-offset:2px; border-radius:8px; }
+        .image-preview .thumb-wrap .drag-handle { position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:4px; background:rgba(0,0,0,0.5); color:white; border:none; font-size:0.6rem; cursor:grab; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.15s; }
+        .image-preview .thumb-wrap:hover .drag-handle { opacity:1; }
     </style>
 </head>
 <body>
@@ -89,9 +93,9 @@
                 </div>
 
                 <div class="form-section">
-                    <h3>Images</h3>
+                    <h3>Images <span style="font-size:0.8rem;font-weight:400;color:var(--text-light);">(up to 10)</span></h3>
                     <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:0.75rem;">Upload images from your device or add image URLs. At least one image is recommended.</p>
-                    
+
                     <div id="uploadArea" style="border:2px dashed var(--border-color);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:border-color 0.2s;margin-bottom:1rem;">
                         <i class="bi bi-cloud-arrow-up" style="font-size:2.5rem;color:var(--primary-color);display:block;margin-bottom:0.5rem;"></i>
                         <p style="font-weight:500;margin-bottom:0.25rem;">Drag & drop images here</p>
@@ -116,16 +120,31 @@
                 </div>
 
                 <div class="form-section">
-                    <h3>Video <span style="font-size:0.8rem;font-weight:400;color:var(--text-light);">(optional)</span></h3>
-                    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:0.75rem;">Add a YouTube or Vimeo video to showcase your product.</p>
+                    <h3>Product Video <span style="font-size:0.8rem;font-weight:400;color:var(--text-light);">(optional, max 30 seconds)</span></h3>
+                    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:0.75rem;">Upload a short video to showcase your product. Supports MP4, WebM, and MOV files up to 50MB.</p>
+
+                    <div id="videoUploadArea" style="border:2px dashed var(--border-color);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:border-color 0.2s;margin-bottom:0.75rem;">
+                        <i class="bi bi-camera-video" style="font-size:2.5rem;color:var(--accent-blue);display:block;margin-bottom:0.5rem;"></i>
+                        <p style="font-weight:500;margin-bottom:0.25rem;">Drag & drop a video here</p>
+                        <p style="font-size:0.8rem;color:var(--text-light);">or click to browse (MP4, WebM, MOV — max 30s, 50MB)</p>
+                        <input type="file" id="videoInput" accept="video/mp4,video/webm,video/quicktime" style="display:none;">
+                    </div>
+                    <div id="videoProgress" style="display:none;margin-bottom:0.75rem;">
+                        <div style="background:var(--border-color);border-radius:4px;height:6px;overflow:hidden;">
+                            <div id="videoBar" style="background:var(--accent-blue);height:100%;width:0%;transition:width 0.3s;"></div>
+                        </div>
+                        <p id="videoStatus" style="font-size:0.8rem;color:var(--text-light);margin-top:0.25rem;"></p>
+                    </div>
+                    <div id="videoPreview" style="display:none;margin-bottom:0.75rem;"></div>
+
+                    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:0.5rem;">Or paste a YouTube / Vimeo URL:</p>
                     <div class="form-group">
-                        <label for="productVideo" class="form-label">Video URL</label>
                         <input type="url" id="productVideo" class="form-input" placeholder="https://www.youtube.com/watch?v=...">
                     </div>
                 </div>
 
                 <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.5rem;">
-                    <button type="submit" class="btn btn-primary" style="flex:1;padding:1rem 2rem;font-size:1rem;">Submit for Review</button>
+                    <button type="submit" class="btn btn-primary" style="flex:1;padding:1rem 2rem;font-size:1rem;">Publish Listing</button>
                 </div>
             </form>
 
@@ -141,10 +160,10 @@
 
     <script src="js/shared/api.js?v=3.0"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.2"></script>
     <script src="js/shared/ui.js?v=3.0"></script>
     <script src="js/shared/cart.js?v=3.0"></script>
-    <script src="js/shared/components.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
     <script>
         (() => {
@@ -169,9 +188,16 @@
             const uploadProgress = document.getElementById('uploadProgress');
             const uploadBar = document.getElementById('uploadBar');
             const uploadStatus = document.getElementById('uploadStatus');
+            const videoUploadArea = document.getElementById('videoUploadArea');
+            const videoInput = document.getElementById('videoInput');
+            const videoProgress = document.getElementById('videoProgress');
+            const videoBar = document.getElementById('videoBar');
+            const videoStatus = document.getElementById('videoStatus');
+            const videoPreview = document.getElementById('videoPreview');
 
             let imageUrls = [];
             let uploadedFiles = [];
+            let uploadedVideoUrl = null;
             let editMode = false;
             let editProductId = null;
 
@@ -239,6 +265,22 @@
                         }
                         updatePreview();
                     }
+                    // Load existing video
+                    if (p.video_url) {
+                        if (p.video_url.startsWith('/uploads/')) {
+                            uploadedVideoUrl = p.video_url;
+                            videoPreview.style.display = 'block';
+                            videoPreview.innerHTML = `
+                                <div style="position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border-color);margin-bottom:0.5rem;">
+                                    <video src="${uploadedVideoUrl}" controls style="width:100%;max-height:300px;display:block;background:#000;"></video>
+                                    <button type="button" onclick="removeVideo()" style="position:absolute;top:8px;right:8px;background:var(--error-color);color:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;">&#10005;</button>
+                                </div>
+                                <p style="font-size:0.8rem;color:var(--accent-green);"><i class="bi bi-check-circle-fill"></i> Uploaded video</p>
+                            `;
+                        } else {
+                            document.getElementById('productVideo').value = p.video_url;
+                        }
+                    }
                 } catch (e) {
                     showToast('Could not load product data.');
                 }
@@ -254,6 +296,17 @@
                 handleFiles(e.dataTransfer.files);
             });
             fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+            // Video upload handlers
+            videoUploadArea.addEventListener('click', () => videoInput.click());
+            videoUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); videoUploadArea.style.borderColor = 'var(--accent-blue)'; });
+            videoUploadArea.addEventListener('dragleave', () => { videoUploadArea.style.borderColor = 'var(--border-color)'; });
+            videoUploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                videoUploadArea.style.borderColor = 'var(--border-color)';
+                handleVideoFile(e.dataTransfer.files[0]);
+            });
+            videoInput.addEventListener('change', () => { if (videoInput.files[0]) handleVideoFile(videoInput.files[0]); });
 
             async function handleFiles(files) {
                 const validFiles = Array.from(files).filter(f => f.size <= 5 * 1024 * 1024 && f.type.startsWith('image/'));
@@ -292,6 +345,90 @@
                 fileInput.value = '';
             }
 
+            async function handleVideoFile(file) {
+                if (!file) return;
+                const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime'];
+                if (!allowedTypes.includes(file.type)) {
+                    showToast('Please select an MP4, WebM, or MOV video file.');
+                    return;
+                }
+                if (file.size > 50 * 1024 * 1024) {
+                    showToast('Video file must be under 50MB.');
+                    return;
+                }
+
+                // Check duration via video element
+                videoProgress.style.display = 'block';
+                videoStatus.textContent = 'Checking video duration...';
+                videoBar.style.width = '10%';
+
+                const videoEl = document.createElement('video');
+                videoEl.preload = 'metadata';
+                videoEl.src = URL.createObjectURL(file);
+
+                await new Promise((resolve) => {
+                    videoEl.onloadedmetadata = () => {
+                        URL.revokeObjectURL(videoEl.src);
+                        resolve();
+                    };
+                    videoEl.onerror = () => {
+                        URL.revokeURL(videoEl.src);
+                        resolve();
+                    };
+                });
+
+                const duration = videoEl.duration;
+                if (!isFinite(duration) || duration > 30) {
+                    videoStatus.textContent = 'Video must be 30 seconds or shorter. Detected: ' + (isFinite(duration) ? Math.round(duration) + 's' : 'unknown');
+                    videoBar.style.width = '0%';
+                    videoBar.style.background = 'var(--error-color)';
+                    setTimeout(() => { videoProgress.style.display = 'none'; videoBar.style.background = 'var(--accent-blue)'; }, 3000);
+                    return;
+                }
+
+                videoStatus.textContent = `Uploading video (${Math.round(duration)}s)...`;
+                videoBar.style.width = '30%';
+
+                const formData = new FormData();
+                formData.append('video', file);
+
+                try {
+                    const token = getToken();
+                    const res = await fetch('/api/upload/video', {
+                        method: 'POST',
+                        headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+                        body: formData
+                    });
+                    videoBar.style.width = '80%';
+                    if (!res.ok) throw new Error('Upload failed');
+                    const data = await res.json();
+                    uploadedVideoUrl = data.url;
+                    videoBar.style.width = '100%';
+                    videoStatus.textContent = 'Video uploaded successfully!';
+                    videoPreview.style.display = 'block';
+                    videoPreview.innerHTML = `
+                        <div style="position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border-color);margin-bottom:0.5rem;">
+                            <video src="${uploadedVideoUrl}" controls style="width:100%;max-height:300px;display:block;background:#000;"></video>
+                            <button type="button" onclick="removeVideo()" style="position:absolute;top:8px;right:8px;background:var(--error-color);color:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;">&#10005;</button>
+                        </div>
+                        <p style="font-size:0.8rem;color:var(--accent-green);"><i class="bi bi-check-circle-fill"></i> ${Math.round(duration)}s video ready</p>
+                    `;
+                    document.getElementById('productVideo').value = '';
+                    setTimeout(() => { videoProgress.style.display = 'none'; videoBar.style.width = '0%'; }, 2000);
+                } catch (err) {
+                    videoStatus.textContent = 'Upload failed: ' + err.message;
+                    videoBar.style.width = '0%';
+                    setTimeout(() => { videoProgress.style.display = 'none'; }, 3000);
+                }
+                videoInput.value = '';
+            }
+
+            window.removeVideo = function() {
+                uploadedVideoUrl = null;
+                videoPreview.style.display = 'none';
+                videoPreview.innerHTML = '';
+            };
+
             function updatePreview() {
                 const inputs = document.querySelectorAll('.img-url');
                 imageUrls = [];
@@ -300,12 +437,127 @@
                     if (val) imageUrls.push(val);
                 });
                 const allImages = [...uploadedFiles, ...imageUrls];
-                imagePreview.innerHTML = allImages.map(url => `
-                    <div class="thumb-wrap">
+                imagePreview.innerHTML = allImages.map((url, i) => `
+                    <div class="thumb-wrap" draggable="true" data-index="${i}" data-source="${uploadedFiles.includes(url) ? 'upload' : 'url'}">
+                        <button class="drag-handle" title="Drag to reorder"><i class="bi bi-grip-vertical"></i></button>
                         <img class="thumb" src="${url}" alt="" onerror="this.style.display='none'">
                         ${uploadedFiles.includes(url) ? `<span style="position:absolute;bottom:2px;left:2px;background:var(--accent-green);color:white;font-size:0.6rem;padding:1px 4px;border-radius:3px;">Uploaded</span>` : ''}
+                        <button type="button" class="remove-img" title="Remove image">&#10005;</button>
                     </div>
                 `).join('');
+                initImageDragDrop();
+                imagePreview.querySelectorAll('.remove-img').forEach((btn, i) => {
+                    btn.addEventListener('click', () => {
+                        if (i < uploadedFiles.length) {
+                            uploadedFiles.splice(i, 1);
+                        } else {
+                            const urlIdx = i - uploadedFiles.length;
+                            const urlInputs = document.querySelectorAll('.img-url');
+                            if (urlInputs[urlIdx]) {
+                                urlInputs[urlIdx].closest('.form-group').remove();
+                            }
+                            imageUrls.splice(urlIdx, 1);
+                        }
+                        updatePreview();
+                    });
+                });
+            }
+
+            let dragSrcIndex = null;
+            let dragSrcSource = null;
+
+            function initImageDragDrop() {
+                const wraps = imagePreview.querySelectorAll('.thumb-wrap');
+                wraps.forEach(wrap => {
+                    wrap.addEventListener('dragstart', (e) => {
+                        dragSrcIndex = parseInt(wrap.dataset.index);
+                        dragSrcSource = wrap.dataset.source;
+                        wrap.classList.add('dragging');
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/plain', '');
+                    });
+
+                    wrap.addEventListener('dragend', () => {
+                        wrap.classList.remove('dragging');
+                        wraps.forEach(w => w.classList.remove('drag-over'));
+                    });
+
+                    wrap.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                        wraps.forEach(w => w.classList.remove('drag-over'));
+                        wrap.classList.add('drag-over');
+                    });
+
+                    wrap.addEventListener('dragenter', (e) => {
+                        e.preventDefault();
+                        wrap.classList.add('drag-over');
+                    });
+
+                    wrap.addEventListener('dragleave', () => {
+                        wrap.classList.remove('drag-over');
+                    });
+
+                    wrap.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        wrap.classList.remove('drag-over');
+                        const targetIndex = parseInt(wrap.dataset.index);
+                        const targetSource = wrap.dataset.source;
+                        if (dragSrcIndex === null || dragSrcIndex === targetIndex) return;
+
+                        reorderImages(dragSrcIndex, dragSrcSource, targetIndex, targetSource);
+                        dragSrcIndex = null;
+                        dragSrcSource = null;
+                    });
+                });
+            }
+
+            function reorderImages(fromIdx, fromSource, toIdx, toSource) {
+                if (fromSource === 'upload' && toSource === 'upload') {
+                    const item = uploadedFiles.splice(fromIdx, 1)[0];
+                    uploadedFiles.splice(toIdx, 0, item);
+                } else if (fromSource === 'upload' && toSource === 'url') {
+                    const item = uploadedFiles.splice(fromIdx, 1)[0];
+                    const adjustedTo = toIdx - uploadedFiles.length;
+                    imageUrls.splice(adjustedTo, 0, item);
+                    rebuildUrlInputs();
+                } else if (fromSource === 'url' && toSource === 'upload') {
+                    const adjustedFrom = fromIdx - uploadedFiles.length;
+                    const item = imageUrls.splice(adjustedFrom, 1)[0];
+                    uploadedFiles.splice(toIdx, 0, item);
+                    rebuildUrlInputs();
+                } else {
+                    const adjustedFrom = fromIdx - uploadedFiles.length;
+                    const adjustedTo = toIdx - uploadedFiles.length;
+                    const item = imageUrls.splice(adjustedFrom, 1)[0];
+                    imageUrls.splice(adjustedTo, 0, item);
+                    rebuildUrlInputs();
+                }
+                updatePreview();
+            }
+
+            function rebuildUrlInputs() {
+                const container = document.getElementById('imageInputs');
+                container.innerHTML = '';
+                if (imageUrls.length === 0) {
+                    const div = document.createElement('div');
+                    div.className = 'form-group';
+                    div.style.cssText = 'display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;';
+                    div.innerHTML = '<input type="url" class="form-input img-url" placeholder="https://example.com/image1.jpg">';
+                    container.appendChild(div);
+                } else {
+                    imageUrls.forEach(url => {
+                        const div = document.createElement('div');
+                        div.className = 'form-group';
+                        div.style.cssText = 'display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;';
+                        div.innerHTML = `<input type="url" class="form-input img-url" value="${escapeHtml(url)}" placeholder="https://example.com/image.jpg"> <button type="button" class="remove-img-input" style="background:var(--error-color);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:0.8rem;flex-shrink:0;">&#10005;</button>`;
+                        container.appendChild(div);
+                        div.querySelector('.remove-img-input').addEventListener('click', () => { div.remove(); updatePreview(); });
+                    });
+                }
+                container.querySelectorAll('.img-url').forEach(inp => {
+                    inp.addEventListener('input', () => updatePreview());
+                });
             }
 
             imageInputs.addEventListener('input', (e) => {
@@ -339,7 +591,7 @@
                 const stock = parseInt(document.getElementById('productStock').value);
                 const category = document.getElementById('productCategory').value;
                 const condition = document.getElementById('productCondition').value;
-                const video = document.getElementById('productVideo').value.trim();
+                const video = uploadedVideoUrl || document.getElementById('productVideo').value.trim() || null;
 
                 if (!name || !desc || isNaN(price) || isNaN(stock) || !category || !condition) {
                     showToast('Please fill in all required fields.');
@@ -388,13 +640,16 @@
                         showToast(err.error || 'Failed to save listing.');
                         return;
                     }
-                    showToast(editMode ? 'Listing updated successfully!' : 'Listing submitted! It will appear on the marketplace after approval.');
+                    showToast(editMode ? 'Listing updated successfully!' : 'Listing published! Your product is now live on the marketplace.');
                     if (!editMode) {
                         form.reset();
                         imagePreview.innerHTML = '';
                         document.querySelectorAll('.img-url').forEach(inp => inp.value = '');
                         imageUrls = [];
                         uploadedFiles = [];
+                        uploadedVideoUrl = null;
+                        videoPreview.style.display = 'none';
+                        videoPreview.innerHTML = '';
                     }
                 } catch (err) {
                     showToast('Network error: ' + err.message);

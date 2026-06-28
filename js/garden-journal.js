@@ -8,11 +8,13 @@ let currentTab = 'entries';
 
 async function initGardenJournal() {
     if (!localStorage.getItem('flower-token')) {
-        document.getElementById('loginPrompt').style.display = 'block';
+        const lp = document.getElementById('loginPrompt');
+        if (lp) lp.style.display = 'block';
         return;
     }
 
-    document.getElementById('journalDashboard').style.display = 'block';
+    const dash = document.getElementById('journalDashboard');
+    if (dash) dash.style.display = 'block';
 
     loadStats();
     loadEntries();

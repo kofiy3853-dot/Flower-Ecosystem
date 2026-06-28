@@ -73,45 +73,57 @@
 
     <script src="js/shared/api.js?v=3.0"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.2"></script>
     <script src="js/shared/ui.js?v=3.0"></script>
     <script src="js/shared/cart.js?v=3.0"></script>
-    <script src="js/shared/components.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
     <script>
         (async () => {
             const params = new URLSearchParams(window.location.search);
-            const id = params.get('id') || 'f1';
+            const id = params.get('id');
+            if (!id) { window.location.href = 'florists.html'; return; }
+
             const florists = await api.fetchFlorists();
-            const f = florists.find(x => x.id === id) || florists[0];
+            const f = florists.find(x => x.id === id);
 
-            if (f) {
-                document.title = `${f.name} — Florist Profile`;
-                document.getElementById('floristName').textContent = f.name;
-                document.getElementById('floristImage').src = f.image;
-                document.getElementById('floristLoc').textContent = f.location;
-                document.getElementById('floristRating').textContent = `${f.rating} (${f.reviews} reviews)`;
-                document.getElementById('floristSpec').textContent = f.specialty;
-                document.getElementById('floristProds').textContent = `${f.products} Products`;
+            if (!f) {
+                document.getElementById('floristName').textContent = 'Seller Not Found';
+                return;
+            }
 
-                // Load some random products as the seller's products
-                const products = await api.fetchProducts();
-                const grid = document.getElementById('sellerProducts');
-                grid.innerHTML = products.slice(0, 4).map(p => `
-                    <div class="product-card">
-                        <div class="product-img-wrap">
-                            ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
-                            <a href="product-detail.html?id=${p.id}"><img loading="lazy" src="${p.image}" alt="${p.name}"></a>
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-name"><a href="product-detail.html?id=${p.id}" style="color:inherit;">${p.name}</a></h3>
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.75rem;">
-                                <span style="font-weight:600; color:var(--primary-color); font-size:1.1rem;">$${p.price.toFixed(2)}</span>
-                                <button class="btn btn-primary btn-sm" onclick="location.href='product-detail.html?id=${p.id}'" role="button" tabindex="0">View</button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
+            document.title = `${f.name} — Seller Profile`;
+            document.getElementById('floristName').textContent = f.name;
+            document.getElementById('floristImage').src = f.image || '';
+            document.getElementById('floristImage').onerror = function() {
+                this.src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect fill="%23FF5FA2" width="150" height="150" rx="75"/><text x="75" y="85" text-anchor="middle" fill="white" font-size="48" font-family="Arial">' + f.name.charAt(0).toUpperCase() + '</text></svg>');
+            };
+            if (!f.image) document.getElementById('floristImage').onerror();
+
+            document.getElementById('floristLoc').textContent = f.location || 'Ghana';
+            document.getElementById('floristRating').textContent = f.role || 'Seller';
+            document.getElementById('floristSpec').textContent = f.specialty || 'Flowers & Arrangements';
+            document.getElementById('floristProds').textContent = f.role || 'Seller';
+
+            document.getElementById('floristDesc').textContent = f.description || 'Passionate seller providing quality flowers and arrangements.';
+
+            // Contact seller
+            document.querySelector('.btn-primary').addEventListener('click', () => {
+                if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+                    window.location.href = 'messages.html?to=' + f.id;
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
+
+            // Load seller's actual products
+            const productsData = await api.fetchProducts({ seller_id: id });
+            const sellerProducts = Array.isArray(productsData) ? productsData : (productsData?.products || []);
+            const grid = document.getElementById('sellerProducts');
+            if (sellerProducts.length) {
+                grid.innerHTML = sellerProducts.map(p => ProductCard(p)).join('');
+            } else {
+                grid.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:2rem;grid-column:1/-1;">No products yet.</p>';
             }
         })();
     </script>

@@ -13,7 +13,8 @@ let currentBloomSeason = 'all';
 
 async function initPlantingCalendar() {
     const season = seasonNames[currentMonth];
-    document.getElementById('currentSeason').innerHTML = `${seasonEmojis[season]} Current Season: ${season} · ${monthNames[currentMonth - 1]}`;
+    const seasonEl = document.getElementById('currentSeason');
+    if (seasonEl) seasonEl.innerHTML = `${seasonEmojis[season]} Current Season: ${season} · ${monthNames[currentMonth - 1]}`;
 
     renderMonthNav();
     loadTasks(currentMonth);
@@ -21,17 +22,18 @@ async function initPlantingCalendar() {
     loadGuides();
     loadZones();
 
-    document.getElementById('monthNav').addEventListener('click', (e) => {
+    document.getElementById('monthNav')?.addEventListener('click', (e) => {
         const btn = e.target.closest('.month-btn');
         if (!btn) return;
         document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentMonth = parseInt(btn.dataset.month, 10);
-        document.getElementById('tasksTitle').textContent = `${monthNames[currentMonth - 1]} Tasks`;
+        const tasksTitle = document.getElementById('tasksTitle');
+        if (tasksTitle) tasksTitle.textContent = `${monthNames[currentMonth - 1]} Tasks`;
         loadTasks(currentMonth);
     });
 
-    document.getElementById('bloomTabs').addEventListener('click', (e) => {
+    document.getElementById('bloomTabs')?.addEventListener('click', (e) => {
         const tab = e.target.closest('.bloom-tab');
         if (!tab) return;
         document.querySelectorAll('.bloom-tab').forEach(t => t.classList.remove('active'));
@@ -43,6 +45,7 @@ async function initPlantingCalendar() {
 
 function renderMonthNav() {
     const nav = document.getElementById('monthNav');
+    if (!nav) return;
     nav.innerHTML = monthNames.map((name, i) => {
         const m = i + 1;
         return `<button class="month-btn${m === currentMonth ? ' active' : ''}" data-month="${m}"><span class="emoji">${monthEmojis[i]}</span>${name.slice(0, 3)}</button>`;
@@ -59,6 +62,7 @@ async function loadTasks(month) {
     }
 
     const grid = document.getElementById('tasksGrid');
+    if (!grid) return;
     if (!tasks.length) {
         grid.innerHTML = '<div class="empty-state">No tasks for this month.</div>';
         return;
@@ -106,6 +110,7 @@ function renderBloomFlowers() {
     }
 
     const grid = document.getElementById('bloomGrid');
+    if (!grid) return;
     if (!filtered.length) {
         grid.innerHTML = '<div class="empty-state">No flowers blooming this month.</div>';
         return;
@@ -145,6 +150,7 @@ async function loadGuides() {
     const seasonIcons = { Spring:'🌷', Summer:'☀️', Fall:'🍂', Winter:'❄️' };
 
     const grid = document.getElementById('guidesGrid');
+    if (!grid) return;
     grid.innerHTML = guides.map(g => {
         const tips = g.tips || [];
         return `
@@ -171,6 +177,7 @@ async function loadZones() {
     }
 
     const grid = document.getElementById('zonesGrid');
+    if (!grid) return;
     grid.innerHTML = zones.map(z => `
         <div class="zone-card">
             <h4>${escapeHtml(z.zone_name)}</h4>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Instructor Dashboard - Manage your courses, students, and teaching on Flower Ecosystem">
+    <title>Instructor Dashboard | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="styles/instructor-dashboard.css">
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div class="inst-layout">
+        <aside class="inst-sidebar" id="instSidebar">
+            <div class="inst-sidebar-header">
+                <div class="inst-avatar" id="instAvatar">S</div>
+                <div class="inst-sidebar-user">
+                    <div class="inst-sidebar-name" id="instName">Dr. Sarah</div>
+                    <div class="inst-sidebar-role">Instructor</div>
+                </div>
+            </div>
+            <nav class="inst-nav">
+                <a class="inst-nav-item active" data-section="overview"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></a>
+                <a class="inst-nav-item" data-section="courses"><i class="bi bi-book"></i><span>My Courses</span></a>
+                <a class="inst-nav-item" data-section="students"><i class="bi bi-people"></i><span>Students</span></a>
+                <a class="inst-nav-item" data-section="assignments"><i class="bi bi-journal-text"></i><span>Assignments</span></a>
+                <a class="inst-nav-item" data-section="live-classes"><i class="bi bi-camera-video"></i><span>Live Classes</span></a>
+                <a class="inst-nav-item" data-section="discussions"><i class="bi bi-chat-dots"></i><span>Discussions</span></a>
+                <a class="inst-nav-item" data-section="resources"><i class="bi bi-folder"></i><span>Resources</span></a>
+                <a class="inst-nav-item" data-section="calendar"><i class="bi bi-calendar3"></i><span>Calendar</span></a>
+                <a class="inst-nav-item" data-section="certificates"><i class="bi bi-award"></i><span>Certificates</span></a>
+                <a class="inst-nav-item" data-section="analytics"><i class="bi bi-bar-chart-line"></i><span>Analytics</span></a>
+                <a class="inst-nav-item" data-section="settings"><i class="bi bi-gear"></i><span>Settings</span></a>
+            </nav>
+            <div class="inst-sidebar-footer">
+                <a href="learning.html" class="inst-nav-item"><i class="bi bi-arrow-left"></i><span>Back to Learning</span></a>
+            </div>
+        </aside>
+
+        <main class="inst-main">
+            <header class="inst-header">
+                <button class="inst-hamburger" id="instHamburger"><i class="bi bi-list"></i></button>
+                <div class="inst-header-search">
+                    <i class="bi bi-search"></i>
+                    <input type="search" placeholder="Search courses, students..." id="instSearch">
+                </div>
+                <div class="inst-header-actions">
+                    <button class="inst-header-btn" id="notifBtn"><i class="bi bi-bell"></i><span class="inst-badge">5</span></button>
+                    <button class="inst-header-btn"><i class="bi bi-envelope"></i><span class="inst-badge">3</span></button>
+                    <div class="inst-header-profile" id="headerProfile">
+                        <div class="inst-avatar inst-avatar-sm">S</div>
+                        <span>Dr. Sarah</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="inst-content" id="instContent">
+                <!-- Overview Section -->
+                <section class="inst-section active" id="sec-overview">
+                    <div class="inst-welcome">
+                        <div>
+                            <h1>Welcome Back, <span id="welcomeName">Dr. Sarah</span> <span style="font-size:1.5rem;">&#x1F338;</span></h1>
+                            <p>Here's what's happening in your courses today.</p>
+                        </div>
+                        <div class="inst-welcome-actions">
+                            <button class="inst-btn inst-btn-primary" onclick="switchSection('courses');openCreateCourse()"><i class="bi bi-plus-lg"></i> Create Course</button>
+                            <button class="inst-btn inst-btn-outline" onclick="switchSection('live-classes')"><i class="bi bi-camera-video"></i> Start Live Class</button>
+                        </div>
+                    </div>
+
+                    <div class="inst-stats-grid" id="statsGrid">
+                        <div class="inst-stat-card">
+                            <div class="inst-stat-icon" style="background:rgba(212,175,55,0.1);color:#d4af37;"><i class="bi bi-people"></i></div>
+                            <div class="inst-stat-info"><div class="inst-stat-value" data-stat="students">1,254</div><div class="inst-stat-label">Total Students</div></div>
+                            <div class="inst-stat-change positive"><i class="bi bi-arrow-up"></i> 12%</div>
+                        </div>
+                        <div class="inst-stat-card">
+                            <div class="inst-stat-icon" style="background:rgba(90,122,96,0.1);color:#5a7a60;"><i class="bi bi-book"></i></div>
+                            <div class="inst-stat-info"><div class="inst-stat-value" data-stat="courses">6</div><div class="inst-stat-label">Active Courses</div></div>
+                            <div class="inst-stat-change positive"><i class="bi bi-arrow-up"></i> 2</div>
+                        </div>
+                        <div class="inst-stat-card">
+                            <div class="inst-stat-icon" style="background:rgba(74,144,217,0.1);color:#4a90d9;"><i class="bi bi-trophy"></i></div>
+                            <div class="inst-stat-info"><div class="inst-stat-value" data-stat="completion">92%</div><div class="inst-stat-label">Completion Rate</div></div>
+                            <div class="inst-stat-change positive"><i class="bi bi-arrow-up"></i> 3%</div>
+                        </div>
+                        <div class="inst-stat-card">
+                            <div class="inst-stat-icon" style="background:rgba(172,50,80,0.1);color:#ac3250;"><i class="bi bi-currency-dollar"></i></div>
+                            <div class="inst-stat-info"><div class="inst-stat-value" data-stat="revenue">GHS 8,450</div><div class="inst-stat-label">Monthly Revenue</div></div>
+                            <div class="inst-stat-change positive"><i class="bi bi-arrow-up"></i> 18%</div>
+                        </div>
+                    </div>
+
+                    <div class="inst-grid-2col">
+                        <div class="inst-card">
+                            <div class="inst-card-header"><h3>Recent Activity</h3></div>
+                            <div class="inst-activity-feed" id="activityFeed"></div>
+                        </div>
+                        <div class="inst-card">
+                            <div class="inst-card-header"><h3>Course Performance</h3></div>
+                            <div id="performanceChart" class="inst-chart-placeholder">
+                                <canvas id="perfCanvas" height="220"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="inst-grid-2col">
+                        <div class="inst-card">
+                            <div class="inst-card-header"><h3>Upcoming Classes</h3></div>
+                            <div id="upcomingClasses"></div>
+                        </div>
+                        <div class="inst-card">
+                            <div class="inst-card-header"><h3>Student Progress</h3></div>
+                            <div id="studentProgress"></div>
+                        </div>
+                    </div>
+
+                    <div class="inst-card">
+                        <div class="inst-card-header"><h3>Quick Actions</h3></div>
+                        <div class="inst-quick-actions" id="quickActions">
+                            <button class="inst-quick-btn" onclick="switchSection('courses');openCreateCourse()"><i class="bi bi-plus-circle"></i><span>Create Course</span></button>
+                            <button class="inst-quick-btn" onclick="switchSection('resources')"><i class="bi bi-upload"></i><span>Upload Lesson</span></button>
+                            <button class="inst-quick-btn" onclick="switchSection('live-classes')"><i class="bi bi-camera-video"></i><span>Start Live Class</span></button>
+                            <button class="inst-quick-btn" onclick="switchSection('assignments')"><i class="bi bi-journal-plus"></i><span>Create Quiz</span></button>
+                            <button class="inst-quick-btn" onclick="switchSection('discussions')"><i class="bi bi-megaphone"></i><span>Send Announcement</span></button>
+                            <button class="inst-quick-btn" onclick="switchSection('certificates')"><i class="bi bi-award"></i><span>Issue Certificate</span></button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- My Courses Section -->
+                <section class="inst-section" id="sec-courses">
+                    <div class="inst-section-header">
+                        <h2>My Courses</h2>
+                        <button class="inst-btn inst-btn-primary" onclick="openCreateCourse()"><i class="bi bi-plus-lg"></i> Create New Course</button>
+                    </div>
+                    <div class="inst-courses-grid" id="coursesGrid"></div>
+                </section>
+
+                <!-- Students Section -->
+                <section class="inst-section" id="sec-students">
+                    <div class="inst-section-header">
+                        <h2>Students</h2>
+                        <div class="inst-filter-group">
+                            <select id="studentCourseFilter" class="inst-select"><option value="all">All Courses</option></select>
+                            <select id="studentStatusFilter" class="inst-select"><option value="all">All Status</option><option value="active">Active</option><option value="completed">Completed</option><option value="inactive">Inactive</option></select>
+                        </div>
+                    </div>
+                    <div class="inst-card">
+                        <div class="inst-table-wrap">
+                            <table class="inst-table">
+                                <thead><tr><th>Student</th><th>Course</th><th>Progress</th><th>Last Active</th><th>Status</th></tr></thead>
+                                <tbody id="studentsBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Assignments Section -->
+                <section class="inst-section" id="sec-assignments">
+                    <div class="inst-section-header">
+                        <h2>Assignments</h2>
+                        <button class="inst-btn inst-btn-primary" onclick="openModal('assignment')"><i class="bi bi-plus-lg"></i> Create Assignment</button>
+                    </div>
+                    <div class="inst-stats-grid inst-stats-3">
+                        <div class="inst-stat-card mini"><div class="inst-stat-info"><div class="inst-stat-value">12</div><div class="inst-stat-label">Pending Submissions</div></div></div>
+                        <div class="inst-stat-card mini"><div class="inst-stat-info"><div class="inst-stat-value">156</div><div class="inst-stat-label">Graded</div></div></div>
+                        <div class="inst-stat-card mini"><div class="inst-stat-info"><div class="inst-stat-value">8</div><div class="inst-stat-label">New Today</div></div></div>
+                    </div>
+                    <div class="inst-card">
+                        <div class="inst-card-header"><h3>Recent Submissions</h3></div>
+                        <div class="inst-table-wrap">
+                            <table class="inst-table">
+                                <thead><tr><th>Student</th><th>Assignment</th><th>Course</th><th>Submitted</th><th>Status</th><th>Action</th></tr></thead>
+                                <tbody id="assignmentsBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Live Classes Section -->
+                <section class="inst-section" id="sec-live-classes">
+                    <div class="inst-section-header">
+                        <h2>Live Classes</h2>
+                        <button class="inst-btn inst-btn-primary" onclick="openModal('liveclass')"><i class="bi bi-plus-lg"></i> Schedule Class</button>
+                    </div>
+                    <div class="inst-grid-2col">
+                        <div class="inst-card">
+                            <div class="inst-card-header"><h3>Today's Classes</h3></div>
+                            <div id="todayClasses"></div>
+                        </div>
+                        <div class="inst-card">
+                            <div class="inst-card-header"><h3>Upcoming</h3></div>
+                            <div id="upcomingLiveClasses"></div>
+                        </div>
+                    </div>
+                    <div class="inst-card">
+                        <div class="inst-card-header"><h3>Recent Recordings</h3></div>
+                        <div id="recordingsList"></div>
+                    </div>
+                </section>
+
+                <!-- Discussions Section -->
+                <section class="inst-section" id="sec-discussions">
+                    <div class="inst-section-header"><h2>Discussion Forum</h2></div>
+                    <div class="inst-card" id="discussionsList"></div>
+                </section>
+
+                <!-- Resources Section -->
+                <section class="inst-section" id="sec-resources">
+                    <div class="inst-section-header">
+                        <h2>Resource Library</h2>
+                        <button class="inst-btn inst-btn-primary" onclick="openModal('resource')"><i class="bi bi-upload"></i> Upload Resource</button>
+                    </div>
+                    <div class="inst-resource-tabs">
+                        <button class="inst-tab active" data-rtype="all">All</button>
+                        <button class="inst-tab" data-rtype="video">Videos</button>
+                        <button class="inst-tab" data-rtype="pdf">PDFs</button>
+                        <button class="inst-tab" data-rtype="image">Images</button>
+                        <button class="inst-tab" data-rtype="template">Templates</button>
+                    </div>
+                    <div class="inst-resources-grid" id="resourcesGrid"></div>
+                </section>
+
+                <!-- Calendar Section -->
+                <section class="inst-section" id="sec-calendar">
+                    <div class="inst-section-header"><h2>Calendar</h2></div>
+                    <div class="inst-card">
+                        <div class="inst-calendar-header">
+                            <button class="inst-btn inst-btn-sm" id="calPrev"><i class="bi bi-chevron-left"></i></button>
+                            <h3 id="calMonth"></h3>
+                            <button class="inst-btn inst-btn-sm" id="calNext"><i class="bi bi-chevron-right"></i></button>
+                        </div>
+                        <div class="inst-calendar-grid" id="calendarGrid"></div>
+                    </div>
+                </section>
+
+                <!-- Certificates Section -->
+                <section class="inst-section" id="sec-certificates">
+                    <div class="inst-section-header">
+                        <h2>Certificates</h2>
+                        <button class="inst-btn inst-btn-primary" onclick="openModal('certificate')"><i class="bi bi-award"></i> Issue Certificate</button>
+                    </div>
+                    <div class="inst-card">
+                        <div class="inst-table-wrap">
+                            <table class="inst-table">
+                                <thead><tr><th>Student</th><th>Course</th><th>Issued</th><th>Certificate ID</th><th>Action</th></tr></thead>
+                                <tbody id="certificatesBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Analytics Section -->
+                <section class="inst-section" id="sec-analytics">
+                    <div class="inst-section-header">
+                        <h2>Analytics</h2>
+                        <div class="inst-filter-group">
+                            <select id="analyticsPeriod" class="inst-select"><option value="7">Last 7 Days</option><option value="30" selected>Last 30 Days</option><option value="90">Last 90 Days</option></select>
+                        </div>
+                    </div>
+                    <div class="inst-stats-grid" id="analyticsStats"></div>
+                    <div class="inst-grid-2col">
+                        <div class="inst-card"><div class="inst-card-header"><h3>Enrollment Trend</h3></div><canvas id="enrollCanvas" height="200"></canvas></div>
+                        <div class="inst-card"><div class="inst-card-header"><h3>Completion Rate</h3></div><canvas id="completionCanvas" height="200"></canvas></div>
+                    </div>
+                    <div class="inst-grid-2col">
+                        <div class="inst-card"><div class="inst-card-header"><h3>Quiz Scores</h3></div><canvas id="quizCanvas" height="200"></canvas></div>
+                        <div class="inst-card"><div class="inst-card-header"><h3>Revenue</h3></div><canvas id="revenueCanvas" height="200"></canvas></div>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section class="inst-section" id="sec-settings">
+                    <div class="inst-section-header"><h2>Settings</h2></div>
+                    <div class="inst-card">
+                        <div class="inst-settings-form" id="settingsForm">
+                            <div class="inst-form-group"><label>Display Name</label><input type="text" id="settingsName" value="Dr. Sarah"></div>
+                            <div class="inst-form-group"><label>Email</label><input type="email" id="settingsEmail" value="sarah@flower.com"></div>
+                            <div class="inst-form-group"><label>Bio</label><textarea id="settingsBio" rows="3">Professional florist with 15 years of experience in wedding and event design.</textarea></div>
+                            <div class="inst-form-group"><label>Specialty</label><input type="text" id="settingsSpecialty" value="Wedding Floristry, Floral Design"></div>
+                            <button class="inst-btn inst-btn-primary" onclick="saveSettings()">Save Changes</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div class="inst-modal-overlay" id="modalOverlay">
+        <div class="inst-modal" id="modalBox">
+            <div class="inst-modal-header">
+                <h3 id="modalTitle">Modal</h3>
+                <button class="inst-modal-close" onclick="closeModal()"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="inst-modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Notifications Panel -->
+    <div class="inst-notif-panel" id="notifPanel">
+        <div class="inst-notif-header"><h4>Notifications</h4><button class="inst-btn inst-btn-sm" onclick="clearNotifications()">Mark all read</button></div>
+        <div class="inst-notif-list" id="notifList"></div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.2"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=3.0"></script>
+    <script src="js/shared/ui.js?v=3.0"></script>
+    <script src="js/instructor-dashboard.js"></script>
+</body>
+</html>

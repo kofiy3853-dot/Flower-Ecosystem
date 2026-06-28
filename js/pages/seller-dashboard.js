@@ -30,7 +30,7 @@ class SellerDashboard {
             <div class="listing-card">
                 <img src="${l.image}" alt="${l.name}" />
                 <h3>${l.name}</h3>
-                <p>$${l.price.toFixed(2)}</p>
+                <p>$${Number(l.price).toFixed(2)}</p>
                 <button data-id="${l.id}" class="edit-listing">Edit</button>
                 <button data-id="${l.id}" class="delete-listing">Delete</button>
             </div>

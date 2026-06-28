@@ -10,8 +10,10 @@ async function initGardeningPage() {
     const month = now.getMonth() + 1;
     const season = seasonNames[month];
 
-    document.getElementById('seasonBadge').innerHTML = `${seasonEmojis[season]} Currently: ${season} · ${monthNames[month - 1]}`;
-    document.getElementById('taskMonthTitle').textContent = `${monthNames[month - 1]}'s Gardening Tasks`;
+    const seasonBadge = document.getElementById('seasonBadge');
+    if (seasonBadge) seasonBadge.innerHTML = `${seasonEmojis[season]} Currently: ${season} · ${monthNames[month - 1]}`;
+    const taskMonthTitle = document.getElementById('taskMonthTitle');
+    if (taskMonthTitle) taskMonthTitle.textContent = `${monthNames[month - 1]}'s Gardening Tasks`;
 
     loadStats(month);
     loadMonthlyTasks(month);
@@ -38,9 +40,12 @@ async function loadStats(month) {
         guideCount = Array.isArray(guides.guides) ? guides.guides.length : (Array.isArray(guides) ? guides.length : 0);
     } catch {}
 
-    document.getElementById('statTasks').textContent = taskCount || 12;
-    document.getElementById('statPlants').textContent = plantCount || 28;
-    document.getElementById('statGuides').textContent = guideCount || 8;
+    const taskEl = document.getElementById('statTasks');
+    const plantEl = document.getElementById('statPlants');
+    const guideEl = document.getElementById('statGuides');
+    if (taskEl) taskEl.textContent = taskCount || 12;
+    if (plantEl) plantEl.textContent = plantCount || 28;
+    if (guideEl) guideEl.textContent = guideCount || 8;
 }
 
 async function loadMonthlyTasks(month) {
@@ -53,7 +58,8 @@ async function loadMonthlyTasks(month) {
     }
 
     if (!Array.isArray(tasks) || !tasks.length) {
-        document.getElementById('taskList').innerHTML = '<li style="color:var(--text-muted);font-size:0.9rem;padding:0.5rem 0;">No tasks for this month. Check the full calendar for details.</li>';
+        const taskList = document.getElementById('taskList');
+        if (taskList) taskList.innerHTML = '<li style="color:var(--text-muted);font-size:0.9rem;padding:0.5rem 0;">No tasks for this month. Check the full calendar for details.</li>';
         return;
     }
 
@@ -66,7 +72,8 @@ async function loadMonthlyTasks(month) {
         harvesting: 'badge-outdoor'
     };
 
-    document.getElementById('taskList').innerHTML = tasks.slice(0, 6).map((t, i) => `
+    const taskList = document.getElementById('taskList');
+    if (taskList) taskList.innerHTML = tasks.slice(0, 6).map((t, i) => `
         <li class="task-item">
             <div class="task-check" onclick="this.classList.toggle('done');this.nextElementSibling.classList.toggle('done')"><i class="bi bi-check"></i></div>
             <span class="task-label">${escapeHtml(t.title)}</span>
@@ -85,7 +92,8 @@ async function loadBloomPreview() {
     }
 
     if (!Array.isArray(flowers) || !flowers.length) {
-        document.getElementById('bloomGrid').innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:2rem;">Loading bloom data...</div>';
+        const bloomGrid = document.getElementById('bloomGrid');
+        if (bloomGrid) bloomGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:2rem;">Loading bloom data...</div>';
         return;
     }
 
@@ -97,7 +105,8 @@ async function loadBloomPreview() {
 
     const display = seasonal.length >= 4 ? seasonal : flowers.slice(0, 4);
 
-    document.getElementById('bloomGrid').innerHTML = display.map(f => `
+    const bloomGrid = document.getElementById('bloomGrid');
+    if (bloomGrid) bloomGrid.innerHTML = display.map(f => `
         <a href="flower-knowledge.html?slug=${escapeHtml(f.slug || '')}" class="bloom-mini">
             <img src="${escapeHtml(f.image_url || 'https://images.unsplash.com/photo-1490750967868-88aa4f44baee?q=300&auto=format&fit=crop')}" alt="${escapeHtml(f.common_name || '')}" loading="lazy">
             <div class="info">

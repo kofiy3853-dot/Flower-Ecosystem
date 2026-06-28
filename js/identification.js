@@ -10,12 +10,12 @@ async function initIdentificationPage() {
     loadCategories();
     loadTopics();
 
-    document.getElementById('idSearchBtn').addEventListener('click', () => loadTopics());
-    document.getElementById('idSearch').addEventListener('keydown', (e) => {
+    document.getElementById('idSearchBtn')?.addEventListener('click', () => loadTopics());
+    document.getElementById('idSearch')?.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') loadTopics();
     });
 
-    document.getElementById('categoryTabs').addEventListener('click', (e) => {
+    document.getElementById('categoryTabs')?.addEventListener('click', (e) => {
         const tab = e.target.closest('.category-tab');
         if (!tab) return;
         document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
@@ -34,12 +34,14 @@ async function loadCategories() {
         categories = [];
     }
     const tabs = document.getElementById('categoryTabs');
+    if (!tabs) return;
     tabs.innerHTML = `<button class="category-tab active" data-slug="">All Topics</button>` +
         categories.map(c => `<button class="category-tab" data-slug="${escapeHtml(c.slug || '')}">${c.icon || ''} ${escapeHtml(c.name)}</button>`).join('');
 }
 
 async function loadTopics() {
-    const search = document.getElementById('idSearch').value.trim();
+    const searchEl = document.getElementById('idSearch');
+    const search = searchEl ? searchEl.value.trim() : '';
     const params = new URLSearchParams();
     if (currentCategory) params.set('category', currentCategory);
     if (search) params.set('search', search);
@@ -53,6 +55,7 @@ async function loadTopics() {
     }
 
     const grid = document.getElementById('topicsGrid');
+    if (!grid) return;
     if (!topics.length) {
         grid.innerHTML = '<div class="empty-state"><i class="bi bi-search"></i><h3>No topics found</h3><p>Try a different search or category.</p></div>';
         return;

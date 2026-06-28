@@ -18,12 +18,12 @@ async function initCareGuidesPage() {
     loadCategories();
     loadGuides();
 
-    document.getElementById('cgSearchBtn').addEventListener('click', () => { currentPage = 1; loadGuides(); });
-    document.getElementById('cgSearch').addEventListener('keydown', (e) => {
+    document.getElementById('cgSearchBtn')?.addEventListener('click', () => { currentPage = 1; loadGuides(); });
+    document.getElementById('cgSearch')?.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') { currentPage = 1; loadGuides(); }
     });
 
-    document.getElementById('categoryTabs').addEventListener('click', (e) => {
+    document.getElementById('categoryTabs')?.addEventListener('click', (e) => {
         const tab = e.target.closest('.category-tab');
         if (!tab) return;
         document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
@@ -33,7 +33,7 @@ async function initCareGuidesPage() {
         loadGuides();
     });
 
-    document.getElementById('difficultyFilters').addEventListener('click', (e) => {
+    document.getElementById('difficultyFilters')?.addEventListener('click', (e) => {
         const btn = e.target.closest('.filter-btn');
         if (!btn) return;
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -53,12 +53,14 @@ async function loadCategories() {
         categories = [];
     }
     const tabs = document.getElementById('categoryTabs');
+    if (!tabs) return;
     tabs.innerHTML = `<button class="category-tab active" data-slug="">All Guides</button>` +
         categories.map(c => `<button class="category-tab" data-slug="${escapeHtml(c.slug || '')}">${c.icon || ''} ${escapeHtml(c.name)}</button>`).join('');
 }
 
 async function loadGuides() {
-    const search = document.getElementById('cgSearch').value.trim();
+    const searchEl = document.getElementById('cgSearch');
+    const search = searchEl ? searchEl.value.trim() : '';
     const params = new URLSearchParams({ sort: currentSort, page: currentPage, limit: 20 });
     if (currentCategory) params.set('category', currentCategory);
     if (currentDifficulty) params.set('difficulty', currentDifficulty);
@@ -73,6 +75,7 @@ async function loadGuides() {
     }
 
     const grid = document.getElementById('guidesGrid');
+    if (!grid) return;
     if (!data.guides || !data.guides.length) {
         grid.innerHTML = '<div class="empty-state"><i class="bi bi-flower1"></i><h3>No care guides found</h3><p>Try a different search or category.</p></div>';
         document.getElementById('pagination').innerHTML = '';

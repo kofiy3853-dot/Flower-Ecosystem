@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
-const { asyncHandler, upload, pool, dbAvailable, readJSON } = require('./middleware');
+const { asyncHandler, upload, pool, dbAvailable, readJSON, requireAuth } = require('./middleware');
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY;
 
@@ -33,7 +33,7 @@ function parseJsonResponse(content) {
 
 // ─── Existing endpoints ────────────────────────────────────────────────────
 
-router.post('/analyze-flower', upload.single('image'), asyncHandler(async (req, res) => {
+router.post('/analyze-flower', requireAuth, upload.single('image'), asyncHandler(async (req, res) => {
     if (!OPENROUTER_API_KEY) return res.status(500).json({ error: 'OpenRouter API key not configured' });
 
     let imageUrl = null;
@@ -109,7 +109,7 @@ router.post('/chat', asyncHandler(async (req, res) => {
 
 // ─── NEW: Flower Expert endpoint ──────────────────────────────────────────
 
-router.post('/flower-expert', upload.single('image'), asyncHandler(async (req, res) => {
+router.post('/flower-expert', requireAuth, upload.single('image'), asyncHandler(async (req, res) => {
     if (!OPENROUTER_API_KEY) return res.status(500).json({ error: 'OpenRouter API key not configured' });
 
     let imageUrl = null;

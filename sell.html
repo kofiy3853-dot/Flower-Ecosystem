@@ -124,30 +124,132 @@
                 <h2>Create Your Seller Account</h2>
                 <p class="section-subtitle">Free for 30 days. No credit card required.</p>
             </div>
-            <form class="reveal-up" id="sellerSignupForm" style="background:var(--bg-white); padding:2.5rem; border-radius:12px; box-shadow:var(--shadow-md); margin-top:1rem;" novalidate>
-                <div style="margin-bottom:1.25rem;">
-                    <label for="sellerName" style="display:block; font-weight:500; margin-bottom:0.5rem; font-size:0.9rem;">Full Name</label>
-                    <input type="text" id="sellerName" placeholder="Your name" style="width:100%; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:6px; font-family:var(--font-sans); font-size:0.95rem; background:var(--bg-main); color:var(--text-main);" required>
+            <form class="reveal-up" id="sellerSignupForm" style="background:var(--bg-white); padding:2.5rem; border-radius:12px; box-shadow:var(--shadow-md); margin-top:1rem;" novalidate enctype="multipart/form-data">
+                <!-- Profile Picture -->
+                <div style="text-align:center; margin-bottom:1.5rem;">
+                    <div id="avatarPreview" style="width:100px; height:100px; border-radius:50%; background:var(--bg-light); border:3px dashed var(--border-color); display:flex; align-items:center; justify-content:center; margin:0 auto 0.75rem; cursor:pointer; overflow:hidden; transition:border-color 0.2s;" onclick="document.getElementById('sellerAvatar').click()">
+                        <i class="bi bi-camera" style="font-size:1.5rem; color:var(--text-light);"></i>
+                    </div>
+                    <input type="file" id="sellerAvatar" accept="image/*" style="display:none;" onchange="previewAvatar(this)">
+                    <label style="font-size:0.85rem; color:var(--primary-color); cursor:pointer; font-weight:500;">Upload Profile Picture</label>
                 </div>
-                <div style="margin-bottom:1.25rem;">
-                    <label for="sellerEmail" style="display:block; font-weight:500; margin-bottom:0.5rem; font-size:0.9rem;">Email Address</label>
-                    <input type="email" id="sellerEmail" placeholder="you@example.com" style="width:100%; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:6px; font-family:var(--font-sans); font-size:0.95rem; background:var(--bg-main); color:var(--text-main);" required>
+
+                <!-- Personal Info -->
+                <h3 style="font-family:'Playfair Display',serif; font-size:1.1rem; margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border-color);">Personal Information</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                    <div>
+                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">First Name *</label>
+                        <input type="text" id="sellerFirstName" placeholder="First name" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
+                    </div>
+                    <div>
+                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Last Name *</label>
+                        <input type="text" id="sellerLastName" placeholder="Last name" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
+                    </div>
                 </div>
-                <div style="margin-bottom:1.25rem;">
-                    <label for="sellerShopName" style="display:block; font-weight:500; margin-bottom:0.5rem; font-size:0.9rem;">Shop Name</label>
-                    <input type="text" id="sellerShopName" placeholder="Your shop name" style="width:100%; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:6px; font-family:var(--font-sans); font-size:0.95rem; background:var(--bg-main); color:var(--text-main);" required>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Email Address *</label>
+                    <input type="email" id="sellerEmail" placeholder="you@example.com" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
                 </div>
-                <div style="margin-bottom:2rem;">
-                    <label for="sellerType" style="display:block; font-weight:500; margin-bottom:0.5rem; font-size:0.9rem;">What do you sell?</label>
-                    <select id="sellerType" style="width:100%; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:6px; font-family:var(--font-sans); font-size:0.95rem; background:var(--bg-main); color:var(--text-main);">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Password *</label>
+                    <input type="password" id="sellerPassword" placeholder="Min. 8 characters" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required minlength="8">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Phone Number *</label>
+                    <input type="tel" id="sellerPhone" placeholder="+233 XX XXX XXXX" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
+                </div>
+
+                <!-- Location -->
+                <h3 style="font-family:'Playfair Display',serif; font-size:1.1rem; margin:1.5rem 0 1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border-color);">Location</h3>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Address / Area *</label>
+                    <input type="text" id="sellerLocation" placeholder="e.g. East Legon, Accra" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                    <div>
+                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">City *</label>
+                        <input type="text" id="sellerCity" placeholder="e.g. Accra" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
+                    </div>
+                    <div>
+                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">State / Region</label>
+                        <input type="text" id="sellerState" placeholder="e.g. Greater Accra" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                    <div>
+                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Country *</label>
+                        <select id="sellerCountry" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
+                            <option value="">Select country</option>
+                            <option value="Ghana" selected>Ghana</option>
+                            <option value="Nigeria">Nigeria</option>
+                            <option value="Kenya">Kenya</option>
+                            <option value="South Africa">South Africa</option>
+                            <option value="Tanzania">Tanzania</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Zip / Postal Code</label>
+                        <input type="text" id="sellerZip" placeholder="e.g. 00233" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
+                    </div>
+                </div>
+
+                <!-- Business Info -->
+                <h3 style="font-family:'Playfair Display',serif; font-size:1.1rem; margin:1.5rem 0 1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border-color);">Business Information</h3>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Business / Shop Name *</label>
+                    <input type="text" id="sellerShopName" placeholder="Your shop name" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">What do you sell? *</label>
+                    <select id="sellerType" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
+                        <option value="">Select type</option>
                         <option>Cut flowers & bouquets</option>
                         <option>Indoor plants & succulents</option>
                         <option>Dried & artificial flowers</option>
                         <option>Seeds & bulbs</option>
                         <option>Floristry supplies</option>
+                        <option>Wedding & event flowers</option>
+                        <option>Gift arrangements</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary w-100" id="sellerSignupBtn" style="width:100%; padding:0.9rem; font-size:1rem;">Create Free Account ?</button>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                    <div>
+                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Business Phone</label>
+                        <input type="tel" id="sellerBusinessPhone" placeholder="+233 XX XXX XXXX" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
+                    </div>
+                    <div>
+                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Business Email</label>
+                        <input type="email" id="sellerBusinessEmail" placeholder="shop@example.com" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
+                    </div>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Website</label>
+                    <input type="url" id="sellerWebsite" placeholder="https://yourshop.com" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">About Your Shop</label>
+                    <textarea id="sellerDescription" rows="3" placeholder="Tell customers about your flowers, specialties, and what makes you unique..." style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main); resize:vertical;"></textarea>
+                </div>
+
+                <!-- Social Links -->
+                <h3 style="font-family:'Playfair Display',serif; font-size:1.1rem; margin:1.5rem 0 1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border-color);">Social Media (Optional)</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-bottom:2rem;">
+                    <div>
+                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;"><i class="bi bi-instagram" style="margin-right:0.25rem;"></i> Instagram</label>
+                        <input type="url" id="sellerInstagram" placeholder="https://instagram.com/..." style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
+                    </div>
+                    <div>
+                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;"><i class="bi bi-facebook" style="margin-right:0.25rem;"></i> Facebook</label>
+                        <input type="url" id="sellerFacebook" placeholder="https://facebook.com/..." style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
+                    </div>
+                    <div>
+                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;"><i class="bi bi-twitter-x" style="margin-right:0.25rem;"></i> Twitter / X</label>
+                        <input type="url" id="sellerTwitter" placeholder="https://x.com/..." style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" id="sellerSignupBtn" style="width:100%; padding:0.9rem; font-size:1rem;">Create Seller Account</button>
                 <p style="text-align:center; font-size:0.85rem; color:var(--text-light); margin-top:1rem;">By signing up, you agree to our <a href="#" style="color:var(--primary-color);">Terms of Service</a> and <a href="#" style="color:var(--primary-color);">Privacy Policy</a>.</p>
                 <p id="signupMessage" class="form-message hidden" style="text-align:center; margin-top:1rem; color:var(--accent-green); font-weight:500;"></p>
             </form>
@@ -158,18 +260,79 @@
 
     <script src="js/shared/api.js?v=3.0"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.2"></script>
     <script src="js/shared/ui.js?v=3.0"></script>
     <script src="js/shared/cart.js?v=3.0"></script>
-    <script src="js/shared/components.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
     <script>
-        document.getElementById('sellerSignupForm').addEventListener('submit', function(e) {
+        function previewAvatar(input) {
+            const preview = document.getElementById('avatarPreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+                    preview.style.border = '3px solid var(--primary-color)';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        document.getElementById('sellerSignupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            const btn = document.getElementById('sellerSignupBtn');
             const msg = document.getElementById('signupMessage');
-            msg.textContent = '?? Welcome aboard! Check your email to activate your seller account.';
-            msg.classList.remove('hidden');
-            this.querySelector('button[type="submit"]').disabled = true;
+            btn.disabled = true;
+            btn.textContent = 'Creating account...';
+
+            const formData = new FormData();
+            formData.append('name', document.getElementById('sellerFirstName').value + ' ' + document.getElementById('sellerLastName').value);
+            formData.append('email', document.getElementById('sellerEmail').value);
+            formData.append('password', document.getElementById('sellerPassword').value);
+            formData.append('role', 'seller');
+            formData.append('phone', document.getElementById('sellerPhone').value);
+            formData.append('location', document.getElementById('sellerLocation').value);
+            formData.append('city', document.getElementById('sellerCity').value);
+            formData.append('state', document.getElementById('sellerState').value);
+            formData.append('country', document.getElementById('sellerCountry').value);
+            formData.append('zip_code', document.getElementById('sellerZip').value);
+            formData.append('business_name', document.getElementById('sellerShopName').value);
+            formData.append('business_type', document.getElementById('sellerType').value);
+            formData.append('business_phone', document.getElementById('sellerBusinessPhone').value);
+            formData.append('business_email', document.getElementById('sellerBusinessEmail').value);
+            formData.append('website', document.getElementById('sellerWebsite').value);
+            formData.append('description', document.getElementById('sellerDescription').value);
+            formData.append('social_instagram', document.getElementById('sellerInstagram').value);
+            formData.append('social_facebook', document.getElementById('sellerFacebook').value);
+            formData.append('social_twitter', document.getElementById('sellerTwitter').value);
+
+            const avatarInput = document.getElementById('sellerAvatar');
+            if (avatarInput.files[0]) {
+                formData.append('avatar', avatarInput.files[0]);
+            }
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Registration failed');
+
+                localStorage.setItem('flower-token', data.token);
+                localStorage.setItem('flower-user', JSON.stringify(data.user));
+
+                msg.innerHTML = '&#x2705; Welcome aboard! Your seller account has been created. Check your email to verify.';
+                msg.style.color = '#27ae60';
+                msg.classList.remove('hidden');
+                btn.textContent = 'Account Created!';
+            } catch (err) {
+                msg.innerHTML = '&#x274C; ' + err.message;
+                msg.style.color = '#e74c3c';
+                msg.classList.remove('hidden');
+                btn.disabled = false;
+                btn.textContent = 'Create Seller Account';
+            }
         });
     </script>
     <script>

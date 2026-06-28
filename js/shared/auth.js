@@ -29,6 +29,13 @@ function setLoggedIn(user, token) {
 }
 
 function logout() {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (token) {
+        fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'X-Requested-With': 'XMLHttpRequest' }
+        }).catch(() => {});
+    }
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(AUTH_KEY);
 }
@@ -48,6 +55,7 @@ async function apiLogin(email, password) {
 async function apiRegister(formData) {
     const res = await fetch('/api/auth/register', {
         method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
         body: formData
     });
     if (!res.ok) {
@@ -60,7 +68,18 @@ async function apiRegister(formData) {
 function openAuthModal(tab) {
     const existing = document.getElementById('auth-modal');
     if (!existing) {
-        loadAuthModal().then(() => openAuthModal(tab));
+        loadAuthModal();
+        const modal = document.getElementById('auth-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            if (tab === 'register') {
+                const regTab = document.getElementById('registerTabBtn');
+                if (regTab) regTab.click();
+            } else {
+                const loginTab = document.getElementById('loginTabBtn');
+                if (loginTab) loginTab.click();
+            }
+        }
         return;
     }
     existing.classList.remove('hidden');
@@ -281,12 +300,14 @@ function updateAccountUI() {
 }
 
 function initAuth() {
-    loadAuthModal();
-
     updateAccountUI();
 
-    // Re-run updateAccountUI after header component loads asynchronously
+    // Wire password toggles when auth-modal component loads via innerHTML
     document.addEventListener('componentLoaded', (e) => {
+        if (e.detail && e.detail.targetId === 'auth-modal-container') {
+            setupPasswordToggle('login-password', 'toggle-login-password');
+            setupPasswordToggle('register-password', 'toggle-register-password');
+        }
         if (e.detail && e.detail.targetId === 'header-container') {
             updateAccountUI();
         }
@@ -297,7 +318,12 @@ function initAuth() {
         (form) => {
             const email = form.querySelector('#login-email').value.trim();
             const password = form.querySelector('#login-password').value.trim();
-            if (!email || !password) return null;
+            const errorEl = form.querySelector('#loginApiError');
+            if (!email || !password) {
+                if (errorEl) { errorEl.textContent = 'Email and password are required'; errorEl.style.display = 'block'; }
+                return null;
+            }
+            if (errorEl) errorEl.style.display = 'none';
             return { email, password, name: email.split('@')[0] };
         }
     );
@@ -308,8 +334,15 @@ function initAuth() {
             const name = form.querySelector('#register-name').value.trim();
             const email = form.querySelector('#register-email').value.trim();
             const password = form.querySelector('#register-password').value.trim();
-            if (!name || !email || !password) return null;
-            if (password.length < 8) return null;
+            const role = form.querySelector('#register-role');
+            const errorEl = form.querySelector('#registerApiError') || form.querySelector('.auth-form .error-message:last-of-type');
+            function showErr(msg) {
+                if (errorEl) { errorEl.textContent = msg; errorEl.style.display = 'block'; }
+            }
+            if (!name || !email || !password) { showErr('All fields are required'); return null; }
+            if (password.length < 8) { showErr('Password must be at least 8 characters'); return null; }
+            if (role && !role.value) { showErr('Please select a role'); return null; }
+            if (errorEl) errorEl.style.display = 'none';
             return new FormData(form);
         }
     );
@@ -366,12 +399,7 @@ function initAuth() {
         if (sellLink && !isLoggedIn()) {
             e.preventDefault();
             sessionStorage.setItem('pending-sell', 'true');
-            const modal = document.getElementById('auth-modal');
-            if (modal) {
-                openAuthModal('register');
-            } else {
-                loadAuthModal().then(() => openAuthModal('register'));
-            }
+            openAuthModal('register');
         }
 
         // Handle tab switching links
@@ -380,11 +408,13 @@ function initAuth() {
             e.preventDefault();
             const loginTabBtn = document.getElementById('loginTabBtn');
             const registerTabBtn = document.getElementById('registerTabBtn');
-            if (loginTabBtn && registerTabBtn) {
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            if (loginTabBtn && registerTabBtn && loginTab && registerTab) {
                 loginTabBtn.classList.remove('active');
                 registerTabBtn.classList.add('active');
-                document.getElementById('login-tab').classList.remove('active');
-                document.getElementById('register-tab').classList.add('active');
+                loginTab.classList.remove('active');
+                registerTab.classList.add('active');
             }
             return;
         }
@@ -394,11 +424,13 @@ function initAuth() {
             e.preventDefault();
             const loginTabBtn = document.getElementById('loginTabBtn');
             const registerTabBtn = document.getElementById('registerTabBtn');
-            if (loginTabBtn && registerTabBtn) {
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            if (loginTabBtn && registerTabBtn && loginTab && registerTab) {
                 registerTabBtn.classList.remove('active');
                 loginTabBtn.classList.add('active');
-                document.getElementById('register-tab').classList.remove('active');
-                document.getElementById('login-tab').classList.add('active');
+                registerTab.classList.remove('active');
+                loginTab.classList.add('active');
             }
             return;
         }

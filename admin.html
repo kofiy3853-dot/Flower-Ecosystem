@@ -440,9 +440,9 @@
     <div class="admin-toast" id="adminToast"></div>
 
     <script src="js/shared/api.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.2"></script>
     <script src="js/shared/ui.js?v=3.0"></script>
-    <script src="js/shared/components.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
     <script>
         // Auth guard
         if (typeof isLoggedIn === 'undefined' || !isLoggedIn()) {
@@ -936,7 +936,7 @@
                     `<div class="analytics-card"><div class="big">${a.users??a.total_users??0}</div><div class="lbl">Total Users</div></div>`,
                     `<div class="analytics-card"><div class="big">${a.products??a.total_products??0}</div><div class="lbl">Active Products</div></div>`,
                     `<div class="analytics-card"><div class="big">${a.orders??a.total_orders??0}</div><div class="lbl">Total Orders</div></div>`,
-                    `<div class="analytics-card"><div class="big">$${parseFloat(a.revenue??a.total_revenue||0).toFixed(0)}</div><div class="lbl">Total Revenue</div></div>`
+                    `<div class="analytics-card"><div class="big">$${parseFloat(a.revenue??a.total_revenue??0).toFixed(0)}</div><div class="lbl">Total Revenue</div></div>`
                 ].join('');
 
                 const months = ['Jan','Feb','Mar','Apr','May','Jun'];

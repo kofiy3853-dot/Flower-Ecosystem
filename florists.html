@@ -82,8 +82,8 @@
     <div id="footer-container"></div>
     <div id="auth-modal-container"></div>
 
-    <script src="js/shared/components.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.2"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
     <script src="js/shared/api.js?v=3.0"></script>
@@ -102,13 +102,8 @@
                 return '?'.repeat(full) + (half ? '—' : '') + '?'.repeat(empty);
             }
 
-            function getLocations(list) {
-                const set = new Set();
-                list.forEach(f => {
-                    const parts = f.location.split(',');
-                    set.add(parts[parts.length - 1].trim());
-                });
-                return [...set].sort();
+            function getLocations() {
+                return ['Ghana'];
             }
 
             function render(list) {
@@ -119,46 +114,36 @@
                     grid.innerHTML = '<div class="dir-empty"><i class="bi bi-search"></i><h3>No florists found</h3><p>Try adjusting your search or filters.</p></div>';
                     return;
                 }
-                grid.innerHTML = list.map(f => `
+                grid.innerHTML = list.map(f => {
+                    const imgSrc = f.image || '';
+                    const initials = (f.name || 'S').charAt(0).toUpperCase();
+                    const avatar = imgSrc ? `<img loading="lazy" src="${imgSrc}" alt="${f.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div style="display:none;width:100%;height:100%;background:linear-gradient(135deg,var(--primary-color),#e84393);color:white;align-items:center;justify-content:center;font-size:2rem;font-weight:700;">${initials}</div>` : `<div style="width:100%;height:100%;background:linear-gradient(135deg,var(--primary-color),#e84393);color:white;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;">${initials}</div>`;
+                    return `
                     <div class="dir-card">
                         <div class="dir-img-wrap">
-                            <img loading="lazy" src="${f.image}" alt="${f.name}">
-                            <div class="dir-rating-badge"><span style="color:#f59e0b;">${stars(f.rating)}</span> ${f.rating}</div>
+                            ${avatar}
                         </div>
                         <div class="dir-body">
                             <h3>${f.name}</h3>
-                            <div class="dir-location"><i class="bi bi-geo-alt-fill"></i> ${f.location}</div>
-                            <span class="dir-specialty">${f.specialty}</span>
-                            <div class="dir-desc">${f.description}</div>
-                            <div class="dir-portfolio">
-                                ${f.portfolio.slice(0, 3).map(p => `<img loading="lazy" src="${p}" alt="Portfolio">`).join('')}
-                                ${f.portfolio.length > 3 ? `<span class="dir-portfolio-more">+${f.portfolio.length - 3}</span>` : ''}
-                            </div>
-                            <div class="dir-meta">
-                                <span><i class="bi bi-chat-dots"></i> ${f.reviews} reviews</span>
-                                <span><i class="bi bi-box-seam"></i> ${f.products} products</span>
-                            </div>
+                            <div class="dir-location"><i class="bi bi-geo-alt-fill"></i> Ghana</div>
+                            <span class="dir-specialty">${f.role || 'Seller'}</span>
                             <div class="dir-footer">
                                 <a href="florist-profile.html?id=${f.id}" class="btn btn-primary btn-sm" style="text-decoration:none;display:block;">View Profile</a>
-                                <button class="btn btn-outline btn-sm" onclick="window.location.href='mailto:${f.email}'"><i class="bi bi-envelope"></i> Contact</button>
+                                <button class="btn btn-outline btn-sm" onclick="window.location.href='messages.html?to=${f.id}'"><i class="bi bi-envelope"></i> Contact</button>
                             </div>
                         </div>
-                    </div>
-                `).join('');
+                    </div>`;
+                }).join('');
             }
 
             function filterAndSort() {
                 const q    = document.getElementById('floristSearch').value.toLowerCase().trim();
                 const sort = document.getElementById('floristSort').value;
                 let list = allFlorists.filter(f => {
-                    const matchSearch = !q || f.name.toLowerCase().includes(q) || f.location.toLowerCase().includes(q) || f.specialty.toLowerCase().includes(q);
-                    const matchSpec   = !activeSpec || f.specialty.toLowerCase().includes(activeSpec.toLowerCase());
-                    const matchLoc    = !activeLoc  || f.location.includes(activeLoc);
-                    return matchSearch && matchSpec && matchLoc;
+                    const matchSearch = !q || f.name.toLowerCase().includes(q);
+                    return matchSearch;
                 });
-                if (sort === 'rating')  list.sort((a, b) => b.rating - a.rating);
-                else if (sort === 'reviews') list.sort((a, b) => b.reviews - a.reviews);
-                else if (sort === 'name')    list.sort((a, b) => a.name.localeCompare(b.name));
+                if (sort === 'name')    list.sort((a, b) => a.name.localeCompare(b.name));
                 render(list);
             }
 

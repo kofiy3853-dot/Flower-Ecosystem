@@ -170,15 +170,21 @@ async function seedEvents() {
 
 async function seedCourses() {
     const courses = readJSON('courses');
+    let inserted = 0, updated = 0;
     for (const c of courses) {
         const exists = await pool.query('SELECT id FROM learning.courses WHERE title = $1', [c.title]);
-        if (exists.rows.length) continue;
+        if (exists.rows.length) {
+            await pool.query('UPDATE learning.courses SET thumbnail_url = $1 WHERE id = $2', [c.thumbnail, exists.rows[0].id]);
+            updated++;
+            continue;
+        }
         await pool.query(`
             INSERT INTO learning.courses (title, description, thumbnail_url, level, instructor, duration_minutes, price, rating, students_count, category, is_published)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true)
         `, [c.title, c.description, c.thumbnail, c.level || 'BEGINNER', c.instructor, c.duration || 0, c.price || 0, c.rating || 0, c.students || 0, c.category || '']);
+        inserted++;
     }
-    console.log(`  Seeded ${courses.length} courses`);
+    console.log(`  Courses: ${inserted} inserted, ${updated} updated`);
 }
 
 async function seedReviews() {

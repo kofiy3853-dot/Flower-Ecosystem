@@ -50,7 +50,7 @@ router.post('/conversations', requireAuth, asyncHandler(async (req, res) => {
     const { user_id } = req.body;
     if (!user_id) return res.status(400).json({ error: 'User ID required' });
     if (user_id === req.user.id) return res.status(400).json({ error: 'Cannot message yourself' });
-    const ids = [Number(req.user.id), Number(user_id)].sort((a, b) => a - b);
+    const ids = [req.user.id, user_id].sort();
     const p1 = ids[0];
     const p2 = ids[1];
     try {

@@ -1,7 +1,57 @@
 const router = require('express').Router();
+const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const { pool, JWT_SECRET, upload, uploadVideo, rateLimiter, asyncHandler, escapeHtml, dbAvailable, requireAuth } = require('./middleware');
+
+function getVideoDuration(filePath) {
+    return new Promise((resolve) => {
+        try {
+            const fd = fs.openSync(filePath, 'r');
+            const buf = Buffer.alloc(1024 * 1024);
+            const bytesRead = fs.readSync(fd, buf, 0, buf.length, 0);
+            fs.closeSync(fd);
+            const data = buf.slice(0, bytesRead);
+
+            let offset = 0;
+            while (offset < data.length - 8) {
+                let boxSize = data.readUInt32BE(offset);
+                const boxType = data.toString('ascii', offset + 4, offset + 8);
+                if (boxSize < 8) break;
+
+                if (boxType === 'moov') {
+                    return resolve(parseMoov(data, offset + 8, offset + boxSize));
+                }
+                if (boxType === 'mdat') break;
+                offset += boxSize;
+            }
+            resolve(null);
+        } catch { resolve(null); }
+    });
+}
+
+function parseMoov(data, start, end) {
+    let offset = start;
+    while (offset < end - 8) {
+        let boxSize = data.readUInt32BE(offset);
+        const boxType = data.toString('ascii', offset + 4, offset + 8);
+        if (boxSize < 8) break;
+        if (boxType === 'mvhd') {
+            const version = data[offset + 8];
+            let timescale, duration;
+            if (version === 0) {
+                timescale = data.readUInt32BE(offset + 20);
+                duration = data.readUInt32BE(offset + 24);
+            } else {
+                timescale = data.readUInt32BE(offset + 28);
+                duration = Number(data.readBigUInt64BE(offset + 32));
+            }
+            return timescale > 0 ? duration / timescale : null;
+        }
+        offset += boxSize;
+    }
+    return null;
+}
 
 // Newsletter
 router.post('/newsletter/subscribe', asyncHandler(async (req, res) => {
@@ -13,7 +63,7 @@ router.post('/newsletter/subscribe', asyncHandler(async (req, res) => {
 }));
 
 // AI Flower Scan — redirects to the real OpenAI-powered endpoint
-router.post('/ai/flower-scan', upload.single('image'), asyncHandler(async (req, res) => {
+router.post('/ai/flower-scan', requireAuth, upload.single('image'), asyncHandler(async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'Image file required' });
     const forwardReq = require('http').request({
         hostname: 'localhost',
@@ -45,6 +95,12 @@ router.post('/upload', requireAuth, upload.array('images', 10), asyncHandler(asy
 // Video Upload
 router.post('/upload/video', requireAuth, uploadVideo.single('video'), asyncHandler(async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No video file provided' });
+    const filePath = path.join(__dirname, '..', 'uploads', req.file.filename);
+    const duration = await getVideoDuration(filePath);
+    if (duration !== null && duration > 30) {
+        fs.unlinkSync(filePath);
+        return res.status(400).json({ error: `Video must be 30 seconds or less (your video is ${Math.round(duration)}s)` });
+    }
     const url = `/uploads/${req.file.filename}`;
     res.status(201).json({ url });
 }));
@@ -153,6 +209,22 @@ router.post('/reviews/:id/helpful', requireAuth, asyncHandler(async (req, res) =
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
     await pool.query('UPDATE platform.reviews SET helpful_count = helpful_count + 1 WHERE id = $1', [req.params.id]);
     res.json({ message: 'Marked as helpful' });
+}));
+
+router.get('/stats', asyncHandler(async (_, res) => {
+    if (!(await dbAvailable())) return res.json({ products: 0, sellers: 0, categories: 0, users: 0 });
+    const [products, sellers, categories, users] = await Promise.all([
+        pool.query('SELECT COUNT(*)::int AS count FROM marketplace.products WHERE is_active = true'),
+        pool.query("SELECT COUNT(DISTINCT id)::int AS count FROM auth.users WHERE role IN ('SELLER','FLORIST') AND is_active = true"),
+        pool.query('SELECT COUNT(*)::int AS count FROM marketplace.categories'),
+        pool.query('SELECT COUNT(*)::int AS count FROM auth.users WHERE is_active = true')
+    ]);
+    res.json({
+        products: products.rows[0].count,
+        sellers: sellers.rows[0].count,
+        categories: categories.rows[0].count,
+        users: users.rows[0].count
+    });
 }));
 
 module.exports = router;

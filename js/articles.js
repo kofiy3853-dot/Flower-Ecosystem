@@ -18,12 +18,12 @@ async function initArticlesPage() {
     loadFeaturedArticles();
     loadArticles();
 
-    document.getElementById('articleSearchBtn').addEventListener('click', () => { currentPage = 1; loadArticles(); });
-    document.getElementById('articleSearch').addEventListener('keydown', (e) => {
+    document.getElementById('articleSearchBtn')?.addEventListener('click', () => { currentPage = 1; loadArticles(); });
+    document.getElementById('articleSearch')?.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') { currentPage = 1; loadArticles(); }
     });
 
-    document.getElementById('categoryCards').addEventListener('click', (e) => {
+    document.getElementById('categoryCards')?.addEventListener('click', (e) => {
         const card = e.target.closest('.cat-card');
         if (!card) return;
         document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
@@ -33,7 +33,7 @@ async function initArticlesPage() {
         loadArticles();
     });
 
-    document.getElementById('sortTabs').addEventListener('click', (e) => {
+    document.getElementById('sortTabs')?.addEventListener('click', (e) => {
         const tab = e.target.closest('.sort-tab');
         if (!tab) return;
         document.querySelectorAll('.sort-tab').forEach(t => t.classList.remove('active'));
@@ -53,6 +53,7 @@ async function loadCategories() {
         categories = [];
     }
     const el = document.getElementById('categoryCards');
+    if (!el) return;
     el.innerHTML = `<div class="cat-card active" data-slug=""><span class="cat-icon">📚</span><span class="cat-name">All Articles</span></div>` +
         categories.map(c => `<div class="cat-card" data-slug="${escapeHtml(c.slug || '')}"><span class="cat-icon">${c.icon || '📄'}</span><span class="cat-name">${escapeHtml(c.name)}</span></div>`).join('');
 }
@@ -81,7 +82,8 @@ async function loadFeaturedArticles() {
 }
 
 async function loadArticles() {
-    const search = document.getElementById('articleSearch').value.trim();
+    const searchEl = document.getElementById('articleSearch');
+    const search = searchEl ? searchEl.value.trim() : '';
     const params = new URLSearchParams({ sort: currentSort, page: currentPage, limit: 20 });
     if (currentCategory) params.set('category', currentCategory);
     if (search) params.set('search', search);
@@ -95,6 +97,7 @@ async function loadArticles() {
     }
 
     const grid = document.getElementById('articlesGrid');
+    if (!grid) return;
     if (!data.articles || !data.articles.length) {
         grid.innerHTML = '<div class="empty-state"><i class="bi bi-journal-text"></i><h3>No articles found</h3><p>Try a different search or category.</p></div>';
         document.getElementById('pagination').innerHTML = '';

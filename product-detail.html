@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Product Details | Flower Ecosystem">
+    <meta property="og:type" content="product">
     <title>Product Detail | Flower Ecosystem</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,84 +12,120 @@
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
-        .pd-hero { padding:2rem 0 4rem; }
-        .pd-grid { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:start; }
-        .pd-gallery { position:sticky; top:100px; }
-        .pd-main-img { width:100%; height:500px; object-fit:cover; border-radius:12px; margin-bottom:1rem; border:1px solid var(--border-color); }
-        .pd-thumbs { display:flex; gap:0.75rem; }
-        .pd-thumb { width:76px; height:76px; object-fit:cover; border-radius:8px; cursor:pointer; border:2px solid transparent; transition:all 0.2s ease; }
-        .pd-thumb.active { border-color:var(--primary-color); }
-        .pd-meta { font-size:0.9rem; color:var(--text-light); margin-bottom:1rem; display:flex; gap:1rem; align-items:center; flex-wrap:wrap; }
-        .pd-title { font-size:2.2rem; margin-bottom:0.5rem; line-height:1.2; }
-        .pd-price { font-size:1.8rem; color:var(--primary-color); font-weight:600; margin-bottom:0.5rem; }
-        .pd-stock { font-size:0.85rem; color:var(--accent-green); margin-bottom:1.5rem; }
-        .pd-desc { font-size:1rem; color:var(--text-light); line-height:1.7; margin-bottom:2rem; }
-        .pd-features { list-style:none; padding:1.5rem 0; margin-bottom:2rem; border-top:1px solid var(--border-color); border-bottom:1px solid var(--border-color); }
-        .pd-features li { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.6rem; font-size:0.9rem; color:var(--text-main); }
-        .pd-features i { color:var(--accent-green); font-size:1.1rem; }
-        .pd-qty { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; }
-        .pd-qty-btn { width:38px; height:38px; border:1px solid var(--border-color); background:var(--bg-light); border-radius:6px; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; justify-content:center; }
-        .pd-qty-input { width:56px; height:38px; text-align:center; border:1px solid var(--border-color); border-radius:6px; font-family:var(--font-sans); font-size:0.95rem; }
-        .pd-add-btn { width:100%; padding:0.9rem; font-size:1rem; display:flex; align-items:center; justify-content:center; gap:0.5rem; margin-bottom:1rem; }
-        .pd-seller { background:var(--bg-light); border-radius:10px; padding:1.25rem 1.5rem; display:flex; align-items:center; gap:1rem; border:1px solid var(--border-color); }
-        .pd-seller-avatar { width:48px; height:48px; border-radius:50%; background:var(--primary-color); color:white; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
-        .pd-reviews { margin-top:4rem; }
-        .pd-reviews h2 { font-size:1.4rem; margin-bottom:1.5rem; }
-        .pd-review-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; padding:1.25rem 1.5rem; margin-bottom:0.75rem; }
-        .pd-review-card .rv-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap; gap:0.5rem; }
-        .pd-review-card .rv-author { font-weight:600; font-size:0.95rem; }
-        .pd-review-card .rv-date { font-size:0.8rem; color:var(--text-light); }
-        .pd-review-card .rv-stars { color:#f59e0b; font-size:0.9rem; }
-        .pd-review-card .rv-text { font-size:0.9rem; color:var(--text-light); line-height:1.6; }
-        .pd-related { margin-top:4rem; padding-top:3rem; border-top:1px solid var(--border-color); }
-        .pd-related h2 { font-size:1.4rem; margin-bottom:1.5rem; }
-        .pd-related-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.25rem; }
-        .pd-related-item { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; overflow:hidden; transition:all 0.3s ease; text-decoration:none; color:inherit; }
-        .pd-related-item:hover { transform:translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,0.1); border-color:var(--primary-color); }
-        .pd-related-item img { width:100%; height:180px; object-fit:cover; }
-        .pd-related-item .r-body { padding:0.75rem 1rem 1rem; }
-        .pd-related-item .r-body h4 { font-size:0.95rem; margin-bottom:0.2rem; }
-        .pd-related-item .r-body .r-price { font-size:1.05rem; font-weight:600; color:var(--primary-color); }
-        @media(max-width:900px){ .pd-grid { grid-template-columns:1fr; gap:2rem; } .pd-main-img { height:400px; } .pd-gallery { position:static; } .pd-related-grid { grid-template-columns:repeat(2,1fr); } }
-        @media(max-width:480px){ .pd-related-grid { grid-template-columns:1fr; } }
+        .pd-breadcrumb{background:var(--bg-light);padding:.75rem 0;border-bottom:1px solid var(--border-color);font-size:.82rem;color:var(--text-light);}
+        .pd-breadcrumb a{color:var(--text-light);text-decoration:none;transition:color .2s;}
+        .pd-breadcrumb a:hover{color:var(--primary-color);}
+        .pd-main{padding:2rem 0 4rem;}
+        .pd-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;}
+        .pd-gallery{position:sticky;top:100px;}
+        .pd-main-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.08);transition:opacity .3s;}
+        .pd-thumbs{display:flex;gap:.6rem;margin-top:1rem;overflow-x:auto;padding-bottom:.25rem;}
+        .pd-thumb{width:72px;height:72px;object-fit:cover;border-radius:10px;cursor:pointer;border:2px solid transparent;transition:all .25s;opacity:.6;flex-shrink:0;}
+        .pd-thumb:hover{opacity:.85;}
+        .pd-thumb.active{border-color:var(--primary-color);opacity:1;box-shadow:0 2px 8px rgba(216,68,124,.25);}
+        .pd-video-wrap{margin-top:1rem;border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.1);display:none;}
+        .pd-video-wrap iframe,.pd-video-wrap video{width:100%;display:block;}
+        .pd-meta{font-size:.85rem;color:var(--text-light);margin-bottom:.75rem;display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;}
+        .pd-category{color:var(--primary-color);font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-size:.8rem;}
+        .pd-badge{background:var(--primary-color);color:#fff;padding:.2rem .55rem;border-radius:50px;font-size:.7rem;font-weight:600;}
+        .pd-title{font-family:'Playfair Display',serif;font-size:2rem;margin-bottom:.5rem;line-height:1.25;font-weight:700;}
+        .pd-rating{display:flex;align-items:center;gap:.35rem;font-size:.85rem;color:var(--text-light);margin-bottom:.75rem;}
+        .pd-rating .stars{color:#f59e0b;}
+        .pd-price{font-size:1.75rem;color:var(--primary-color);font-weight:700;margin-bottom:.5rem;}
+        .pd-price .old{font-size:1rem;color:var(--text-light);text-decoration:line-through;font-weight:400;margin-left:.5rem;}
+        .pd-price .discount{font-size:.85rem;color:#e74c3c;font-weight:600;margin-left:.5rem;}
+        .pd-stock{font-size:.85rem;color:#27ae60;margin-bottom:1.25rem;display:flex;align-items:center;gap:.35rem;}
+        .pd-stock.out{color:#e74c3c;}
+        .pd-desc{font-size:.95rem;color:var(--text-light);line-height:1.75;margin-bottom:1.5rem;}
+        .pd-features{list-style:none;padding:1.25rem 0;margin-bottom:1.5rem;border-top:1px solid var(--border-color);border-bottom:1px solid var(--border-color);}
+        .pd-features li{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;font-size:.88rem;color:var(--text-main);}
+        .pd-features li:last-child{margin-bottom:0;}
+        .pd-features i{color:#27ae60;font-size:1rem;}
+        .pd-qty{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;}
+        .pd-qty-btn{width:40px;height:40px;border:1.5px solid var(--border-color);background:var(--bg-light);border-radius:10px;cursor:pointer;font-size:1.15rem;display:flex;align-items:center;justify-content:center;transition:all .2s;color:var(--text-main);}
+        .pd-qty-btn:hover{background:var(--primary-color);color:#fff;border-color:var(--primary-color);}
+        .pd-qty-input{width:52px;height:40px;text-align:center;border:1.5px solid var(--border-color);border-radius:10px;font-size:.95rem;font-weight:600;color:var(--text-main);}
+        .pd-actions{display:flex;gap:.75rem;margin-bottom:1.5rem;}
+        .pd-add-btn{flex:1;padding:.95rem;font-size:1rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:.5rem;border-radius:12px;transition:all .3s;background:var(--primary-color);color:#fff;border:none;cursor:pointer;}
+        .pd-add-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(216,68,124,.3);}
+        .pd-add-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+        .pd-wishlist-btn{width:52px;height:52px;border:1.5px solid var(--border-color);background:var(--bg-white);border-radius:12px;cursor:pointer;font-size:1.25rem;display:flex;align-items:center;justify-content:center;transition:all .2s;color:var(--text-light);}
+        .pd-wishlist-btn:hover{border-color:#e74c3c;color:#e74c3c;}
+        .pd-wishlist-btn.active{background:#e74c3c;color:#fff;border-color:#e74c3c;}
+        .pd-cart-msg{text-align:center;color:#27ae60;font-weight:500;display:none;margin-bottom:1rem;padding:.6rem;background:rgba(39,174,96,.1);border-radius:8px;font-size:.9rem;}
+        .pd-seller{background:var(--bg-light);border-radius:12px;padding:1.15rem 1.25rem;display:flex;align-items:center;gap:1rem;border:1px solid var(--border-color);transition:border-color .2s;}
+        .pd-seller:hover{border-color:var(--primary-color);}
+        .pd-seller-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--primary-color),#e84393);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+        .pd-tabs{display:flex;gap:0;border-bottom:2px solid var(--border-color);margin-bottom:1.5rem;}
+        .pd-tab{padding:.75rem 1.5rem;border:none;background:none;cursor:pointer;font-size:.95rem;font-weight:500;color:var(--text-light);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;}
+        .pd-tab:hover{color:var(--primary-color);}
+        .pd-tab.active{color:var(--primary-color);border-bottom-color:var(--primary-color);}
+        .pd-tab-panel{display:none;}
+        .pd-tab-panel.active{display:block;}
+        .pd-review-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:.75rem;transition:border-color .2s;}
+        .pd-review-card:hover{border-color:var(--primary-color);}
+        .rv-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;flex-wrap:wrap;gap:.5rem;}
+        .rv-author{font-weight:600;font-size:.92rem;}
+        .rv-date{font-size:.78rem;color:var(--text-light);}
+        .rv-stars{color:#f59e0b;font-size:.88rem;}
+        .rv-text{font-size:.88rem;color:var(--text-light);line-height:1.65;}
+        .pd-related{margin-top:3rem;}
+        .pd-related h2{font-family:'Playfair Display',serif;font-size:1.35rem;margin-bottom:1.25rem;}
+        .pd-related-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.15rem;}
+        .pd-related-item{background:var(--bg-white);border:1px solid var(--border-color);border-radius:14px;overflow:hidden;transition:all .35s;text-decoration:none;color:inherit;}
+        .pd-related-item:hover{transform:translateY(-5px);box-shadow:0 10px 30px rgba(0,0,0,.08);border-color:transparent;}
+        .pd-related-item img{width:100%;height:170px;object-fit:cover;transition:transform .4s;}
+        .pd-related-item:hover img{transform:scale(1.04);}
+        .pd-related-item .r-body{padding:.85rem 1rem 1rem;}
+        .pd-related-item .r-body h4{font-size:.9rem;margin-bottom:.2rem;font-weight:600;line-height:1.35;}
+        .pd-related-item .r-body .r-price{font-size:1rem;font-weight:700;color:var(--primary-color);}
+        .pd-shipping{background:var(--bg-light);border-radius:12px;padding:1rem;margin-top:1rem;font-size:.85rem;}
+        .pd-shipping-item{display:flex;align-items:center;gap:.5rem;padding:.35rem 0;color:var(--text-main);}
+        .pd-shipping-item i{color:var(--primary-color);width:20px;}
+        @media(max-width:900px){
+            .pd-grid{grid-template-columns:1fr;gap:2rem;}
+            .pd-gallery{position:static;}
+            .pd-related-grid{grid-template-columns:repeat(2,1fr);}
+        }
+        @media(max-width:480px){
+            .pd-title{font-size:1.5rem;}
+            .pd-price{font-size:1.4rem;}
+            .pd-related-grid{grid-template-columns:1fr;}
+            .pd-actions{flex-direction:column;}
+        }
     </style>
 </head>
 <body>
     <div id="header-container"></div>
 
-    <!-- Breadcrumb -->
-    <div style="background:var(--bg-light); padding:0.75rem 0; border-bottom:1px solid var(--border-color); margin-top:65px;">
-        <div class="container" style="font-size:0.85rem; color:var(--text-light);">
-            <a href="index.html" style="color:var(--text-light);">Home</a>
-            <span style="margin:0 0.5rem;">›</span>
-            <a href="marketplace.html" style="color:var(--text-light);">Marketplace</a>
-            <span style="margin:0 0.5rem;">›</span>
-            <span id="breadcrumbTitle" style="color:var(--text-main);">Product</span>
+    <div class="pd-breadcrumb">
+        <div class="container">
+            <a href="index.html">Home</a> <span style="margin:0 .5rem;opacity:.5;">›</span>
+            <a href="shop.html">Shop</a> <span style="margin:0 .5rem;opacity:.5;">›</span>
+            <span id="pdBreadcrumb" style="color:var(--text-main);font-weight:500;"></span>
         </div>
     </div>
 
-    <!-- Product Details -->
-    <main class="pd-hero">
+    <main class="pd-main">
         <div class="container pd-grid">
             <!-- Gallery -->
-            <div class="pd-gallery reveal-up">
+            <div class="pd-gallery">
                 <img id="pdMainImg" src="" alt="Product Image" class="pd-main-img">
                 <div class="pd-thumbs" id="pdThumbs"></div>
-                <div id="pdVideo" style="display:none;margin-top:1rem;">
-                    <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;">
-                        <iframe id="pdVideoIframe" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allowfullscreen></iframe>
-                    </div>
+                <div class="pd-video-wrap" id="pdVideoWrap">
+                    <iframe id="pdVideoIframe" frameborder="0" allowfullscreen></iframe>
+                    <video id="pdVideoFile" controls style="display:none;"></video>
                 </div>
             </div>
 
             <!-- Info -->
-            <div class="reveal-up" style="animation-delay:0.1s;">
+            <div>
                 <div class="pd-meta">
-                    <span id="pdCategory" style="text-transform:uppercase; font-weight:600; color:var(--accent-green); letter-spacing:0.05em;"></span>
-                    <span id="pdBadge" style="background:var(--primary-color); color:white; padding:0.15rem 0.5rem; border-radius:4px; font-size:0.7rem; font-weight:600; display:none;"></span>
-                    <span id="pdRating"></span>
+                    <span class="pd-category" id="pdCategory"></span>
+                    <span class="pd-badge" id="pdBadge" style="display:none;"></span>
                 </div>
                 <h1 id="pdTitle" class="pd-title">Loading...</h1>
+                <div class="pd-rating" id="pdRating"></div>
                 <div id="pdPrice" class="pd-price"></div>
                 <div id="pdStock" class="pd-stock"><i class="bi bi-check-circle-fill"></i> In Stock</div>
                 <p id="pdDesc" class="pd-desc"></p>
@@ -102,60 +139,76 @@
 
                 <div class="pd-qty">
                     <span style="font-weight:500;">Quantity:</span>
-                    <button class="pd-qty-btn" onclick="updateQty(-1)" aria-label="Decrease quantity">−</button>
-                    <input type="number" id="pdQty" class="pd-qty-input" value="1" min="1" aria-label="Quantity" readonly>
-                    <button class="pd-qty-btn" onclick="updateQty(1)" aria-label="Increase quantity">+</button>
+                    <button class="pd-qty-btn" onclick="updateQty(-1)">−</button>
+                    <input type="number" id="pdQty" class="pd-qty-input" value="1" min="1" readonly>
+                    <button class="pd-qty-btn" onclick="updateQty(1)">+</button>
                 </div>
 
-                <button class="btn btn-primary pd-add-btn" id="pdAddBtn">
-                    <i class="bi bi-cart-plus"></i> Add to Cart
-                </button>
-                <div id="pdCartMsg" style="text-align:center; color:var(--accent-green); font-weight:500; display:none; margin-bottom:1rem;">✅ Added to cart!</div>
+                <div class="pd-actions">
+                    <button class="pd-add-btn" id="pdAddBtn"><i class="bi bi-cart-plus"></i> Add to Cart</button>
+                    <button class="pd-wishlist-btn" id="pdWishlistBtn"><i class="bi bi-heart"></i></button>
+                </div>
+                <div id="pdCartMsg" class="pd-cart-msg"><i class="bi bi-check-circle"></i> Added to cart!</div>
 
-                <!-- Seller -->
                 <div class="pd-seller">
-                    <div class="pd-seller-avatar">👤</div>
-                    <div>
-                        <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:0.15rem;">Sold by</p>
-                        <h4 id="pdSeller" style="margin-bottom:0.15rem; font-size:1rem;"></h4>
-                        <a id="pdSellerLink" href="#" style="font-size:0.85rem; color:var(--primary-color);">View Seller Profile →</a>
+                    <div class="pd-seller-avatar"><i class="bi bi-person-fill"></i></div>
+                    <div style="flex:1;">
+                        <p style="font-size:.8rem;color:var(--text-light);margin-bottom:.1rem;">Sold by</p>
+                        <h4 id="pdSeller" style="margin-bottom:.15rem;font-size:.95rem;"></h4>
+                        <a id="pdSellerLink" href="#" style="font-size:.82rem;color:var(--primary-color);text-decoration:none;font-weight:500;">View Seller Profile →</a>
                     </div>
                 </div>
-            </div>
-        </div>
-    </main>
 
-    <!-- Reviews -->
-    <section class="section-padding bg-light" style="padding-top:3rem; padding-bottom:3rem;">
-        <div class="container">
-            <div class="pd-reviews">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
-                    <h2 style="margin:0;">Customer Reviews</h2>
-                    <span id="pdReviewSummary" style="font-size:0.9rem; color:var(--text-light);"></span>
+                <div class="pd-shipping">
+                    <div class="pd-shipping-item"><i class="bi bi-truck"></i> Free shipping on orders over GHS 100</div>
+                    <div class="pd-shipping-item"><i class="bi bi-clock"></i> Estimated delivery: 1-3 business days</div>
+                    <div class="pd-shipping-item"><i class="bi bi-shield-check"></i> Secure payment checkout</div>
                 </div>
-                <div id="pdReviewList" style="margin-top:1.5rem;"></div>
             </div>
         </div>
-    </section>
 
-    <!-- Related Products -->
-    <section class="section-padding">
+        <!-- Tabs: Description / Reviews / Shipping -->
+        <div class="container" style="margin-top:3rem;">
+            <div class="pd-tabs">
+                <button class="pd-tab active" data-tab="description">Description</button>
+                <button class="pd-tab" data-tab="reviews">Reviews (<span id="pdReviewCount">0</span>)</button>
+                <button class="pd-tab" data-tab="shipping">Shipping & Returns</button>
+            </div>
+            <div class="pd-tab-panel active" id="tab-description">
+                <div id="pdFullDesc" style="font-size:.95rem;color:var(--text-light);line-height:1.8;"></div>
+            </div>
+            <div class="pd-tab-panel" id="tab-reviews">
+                <div id="pdReviewList"></div>
+            </div>
+            <div class="pd-tab-panel" id="tab-shipping">
+                <div style="font-size:.95rem;color:var(--text-light);line-height:1.8;">
+                    <h3 style="font-family:'Playfair Display',serif;margin-bottom:1rem;">Shipping Policy</h3>
+                    <p>We offer free shipping on all orders over GHS 100. Standard delivery takes 1-3 business days. Express delivery (same-day) is available in major cities for an additional fee.</p>
+                    <h3 style="font-family:'Playfair Display',serif;margin:1.5rem 0 1rem;">Return Policy</h3>
+                    <p>We accept returns within 7 days of delivery. Flowers must be in their original condition. If you receive damaged or incorrect items, contact us immediately for a full refund or replacement.</p>
+                    <h3 style="font-family:'Playfair Display',serif;margin:1.5rem 0 1rem;">Freshness Guarantee</h3>
+                    <p>All flowers come with our 100% freshness guarantee. If your flowers don't last at least 5 days, we'll replace them free of charge.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Products -->
         <div class="container">
-            <div class="pd-related" style="border-top:none; padding-top:0; margin-top:0;">
+            <div class="pd-related">
                 <h2>You May Also Like</h2>
                 <div class="pd-related-grid" id="pdRelated"></div>
             </div>
         </div>
-    </section>
+    </main>
 
     <div id="footer-container"></div>
 
     <script src="js/shared/api.js?v=3.0"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.2"></script>
     <script src="js/shared/ui.js?v=3.0"></script>
     <script src="js/shared/cart.js?v=3.0"></script>
-    <script src="js/shared/components.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
     <script>
         let currentProduct = null;
@@ -178,9 +231,9 @@
             const f = Math.floor(r);
             const h = r - f >= 0.5;
             let s = '';
-            for (let i = 0; i < f; i++) s += '<i class="bi bi-star-fill" style="color:#f59e0b;"></i>';
-            if (h) s += '<i class="bi bi-star-half" style="color:#f59e0b;"></i>';
-            for (let i = 0; i < 5 - f - (h ? 1 : 0); i++) s += '<i class="bi bi-star" style="color:var(--border-color);"></i>';
+            for (let i = 0; i < f; i++) s += '<i class="bi bi-star-fill"></i>';
+            if (h) s += '<i class="bi bi-star-half"></i>';
+            for (let i = 0; i < 5 - f - (h ? 1 : 0); i++) s += '<i class="bi bi-star"></i>';
             return s;
         }
 
@@ -196,8 +249,9 @@
 
         function renderReviews(list) {
             const container = document.getElementById('pdReviewList');
-            if (!list || list.length === 0) {
-                container.innerHTML = '<p style="color:var(--text-light); padding:1rem 0;">No reviews yet. Be the first to review this product!</p>';
+            document.getElementById('pdReviewCount').textContent = list.length;
+            if (!list.length) {
+                container.innerHTML = '<p style="color:var(--text-light);padding:1rem 0;">No reviews yet. Be the first to review this product!</p>';
                 return;
             }
             container.innerHTML = list.map(r => `
@@ -214,10 +268,20 @@
             `).join('');
         }
 
+        // Tabs
+        document.querySelectorAll('.pd-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.pd-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.pd-tab-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+
         (async () => {
             const params = new URLSearchParams(window.location.search);
             const id = params.get('id');
-            if (!id) { window.location.href = 'marketplace.html'; return; }
+            if (!id) { window.location.href = 'shop.html'; return; }
 
             let p;
             try {
@@ -225,12 +289,13 @@
                 if (!p || p.error) throw new Error(p?.error || 'Not found');
             } catch (e) {
                 document.getElementById('pdTitle').textContent = 'Product Not Found';
-                document.getElementById('pdDesc').textContent = 'The product you\'re looking for doesn\'t exist or has been removed.';
+                document.getElementById('pdDesc').textContent = "The product you're looking for doesn't exist or has been removed.";
                 return;
             }
 
             currentProduct = p;
             const price = Number(p.price) || 0;
+            const oldPrice = Number(p.oldPrice) || 0;
             const rating = Number(p.rating) || 0;
             const reviewCount = Number(p.reviews) || 0;
             const categoryName = p.category_name || p.category || '';
@@ -238,71 +303,70 @@
             const sellerId = p.seller_id || '';
             const videoUrl = p.video_url || p.videoUrl || null;
             const images = (p.images && p.images.length) ? p.images : (p.image ? [p.image] : []);
+            const discount = oldPrice > price ? Math.round((1 - price / oldPrice) * 100) : 0;
 
             document.title = `${p.name} – Flower Ecosystem`;
-            document.getElementById('breadcrumbTitle').textContent = p.name;
+            document.getElementById('pdBreadcrumb').textContent = p.name;
 
             // Gallery
             if (images.length) {
                 document.getElementById('pdMainImg').src = images[0];
                 document.getElementById('pdThumbs').innerHTML = images.map((url, i) =>
-                    `<img src="${escapeHtml(url)}" alt="Product thumbnail" class="pd-thumb ${i === 0 ? 'active' : ''}" onclick="setMainImg('${escapeHtml(url)}', this)" role="button" tabindex="0">`
+                    `<img src="${escapeHtml(url)}" alt="Thumbnail" class="pd-thumb ${i === 0 ? 'active' : ''}" onclick="setMainImg('${escapeHtml(url)}', this)">`
                 ).join('');
             }
 
             // Video
-            const videoDiv = document.getElementById('pdVideo');
-            const videoIframe = document.getElementById('pdVideoIframe');
             if (videoUrl) {
                 const embed = getVideoEmbedUrl(videoUrl);
+                const wrap = document.getElementById('pdVideoWrap');
                 if (embed) {
-                    videoIframe.src = embed;
-                    videoDiv.style.display = 'block';
+                    document.getElementById('pdVideoIframe').src = embed;
+                    wrap.style.display = 'block';
+                } else {
+                    const vf = document.getElementById('pdVideoFile');
+                    vf.src = videoUrl;
+                    vf.style.display = 'block';
+                    wrap.style.display = 'block';
                 }
             }
 
             // Info
             document.getElementById('pdTitle').textContent = p.name;
-            document.getElementById('pdPrice').textContent = '$' + price.toFixed(2);
+            const currency = p.currency || 'GHS';
+            document.getElementById('pdPrice').innerHTML = `${currency} ${price.toFixed(2)}${oldPrice > price ? `<span class="old">${currency} ${oldPrice.toFixed(2)}</span><span class="discount">-${discount}%</span>` : ''}`;
             document.getElementById('pdDesc').textContent = p.description || '';
+            document.getElementById('pdFullDesc').textContent = p.description || 'No detailed description available.';
             document.getElementById('pdCategory').textContent = categoryName;
             document.getElementById('pdSeller').textContent = sellerName;
-
-            // Seller link
-            const sellerLink = document.getElementById('pdSellerLink');
-            sellerLink.href = sellerId ? `florist-profile.html?id=${sellerId}` : 'florists.html';
+            document.getElementById('pdSellerLink').href = sellerId ? `florist-profile.html?id=${sellerId}` : 'florists.html';
 
             // Badge
-            const badgeEl = document.getElementById('pdBadge');
             if (p.badge) {
+                const badgeEl = document.getElementById('pdBadge');
                 badgeEl.textContent = p.badge;
                 badgeEl.style.display = 'inline';
             }
 
             // Rating
-            const ratingEl = document.getElementById('pdRating');
             if (rating > 0) {
-                ratingEl.innerHTML = `${renderStars(rating)} <span style="font-size:0.85rem; color:var(--text-light);">${rating.toFixed(1)} (${reviewCount} reviews)</span>`;
+                document.getElementById('pdRating').innerHTML = `<span class="stars">${renderStars(rating)}</span> <span>${rating.toFixed(1)}</span> <span>(${reviewCount} reviews)</span>`;
             }
 
-            // Reviews section
+            // Reviews
             const reviews = p.reviewList || p.reviews || [];
-            if (reviews.length) {
-                document.getElementById('pdReviewSummary').innerHTML =
-                    `<strong>${rating.toFixed(1)}</strong> out of 5 · <span style="color:var(--text-light)">${reviewCount} reviews</span>`;
-            }
             renderReviews(reviews);
 
             // Stock
             const stockEl = document.getElementById('pdStock');
             if (p.stock_quantity <= 0) {
-                stockEl.innerHTML = '<i class="bi bi-x-circle-fill" style="color:var(--error-color);"></i> Out of Stock';
+                stockEl.innerHTML = '<i class="bi bi-x-circle-fill"></i> Out of Stock';
+                stockEl.classList.add('out');
                 document.getElementById('pdAddBtn').disabled = true;
-                document.getElementById('pdAddBtn').style.opacity = '0.5';
             } else if (p.fresh) {
-                stockEl.innerHTML = '<i class="bi bi-check-circle-fill" style="color:var(--accent-green);"></i> Fresh — In Stock (' + p.stock_quantity + ' available)';
+                stockEl.innerHTML = `<i class="bi bi-check-circle-fill"></i> Fresh — In Stock (${p.stock_quantity} available)`;
             } else {
-                stockEl.innerHTML = '<i class="bi bi-check-circle-fill" style="color:var(--accent-green);"></i> In Stock (' + p.stock_quantity + ' available)';
+                stockEl.innerHTML = `<i class="bi bi-check-circle-fill"></i> In Stock (${p.stock_quantity} available)`;
             }
 
             // Add to cart
@@ -310,7 +374,6 @@
                 const qty = parseInt(document.getElementById('pdQty').value);
                 const btn = document.getElementById('pdAddBtn');
                 btn.disabled = true;
-
                 try {
                     if (typeof isLoggedIn === 'function' && isLoggedIn()) {
                         await serverAddToCart(p.id, qty);
@@ -318,14 +381,8 @@
                     } else {
                         const cartData = JSON.parse(localStorage.getItem('flower-cart') || '[]');
                         const existing = cartData.find(i => i.id === p.id);
-                        if (existing) {
-                            existing.qty += qty;
-                        } else {
-                            cartData.push({
-                                id: p.id, name: p.name, price: price,
-                                image: images[0] || '', qty
-                            });
-                        }
+                        if (existing) existing.qty += qty;
+                        else cartData.push({ id: p.id, name: p.name, price, image: images[0] || '', qty });
                         localStorage.setItem('flower-cart', JSON.stringify(cartData));
                         if (typeof updateAllBadges === 'function') updateAllBadges();
                     }
@@ -340,16 +397,20 @@
                 }
             });
 
-            // Related products — fetch from listing and filter by category
+            // Wishlist
+            document.getElementById('pdWishlistBtn').addEventListener('click', function() {
+                this.classList.toggle('active');
+                const icon = this.querySelector('i');
+                icon.classList.toggle('bi-heart');
+                icon.classList.toggle('bi-heart-fill');
+            });
+
+            // Related
             try {
-                const allData = await api.fetchProducts();
-                const allProducts = Array.isArray(allData) ? allData : (allData.products || []);
-                const related = allProducts
-                    .filter(r => (r.category_name || r.category) === categoryName && r.id !== p.id)
-                    .slice(0, 4);
-                const relatedGrid = document.getElementById('pdRelated');
+                const related = await api.fetchRelated(p.id);
+                const grid = document.getElementById('pdRelated');
                 if (related.length) {
-                    relatedGrid.innerHTML = related.map(r => {
+                    grid.innerHTML = related.map(r => {
                         const rPrice = Number(r.price) || 0;
                         const rImg = r.image || (r.images && r.images[0]) || '';
                         return `
@@ -357,27 +418,17 @@
                                 <img loading="lazy" src="${escapeHtml(rImg)}" alt="${escapeHtml(r.name)}">
                                 <div class="r-body">
                                     <h4>${escapeHtml(r.name)}</h4>
-                                    <div class="r-price">$${rPrice.toFixed(2)}</div>
+                                    <div class="r-price">${r.currency || 'GHS'} ${rPrice.toFixed(2)}</div>
                                 </div>
                             </a>`;
                     }).join('');
                 } else {
-                    relatedGrid.innerHTML = '<p style="color:var(--text-light); grid-column:1/-1;">No related products found.</p>';
+                    grid.innerHTML = '<p style="color:var(--text-light);">No related products found.</p>';
                 }
             } catch (_) {
-                document.getElementById('pdRelated').innerHTML = '<p style="color:var(--text-light); grid-column:1/-1;">Could not load related products.</p>';
+                document.getElementById('pdRelated').innerHTML = '<p style="color:var(--text-light);">Could not load related products.</p>';
             }
         })();
     </script>
-<script>
-document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
-    toggle.addEventListener('click', function(e) {
-        if (window.innerWidth <= 768) {
-            e.preventDefault();
-            this.parentElement.classList.toggle('mobile-open');
-        }
-    });
-});
-</script>
 </body>
 </html>

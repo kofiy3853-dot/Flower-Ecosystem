@@ -368,10 +368,10 @@
 
     <script src="js/shared/api.js?v=3.0"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.2"></script>
     <script src="js/shared/ui.js?v=3.0"></script>
     <script src="js/shared/cart.js?v=3.0"></script>
-    <script src="js/shared/components.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
     <script>
         (() => {
@@ -392,7 +392,7 @@
 
             function productCardHTML(p) {
                 const badge = p.badge || (p.stockQuantity <= 10 ? 'Low Stock' : '');
-                const oldPriceHtml = p.oldPrice ? `<span style="text-decoration:line-through;color:var(--text-light);font-size:0.8rem;margin-right:0.3rem;">$${p.oldPrice.toFixed(2)}</span>` : '';
+                const oldPriceHtml = p.oldPrice ? `<span style="text-decoration:line-through;color:var(--text-light);font-size:0.8rem;margin-right:0.3rem;">${p.currency || 'GHS'} ${Number(p.oldPrice).toFixed(2)}</span>` : '';
                 const discount = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
                 return `
                 <div class="product-card">
@@ -413,8 +413,8 @@
                         <p class="product-seller">by ${p.seller}</p>
                         <div class="product-rating" style="margin:0.25rem 0;">${renderStars(p.rating)} <span style="font-size:0.8rem; color:var(--text-light);">(${p.reviews})</span></div>
                         <div class="product-footer">
-                            <span class="product-price">${oldPriceHtml}$${p.price.toFixed(2)}</span>
-                            <button class="btn btn-primary btn-sm add-to-cart-btn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}">Add to Cart</button>
+                            <span class="product-price">${oldPriceHtml}${p.currency || 'GHS'} ${Number(p.price).toFixed(2)}</span>
+                            <button class="btn btn-primary btn-sm add-to-cart-btn" data-id="${p.id}" data-name="${p.name}" data-price="${Number(p.price)}" data-image="${p.image}">Add to Cart</button>
                         </div>
                     </div>
                 </div>`;
@@ -494,7 +494,14 @@
             }
 
             function populateSellerFilters() {
-                const sellers = [...new Set(allProducts.filter(p => p.category === currentCategory || !currentCategory).map(p => p.seller).filter(Boolean))];
+                const sellers = [...new Set(allProducts.filter(p => {
+                    if (currentCategory) {
+                        const catName = (p.category_name || '').toLowerCase();
+                        const catId = String(p.category_id || '');
+                        if (catName !== currentCategory && catId !== currentCategory && catName !== currentCategory.replace(/-/g, ' ')) return false;
+                    }
+                    return true;
+                }).map(p => p.seller).filter(Boolean))];
                 const container = document.getElementById('sellerCheckboxes');
                 container.innerHTML = sellers.map(s => `<label><input type="checkbox" value="${s}"> ${s}</label>`).join('');
             }
@@ -516,7 +523,11 @@
                 const priceMax = parseFloat(document.getElementById('priceMax').value) || Infinity;
 
                 filteredProducts = allProducts.filter(p => {
-                    if (currentCategory && p.category !== currentCategory) return false;
+                    if (currentCategory) {
+                        const catName = (p.category_name || '').toLowerCase();
+                        const catId = String(p.category_id || '');
+                        if (catName !== currentCategory && catId !== currentCategory && catName !== currentCategory.replace(/-/g, ' ')) return false;
+                    }
                     if (search && !p.name.toLowerCase().includes(search) && !p.description.toLowerCase().includes(search)) return false;
                     if (selectedTypes.length && !selectedTypes.includes(p.flowerType)) return false;
                     if (selectedColors.length && !selectedColors.includes(p.color)) return false;

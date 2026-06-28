@@ -17,10 +17,10 @@ async function initQAPage() {
     loadStats();
     loadQuestions();
 
-    document.getElementById('qaSearchBtn').addEventListener('click', () => { currentPage = 1; loadQuestions(); });
-    document.getElementById('qaSearch').addEventListener('keydown', (e) => { if (e.key === 'Enter') { currentPage = 1; loadQuestions(); } });
+    document.getElementById('qaSearchBtn')?.addEventListener('click', () => { currentPage = 1; loadQuestions(); });
+    document.getElementById('qaSearch')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') { currentPage = 1; loadQuestions(); } });
 
-    document.getElementById('categoryTabs').addEventListener('click', (e) => {
+    document.getElementById('categoryTabs')?.addEventListener('click', (e) => {
         const tab = e.target.closest('.category-tab');
         if (!tab) return;
         document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
@@ -30,7 +30,7 @@ async function initQAPage() {
         loadQuestions();
     });
 
-    document.getElementById('sortTabs').addEventListener('click', (e) => {
+    document.getElementById('sortTabs')?.addEventListener('click', (e) => {
         const tab = e.target.closest('.sort-tab');
         if (!tab) return;
         document.querySelectorAll('.sort-tab').forEach(t => t.classList.remove('active'));
@@ -45,6 +45,7 @@ async function loadCategories() {
     let cats;
     try { cats = await fetch('/api/qa/categories').then(r => r.json()); } catch { cats = []; }
     const tabs = document.getElementById('categoryTabs');
+    if (!tabs) return;
     tabs.innerHTML = `<button class="category-tab active" data-slug="">All Questions</button>` +
         cats.map(c => `<button class="category-tab" data-slug="${escapeHtml(c.slug || '')}">${c.icon || ''} ${escapeHtml(c.name)}</button>`).join('');
 }
@@ -52,7 +53,8 @@ async function loadCategories() {
 async function loadStats() {
     try {
         const stats = await fetch('/api/qa/stats').then(r => r.json());
-        document.getElementById('statsRow').innerHTML = `
+        const statsRow = document.getElementById('statsRow');
+        if (statsRow) statsRow.innerHTML = `
             <div class="stat-card"><div class="num">${formatNumber(stats.questions)}</div><div class="label">Questions</div></div>
             <div class="stat-card"><div class="num">${formatNumber(stats.answers)}</div><div class="label">Answers</div></div>
             <div class="stat-card"><div class="num">${stats.experts}</div><div class="label">Experts</div></div>
@@ -62,7 +64,8 @@ async function loadStats() {
 }
 
 async function loadQuestions() {
-    const search = document.getElementById('qaSearch').value.trim();
+    const searchEl = document.getElementById('qaSearch');
+    const search = searchEl ? searchEl.value.trim() : '';
     const params = new URLSearchParams({ sort: currentSort, page: currentPage, limit: 20 });
     if (currentCategory) params.set('category', currentCategory);
     if (search) params.set('search', search);
@@ -71,6 +74,7 @@ async function loadQuestions() {
     try { data = await fetch(`/api/qa/questions?${params}`).then(r => r.json()); } catch { data = { questions: [], total: 0, pages: 1 }; }
 
     const el = document.getElementById('questionsList');
+    if (!el) return;
     if (!data.questions || !data.questions.length) { el.innerHTML = '<div class="empty-state"><i class="bi bi-question-circle"></i><h3>No questions found</h3><p>Be the first to ask!</p></div>'; document.getElementById('pagination').innerHTML = ''; return; }
 
     totalPages = data.pages || 1;

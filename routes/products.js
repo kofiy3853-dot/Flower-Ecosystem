@@ -2,8 +2,10 @@ const router = require('express').Router();
 const path = require('path');
 const { pool, asyncHandler, escapeHtml, dbAvailable, readJSON, queryWithFallback, requireAuth, requireSeller, requireAdmin } = require('./middleware');
 
+const condMap = { 'FRESH CUT': 'NATURAL', 'POTTED': 'NATURAL', 'NATURAL': 'NATURAL', 'ARTIFICIAL': 'ARTIFICIAL', 'PRESERVED': 'PRESERVED', 'DRIED': 'DRIED' };
+
 router.get('/', asyncHandler(async (req, res) => {
-    const { search, category, min_price, max_price, color, occasion, flower_cond, sort, page = 1, limit = 20, featured, best_seller, new_arrival } = req.query;
+    const { search, category, min_price, max_price, color, occasion, flower_cond, sort, page = 1, limit = 20, featured, best_seller, new_arrival, seller_id } = req.query;
 
     return queryWithFallback(
         async () => {
@@ -11,13 +13,14 @@ router.get('/', asyncHandler(async (req, res) => {
             const values = [];
             let idx = 1;
 
+            if (seller_id) { conditions.push(`p.seller_id = $${idx}`); values.push(seller_id); idx++; }
             if (search) { conditions.push(`(p.name ILIKE $${idx} OR p.description ILIKE $${idx})`); values.push(`%${search.replace(/[%_]/g, '\\$&')}%`); idx++; }
             if (category) { conditions.push(`c.name ILIKE $${idx}`); values.push(category); idx++; }
             if (min_price) { const mp = Number(min_price); if (!isNaN(mp)) { conditions.push(`p.price >= $${idx}`); values.push(mp); idx++; } }
             if (max_price) { const mp = Number(max_price); if (!isNaN(mp)) { conditions.push(`p.price <= $${idx}`); values.push(mp); idx++; } }
             if (color) { conditions.push(`p.color ILIKE $${idx}`); values.push(`%${color.replace(/[%_]/g, '\\$&')}%`); idx++; }
             if (occasion) { conditions.push(`p.occasion ILIKE $${idx}`); values.push(`%${occasion.replace(/[%_]/g, '\\$&')}%`); idx++; }
-            if (flower_cond) { conditions.push(`p.flower_cond = $${idx}`); values.push(flower_cond.toUpperCase()); idx++; }
+            if (flower_cond) { conditions.push(`p.flower_cond = $${idx}`); values.push(condMap[flower_cond.toUpperCase()] || flower_cond.toUpperCase()); idx++; }
             if (featured === 'true') { conditions.push('p.featured = true'); }
             if (best_seller === 'true') { conditions.push('p.best_seller = true'); }
             if (new_arrival === 'true') { conditions.push('p.new_arrival = true'); }
@@ -42,7 +45,8 @@ router.get('/', asyncHandler(async (req, res) => {
                     p.is_active, p.badge, p.occasion, p.color, p.fresh, p.featured,
                     p.best_seller AS "bestSeller", p.new_arrival AS "newArrival",
                     p.image_url, p.images, p.video_url, p.harvest_date, p.shelf_life_days, p.created_at, p.updated_at,
-                    p.seller_id, p.category_id,
+                    p.seller_id, p.category_id, p.currency,
+                    c.name AS category,
                     c.name AS category_name,
                     u.first_name || ' ' || u.last_name AS seller,
                     COALESCE(AVG(pr.rating)::numeric(2,1), 0) AS rating,
@@ -116,7 +120,8 @@ router.get('/:id', asyncHandler(async (req, res) => {
                         p.is_active, p.badge, p.occasion, p.color, p.fresh, p.featured,
                         p.best_seller AS "bestSeller", p.new_arrival AS "newArrival",
                         p.image_url, p.images, p.video_url, p.harvest_date, p.shelf_life_days, p.created_at, p.updated_at,
-                        p.seller_id, p.category_id,
+                        p.seller_id, p.category_id, p.currency,
+                        c.name AS category,
                         c.name AS category_name,
                         (SELECT image_url FROM marketplace.product_images WHERE product_id = p.id ORDER BY sort_order LIMIT 1) AS image,
                         (SELECT COALESCE(json_agg(image_url ORDER BY sort_order), '[]') FROM marketplace.product_images WHERE product_id = p.id) AS images,
@@ -145,7 +150,10 @@ router.post('/', requireSeller, asyncHandler(async (req, res) => {
     const {
         name, description, price, stock_quantity, category_id, category,
         flower_cond, images, image_url, video_url, harvest_date, shelf_life_days,
-        badge, occasion, color, fresh, featured, best_seller, new_arrival
+        badge, occasion, color, fresh, featured, best_seller, new_arrival,
+        currency, unit, flower_type, fragrance, bloom_season, origin, care_level,
+        sku, low_stock_alert, delivery_areas, delivery_time, shipping_fee, pickup_available,
+        tags, seo_slug, meta_description, status
     } = req.body;
     if (!name || !price) {
         return res.status(400).json({ error: 'Name and price are required' });
@@ -159,9 +167,11 @@ router.post('/', requireSeller, asyncHandler(async (req, res) => {
     if (stock_quantity !== undefined && (typeof stock_quantity !== 'number' || stock_quantity < 0)) {
         return res.status(400).json({ error: 'Stock quantity must be a non-negative number' });
     }
-    const validConds = ['NATURAL', 'ARTIFICIAL', 'PRESERVED', 'DRIED'];
-    if (flower_cond && !validConds.includes(flower_cond.toUpperCase())) {
-        return res.status(400).json({ error: `Invalid flower condition. Must be one of: ${validConds.join(', ')}` });
+    if (flower_cond) {
+        const mapped = condMap[flower_cond.toUpperCase()];
+        if (!mapped) {
+            return res.status(400).json({ error: `Invalid flower condition. Must be one of: Fresh Cut, Potted, Artificial, Preserved, Dried` });
+        }
     }
 
     let resolvedCategoryId = category_id || null;
@@ -173,6 +183,7 @@ router.post('/', requireSeller, asyncHandler(async (req, res) => {
     }
 
     const firstImage = image_url || (Array.isArray(images) && images.length > 0 ? images[0] : null);
+    const isActive = status === 'published' ? true : (status === 'draft' ? false : true);
 
     const client = await pool.connect();
     try {
@@ -180,14 +191,22 @@ router.post('/', requireSeller, asyncHandler(async (req, res) => {
         const product = await client.query(
             `INSERT INTO marketplace.products
                 (seller_id, name, description, price, stock_quantity, category_id, flower_cond,
-                 badge, occasion, color, fresh, featured, best_seller, new_arrival,
-                 image_url, video_url, harvest_date, shelf_life_days)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING *`,
+                 badge, occasion, color, fresh, featured, best_seller, new_arrival, is_active,
+                 image_url, video_url, harvest_date, shelf_life_days,
+                 currency, unit, flower_type, fragrance, bloom_season, origin, care_level,
+                 sku, low_stock_alert, delivery_areas, delivery_time, shipping_fee, pickup_available,
+                 tags, seo_slug, meta_description, status)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34,$35,$36) RETURNING *`,
             [req.user.id, escapeHtml(name).slice(0, 255), escapeHtml(description || '').slice(0, 2000),
-             price, stock_quantity || 0, resolvedCategoryId, flower_cond ? flower_cond.toUpperCase() : null,
+             price, stock_quantity || 0, resolvedCategoryId, flower_cond ? (condMap[flower_cond.toUpperCase()] || flower_cond.toUpperCase()) : null,
              badge || null, occasion || null, color || null, fresh || false,
-             featured || false, best_seller || false, new_arrival || false,
-             firstImage, video_url || null, harvest_date || null, shelf_life_days || 7]
+             featured || false, best_seller || false, true, isActive,
+             firstImage, video_url || null, harvest_date || null, shelf_life_days || 7,
+             currency || 'GHS', unit || 'Piece', flower_type || null, fragrance || null,
+             bloom_season || null, origin || null, care_level || null,
+             sku || null, low_stock_alert || 10, delivery_areas || [], delivery_time || null,
+             shipping_fee || 0, pickup_available !== false, tags || [], seo_slug || null,
+             meta_description || null, status || 'published']
         );
         if (images && Array.isArray(images) && images.length > 0) {
             for (let i = 0; i < images.length; i++) {
@@ -222,7 +241,10 @@ router.put('/:id', requireSeller, asyncHandler(async (req, res) => {
     const {
         name, description, price, stock_quantity, category_id, category,
         flower_cond, images, image_url, video_url,
-        badge, occasion, color, fresh, featured, best_seller, new_arrival
+        badge, occasion, color, fresh, featured, best_seller, new_arrival,
+        currency, unit, flower_type, fragrance, bloom_season, origin, care_level,
+        sku, low_stock_alert, delivery_areas, delivery_time, shipping_fee, pickup_available,
+        tags, seo_slug, meta_description, status
     } = req.body;
     if (name !== undefined && (typeof name !== 'string' || name.trim().length === 0 || name.length > 255)) {
         return res.status(400).json({ error: 'Name must be a non-empty string under 255 characters' });
@@ -240,6 +262,7 @@ router.put('/:id', requireSeller, asyncHandler(async (req, res) => {
     }
 
     const firstImage = image_url || (Array.isArray(images) && images.length > 0 ? images[0] : null);
+    const isActive = status !== undefined ? (status === 'published' ? true : false) : undefined;
 
     const client = await pool.connect();
     try {
@@ -252,13 +275,26 @@ router.put('/:id', requireSeller, asyncHandler(async (req, res) => {
                  occasion = COALESCE($8, occasion), color = COALESCE($9, color),
                  fresh = COALESCE($10, fresh), featured = COALESCE($11, featured),
                  best_seller = COALESCE($12, best_seller), new_arrival = COALESCE($13, new_arrival),
-                 image_url = COALESCE($14, image_url), video_url = COALESCE($15, video_url)
-             WHERE id = $16 RETURNING *`,
+                 image_url = COALESCE($14, image_url), video_url = COALESCE($15, video_url),
+                 currency = COALESCE($16, currency), unit = COALESCE($17, unit),
+                 flower_type = COALESCE($18, flower_type), fragrance = COALESCE($19, fragrance),
+                 bloom_season = COALESCE($20, bloom_season), origin = COALESCE($21, origin),
+                 care_level = COALESCE($22, care_level), sku = COALESCE($23, sku),
+                 low_stock_alert = COALESCE($24, low_stock_alert),
+                 delivery_areas = COALESCE($25, delivery_areas), delivery_time = COALESCE($26, delivery_time),
+                 shipping_fee = COALESCE($27, shipping_fee), pickup_available = COALESCE($28, pickup_available),
+                 tags = COALESCE($29, tags), seo_slug = COALESCE($30, seo_slug),
+                 meta_description = COALESCE($31, meta_description),
+                 is_active = COALESCE($32, is_active), status = COALESCE($33, status)
+             WHERE id = $34 RETURNING *`,
             [name ? escapeHtml(name).slice(0, 255) : null, description ? escapeHtml(description).slice(0, 2000) : null,
              price, stock_quantity, resolvedCategoryId,
-             flower_cond ? flower_cond.toUpperCase() : null,
+             flower_cond ? (condMap[flower_cond.toUpperCase()] || flower_cond.toUpperCase()) : null,
              badge, occasion, color, fresh, featured, best_seller, new_arrival,
-             firstImage, video_url, id]
+             firstImage, video_url,
+             currency, unit, flower_type, fragrance, bloom_season, origin, care_level,
+             sku, low_stock_alert, delivery_areas, delivery_time, shipping_fee, pickup_available,
+             tags, seo_slug, meta_description, isActive, status, id]
         );
         if (images && Array.isArray(images) && images.length > 0) {
             await client.query('DELETE FROM marketplace.product_images WHERE product_id = $1', [id]);
@@ -323,6 +359,32 @@ router.post('/:id/reviews', requireAuth, asyncHandler(async (req, res) => {
     }
 }));
 
+// Related products by category
+router.get('/:id/related', asyncHandler(async (req, res) => {
+    return queryWithFallback(
+        async () => {
+            const r = await pool.query(
+                `SELECT p.id, p.name, p.price, p.image_url, p.badge, p.rating,
+                        c.name AS category_name,
+                        (SELECT image_url FROM marketplace.product_images WHERE product_id = p.id ORDER BY sort_order LIMIT 1) AS image
+                 FROM marketplace.products p
+                 JOIN marketplace.categories c ON c.id = p.category_id
+                 WHERE p.category_id = (SELECT category_id FROM marketplace.products WHERE id = $1)
+                   AND p.id != $1 AND p.is_active = true
+                 ORDER BY RANDOM() LIMIT 4`,
+                [req.params.id]
+            );
+            return r.rows;
+        },
+        'products', res, false,
+        (data) => {
+            const product = data.find(p => p.id === req.params.id);
+            const cat = product ? (product.category || product.category_name || '') : '';
+            return data.filter(p => p.id !== req.params.id && (p.category || p.category_name || '') === cat).slice(0, 4);
+        }
+    );
+}));
+
 // Categories
 router.get('/list/categories', asyncHandler(async (_, res) => {
     return queryWithFallback(
@@ -340,8 +402,8 @@ router.get('/list/florists', asyncHandler(async (_, res) => {
     return queryWithFallback(
         async () => {
             const r = await pool.query(
-                `SELECT id, first_name AS name, profile_image AS image, role
-                 FROM auth.users WHERE role IN ('SELLER', 'FLORIST') ORDER BY first_name`
+                `SELECT DISTINCT ON (u.id) u.id, u.first_name AS name, u.profile_image AS image, u.role
+                 FROM auth.users u WHERE u.role IN ('SELLER', 'FLORIST') AND u.is_active = true ORDER BY u.id, u.first_name`
             );
             return r.rows;
         },

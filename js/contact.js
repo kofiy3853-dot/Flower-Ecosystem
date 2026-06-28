@@ -6,7 +6,7 @@ let currentFaqCategory = '';
 async function initContactPage() {
     loadFaqs();
 
-    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+    document.getElementById('contactForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const name = document.getElementById('contactName').value.trim();
         const email = document.getElementById('contactEmail').value.trim();
@@ -64,6 +64,7 @@ async function loadFaqs() {
 
     const categories = [...new Set(faqs.map(f => f.category).filter(Boolean))];
     const tabs = document.getElementById('faqTabs');
+    if (!tabs) return;
     tabs.innerHTML = `<button class="faq-tab active" data-cat="">All</button>` +
         categories.map(c => `<button class="faq-tab" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join('');
 
@@ -85,6 +86,7 @@ function renderFaqs(faqs) {
         : faqs;
 
     const list = document.getElementById('faqList');
+    if (!list) return;
     list.innerHTML = filtered.map(f => `
         <div class="faq-item">
             <div class="faq-question" onclick="this.parentElement.classList.toggle('open')">

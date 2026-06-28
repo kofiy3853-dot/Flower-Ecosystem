@@ -33,7 +33,7 @@ const LEARNING_CATEGORIES = [
             <div class="product-card">
                 <div class="product-img-wrap">
                     <a href="course-detail.html?id=${escapeHtml(c.id)}">
-                        <img loading="lazy" src="${escapeHtml(c.thumbnail)}" alt="${escapeHtml(c.title)}" class="product-img" style="aspect-ratio:16/9;">
+                        <img loading="lazy" src="${escapeHtml(c.thumbnail || c.thumbnail_url)}" alt="${escapeHtml(c.title)}" class="product-img" style="aspect-ratio:16/9;">
                     </a>
                     <span class="product-badge">${escapeHtml(c.level || 'All Levels')}</span>
                 </div>

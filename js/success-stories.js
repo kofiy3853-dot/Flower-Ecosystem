@@ -34,12 +34,12 @@ async function initStoriesPage() {
     loadFeaturedStories();
     loadStories();
 
-    document.getElementById('storySearchBtn').addEventListener('click', () => { currentPage = 1; loadStories(); });
-    document.getElementById('storySearch').addEventListener('keydown', (e) => {
+    document.getElementById('storySearchBtn')?.addEventListener('click', () => { currentPage = 1; loadStories(); });
+    document.getElementById('storySearch')?.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') { currentPage = 1; loadStories(); }
     });
 
-    document.getElementById('categoryTabs').addEventListener('click', (e) => {
+    document.getElementById('categoryTabs')?.addEventListener('click', (e) => {
         const tab = e.target.closest('.category-tab');
         if (!tab) return;
         document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
@@ -49,7 +49,7 @@ async function initStoriesPage() {
         loadStories();
     });
 
-    document.getElementById('sortTabs').addEventListener('click', (e) => {
+    document.getElementById('sortTabs')?.addEventListener('click', (e) => {
         const tab = e.target.closest('.sort-tab');
         if (!tab) return;
         document.querySelectorAll('.sort-tab').forEach(t => t.classList.remove('active'));
@@ -66,7 +66,9 @@ async function loadFeaturedStories() {
         const stories = await res.json();
         if (!stories.length) return;
 
-        document.getElementById('featuredSection').innerHTML = `
+        const featuredEl = document.getElementById('featuredSection');
+        if (!featuredEl) return;
+        featuredEl.innerHTML = `
             <div class="featured-stories reveal-up">
                 ${stories.slice(0, 3).map(s => `
                     <div class="featured-card" onclick="window.location.href='success-story-detail.html?id=${escapeHtml(String(s.id))}'">
@@ -83,7 +85,8 @@ async function loadFeaturedStories() {
 }
 
 async function loadStories() {
-    const search = document.getElementById('storySearch').value.trim();
+    const searchEl = document.getElementById('storySearch');
+    const search = searchEl ? searchEl.value.trim() : '';
     const params = new URLSearchParams({ sort: currentSort, page: currentPage, limit: 20 });
     if (currentCategory) params.set('category', currentCategory);
     if (search) params.set('search', search);
@@ -97,6 +100,7 @@ async function loadStories() {
     }
 
     const grid = document.getElementById('storiesGrid');
+    if (!grid) return;
     if (!data.stories || !data.stories.length) {
         grid.innerHTML = '<div class="empty-state"><i class="bi bi-heart"></i><h3>No stories found</h3><p>Be the first to share your success story!</p></div>';
         document.getElementById('pagination').innerHTML = '';

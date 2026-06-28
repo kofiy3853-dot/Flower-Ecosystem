@@ -13,10 +13,12 @@ let editingCropId = null;
 
 async function initGrowerDashboard() {
     if (!localStorage.getItem('flower-token')) {
-        document.getElementById('loginPrompt').style.display = 'block';
+        const lp = document.getElementById('loginPrompt');
+        if (lp) lp.style.display = 'block';
         return;
     }
-    document.getElementById('dashContent').style.display = 'block';
+    const dc = document.getElementById('dashContent');
+    if (dc) dc.style.display = 'block';
 
     document.querySelectorAll('.dash-nav a').forEach(link => {
         link.addEventListener('click', (e) => {

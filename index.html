@@ -1,19 +1,155 @@
-<!DOCTYPE html><html lang="en"><head>    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <meta name="description" content="Flower Ecosystem: Buy fresh flowers, sell arrangements, learn floristry, and connect with the global flower community. One platform for everything flowers.">    <meta name="keywords" content="buy flowers online, sell flowers, floristry courses, flower delivery, floral design">    <meta property="og:title" content="Flower Ecosystem - Buy, Sell, Learn & Grow Together">    <meta property="og:description" content="Everything you need for flowers - buy, sell, learn, and connect with florists and growers worldwide.">    <meta property="og:type" content="website">    <title>Flower Ecosystem - Buy, Sell, Learn & Grow Together</title>    <link rel="preconnect" href="https://fonts.googleapis.com">    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/main.css?v=3.0">    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"></head><body>    <div id="header-container"></div>    <!-- ===== HERO SECTION ===== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Flower Ecosystem: Buy fresh flowers, sell arrangements, learn floristry, and connect with the global flower community. One platform for everything flowers.">
+    <meta name="keywords" content="buy flowers online, sell flowers, floristry courses, flower delivery, floral design">
+    <meta property="og:title" content="Flower Ecosystem - Buy, Sell, Learn & Grow Together">
+    <meta property="og:description" content="Everything you need for flowers - buy, sell, learn, and connect with florists and growers worldwide.">
+    <meta property="og:type" content="website">
+    <title>Flower Ecosystem - Buy, Sell, Learn & Grow Together</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- ===== HERO SECTION ===== -->
     <header class="hero-section">
         <div class="hero-bg-circle-1"></div>
         <div class="hero-bg-circle-2"></div>
-        <img
-            class="hero-image"
-            src="https://images.unsplash.com/photo-1507290439931-a861b5a38200?q=80&w=1600&auto=format&fit=crop"
-            alt="Colorful mixed flower bouquet"
-            loading="eager"
-        >
+        <img class="hero-image" src="https://images.unsplash.com/photo-1507290439931-a861b5a38200?q=80&w=1600&auto=format&fit=crop" alt="Colorful mixed flower bouquet" loading="eager">
         <div class="hero-wrapper">
-            <div class="hero-left">                <div class="hero-badge">                    <span class="badge-icon">??</span>                    <span class="badge-text">The Complete Flower Ecosystem</span>                </div>                <h1 class="hero-title">                    Everything Flowers,<br>                    <em>All in One Ecosystem</em>                </h1>                <p class="hero-description">                    Buy flowers, sell floral products, learn floristry, identify flower species, discover medicinal uses, and connect with flower lovers around the world.                </p>                <div class="hero-cta">                    <a href="marketplace.html" class="btn btn-primary btn-lg">                        <i class="bi bi-shop"></i> Explore Marketplace                    </a>                    <a href="learning.html" class="btn btn-outline btn-lg">                        <i class="bi bi-book"></i> Start Learning                    </a>                </div>                <div class="hero-stats">                    <div class="stat"><div class="stat-value">500+</div><div class="stat-label">Flower Species</div></div>                    <div class="stat"><div class="stat-value">200+</div><div class="stat-label">Florists</div></div>                    <div class="stat"><div class="stat-value">100+</div><div class="stat-label">Learning Resources</div></div>                    <div class="stat"><div class="stat-value">50+</div><div class="stat-label">Flower Categories</div></div>                </div>
+            <div class="hero-left">
+                <div class="hero-badge">
+                    <span class="badge-icon"><i class="bi bi-flower1"></i></span>
+                    <span class="badge-text">The Complete Flower Ecosystem</span>
+                </div>
+                <h1 class="hero-title">
+                    Everything Flowers,<br>
+                    <em>All in One Ecosystem</em>
+                </h1>
+                <p class="hero-description">
+                    Buy flowers, sell floral products, learn floristry, identify flower species, discover medicinal uses, and connect with flower lovers around the world.
+                </p>
+                <div class="hero-cta">
+                    <a href="marketplace.html" class="btn btn-primary btn-lg">
+                        <i class="bi bi-shop"></i> Explore Marketplace
+                    </a>
+                    <a href="learning.html" class="btn btn-outline btn-lg">
+                        <i class="bi bi-book"></i> Start Learning
+                    </a>
+                </div>
+                <div class="hero-stats" id="heroStats">
+                    <div class="stat"><div class="stat-value">500+</div><div class="stat-label">Flower Species</div></div>
+                    <div class="stat"><div class="stat-value">200+</div><div class="stat-label">Sellers</div></div>
+                    <div class="stat"><div class="stat-value">100+</div><div class="stat-label">Learning Resources</div></div>
+                    <div class="stat"><div class="stat-value">50+</div><div class="stat-label">Flower Categories</div></div>
+                </div>
             </div>
         </div>
-    </header>    <!-- ===== EXPLORE / HOW IT WORKS ===== -->    <section id="explore" class="explore-section section-padding">        <div class="container text-center reveal-up">            <span class="subtitle">HOW IT WORKS</span>            <h2>Explore the Ecosystem</h2>            <p class="section-subtitle">Choose how you want to experience the world of flowers</p>        </div>        <div class="container">            <div class="quick-stats reveal-up">                <div class="stat-item">                    <div class="stat-number">12K+</div>                    <div class="stat-label">Products Listed</div>                </div>                <div class="stat-item">                    <div class="stat-number">3.2K</div>                    <div class="stat-label">Active Sellers</div>                </div>                <div class="stat-item">                    <div class="stat-number">480+</div>                    <div class="stat-label">Learning Resources</div>                </div>                <div class="stat-item">                    <div class="stat-number">89K</div>                    <div class="stat-label">Community Members</div>                </div>            </div>            <div class="explore-grid">                <a href="marketplace.html" class="explore-card reveal-up">                    <div class="explore-icon">&#x1F6D2;</div>                    <h3>Buy Fresh Flowers</h3>                    <p class="card-desc">Shop from thousands of florists and growers worldwide</p>                    <ul class="card-features">                        <li>&#x2713; Same-day delivery available</li>                        <li>&#x2713; 12,000+ products</li>                        <li>&#x2713; Verified sellers</li>                    </ul>                    <span class="explore-arrow">View all &rarr;</span>                </a>                <a href="sell.html" class="explore-card reveal-up" style="transition-delay:0.1s">                    <div class="explore-icon">&#x1F331;</div>                    <h3>Sell Your Flowers</h3>                    <p class="card-desc">Turn your passion into profit with our seller tools</p>                    <ul class="card-features">                        <li>&#x2713; Easy listing tools</li>                        <li>&#x2713; Reach 89K members</li>                        <li>&#x2713; Secure payments</li>                    </ul>                    <span class="explore-arrow">Start selling &rarr;</span>                </a>                <a href="learning.html" class="explore-card reveal-up" style="transition-delay:0.2s">                    <div class="explore-icon">&#x1F4DA;</div>                    <h3>Learn Floristry</h3>                    <p class="card-desc">Expert guides, tutorials, and video courses</p>                    <ul class="card-features">                        <li>&#x2713; 480+ resources</li>                        <li>&#x2713; Beginner to expert</li>                        <li>&#x2713; Free &amp; premium</li>                    </ul>                    <span class="explore-arrow">Start learning &rarr;</span>                </a>                <a href="community.html" class="explore-card reveal-up" style="transition-delay:0.3s">                    <div class="explore-icon">&#x1F91D;</div>                    <h3>Join the Community</h3>                    <p class="card-desc">Connect with florists and enthusiasts worldwide</p>                    <ul class="card-features">                        <li>&#x2713; Forums &amp; groups</li>                        <li>&#x2713; Events &amp; workshops</li>                        <li>&#x2713; Expert Q&amp;A</li>                    </ul>                    <span class="explore-arrow">Join now &rarr;</span>                </a>                <a href="identification.html" class="explore-card reveal-up" style="transition-delay:0.4s">                    <div class="explore-icon">&#x1F50D;</div>                    <h3>Identify Flowers</h3>                    <p class="card-desc">Use AI to identify any flower species instantly</p>                    <ul class="card-features">                        <li>&#x2713; AI-powered scanner</li>                        <li>&#x2713; 500+ species database</li>                        <li>&#x2713; Medicinal uses</li>                    </ul>                    <span class="explore-arrow">Try scanner &rarr;</span>                </a>                <a href="contact.html" class="explore-card reveal-up" style="transition-delay:0.5s">                    <div class="explore-icon">&#x1F4AC;</div>                    <h3>Get Support</h3>                    <p class="card-desc">Our team is here to help you every step of the way</p>                    <ul class="card-features">                        <li>&#x2713; 24/7 chat support</li>                        <li>&#x2713; Dedicated account manager</li>                        <li>&#x2713; Fast resolution</li>                    </ul>                    <span class="explore-arrow">Contact us &rarr;</span>                </a>            </div>        </div>    </section>
+    </header>
+
+    <!-- ===== EXPLORE / HOW IT WORKS ===== -->
+    <section id="explore" class="explore-section section-padding">
+        <div class="container text-center reveal-up">
+            <span class="subtitle">HOW IT WORKS</span>
+            <h2>Explore the Ecosystem</h2>
+            <p class="section-subtitle">Choose how you want to experience the world of flowers</p>
+        </div>
+        <div class="container">
+            <div class="quick-stats reveal-up" id="exploreStats">
+                <div class="stat-item">
+                    <div class="stat-number" data-stat="products">0</div>
+                    <div class="stat-label">Products Listed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-stat="sellers">0</div>
+                    <div class="stat-label">Active Sellers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-stat="users">0</div>
+                    <div class="stat-label">Community Members</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-stat="categories">0</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+            </div>
+            <div class="explore-grid">
+                <a href="marketplace.html" class="explore-card reveal-up">
+                    <div class="explore-icon"><i class="bi bi-cart3"></i></div>
+                    <h3>Buy Fresh Flowers</h3>
+                    <p class="card-desc">Shop from thousands of florists and growers worldwide</p>
+                    <ul class="card-features">
+                        <li>&#x2713; Same-day delivery available</li>
+                        <li>&#x2713; 12,000+ products</li>
+                        <li>&#x2713; Verified sellers</li>
+                    </ul>
+                    <span class="explore-arrow">View all &rarr;</span>
+                </a>
+                <a href="sell.html" class="explore-card reveal-up">
+                    <div class="explore-icon"><i class="bi bi-bag-check"></i></div>
+                    <h3>Sell Your Flowers</h3>
+                    <p class="card-desc">List your floral products and reach customers worldwide</p>
+                    <ul class="card-features">
+                        <li>&#x2713; Free listing</li>
+                        <li>&#x2713; Global marketplace</li>
+                        <li>&#x2713; Secure payments</li>
+                    </ul>
+                    <span class="explore-arrow">Start selling &rarr;</span>
+                </a>
+                <a href="learning.html" class="explore-card reveal-up">
+                    <div class="explore-icon"><i class="bi bi-book"></i></div>
+                    <h3>Learn Floristry</h3>
+                    <p class="card-desc">Courses, tutorials, and guides for every skill level</p>
+                    <ul class="card-features">
+                        <li>&#x2713; Expert instructors</li>
+                        <li>&#x2713; Video lessons</li>
+                        <li>&#x2713; Certificates</li>
+                    </ul>
+                    <span class="explore-arrow">Start learning &rarr;</span>
+                </a>
+                <a href="identification.html" class="explore-card reveal-up">
+                    <div class="explore-icon"><i class="bi bi-camera"></i></div>
+                    <h3>Identify Flowers</h3>
+                    <p class="card-desc">AI-powered flower identification and species database</p>
+                    <ul class="card-features">
+                        <li>&#x2713; Snap & identify</li>
+                        <li>&#x2713; 500+ species</li>
+                        <li>&#x2713; Care tips</li>
+                    </ul>
+                    <span class="explore-arrow">Try it now &rarr;</span>
+                </a>
+                <a href="flower-knowledge-hub.html" class="explore-card reveal-up">
+                    <div class="explore-icon"><i class="bi bi-heart-pulse"></i></div>
+                    <h3>Medicinal Uses</h3>
+                    <p class="card-desc">Discover the healing properties and uses of flowers</p>
+                    <ul class="card-features">
+                        <li>&#x2713; Medicinal database</li>
+                        <li>&#x2713; Perfume ingredients</li>
+                        <li>&#x2713; Edible flowers</li>
+                    </ul>
+                    <span class="explore-arrow">Explore knowledge &rarr;</span>
+                </a>
+                <a href="community.html" class="explore-card reveal-up">
+                    <div class="explore-icon"><i class="bi bi-people"></i></div>
+                    <h3>Join Community</h3>
+                    <p class="card-desc">Connect with flower lovers, florists, and growers</p>
+                    <ul class="card-features">
+                        <li>&#x2713; Discussion forums</li>
+                        <li>&#x2713; Share arrangements</li>
+                        <li>&#x2713; Events & workshops</li>
+                    </ul>
+                    <span class="explore-arrow">Join now &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </section>
 
     <!-- ===== CATEGORIES ===== -->
     <section id="categories" class="section-padding bg-light">
@@ -23,33 +159,10 @@
                     <span class="subtitle">BROWSE BY TYPE</span>
                     <h2>Shop by Category</h2>
                 </div>
-                <a href="marketplace.html" class="btn btn-outline">View All ?</a>
+                <a href="marketplace.html" class="btn btn-outline">View All &rarr;</a>
             </div>
             <div class="category-grid reveal-up" id="categoryGrid">
-                <a href="category-roses.html" class="category-card">
-                    <div class="category-img"><img loading="lazy" src="https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?q=80&w=600&auto=format&fit=crop" alt="Roses"></div>
-                    <div class="category-overlay"><h3>Roses</h3><p>Romance & elegance</p></div>
-                </a>
-                <a href="category-tulips.html" class="category-card">
-                    <div class="category-img"><img loading="lazy" src="https://images.unsplash.com/photo-1519052537078-e6302a4968d4?q=80&w=600&auto=format&fit=crop" alt="Tulips"></div>
-                    <div class="category-overlay"><h3>Tulips</h3><p>Vibrant & fresh</p></div>
-                </a>
-                <a href="category-sunflower.html" class="category-card">
-                    <div class="category-img"><img loading="lazy" src="https://images.unsplash.com/photo-1597848212624-a19eb35e2651?q=80&w=600&auto=format&fit=crop" alt="Sunflowers"></div>
-                    <div class="category-overlay"><h3>Sunflowers</h3><p>Bright & cheerful</p></div>
-                </a>
-                <a href="category-iris.html" class="category-card">
-                    <div class="category-img"><img loading="lazy" src="https://images.unsplash.com/photo-1590500407234-bd02f38c5985?q=80&w=600&auto=format&fit=crop" alt="Iris"></div>
-                    <div class="category-overlay"><h3>Iris</h3><p>Elegant & artistic</p></div>
-                </a>
-                <a href="category-hibiscus.html" class="category-card">
-                    <div class="category-img"><img loading="lazy" src="https://images.unsplash.com/photo-1599598425947-5202edd56bdb?q=80&w=600&auto=format&fit=crop" alt="Hibiscus"></div>
-                    <div class="category-overlay"><h3>Hibiscus</h3><p>Tropical & bold</p></div>
-                </a>
-                <a href="category-narcissus.html" class="category-card">
-                    <div class="category-img"><img loading="lazy" src="https://images.unsplash.com/photo-1462275646964-a0e3386b89fa?q=80&w=600&auto=format&fit=crop" alt="Narcissus"></div>
-                    <div class="category-overlay"><h3>Narcissus</h3><p>Delicate & pure</p></div>
-                </a>
+                <!-- Loaded dynamically via JS -->
             </div>
         </div>
     </section>
@@ -62,7 +175,7 @@
                     <span class="subtitle">FRESH ARRIVALS</span>
                     <h2>Featured Flowers</h2>
                 </div>
-                <a href="marketplace.html" class="btn btn-outline">View All ?</a>
+                <a href="marketplace.html" class="btn btn-outline">View All &rarr;</a>
             </div>
             <div class="product-grid reveal-up" id="featuredProducts">
                 <!-- Loaded dynamically via JS -->
@@ -70,8 +183,41 @@
         </div>
     </section>
 
+    <!-- ===== WHY CHOOSE US ===== -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="text-center reveal-up" style="margin-bottom:3rem;">
+                <span class="subtitle">WHY CHOOSE US</span>
+                <h2>What Makes Us Different</h2>
+                <p class="section-subtitle">Everything you need in one platform</p>
+            </div>
+            <div class="features-grid reveal-up">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:rgba(212,175,55,.1);color:#d4af37;"><i class="bi bi-shield-check"></i></div>
+                    <h3>Verified Sellers</h3>
+                    <p>Every seller is vetted and verified for quality and reliability.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:rgba(90,122,96,.1);color:#5a7a60;"><i class="bi bi-truck"></i></div>
+                    <h3>Fast Delivery</h3>
+                    <p>Same-day delivery available in major cities. Fresh flowers, fast.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:rgba(74,144,217,.1);color:#4a90d9;"><i class="bi bi-book"></i></div>
+                    <h3>Learn & Grow</h3>
+                    <p>Expert-led courses from beginner to professional level.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:rgba(172,50,80,.1);color:#ac3250;"><i class="bi bi-people"></i></div>
+                    <h3>Community</h3>
+                    <p>Connect with thousands of flower lovers and professionals.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- ===== LEARNING CENTER ===== -->
-    <section id="learning" class="section-padding bg-light">
+    <section id="learning" class="section-padding">
         <div class="container">
             <div class="text-center reveal-up">
                 <span class="subtitle">GROW YOUR KNOWLEDGE</span>
@@ -99,20 +245,20 @@
                 </div>
             </div>
             <div class="text-center mt-4 reveal-up">
-                <a href="learning.html" class="btn btn-primary">Explore All Resources ?</a>
+                <a href="learning.html" class="btn btn-primary">Explore All Resources &rarr;</a>
             </div>
         </div>
     </section>
 
     <!-- ===== FLORISTS ===== -->
-    <section id="florists" class="section-padding">
+    <section id="florists" class="section-padding bg-light">
         <div class="container">
             <div class="flex-between reveal-up">
                 <div>
                     <span class="subtitle">TRUSTED EXPERTS</span>
                     <h2>Top Florists</h2>
                 </div>
-                <a href="florists.html" class="btn btn-outline">View All ?</a>
+                <a href="florists.html" class="btn btn-outline">View All &rarr;</a>
             </div>
             <div class="florist-grid reveal-up" id="floristGrid">
                 <!-- Loaded dynamically via JS -->
@@ -121,7 +267,7 @@
     </section>
 
     <!-- ===== COMMUNITY ===== -->
-    <section id="community" class="section-padding bg-light">
+    <section id="community" class="section-padding">
         <div class="container">
             <div class="community-flex reveal-up">
                 <div class="community-content">
@@ -137,24 +283,61 @@
                     <a href="community.html" class="btn btn-primary mt-4">Join the Community</a>
                 </div>
                 <div class="community-image">
-                    <img loading="lazy" src="https://images.unsplash.com/photo-1464349153735-7db50ed83c84?q=80&w=800&auto=format&fit=crop" alt="Community of flower lovers">
+                    <img loading="lazy" src="images/tony-sebastian-OUNLahnM4Pc-unsplash.jpg" alt="Community of flower lovers">
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ===== EVENTS ===== -->
-    <section id="events" class="section-padding">
+    <section id="events" class="section-padding bg-light">
         <div class="container">
             <div class="flex-between reveal-up">
                 <div>
                     <span class="subtitle">UPCOMING</span>
                     <h2>Events & Workshops</h2>
                 </div>
-                <a href="events.html" class="btn btn-outline">View All ?</a>
+                <a href="events.html" class="btn btn-outline">View All &rarr;</a>
             </div>
             <div class="events-grid reveal-up" id="eventsGrid">
                 <!-- Loaded dynamically via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== TESTIMONIALS ===== -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="text-center reveal-up" style="margin-bottom:3rem;">
+                <span class="subtitle">WHAT PEOPLE SAY</span>
+                <h2>Testimonials</h2>
+                <p class="section-subtitle">Hear from our community members</p>
+            </div>
+            <div class="testimonials-grid reveal-up">
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">&#x2B50;&#x2B50;&#x2B50;&#x2B50;&#x2B50;</div>
+                    <p>"Flower Ecosystem transformed my small floristry business. I've reached customers I never could before!"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar" style="background:linear-gradient(135deg,#d4af37,#b8941f);">B</div>
+                        <div><strong>Bloom & Co.</strong><br><span>Seller</span></div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">&#x2B50;&#x2B50;&#x2B50;&#x2B50;&#x2B50;</div>
+                    <p>"The floristry courses are incredible. I went from complete beginner to running my own flower shop in 6 months."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar" style="background:linear-gradient(135deg,#5a7a60,#3d5a42);">S</div>
+                        <div><strong>Sarah Chen</strong><br><span>Instructor</span></div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">&#x2B50;&#x2B50;&#x2B50;&#x2B50;&#x2B50;</div>
+                    <p>"I love the flower identification feature. It's like having a botanist in my pocket. Highly recommend!"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar" style="background:linear-gradient(135deg,#4a90d9,#2d6cb5);">A</div>
+                        <div><strong>Ama Mensah</strong><br><span>Student</span></div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -169,15 +352,15 @@
                 <input type="email" placeholder="Enter your email address" required aria-label="Email address">
                 <button type="submit" class="btn btn-primary">Subscribe</button>
             </form>
-            <p class="form-message hidden" id="newsletterMsg">Thanks for subscribing! ??</p>
+            <p class="form-message hidden" id="newsletterMsg">Thanks for subscribing!</p>
         </div>
     </section>
 
     <div id="footer-container"></div>
     <div id="auth-modal-container"></div>
 
-    <script src="js/shared/components.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.2"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
     <script src="js/shared/api.js?v=3.0"></script>

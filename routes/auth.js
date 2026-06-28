@@ -2,17 +2,20 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const { pool, JWT_SECRET, upload, rateLimiter, asyncHandler, dbAvailable, requireAuth } = require('./middleware');
+const { pool, JWT_SECRET, upload, rateLimiter, asyncHandler, dbAvailable, requireAuth, blacklistToken, blacklistUserTokens, cleanupBlacklist } = require('./middleware');
 
-// Clean expired reset tokens periodically
+// Clean expired reset tokens and blacklisted tokens periodically
 setInterval(async () => {
     try {
         await pool.query("DELETE FROM auth.password_resets WHERE expires_at < CURRENT_TIMESTAMP");
     } catch {}
+    cleanupBlacklist();
 }, 300000);
 
 router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncHandler(async (req, res) => {
-    const { name, email, password, role, location, description } = req.body;
+    const { name, email, password, role, phone, location, city, state, country, zip_code, description,
+            business_name, business_type, business_phone, business_email, website,
+            social_instagram, social_facebook, social_twitter } = req.body;
     const profile_image = req.file ? `/uploads/${req.file.filename}` : null;
     if (!name || !email || !password) {
         return res.status(400).json({ error: 'Name, email, and password are required' });
@@ -37,9 +40,14 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
     let user;
     try {
       const r = await pool.query(
-        `INSERT INTO auth.users (first_name, last_name, email, password_hash, role, location, description, profile_image, is_active)
-         VALUES ($1, '', $2, $3, $4, $5, $6, $7, $8) RETURNING id, first_name, email, role, is_active, created_at`,
-        [name, email, hash, dbRole, location || null, description || null, profile_image, isActive]
+        `INSERT INTO auth.users (first_name, last_name, email, password_hash, role, phone, location, city, state, country, zip_code,
+         description, profile_image, business_name, business_type, business_phone, business_email, website,
+         social_instagram, social_facebook, social_twitter, is_active)
+         VALUES ($1, '', $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+         RETURNING id, first_name, email, role, is_active, created_at`,
+        [name, email, hash, dbRole, phone || null, location || null, city || null, state || null, country || null, zip_code || null,
+         description || null, profile_image, business_name || null, business_type || null, business_phone || null,
+         business_email || null, website || null, social_instagram || null, social_facebook || null, social_twitter || null, isActive]
       );
       user = r.rows[0];
     } catch (dbErr) {
@@ -53,7 +61,45 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
     }
 
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+
+    // Generate email verification token (for future use when email sending is configured)
+    try {
+        const verifyToken = crypto.randomBytes(32).toString('hex');
+        await pool.query(
+            'INSERT INTO auth.email_verifications (user_id, token, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL \'24 hours\')',
+            [user.id, verifyToken]
+        );
+    } catch {}
+
     res.status(201).json({ token, user: { id: user.id, name: user.first_name, email: user.email, role: user.role, profile_image } });
+}));
+
+router.post('/logout', requireAuth, asyncHandler(async (req, res) => {
+    const header = req.headers.authorization;
+    if (header) {
+        await blacklistToken(header.replace('Bearer ', ''));
+    }
+    res.json({ message: 'Logged out successfully' });
+}));
+
+router.post('/verify-email', rateLimiter(10, 60000), asyncHandler(async (req, res) => {
+    const { token } = req.body;
+    if (!token || typeof token !== 'string') {
+        return res.status(400).json({ error: 'Verification token is required' });
+    }
+    if (!(await dbAvailable())) {
+        return res.status(503).json({ error: 'Service unavailable' });
+    }
+    const r = await pool.query(
+        'SELECT user_id FROM auth.email_verifications WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP',
+        [token]
+    );
+    if (!r.rows.length) {
+        return res.status(400).json({ error: 'Invalid or expired verification token' });
+    }
+    await pool.query('UPDATE auth.users SET email_verified = TRUE WHERE id = $1', [r.rows[0].user_id]);
+    await pool.query('DELETE FROM auth.email_verifications WHERE token = $1', [token]);
+    res.json({ message: 'Email verified successfully' });
 }));
 
 router.post('/login', rateLimiter(20, 60000), asyncHandler(async (req, res) => {
@@ -145,6 +191,10 @@ router.post('/reset-password', rateLimiter(5, 60000), asyncHandler(async (req, r
     const hash = await bcrypt.hash(password, 12);
     await pool.query('UPDATE auth.users SET password_hash = $1 WHERE email = $2', [hash, r.rows[0].email]);
     await pool.query('UPDATE auth.password_resets SET used = TRUE WHERE token = $1', [token]);
+    const userResult = await pool.query('SELECT id FROM auth.users WHERE email = $1', [r.rows[0].email]);
+    if (userResult.rows.length) {
+        await blacklistUserTokens(userResult.rows[0].id);
+    }
     res.json({ message: 'Password reset successfully' });
 }));
 
@@ -178,6 +228,7 @@ router.put('/password', requireAuth, asyncHandler(async (req, res) => {
     if (!valid) return res.status(401).json({ error: 'Current password is incorrect' });
     const hash = await bcrypt.hash(new_password, 12);
     await pool.query('UPDATE auth.users SET password_hash = $1 WHERE id = $2', [hash, req.user.id]);
+    await blacklistUserTokens(req.user.id);
     res.json({ message: 'Password updated successfully' });
 }));
 

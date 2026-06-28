@@ -50,7 +50,7 @@ localData['articles'] = [
         "readTime": "8 min read",
         "author": "Flora Williams",
         "description": "Learn the secrets to extending the vase life of your premium cut roses and keeping them fresh for up to 2 weeks.",
-        "image": "https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?q=80&w=600&auto=format&fit=crop",
+        "image": "images/1701165.jpg",
         "content": "Roses are among the most beloved flowers in the world. To keep them fresh, start with a clean vase and fresh water. Cut stems at a 45-degree angle to maximize water uptake. Remove any leaves below the waterline to prevent bacterial growth. Change the water every two days and add a drop of bleach to prevent bacteria."
     },
     {
@@ -61,7 +61,7 @@ localData['articles'] = [
         "readTime": "6 min read",
         "author": "James Bloom",
         "description": "Discover how to create stunning seasonal arrangements using locally available blooms throughout the year.",
-        "image": "https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=600&auto=format&fit=crop",
+        "image": "images/Florists_Review_October_2024.1_66fdb9da3ed6c.jpg",
         "content": "Seasonal flowers not only look beautiful but are also more sustainable and cost-effective. In spring, embrace tulips, daffodils and hyacinths. Summer brings sunflowers, dahlias and zinnias. Autumn offers chrysanthemums and marigolds, while winter is perfect for holly berries and amaryllis."
     },
     {
@@ -72,7 +72,7 @@ localData['articles'] = [
         "readTime": "10 min read",
         "author": "Sarah Chen",
         "description": "Everything you need to know about starting your floristry journey â€” from tools to techniques.",
-        "image": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=600&auto=format&fit=crop",
+        "image": "images/gld0314c_Bouquets-page-002.jpg",
         "content": "Starting out in floristry can feel overwhelming, but with the right tools and mindset, anyone can create beautiful arrangements. Begin with a sharp pair of floral scissors, floral foam, and a selection of focal flowers, filler flowers, and greenery. Master the basics of proportion and balance before moving on to complex designs."
     },
     {
@@ -892,7 +892,7 @@ localData['courses'] = [
         "id": "c1",
         "title": "Flower Arrangement Basics",
         "description": "Learn the fundamentals of flower arrangement from professional florist Maria Chen. This course covers everything from choosing the right flowers to creating stunning centerpiece designs for any occasion.",
-        "thumbnail": "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=600&auto=format&fit=crop",
+        "thumbnail": "images/pexels-ani-coloca-1105433412-29391663.jpg",
         "instructor": "Maria Chen",
         "level": "Beginner",
         "duration": 180,
@@ -909,7 +909,7 @@ localData['courses'] = [
         "id": "c2",
         "title": "Natural vs Artificial Flowers",
         "description": "Master the art of distinguishing natural, artificial, preserved, and dried flowers. Perfect for florists, buyers, and collectors who need to authenticate and evaluate flower quality.",
-        "thumbnail": "https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=600&auto=format&fit=crop",
+        "thumbnail": "images/pexels-marta-nogueira-589022975-34025116.jpg",
         "instructor": "David Okonkwo",
         "level": "Beginner",
         "duration": 90,
@@ -926,7 +926,7 @@ localData['courses'] = [
         "id": "c3",
         "title": "Wedding Floristry Masterclass",
         "description": "Design breathtaking wedding flowers from engagement to reception. Learn bouquets, boutonnieres, arch installations, table centerpieces, and venue-wide floral decor planning.",
-        "thumbnail": "https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=600&auto=format&fit=crop",
+        "thumbnail": "images/pexels-roman-odintsov-8528253.jpg",
         "instructor": "Sophie Laurent",
         "level": "Intermediate",
         "duration": 300,
@@ -1403,7 +1403,7 @@ localData['videos'] = [
         "duration": "12:34 min",
         "description": "Learn contemporary arrangement styles from pro florist Maria Chen.",
         "image": "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=600&auto=format&fit=crop",
-        "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "video_url": "https://www.pexels.com/embed/video/5228886/",
         "instructor": "Maria Chen",
         "views": 12453
     },
@@ -1415,7 +1415,7 @@ localData['videos'] = [
         "duration": "28:15 min",
         "description": "Complete guide to planning and executing flawless wedding arrangements.",
         "image": "https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=600&auto=format&fit=crop",
-        "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "video_url": "https://www.pexels.com/embed/video/1384777/",
         "instructor": "Sophie Laurent",
         "views": 8932
     },
@@ -1427,7 +1427,7 @@ localData['videos'] = [
         "duration": "35:42 min",
         "description": "Expert techniques for cultivating show-quality peony flowers year-round.",
         "image": "https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=600&auto=format&fit=crop",
-        "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "video_url": "https://www.pexels.com/embed/video/37570648/",
         "instructor": "Dr. James Whitfield",
         "views": 15678
     },
@@ -1439,7 +1439,7 @@ localData['videos'] = [
         "duration": "45:20 min",
         "description": "Learn how to start, market, and scale your floristry business successfully.",
         "image": "https://images.unsplash.com/photo-1664575602276-acd073f104c1?q=80&w=600&auto=format&fit=crop",
-        "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "video_url": "https://www.pexels.com/embed/video/3993446/",
         "instructor": "Amara Sterling",
         "views": 7231
     },
@@ -1451,7 +1451,7 @@ localData['videos'] = [
         "duration": "52:10 min",
         "description": "Transform venues with professional-grade event floral arrangements.",
         "image": "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?q=80&w=600&auto=format&fit=crop",
-        "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "video_url": "https://www.pexels.com/embed/video/4327402/",
         "instructor": "Luis Mendez",
         "views": 11420
     },
@@ -1463,7 +1463,7 @@ localData['videos'] = [
         "duration": "18:45 min",
         "description": "Master the fundamental tools, techniques, and principles of floristry.",
         "image": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=600&auto=format&fit=crop",
-        "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "video_url": "https://www.pexels.com/embed/video/4327403/",
         "instructor": "Maria Chen",
         "views": 18902
     }
@@ -1488,6 +1488,7 @@ function escapeHtml(str) {
     div.appendChild(document.createTextNode(str));
     return div.innerHTML;
 }
+
 
 function formatDate(dateStr) {
     if (!dateStr) return '';
@@ -1526,6 +1527,13 @@ function renderStars(rating) {
     const empty = 5 - full - half;
     return '&#9733;'.repeat(full) + (half ? '&#9734;' : '') + '&#9734;'.repeat(empty);
 }
+
+// Expose utilities globally so other scripts can use them safely
+window.escapeHtml   = escapeHtml;
+window.formatDate   = formatDate;
+window.formatNumber = formatNumber;
+window.timeAgo      = timeAgo;
+window.renderStars  = renderStars;
 
 function getCurrentUserId() {
     try {
@@ -1604,8 +1612,16 @@ function apiFetchWithBody(url, method, body) {
 }
 
 const api = {
-    fetchProducts() { return apiFetch('/api/products', 'products'); },
+    fetchProducts(params) {
+        let url = '/api/products';
+        if (params && typeof params === 'object') {
+            const qs = new URLSearchParams(params).toString();
+            if (qs) url += '?' + qs;
+        }
+        return apiFetch(url, 'products');
+    },
     fetchProduct(id) { return apiFetch('/api/products/' + encodeURIComponent(id)); },
+    fetchRelated(id) { return apiFetch('/api/products/' + encodeURIComponent(id) + '/related'); },
     fetchCategories() { return apiFetch('/api/products/list/categories', 'categories'); },
     fetchFlorists() { return apiFetch('/api/products/list/florists', 'florists'); },
     fetchArticles() { return apiFetch('/api/articles', 'articles'); },

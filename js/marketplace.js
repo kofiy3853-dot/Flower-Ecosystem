@@ -4,35 +4,7 @@
 const PER_PAGE = 6;
 
 function productCardHTML(p) {
-    return `
-    <div class="product-card">
-        <div class="product-img-wrap">
-            <a href="/product-detail.html?id=${escapeHtml(p.id)}">
-                <img loading="lazy" src="${escapeHtml(p.image || '/images/placeholder.svg')}" alt="${escapeHtml(p.name)}" class="product-img">
-            </a>
-            ${p.badge ? `<span class="product-badge">${escapeHtml(p.badge)}</span>` : ''}
-            <button class="wishlist-btn" data-id="${escapeHtml(p.id)}" aria-label="Add to wishlist"
-                style="position:absolute;top:0.75rem;right:0.75rem;background:rgba(255,255,255,0.9);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">
-                <i class="bi bi-heart" style="color:var(--primary-color);"></i>
-            </button>
-        </div>
-        <div class="product-info">
-            <a href="/product-detail.html?id=${escapeHtml(p.id)}" style="text-decoration:none;color:inherit;">
-                <h3 class="product-name">${escapeHtml(p.name)}</h3>
-            </a>
-            <p class="product-seller">by ${escapeHtml(p.seller)}</p>
-            <div class="product-rating" style="margin:0.25rem 0;">${renderStars(p.rating)}
-                <span style="font-size:0.8rem;color:var(--text-light);">(${escapeHtml(String(p.reviews))})</span>
-            </div>
-            <div class="product-footer">
-                <span class="product-price">${Number(p.price).toFixed(2)}</span>
-                <button class="btn btn-primary btn-sm add-to-cart-btn"
-                    data-id="${escapeHtml(p.id)}" data-name="${escapeHtml(p.name)}" data-price="${p.price}" data-image="${escapeHtml(p.image || '/images/placeholder.svg')}">
-                    Add to Cart
-                </button>
-            </div>
-        </div>
-    </div>`;
+    return ProductCard(p);
 }
 
 function renderToGrid(id, items, limit) {
@@ -195,9 +167,9 @@ function showGridSpinner(targetGrid) {
                 const haystack = `${p.name} ${p.description || ''} ${p.seller} ${p.category || ''}`.toLowerCase();
                 if (!haystack.includes(q)) return false;
             }
-            if (catFilter?.value !== 'all' && p.category !== catFilter.value) return false;
-            if (occasionFilter?.value !== 'all' && p.occasion !== occasionFilter.value) return false;
-            if (colorFilter?.value !== 'all' && p.color !== colorFilter.value) return false;
+            if (catFilter?.value !== 'all' && (p.category || '').toLowerCase() !== catFilter.value.toLowerCase()) return false;
+            if (occasionFilter?.value !== 'all' && (p.occasion || '').toLowerCase() !== occasionFilter.value.toLowerCase()) return false;
+            if (colorFilter?.value !== 'all' && (p.color || '').toLowerCase() !== colorFilter.value.toLowerCase()) return false;
             if (typeFilter?.value !== 'all') {
                 if (typeFilter.value === 'fresh' && !p.fresh) return false;
                 if (typeFilter.value === 'artificial' && p.fresh) return false;
@@ -423,7 +395,7 @@ function showGridSpinner(targetGrid) {
                         <div class="suggestion-meta">${metaHtml}</div>
                         ${descSnippet}
                     </div>
-                    <span class="suggestion-price">$${p.price.toFixed(2)}</span>
+                    <span class="suggestion-price">${p.currency || 'GHS'} ${Number(p.price).toFixed(2)}</span>
                 </li>`;
             }).join('') +
             `<li class="suggestion-footer" role="option" data-action="view-all">View all ${currentSuggestions.length} results for "${escapeHtml(query)}"</li>`;

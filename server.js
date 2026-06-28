@@ -23,6 +23,7 @@ app.use(require('helmet')({
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
             fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
             imgSrc: ["'self'", "data:", "https:", "blob:"],
+            mediaSrc: ["'self'", "blob:"],
             connectSrc: ["'self'", "https:"],
             frameSrc: ["'self'", "https:"],
             objectSrc: ["'none'"],
@@ -44,10 +45,9 @@ app.use(express.urlencoded({ extended: false }));
 // CSRF protection
 app.use((req, res, next) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
-        const contentType = req.get('Content-Type') || '';
-        if (contentType.includes('multipart/form-data')) return next();
         const xRequestedWith = req.get('X-Requested-With');
-        if (xRequestedWith !== 'XMLHttpRequest' && !req.get('Authorization')) {
+        const hasAuth = !!req.get('Authorization');
+        if (xRequestedWith !== 'XMLHttpRequest' && !hasAuth) {
             return res.status(403).json({ error: 'Missing required header' });
         }
     }
@@ -141,6 +141,7 @@ app.get('/favorites', (_, res) => res.sendFile(path.join(__dirname, 'favorites.h
 app.get('/notifications', (_, res) => res.sendFile(path.join(__dirname, 'notifications.html')));
 app.get('/messages', (_, res) => res.sendFile(path.join(__dirname, 'messages.html')));
 app.get('/manage-orders', (_, res) => res.sendFile(path.join(__dirname, 'manage-orders.html')));
+app.get('/profile', (_, res) => res.sendFile(path.join(__dirname, 'profile.html')));
 app.get('/about', (_, res) => res.sendFile(path.join(__dirname, 'about.html')));
 app.get('/search', (_, res) => res.sendFile(path.join(__dirname, 'search.html')));
 app.get('/forgot-password', (_, res) => res.sendFile(path.join(__dirname, 'forgot-password.html')));
@@ -215,6 +216,7 @@ pool.query('SELECT 1')
 // ─── Uploads static ───────────────────────────────────────────────────────
 
 app.use('/uploads', require('express').static(path.join(__dirname, 'uploads')));
+app.use('/images', require('express').static(path.join(__dirname, 'images')));
 
 // ─── API Routes ────────────────────────────────────────────────────────────
 
@@ -237,6 +239,7 @@ app.use('/api/messages', require('./routes/notifications'));
 app.use('/api/qa', require('./routes/qa'));
 app.use('/api/identification', require('./routes/identification'));
 app.use('/api/openai', require('./routes/openai'));
+app.use('/api/users', require('./routes/users'));
 app.use('/api', require('./routes/misc'));
 
 // ─── Error handling ────────────────────────────────────────────────────────

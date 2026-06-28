@@ -17,6 +17,60 @@ const pool = new Pool({
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+const blacklistedTokens = new Set();
+
+function hashToken(token) {
+    return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+function isTokenBlacklisted(token) {
+    return blacklistedTokens.has(hashToken(token));
+}
+
+async function blacklistToken(token) {
+    try {
+        const decoded = jwt.decode(token);
+        if (!decoded) return;
+        const hash = hashToken(token);
+        blacklistedTokens.add(hash);
+        const expMs = (decoded.exp || 0) * 1000;
+        const expiresAt = new Date(expMs);
+        await pool.query(
+            'INSERT INTO auth.token_blacklist (token_hash, user_id, expires_at) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING',
+            [hash, decoded.id, expiresAt]
+        );
+    } catch {}
+}
+
+function cleanupBlacklist() {
+    const now = Date.now();
+    pool.query('DELETE FROM auth.token_blacklist WHERE expires_at < CURRENT_TIMESTAMP').catch(() => {});
+    pool.query('SELECT token_hash, expires_at FROM auth.token_blacklist').then(r => {
+        const validHashes = new Set();
+        for (const row of r.rows) {
+            if (new Date(row.expires_at).getTime() > now) {
+                validHashes.add(row.token_hash);
+            }
+        }
+        for (const hash of blacklistedTokens) {
+            if (!validHashes.has(hash)) {
+                blacklistedTokens.delete(hash);
+            }
+        }
+    }).catch(() => {});
+}
+
+async function blacklistUserTokens(userId) {
+    try {
+        const userHash = crypto.createHash('sha256').update(`user:${userId}`).digest('hex');
+        blacklistedTokens.add(userHash);
+        await pool.query(
+            'INSERT INTO auth.token_blacklist (token_hash, user_id, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL \'7 days\') ON CONFLICT DO NOTHING',
+            [userHash, userId]
+        );
+    } catch {}
+}
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, path.join(__dirname, '..', 'uploads')),
     filename: (req, file, cb) => {
@@ -40,7 +94,7 @@ const upload = multer({
 
 const uploadVideo = multer({
     storage,
-    limits: { fileSize: 100 * 1024 * 1024 },
+    limits: { fileSize: 50 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         const allowed = /\.(mp4|webm|mov|avi|mkv)$/i;
         const videoMimes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska'];
@@ -130,8 +184,26 @@ function requireAuth(req, res, next) {
     const header = req.headers.authorization;
     if (!header) return res.status(401).json({ error: 'Authorization required' });
     try {
-        req.user = jwt.verify(header.replace('Bearer ', ''), JWT_SECRET);
-        next();
+        const token = header.replace('Bearer ', '');
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.user = decoded;
+        if (isTokenBlacklisted(token)) {
+            return res.status(401).json({ error: 'Token has been revoked' });
+        }
+        const userHash = crypto.createHash('sha256').update(`user:${decoded.id}`).digest('hex');
+        if (blacklistedTokens.has(userHash)) {
+            return res.status(401).json({ error: 'Token has been revoked' });
+        }
+        // DB fallback for user-level blacklist after restart
+        pool.query('SELECT 1 FROM auth.token_blacklist WHERE user_id = $1 AND token_hash = $2 AND expires_at > CURRENT_TIMESTAMP', [decoded.id, userHash])
+            .then(r => {
+                if (r.rows.length) {
+                    blacklistedTokens.add(userHash);
+                    return res.status(401).json({ error: 'Token has been revoked' });
+                }
+                next();
+            })
+            .catch(() => next());
     } catch {
         res.status(401).json({ error: 'Invalid or expired token' });
     }
@@ -196,4 +268,7 @@ module.exports = {
     requireInstructor,
     requireModerator,
     requireSuperAdmin,
+    blacklistToken,
+    blacklistUserTokens,
+    cleanupBlacklist,
 };

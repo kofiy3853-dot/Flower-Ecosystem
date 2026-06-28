@@ -158,10 +158,10 @@
 
     <script src="js/shared/api.js?v=3.0"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.2"></script>
     <script src="js/shared/ui.js?v=3.0"></script>
     <script src="js/shared/cart.js?v=3.0"></script>
-    <script src="js/shared/components.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
     <script src="js/shared/validation.js"></script>
     <script src="js/shared/image-upload.js"></script>
@@ -206,15 +206,20 @@
             const avatarInput = document.getElementById('accAvatarInput');
             const avatarPreview = document.getElementById('accAvatarPreview');
             
-            if (avatarInput && avatarPreview && typeof ImageUpload !== 'undefined') {
-                ImageUpload.initAvatarUpload(avatarInput, avatarPreview, {
-                    maxSize: 2 * 1024 * 1024,
-                    acceptTypes: ['image/jpeg', 'image/png', 'image/webp'],
-                    onChange: (file) => {
-                        if (typeof Toast !== 'undefined') {
-                            Toast.success('Avatar selected');
-                        }
+            if (avatarInput && avatarPreview) {
+                avatarInput.addEventListener('change', () => {
+                    const file = avatarInput.files[0];
+                    if (!file) return;
+                    if (file.size > 2 * 1024 * 1024) {
+                        showMsg('Image must be under 2MB.', 'error');
+                        avatarInput.value = '';
+                        return;
                     }
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        avatarPreview.innerHTML = '<img src="' + e.target.result + '" alt="Preview" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+                    };
+                    reader.readAsDataURL(file);
                 });
             }
         }
@@ -261,11 +266,31 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="auth-spinner"></span> Saving...';
             try {
-                await apiFetchWithBody('/api/auth/profile', 'PUT', {
+                const avatarInput = document.getElementById('accAvatarInput');
+                let profileImage = undefined;
+
+                if (avatarInput && avatarInput.files.length > 0) {
+                    const fd = new FormData();
+                    fd.append('images', avatarInput.files[0]);
+                    const uploadRes = await fetch('/api/upload', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + getToken(), 'X-Requested-With': 'XMLHttpRequest' },
+                        body: fd
+                    });
+                    if (!uploadRes.ok) throw new Error('Image upload failed');
+                    const uploadData = await uploadRes.json();
+                    profileImage = uploadData.images[0];
+                }
+
+                const body = {
                     first_name: document.getElementById('accFirstName').value.trim(),
                     last_name: document.getElementById('accLastName').value.trim()
-                });
+                };
+                if (profileImage) body.profile_image = profileImage;
+
+                await apiFetchWithBody('/api/auth/profile', 'PUT', body);
                 showMsg('Profile updated successfully!', 'success');
+                avatarInput.value = '';
                 await loadUserProfile();
             } catch(e) {
                 showMsg(e.message || 'Failed to update profile.', 'error');

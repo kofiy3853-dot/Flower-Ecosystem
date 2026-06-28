@@ -223,18 +223,35 @@ router.delete('/:id', requireAuth, asyncHandler(async (req, res) => {
 router.post('/:id/register', requireAuth, rateLimiter(20, 60000), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
     const { id } = req.params;
-    const event = await pool.query('SELECT * FROM events.events WHERE id = $1', [id]);
-    if (!event.rows.length) return res.status(404).json({ error: 'Event not found' });
-    if (event.rows[0].max_participants) {
-        const count = await pool.query('SELECT COUNT(*) AS cnt FROM events.event_registrations WHERE event_id = $1', [id]);
-        if (parseInt(count.rows[0].cnt) >= event.rows[0].max_participants) return res.status(400).json({ error: 'Event is full' });
-    }
+    const client = await pool.connect();
     try {
-        const r = await pool.query('INSERT INTO events.event_registrations (event_id, user_id) VALUES ($1, $2) RETURNING *', [id, req.user.id]);
-        res.status(201).json(r.rows[0]);
-    } catch (dbErr) {
-        if (dbErr.code === '23505') return res.status(409).json({ error: 'Already registered for this event' });
-        throw dbErr;
+        await client.query('BEGIN');
+        const event = await client.query('SELECT * FROM events.events WHERE id = $1 FOR UPDATE', [id]);
+        if (!event.rows.length) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'Event not found' });
+        }
+        if (event.rows[0].max_participants) {
+            const count = await client.query('SELECT COUNT(*) AS cnt FROM events.event_registrations WHERE event_id = $1', [id]);
+            if (parseInt(count.rows[0].cnt) >= event.rows[0].max_participants) {
+                await client.query('ROLLBACK');
+                return res.status(400).json({ error: 'Event is full' });
+            }
+        }
+        try {
+            const r = await client.query('INSERT INTO events.event_registrations (event_id, user_id) VALUES ($1, $2) RETURNING *', [id, req.user.id]);
+            await client.query('COMMIT');
+            res.status(201).json(r.rows[0]);
+        } catch (dbErr) {
+            await client.query('ROLLBACK');
+            if (dbErr.code === '23505') return res.status(409).json({ error: 'Already registered for this event' });
+            throw dbErr;
+        }
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
     }
 }));
 

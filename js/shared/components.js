@@ -1,23 +1,43 @@
 // js/shared/components.js
 
 function ProductCard(product) {
-    const image = product.image || (product.images && product.images[0]) || 'https://via.placeholder.com/300x200?text=No+Image';
+    const _noImg = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><rect fill="#fdf6f9" width="300" height="300" rx="12"/><text x="150" y="168" text-anchor="middle" fill="#c50454" font-size="56" font-family="Arial" font-weight="bold">✿</text></svg>')}`;
+    const image = product.image || (product.images && product.images[0]) || _noImg;
     const name = (product.name || 'Untitled Product').replace(/</g, '&lt;');
-    const price = typeof product.price === 'number' ? product.price.toFixed(2) : '0.00';
+    const desc = (product.description || '').replace(/</g, '&lt;').slice(0, 80);
+    const price = Number(product.price || 0).toFixed(2);
+    const currency = product.currency || 'GHS';
     const rating = product.rating || 0;
     const reviews = product.reviews || product.review_count || 0;
     const id = product.id || '';
+    const seller = product.seller || product.seller_name || '';
+    const badge = product.badge || '';
     return `
         <div class="product-card">
-            <a href="product-detail.html?id=${id}">
-                <div class="product-img"><img loading="lazy" src="${image}" alt="${name}"></div>
-                <div class="product-info">
+            <div class="product-img-link">
+                <a href="product-detail.html?id=${id}">
+                    <img loading="lazy" src="${image}" alt="${name}">
+                </a>
+                ${badge ? `<span class="product-badge">${badge}</span>` : ''}
+                <button class="wishlist-btn" data-id="${id}" aria-label="Add to wishlist">
+                    <i class="bi bi-heart"></i>
+                </button>
+            </div>
+            <div class="product-content">
+                <a href="product-detail.html?id=${id}" style="text-decoration:none;color:inherit;">
                     <h3 class="product-name">${name}</h3>
-                    <div class="product-rating">${'&#9733;'.repeat(Math.round(rating))} (${reviews})</div>
-                    <div class="product-price">$${price}</div>
-                </div>
-            </a>
-            <button class="btn btn-primary btn-sm add-to-cart" data-id="${id}">Add to Cart</button>
+                </a>
+                ${desc ? `<p class="product-desc">${desc}...</p>` : ''}
+                ${seller ? `<p class="product-seller">by ${seller}</p>` : ''}
+                <div class="product-rating">${'&#9733;'.repeat(Math.round(rating))}${'&#9734;'.repeat(5 - Math.round(rating))} <span>(${reviews})</span></div>
+            </div>
+            <div class="product-footer">
+                <span class="product-price">${currency} ${price}</span>
+            </div>
+            <div class="product-actions">
+                <button class="btn btn-primary btn-sm add-to-cart" data-id="${id}" data-name="${name}" data-price="${price}" data-image="${image}"><i class="bi bi-cart-plus"></i> Add to Cart</button>
+                <button class="btn btn-outline btn-sm" onclick="window.location.href='product-detail.html?id=${id}'"><i class="bi bi-eye"></i></button>
+            </div>
         </div>
     `;
 }
@@ -73,4 +93,5 @@ if (document.readyState === 'loading') {
     initComponents();
 }
 
-export { ProductCard, loadComponent, initComponents };
+window.ProductCard = ProductCard;
+window.loadComponent = loadComponent;

@@ -40,18 +40,18 @@ async function initDiscussionsPage() {
     loadStats();
     loadTopContributors();
 
-    document.getElementById('discSearchBtn').addEventListener('click', () => {
+    document.getElementById('discSearchBtn')?.addEventListener('click', () => {
         currentPage = 1;
         loadDiscussions();
     });
-    document.getElementById('discSearch').addEventListener('keydown', (e) => {
+    document.getElementById('discSearch')?.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             currentPage = 1;
             loadDiscussions();
         }
     });
 
-    document.getElementById('categoryTabs').addEventListener('click', (e) => {
+    document.getElementById('categoryTabs')?.addEventListener('click', (e) => {
         const tab = e.target.closest('.category-tab');
         if (!tab) return;
         document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
@@ -61,7 +61,7 @@ async function initDiscussionsPage() {
         loadDiscussions();
     });
 
-    document.getElementById('sortTabs').addEventListener('click', (e) => {
+    document.getElementById('sortTabs')?.addEventListener('click', (e) => {
         const tab = e.target.closest('.sort-tab');
         if (!tab) return;
         document.querySelectorAll('.sort-tab').forEach(t => t.classList.remove('active'));
@@ -81,12 +81,14 @@ async function loadCategories() {
         categories = [];
     }
     const tabs = document.getElementById('categoryTabs');
+    if (!tabs) return;
     tabs.innerHTML = `<button class="category-tab active" data-slug="">All</button>` +
         categories.map(c => `<button class="category-tab" data-slug="${escapeHtml(c.slug || '')}">${c.icon || ''} ${escapeHtml(c.name)}</button>`).join('');
 }
 
 async function loadDiscussions() {
-    const search = document.getElementById('discSearch').value.trim();
+    const searchEl = document.getElementById('discSearch');
+    const search = searchEl ? searchEl.value.trim() : '';
     const params = new URLSearchParams({ sort: currentSort, page: currentPage, limit: 20 });
     if (currentCategory) params.set('category', currentCategory);
     if (search) params.set('search', search);
@@ -100,6 +102,7 @@ async function loadDiscussions() {
     }
 
     const list = document.getElementById('discussionList');
+    if (!list) return;
     if (!data.discussions || !data.discussions.length) {
         list.innerHTML = `<div class="empty-state"><i class="bi bi-chat-dots"></i><h3>No discussions found</h3><p>Be the first to start a conversation!</p></div>`;
         document.getElementById('pagination').innerHTML = '';

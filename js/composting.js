@@ -99,7 +99,7 @@ function renderMethods() {
     if (!grid) return;
 
     grid.innerHTML = compostingMethods.map(m => `
-        <div class="method-card" onclick="selectMethod('${m.id}')">
+        <div class="method-card" onclick="selectMethod('${m.id}', event)">
             <div class="method-icon" style="${m.iconBg}">${m.icon}</div>
             <h4>${m.name}</h4>
             <p>${m.desc}</p>
@@ -112,9 +112,9 @@ function renderMethods() {
     `).join('');
 }
 
-function selectMethod(id) {
+function selectMethod(id, evt) {
     document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
 }
 
 function renderTroubleshooting() {

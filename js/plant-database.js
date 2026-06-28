@@ -20,13 +20,15 @@ async function initPlantDatabase() {
     populateOrigins();
     renderPlants();
 
-    document.getElementById('dbSearchBtn').addEventListener('click', () => renderPlants());
-    document.getElementById('dbSearch').addEventListener('keydown', (e) => {
+    document.getElementById('dbSearchBtn')?.addEventListener('click', () => renderPlants());
+    document.getElementById('dbSearch')?.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') renderPlants();
     });
 
     ['filterDifficulty', 'filterLight', 'filterOrigin', 'sortBy'].forEach(id => {
-        document.getElementById(id).addEventListener('change', () => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('change', () => {
             currentDifficulty = document.getElementById('filterDifficulty').value;
             currentLight = document.getElementById('filterLight').value;
             currentOrigin = document.getElementById('filterOrigin').value;
@@ -48,6 +50,7 @@ async function initPlantDatabase() {
 function populateOrigins() {
     const origins = [...new Set(allPlants.map(p => p.origin).filter(Boolean))].sort();
     const select = document.getElementById('filterOrigin');
+    if (!select) return;
     origins.forEach(o => {
         const opt = document.createElement('option');
         opt.value = o;
@@ -57,7 +60,8 @@ function populateOrigins() {
 }
 
 function getFilteredPlants() {
-    const search = document.getElementById('dbSearch').value.trim().toLowerCase();
+    const searchEl = document.getElementById('dbSearch');
+    const search = searchEl ? searchEl.value.trim().toLowerCase() : '';
     return allPlants.filter(p => {
         if (search && !((p.common_name || '').toLowerCase().includes(search) ||
             (p.scientific_name || '').toLowerCase().includes(search) ||
@@ -81,6 +85,7 @@ function renderPlants() {
     const plants = getFilteredPlants();
     const container = document.getElementById('dbContainer');
     const countEl = document.getElementById('resultsCount');
+    if (!container || !countEl) return;
 
     countEl.textContent = `Showing ${plants.length} of ${allPlants.length} plants`;
 
@@ -161,6 +166,7 @@ function getDiffClass(diff) {
 
 function sortBy(field) {
     currentSort = field;
-    document.getElementById('sortBy').value = field;
+    const sortByEl = document.getElementById('sortBy');
+    if (sortByEl) sortByEl.value = field;
     renderPlants();
 }

@@ -34,6 +34,10 @@ router.post('/', requireAuth, rateLimiter(10, 60000), asyncHandler(async (req, r
                 await client.query('ROLLBACK');
                 return res.status(400).json({ error: 'Insufficient stock for product' });
             }
+            await client.query(
+                'UPDATE marketplace.products SET stock_quantity = stock_quantity - $1 WHERE id = $2',
+                [item.quantity, item.product_id]
+            );
         }
         const order = await client.query(
             `INSERT INTO marketplace.orders (user_id, total_amount)
@@ -51,12 +55,6 @@ router.post('/', requireAuth, rateLimiter(10, 60000), asyncHandler(async (req, r
             'DELETE FROM marketplace.cart_items WHERE cart_id = $1',
             [cart.rows[0].id]
         );
-        for (const item of items.rows) {
-            await client.query(
-                'UPDATE marketplace.products SET stock_quantity = stock_quantity - $1 WHERE id = $2',
-                [item.quantity, item.product_id]
-            );
-        }
         await client.query('COMMIT');
 
         if (coupon_id) {

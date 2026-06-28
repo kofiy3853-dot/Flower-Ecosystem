@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Student Dashboard - Track your learning progress on Flower Ecosystem">
+    <title>Student Dashboard | Flower Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="styles/student-dashboard.css">
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div class="stu-layout">
+        <aside class="stu-sidebar" id="stuSidebar">
+            <div class="stu-sidebar-header">
+                <div class="stu-avatar" id="stuAvatar">A</div>
+                <div class="stu-sidebar-user">
+                    <div class="stu-sidebar-name" id="stuName">Ama Mensah</div>
+                    <div class="stu-sidebar-role">Student</div>
+                </div>
+            </div>
+            <nav class="stu-nav">
+                <a class="stu-nav-item active" data-section="overview"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></a>
+                <a class="stu-nav-item" data-section="my-courses"><i class="bi bi-book"></i><span>My Courses</span></a>
+                <a class="stu-nav-item" data-section="browse"><i class="bi bi-shop"></i><span>Browse Courses</span></a>
+                <a class="stu-nav-item" data-section="assignments"><i class="bi bi-journal-text"></i><span>Assignments</span></a>
+                <a class="stu-nav-item" data-section="quizzes"><i class="bi bi-question-circle"></i><span>Quizzes</span></a>
+                <a class="stu-nav-item" data-section="discussions"><i class="bi bi-chat-dots"></i><span>Discussions</span></a>
+                <a class="stu-nav-item" data-section="certificates"><i class="bi bi-award"></i><span>Certificates</span></a>
+                <a class="stu-nav-item" data-section="calendar"><i class="bi bi-calendar3"></i><span>Calendar</span></a>
+                <a class="stu-nav-item" data-section="progress"><i class="bi bi-graph-up"></i><span>My Progress</span></a>
+                <a class="stu-nav-item" data-section="settings"><i class="bi bi-gear"></i><span>Settings</span></a>
+            </nav>
+            <div class="stu-sidebar-footer">
+                <a href="learning.html" class="stu-nav-item"><i class="bi bi-arrow-left"></i><span>Back to Learning</span></a>
+            </div>
+        </aside>
+
+        <main class="stu-main">
+            <header class="stu-header">
+                <button class="stu-hamburger" id="stuHamburger"><i class="bi bi-list"></i></button>
+                <div class="stu-header-search">
+                    <i class="bi bi-search"></i>
+                    <input type="search" placeholder="Search courses, lessons..." id="stuSearch">
+                </div>
+                <div class="stu-header-actions">
+                    <button class="stu-header-btn" id="stuNotifBtn"><i class="bi bi-bell"></i><span class="stu-badge">3</span></button>
+                    <div class="stu-header-profile">
+                        <div class="stu-avatar stu-avatar-sm">A</div>
+                        <span>Ama Mensah</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="stu-content">
+                <!-- Overview Section -->
+                <section class="stu-section active" id="sec-overview">
+                    <div class="stu-welcome">
+                        <div>
+                            <h1>Welcome Back, <span id="stuWelcomeName">Ama</span> <span style="font-size:1.5rem;">&#x1F338;</span></h1>
+                            <p>Continue your learning journey. You're making great progress!</p>
+                        </div>
+                        <a href="learning.html" class="stu-btn stu-btn-primary"><i class="bi bi-shop"></i> Browse Courses</a>
+                    </div>
+
+                    <div class="stu-stats-grid">
+                        <div class="stu-stat-card">
+                            <div class="stu-stat-icon" style="background:rgba(212,175,55,0.1);color:#d4af37;"><i class="bi bi-book"></i></div>
+                            <div class="stu-stat-info"><div class="stu-stat-value">4</div><div class="stu-stat-label">Enrolled Courses</div></div>
+                        </div>
+                        <div class="stu-stat-card">
+                            <div class="stu-stat-icon" style="background:rgba(39,174,96,0.1);color:#27ae60;"><i class="bi bi-check-circle"></i></div>
+                            <div class="stu-stat-info"><div class="stu-stat-value">1</div><div class="stu-stat-label">Completed</div></div>
+                        </div>
+                        <div class="stu-stat-card">
+                            <div class="stu-stat-icon" style="background:rgba(74,144,217,0.1);color:#4a90d9;"><i class="bi bi-clock-history"></i></div>
+                            <div class="stu-stat-info"><div class="stu-stat-value">28h</div><div class="stu-stat-label">Time Spent</div></div>
+                        </div>
+                        <div class="stu-stat-card">
+                            <div class="stu-stat-icon" style="background:rgba(172,50,80,0.1);color:#ac3250;"><i class="bi bi-award"></i></div>
+                            <div class="stu-stat-info"><div class="stu-stat-value">2</div><div class="stu-stat-label">Certificates</div></div>
+                        </div>
+                    </div>
+
+                    <div class="stu-grid-2col">
+                        <div class="stu-card">
+                            <div class="stu-card-header"><h3>Continue Learning</h3><a href="#my-courses" class="stu-link" onclick="switchSection('my-courses')">View All</a></div>
+                            <div id="continueLearning"></div>
+                        </div>
+                        <div class="stu-card">
+                            <div class="stu-card-header"><h3>Upcoming Deadlines</h3></div>
+                            <div id="upcomingDeadlines"></div>
+                        </div>
+                    </div>
+
+                    <div class="stu-grid-2col">
+                        <div class="stu-card">
+                            <div class="stu-card-header"><h3>Learning Activity</h3></div>
+                            <div class="stu-activity-chart">
+                                <canvas id="activityCanvas" height="180"></canvas>
+                            </div>
+                        </div>
+                        <div class="stu-card">
+                            <div class="stu-card-header"><h3>Recent Achievements</h3></div>
+                            <div id="achievements"></div>
+                        </div>
+                    </div>
+
+                    <div class="stu-card">
+                        <div class="stu-card-header"><h3>Recommended For You</h3><a href="learning.html" class="stu-link">Browse All</a></div>
+                        <div class="stu-recommend-grid" id="recommendedGrid"></div>
+                    </div>
+                </section>
+
+                <!-- My Courses Section -->
+                <section class="stu-section" id="sec-my-courses">
+                    <div class="stu-section-header">
+                        <h2>My Courses</h2>
+                        <div class="stu-filter-group">
+                            <select id="myCourseFilter" class="stu-select">
+                                <option value="all">All Courses</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="stu-courses-grid" id="myCoursesGrid"></div>
+                </section>
+
+                <!-- Browse Courses Section -->
+                <section class="stu-section" id="sec-browse">
+                    <div class="stu-section-header">
+                        <h2>Browse Courses</h2>
+                        <div class="stu-filter-group">
+                            <select id="browseCatFilter" class="stu-select"><option value="all">All Categories</option></select>
+                            <select id="browseLevelFilter" class="stu-select"><option value="all">All Levels</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
+                        </div>
+                    </div>
+                    <div class="stu-courses-grid" id="browseGrid"></div>
+                </section>
+
+                <!-- Assignments Section -->
+                <section class="stu-section" id="sec-assignments">
+                    <div class="stu-section-header"><h2>Assignments</h2></div>
+                    <div class="stu-assign-tabs">
+                        <button class="stu-tab active" data-atab="pending">Pending</button>
+                        <button class="stu-tab" data-atab="submitted">Submitted</button>
+                        <button class="stu-tab" data-atab="graded">Graded</button>
+                    </div>
+                    <div id="assignmentsList"></div>
+                </section>
+
+                <!-- Quizzes Section -->
+                <section class="stu-section" id="sec-quizzes">
+                    <div class="stu-section-header"><h2>Quizzes</h2></div>
+                    <div id="quizzesList"></div>
+                </section>
+
+                <!-- Discussions Section -->
+                <section class="stu-section" id="sec-discussions">
+                    <div class="stu-section-header">
+                        <h2>Discussions</h2>
+                        <button class="stu-btn stu-btn-primary" onclick="openModal('new-discussion')"><i class="bi bi-plus-lg"></i> New Post</button>
+                    </div>
+                    <div id="discussionsList"></div>
+                </section>
+
+                <!-- Certificates Section -->
+                <section class="stu-section" id="sec-certificates">
+                    <div class="stu-section-header"><h2>My Certificates</h2></div>
+                    <div class="stu-certs-grid" id="certsGrid"></div>
+                </section>
+
+                <!-- Calendar Section -->
+                <section class="stu-section" id="sec-calendar">
+                    <div class="stu-section-header"><h2>Calendar</h2></div>
+                    <div class="stu-card">
+                        <div class="stu-calendar-header">
+                            <button class="stu-btn stu-btn-sm" id="stuCalPrev"><i class="bi bi-chevron-left"></i></button>
+                            <h3 id="stuCalMonth"></h3>
+                            <button class="stu-btn stu-btn-sm" id="stuCalNext"><i class="bi bi-chevron-right"></i></button>
+                        </div>
+                        <div class="stu-calendar-grid" id="stuCalendarGrid"></div>
+                    </div>
+                    <div class="stu-card" style="margin-top:1rem;">
+                        <div class="stu-card-header"><h3>Upcoming This Week</h3></div>
+                        <div id="weekEvents"></div>
+                    </div>
+                </section>
+
+                <!-- Progress Section -->
+                <section class="stu-section" id="sec-progress">
+                    <div class="stu-section-header"><h2>My Progress</h2></div>
+                    <div class="stu-stats-grid stu-stats-3" id="progressStats"></div>
+                    <div class="stu-card"><div class="stu-card-header"><h3>Skills Overview</h3></div><canvas id="skillsCanvas" height="220"></canvas></div>
+                    <div class="stu-card" style="margin-top:1rem;"><div class="stu-card-header"><h3>Learning Streak</h3></div><div id="streakInfo"></div></div>
+                </section>
+
+                <!-- Settings Section -->
+                <section class="stu-section" id="sec-settings">
+                    <div class="stu-section-header"><h2>Settings</h2></div>
+                    <div class="stu-card">
+                        <div class="stu-settings-form">
+                            <div class="stu-form-group"><label>Full Name</label><input type="text" id="stuSetName" value="Ama Mensah"></div>
+                            <div class="stu-form-group"><label>Email</label><input type="email" id="stuSetEmail" value="ama@student.com"></div>
+                            <div class="stu-form-group"><label>Bio</label><textarea id="stuSetBio" rows="3">Passionate about floral design and looking to start my own bouquet business.</textarea></div>
+                            <div class="stu-form-group"><label>Interests</label><input type="text" id="stuSetInterests" value="Floral Design, Wedding Flowers, Business"></div>
+                            <div class="stu-form-group"><label>Email Notifications</label>
+                                <label class="stu-toggle"><input type="checkbox" checked><span class="stu-toggle-slider"></span> Course updates</label>
+                                <label class="stu-toggle"><input type="checkbox" checked><span class="stu-toggle-slider"></span> Assignment reminders</label>
+                                <label class="stu-toggle"><input type="checkbox"><span class="stu-toggle-slider"></span> Marketing emails</label>
+                            </div>
+                            <button class="stu-btn stu-btn-primary" onclick="saveStuSettings()">Save Changes</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div class="stu-modal-overlay" id="stuModalOverlay">
+        <div class="stu-modal" id="stuModalBox">
+            <div class="stu-modal-header">
+                <h3 id="stuModalTitle">Modal</h3>
+                <button class="stu-modal-close" onclick="closeStuModal()"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="stu-modal-body" id="stuModalBody"></div>
+        </div>
+    </div>
+
+    <!-- Notifications Panel -->
+    <div class="stu-notif-panel" id="stuNotifPanel">
+        <div class="stu-notif-header"><h4>Notifications</h4></div>
+        <div class="stu-notif-list" id="stuNotifList"></div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.2"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=3.0"></script>
+    <script src="js/shared/ui.js?v=3.0"></script>
+    <script src="js/student-dashboard.js"></script>
+</body>
+</html>

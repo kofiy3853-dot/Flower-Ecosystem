@@ -50,12 +50,12 @@ async function initEventsPage() {
     loadFeaturedEvent();
     loadEvents();
 
-    document.getElementById('eventSearchBtn').addEventListener('click', () => { currentPage = 1; loadEvents(); });
-    document.getElementById('eventSearch').addEventListener('keydown', (e) => {
+    document.getElementById('eventSearchBtn')?.addEventListener('click', () => { currentPage = 1; loadEvents(); });
+    document.getElementById('eventSearch')?.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') { currentPage = 1; loadEvents(); }
     });
 
-    document.getElementById('categoryTabs').addEventListener('click', (e) => {
+    document.getElementById('categoryTabs')?.addEventListener('click', (e) => {
         const tab = e.target.closest('.category-tab');
         if (!tab) return;
         document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
@@ -65,7 +65,7 @@ async function initEventsPage() {
         loadEvents();
     });
 
-    document.getElementById('sortTabs').addEventListener('click', (e) => {
+    document.getElementById('sortTabs')?.addEventListener('click', (e) => {
         const tab = e.target.closest('.sort-tab');
         if (!tab) return;
         document.querySelectorAll('.sort-tab').forEach(t => t.classList.remove('active'));
@@ -98,6 +98,7 @@ async function loadEventCategories() {
         categories = [];
     }
     const tabs = document.getElementById('categoryTabs');
+    if (!tabs) return;
     tabs.innerHTML = `<button class="category-tab active" data-category="">All Events</button>` +
         categories.map(c => `<button class="category-tab" data-category="${escapeHtml(c.name)}">${c.icon || ''} ${escapeHtml(c.name)}</button>`).join('');
 }
@@ -133,7 +134,8 @@ async function loadFeaturedEvent() {
 }
 
 async function loadEvents() {
-    const search = document.getElementById('eventSearch').value.trim();
+    const searchEl = document.getElementById('eventSearch');
+    const search = searchEl ? searchEl.value.trim() : '';
     const params = new URLSearchParams({ sort: currentSort, page: currentPage, limit: 20 });
     if (currentCategory) params.set('category', currentCategory);
     if (search) params.set('search', search);
@@ -147,6 +149,7 @@ async function loadEvents() {
     }
 
     const container = document.getElementById('eventsContainer');
+    if (!container) return;
     if (!data.events || !data.events.length) {
         container.innerHTML = '';
         container.className = '';
