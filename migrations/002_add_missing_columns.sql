@@ -13,6 +13,18 @@ CREATE TABLE IF NOT EXISTS auth.password_resets (
 CREATE INDEX IF NOT EXISTS idx_password_resets_token ON auth.password_resets(token);
 CREATE INDEX IF NOT EXISTS idx_password_resets_email ON auth.password_resets(email);
 
+-- Email verification tokens
+CREATE TABLE IF NOT EXISTS auth.email_verifications (
+    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id     UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    token       TEXT UNIQUE NOT NULL,
+    expires_at  TIMESTAMP NOT NULL,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_email_verify_token ON auth.email_verifications(token);
+CREATE INDEX IF NOT EXISTS idx_email_verify_user ON auth.email_verifications(user_id);
+
 -- Add missing user columns
 ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS phone VARCHAR(30);
 ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS city VARCHAR(100);
@@ -29,6 +41,7 @@ ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS social_instagram VARCHAR(500);
 ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS social_facebook VARCHAR(500);
 ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS social_twitter VARCHAR(500);
 ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE;
+ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE;
 
 -- Add missing product columns
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'GHS';
