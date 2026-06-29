@@ -118,6 +118,7 @@ CREATE TABLE IF NOT EXISTS marketplace.products (
     name            VARCHAR(255) NOT NULL,
     description     TEXT,
     price           NUMERIC(10,2) CHECK (price >= 0),
+    currency        VARCHAR(10) DEFAULT 'GHS',
     stock_quantity  INT DEFAULT 0 CHECK (stock_quantity >= 0),
     flower_cond     flower_condition,
     is_active       BOOLEAN DEFAULT TRUE,
@@ -430,27 +431,39 @@ CREATE INDEX IF NOT EXISTS idx_audit_log_created ON admin.audit_log(created_at D
 -- FULL-TEXT SEARCH
 -- =============================================================================
 
-ALTER TABLE marketplace.products
-ADD COLUMN search_vector tsvector
-GENERATED ALWAYS AS (
-    to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, ''))
-) STORED;
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'marketplace' AND table_name = 'products' AND column_name = 'search_vector') THEN
+        ALTER TABLE marketplace.products
+        ADD COLUMN search_vector tsvector
+        GENERATED ALWAYS AS (
+            to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, ''))
+        ) STORED;
+    END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_products_search ON marketplace.products USING GIN(search_vector);
 
-ALTER TABLE learning.courses
-ADD COLUMN search_vector tsvector
-GENERATED ALWAYS AS (
-    to_tsvector('english', coalesce(title, '') || ' ' || coalesce(description, ''))
-) STORED;
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'learning' AND table_name = 'courses' AND column_name = 'search_vector') THEN
+        ALTER TABLE learning.courses
+        ADD COLUMN search_vector tsvector
+        GENERATED ALWAYS AS (
+            to_tsvector('english', coalesce(title, '') || ' ' || coalesce(description, ''))
+        ) STORED;
+    END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_courses_search ON learning.courses USING GIN(search_vector);
 
-ALTER TABLE community.posts
-ADD COLUMN search_vector tsvector
-GENERATED ALWAYS AS (
-    to_tsvector('english', coalesce(title, '') || ' ' || coalesce(content, ''))
-) STORED;
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'community' AND table_name = 'posts' AND column_name = 'search_vector') THEN
+        ALTER TABLE community.posts
+        ADD COLUMN search_vector tsvector
+        GENERATED ALWAYS AS (
+            to_tsvector('english', coalesce(title, '') || ' ' || coalesce(content, ''))
+        ) STORED;
+    END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_posts_search ON community.posts USING GIN(search_vector);
 
