@@ -199,8 +199,7 @@ pool.query('SELECT 1')
                         "INSERT INTO auth.users (first_name, last_name, email, password_hash, role) VALUES ('Admin', 'User', $1, $2, 'ADMIN')",
                         [ADMIN_EMAIL, hash]
                     );
-                    console.log(`Default admin created: ${ADMIN_EMAIL} / Reset this password immediately!`);
-                    console.log(`Temporary password: ${adminPassword}`);
+                    console.log(`Default admin created: ${ADMIN_EMAIL} — use the forgot password flow to set a secure password.`);
                 }
             }
         } catch (seedErr) {
