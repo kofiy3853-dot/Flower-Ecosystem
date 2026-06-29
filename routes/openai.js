@@ -34,7 +34,10 @@ function parseJsonResponse(content) {
 async function getImageBase64(file) {
     if (!file) return null;
     
-    if (useCloudinary) {
+    // Check if file.path looks like a URL (Cloudinary)
+    const isCloudinaryUrl = file.path && file.path.startsWith('http');
+    
+    if (isCloudinaryUrl) {
         // Cloudinary: file.path is a URL, fetch and convert to base64
         const response = await fetch(file.path);
         if (!response.ok) throw new Error(`Failed to fetch image from Cloudinary: ${response.statusText}`);

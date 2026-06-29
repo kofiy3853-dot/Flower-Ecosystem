@@ -110,7 +110,8 @@ router.post('/upload/video', requireAuth, uploadVideo.single('video'), asyncHand
     if (!req.file) return res.status(400).json({ error: 'No video file provided' });
     
     // Duration check only for local storage (Cloudinary doesn't provide local file path)
-    if (!useCloudinary) {
+    const isCloudinaryUrl = req.file.path && req.file.path.startsWith('http');
+    if (!isCloudinaryUrl) {
         const filePath = path.join(__dirname, '..', 'uploads', req.file.filename);
         const duration = await getVideoDuration(filePath);
         if (duration !== null && duration > 30) {

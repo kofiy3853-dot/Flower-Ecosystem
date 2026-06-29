@@ -5,21 +5,29 @@ const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 const crypto = require('crypto');
-const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-
-// Configure Cloudinary
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
-});
 
 const useCloudinary = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET;
 
+let cloudinary;
+let CloudinaryStorage;
+if (useCloudinary) {
+    try {
+        cloudinary = require('cloudinary').v2;
+        CloudinaryStorage = require('multer-storage-cloudinary').CloudinaryStorage;
+        cloudinary.config({
+            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY,
+            api_secret: process.env.CLOUDINARY_API_SECRET
+        });
+        console.log('Cloudinary configured successfully');
+    } catch (err) {
+        console.warn('Cloudinary packages not installed, falling back to local storage:', err.message);
+    }
+}
+
 function getFileUrl(file) {
     if (!file) return null;
-    if (useCloudinary) {
+    if (useCloudinary && cloudinary) {
         return file.path; // Cloudinary URL
     } else {
         return `/uploads/${file.filename}`;
@@ -93,7 +101,7 @@ async function blacklistUserTokens(userId) {
 
 // Configure storage based on Cloudinary availability
 let storage;
-if (useCloudinary) {
+if (useCloudinary && cloudinary && CloudinaryStorage) {
     storage = new CloudinaryStorage({
         cloudinary,
         params: {
@@ -133,7 +141,7 @@ const upload = multer({
 
 // Video storage
 let videoStorage;
-if (useCloudinary) {
+if (useCloudinary && cloudinary && CloudinaryStorage) {
     videoStorage = new CloudinaryStorage({
         cloudinary,
         params: {
