@@ -153,7 +153,8 @@ router.post('/', requireSeller, asyncHandler(async (req, res) => {
         badge, occasion, color, fresh, featured, best_seller, new_arrival,
         currency, unit, flower_type, fragrance, bloom_season, origin, care_level,
         sku, low_stock_alert, delivery_areas, delivery_time, shipping_fee, pickup_available,
-        tags, seo_slug, meta_description, status
+        tags, seo_slug, meta_description, status,
+        size, sunlight, water_frequency, features
     } = req.body;
     if (!name || !price) {
         return res.status(400).json({ error: 'Name and price are required' });
@@ -195,8 +196,9 @@ router.post('/', requireSeller, asyncHandler(async (req, res) => {
                  image_url, video_url, harvest_date, shelf_life_days,
                  currency, unit, flower_type, fragrance, bloom_season, origin, care_level,
                  sku, low_stock_alert, delivery_areas, delivery_time, shipping_fee, pickup_available,
-                 tags, seo_slug, meta_description, status)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34,$35,$36) RETURNING *`,
+                 tags, seo_slug, meta_description, status,
+                 size, sunlight, water_frequency, features)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34,$35,$36,$37,$38,$39,$40) RETURNING *`,
             [req.user.id, escapeHtml(name).slice(0, 255), escapeHtml(description || '').slice(0, 2000),
              price, stock_quantity || 0, resolvedCategoryId, flower_cond ? (condMap[flower_cond.toUpperCase()] || flower_cond.toUpperCase()) : null,
              badge || null, occasion || null, color || null, fresh || false,
@@ -206,7 +208,8 @@ router.post('/', requireSeller, asyncHandler(async (req, res) => {
              bloom_season || null, origin || null, care_level || null,
              sku || null, low_stock_alert || 10, delivery_areas || [], delivery_time || null,
              shipping_fee || 0, pickup_available !== false, tags || [], seo_slug || null,
-             meta_description || null, status || 'published']
+             meta_description || null, status || 'published',
+             size || null, sunlight || null, water_frequency || null, features || []]
         );
         if (images && Array.isArray(images) && images.length > 0) {
             for (let i = 0; i < images.length; i++) {

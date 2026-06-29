@@ -90,6 +90,129 @@
                             </select>
                         </div>
                     </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem;">
+                        <div class="form-group">
+                            <label for="productOccasion" class="form-label">Occasion</label>
+                            <select id="productOccasion" class="form-select">
+                                <option value="">Select occasion</option>
+                                <option value="romance">Romance</option>
+                                <option value="wedding">Wedding</option>
+                                <option value="birthday">Birthday</option>
+                                <option value="sympathy">Sympathy</option>
+                                <option value="celebration">Celebration</option>
+                                <option value="everyday">Everyday</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productColor" class="form-label">Primary Color</label>
+                            <select id="productColor" class="form-select">
+                                <option value="">Select color</option>
+                                <option value="red">Red</option>
+                                <option value="pink">Pink</option>
+                                <option value="white">White</option>
+                                <option value="yellow">Yellow</option>
+                                <option value="purple">Purple</option>
+                                <option value="orange">Orange</option>
+                                <option value="multi">Multi-color</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="bi bi-flower1" style="color:var(--primary-color);"></i> Flower Characteristics</h3>
+                    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:1rem;">Help buyers understand your flowers better by adding these details.</p>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                        <div class="form-group">
+                            <label for="productSize" class="form-label">Size / Stem Count</label>
+                            <select id="productSize" class="form-select">
+                                <option value="">Select size</option>
+                                <option value="single">Single Stem</option>
+                                <option value="small">Small (5-10 stems)</option>
+                                <option value="medium">Medium (10-20 stems)</option>
+                                <option value="large">Large (20-30 stems)</option>
+                                <option value="extra-large">Extra Large (30+ stems)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productFragrance" class="form-label">Fragrance Level</label>
+                            <select id="productFragrance" class="form-select">
+                                <option value="">Select fragrance</option>
+                                <option value="none">No Fragrance</option>
+                                <option value="light">Light Scent</option>
+                                <option value="medium">Medium Scent</option>
+                                <option value="strong">Strong Fragrance</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productCareLevel" class="form-label">Care Difficulty</label>
+                            <select id="productCareLevel" class="form-select">
+                                <option value="">Select care level</option>
+                                <option value="easy">Easy - Minimal care needed</option>
+                                <option value="moderate">Moderate - Regular watering</option>
+                                <option value="expert">Expert - Special care required</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productSunlight" class="form-label">Sunlight Needs</label>
+                            <select id="productSunlight" class="form-select">
+                                <option value="">Select sunlight</option>
+                                <option value="full-sun">Full Sun (6+ hours)</option>
+                                <option value="partial-sun">Partial Sun (3-6 hours)</option>
+                                <option value="shade">Shade (Less than 3 hours)</option>
+                                <option value="indoor">Indoor / Low Light</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productWater" class="form-label">Watering Frequency</label>
+                            <select id="productWater" class="form-select">
+                                <option value="">Select frequency</option>
+                                <option value="daily">Daily</option>
+                                <option value="every-2-3-days">Every 2-3 days</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="bi-weekly">Every 2 weeks</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productBloomTime" class="form-label">Bloom Season</label>
+                            <select id="productBloomTime" class="form-select">
+                                <option value="">Select season</option>
+                                <option value="spring">Spring</option>
+                                <option value="summer">Summer</option>
+                                <option value="fall">Fall</option>
+                                <option value="winter">Winter</option>
+                                <option value="year-round">Year-Round</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:1rem;">
+                        <label class="form-label">Special Features</label>
+                        <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
+                            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; cursor:pointer;">
+                                <input type="checkbox" id="featLongLasting" class="product-feature" value="long-lasting"> Long-lasting
+                            </label>
+                            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; cursor:pointer;">
+                                <input type="checkbox" id="featPollinator" class="product-feature" value="pollinator-friendly"> Pollinator Friendly
+                            </label>
+                            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; cursor:pointer;">
+                                <input type="checkbox" id="featPetSafe" class="product-feature" value="pet-safe"> Pet Safe
+                            </label>
+                            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; cursor:pointer;">
+                                <input type="checkbox" id="featEdible" class="product-feature" value="edible"> Edible
+                            </label>
+                            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; cursor:pointer;">
+                                <input type="checkbox" id="featMedicinal" class="product-feature" value="medicinal"> Medicinal
+                            </label>
+                            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; cursor:pointer;">
+                                <input type="checkbox" id="featDrought" class="product-feature" value="drought-tolerant"> Drought Tolerant
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:1rem;">
+                        <label for="productOrigin" class="form-label">Origin / Source</label>
+                        <input type="text" id="productOrigin" class="form-input" placeholder="e.g. Local farm, Imported from Netherlands">
+                    </div>
                 </div>
 
                 <div class="form-section">
@@ -605,6 +728,17 @@
                 const catMap = { roses: 'Roses', bouquets: 'Bouquets', orchids: 'Orchids', succulents: 'Succulents', wildflowers: 'Wildflowers', plants: 'Indoor Plants' };
                 const condMap = { natural: 'NATURAL', artificial: 'ARTIFICIAL', preserved: 'PRESERVED', dried: 'DRIED' };
 
+                const occasion = document.getElementById('productOccasion').value;
+                const color = document.getElementById('productColor').value;
+                const size = document.getElementById('productSize').value;
+                const fragrance = document.getElementById('productFragrance').value;
+                const careLevel = document.getElementById('productCareLevel').value;
+                const sunlight = document.getElementById('productSunlight').value;
+                const water = document.getElementById('productWater').value;
+                const bloomTime = document.getElementById('productBloomTime').value;
+                const origin = document.getElementById('productOrigin').value.trim();
+                const features = [...document.querySelectorAll('.product-feature:checked')].map(cb => cb.value);
+
                 const body = {
                     name,
                     description: desc,
@@ -612,8 +746,18 @@
                     stock_quantity: stock,
                     category: catMap[category] || category,
                     flower_cond: condMap[condition] || condition.toUpperCase(),
+                    occasion: occasion || null,
+                    color: color || null,
                     images,
-                    video_url: video || null
+                    video_url: video || null,
+                    size: size || null,
+                    fragrance: fragrance || null,
+                    care_level: careLevel || null,
+                    sunlight: sunlight || null,
+                    water_frequency: water || null,
+                    bloom_season: bloomTime || null,
+                    features: features.length ? features : null,
+                    origin: origin || null
                 };
 
                 const token = getToken();

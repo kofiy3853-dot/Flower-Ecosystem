@@ -45,6 +45,14 @@ ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT F
 
 -- Add missing product columns
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'GHS';
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS size VARCHAR(50);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS fragrance VARCHAR(50);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS care_level VARCHAR(50);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS sunlight VARCHAR(50);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS water_frequency VARCHAR(50);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS bloom_season VARCHAR(50);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS features TEXT[] DEFAULT '{}';
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS origin VARCHAR(255);
 
 -- Event speakers table
 CREATE TABLE IF NOT EXISTS events.event_speakers (

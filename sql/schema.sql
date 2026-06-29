@@ -134,6 +134,14 @@ CREATE TABLE IF NOT EXISTS marketplace.products (
     video_url       TEXT,
     harvest_date    DATE DEFAULT CURRENT_DATE,
     shelf_life_days INT DEFAULT 7 CHECK (shelf_life_days > 0),
+    size            VARCHAR(50),
+    fragrance       VARCHAR(50),
+    care_level      VARCHAR(50),
+    sunlight        VARCHAR(50),
+    water_frequency VARCHAR(50),
+    bloom_season    VARCHAR(50),
+    features        TEXT[] DEFAULT '{}',
+    origin          VARCHAR(255),
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
