@@ -369,10 +369,24 @@ const courseForm=`
     </form>`;
 const productForm=`
     <form id="admProductForm">
+    <h4 style="margin:0 0 1rem;font-size:.9rem;color:var(--text-light);border-bottom:1px solid var(--border-color);padding-bottom:.5rem;">Basic Info</h4>
     <div class="adm-form-group"><label>Name *</label><input required></div>
     <div class="adm-form-group"><label>Price (GHS) *</label><input type="number" step="0.01" min="0" required></div>
     <div class="adm-form-group"><label>Category</label><select><option>Roses</option><option>Bouquets</option><option>Orchids</option><option>Succulents</option><option>Wildflowers</option><option>Indoor Plants</option></select></div>
+    <div class="adm-form-group"><label>Condition</label><select><option>Natural (Fresh)</option><option>Artificial (Silk)</option><option>Preserved</option><option>Dried</option></select></div>
     <div class="adm-form-group"><label>Description</label><textarea rows="3"></textarea></div>
+    <h4 style="margin:1rem 0 1rem;font-size:.9rem;color:var(--text-light);border-bottom:1px solid var(--border-color);padding-bottom:.5rem;">Characteristics</h4>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+        <div class="adm-form-group"><label>Occasion</label><select><option value="">Select</option><option>Romance</option><option>Wedding</option><option>Birthday</option><option>Sympathy</option><option>Celebration</option><option>Everyday</option></select></div>
+        <div class="adm-form-group"><label>Color</label><select><option value="">Select</option><option>Red</option><option>Pink</option><option>White</option><option>Yellow</option><option>Purple</option><option>Orange</option><option>Multi</option></select></div>
+        <div class="adm-form-group"><label>Size</label><select><option value="">Select</option><option>Single Stem</option><option>Small (5-10)</option><option>Medium (10-20)</option><option>Large (20-30)</option><option>Extra Large (30+)</option></select></div>
+        <div class="adm-form-group"><label>Fragrance</label><select><option value="">Select</option><option>None</option><option>Light</option><option>Medium</option><option>Strong</option></select></div>
+        <div class="adm-form-group"><label>Care Level</label><select><option value="">Select</option><option>Easy</option><option>Moderate</option><option>Expert</option></select></div>
+        <div class="adm-form-group"><label>Sunlight</label><select><option value="">Select</option><option>Full Sun</option><option>Partial Sun</option><option>Shade</option><option>Indoor</option></select></div>
+        <div class="adm-form-group"><label>Watering</label><select><option value="">Select</option><option>Daily</option><option>Every 2-3 days</option><option>Weekly</option><option>Bi-weekly</option><option>Monthly</option></select></div>
+        <div class="adm-form-group"><label>Bloom Season</label><select><option value="">Select</option><option>Spring</option><option>Summer</option><option>Fall</option><option>Winter</option><option>Year-Round</option></select></div>
+    </div>
+    <div class="adm-form-group"><label>Origin</label><input placeholder="e.g. Local farm, Imported"></div>
     <button type="submit" class="adm-btn adm-btn-primary" style="width:100%;">Add Product</button>
     </form>`;
 const eventForm=`
