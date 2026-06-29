@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const path = require('path');
-const { pool, JWT_SECRET, upload, asyncHandler, escapeHtml, dbAvailable, readJSON, requireAuth, requireRole } = require('./middleware');
+const { pool, JWT_SECRET, upload, asyncHandler, escapeHtml, dbAvailable, readJSON, requireAuth, requireRole, getFileUrl } = require('./middleware');
 
 // Posts
 router.get('/posts', asyncHandler(async (req, res) => {
@@ -212,7 +212,7 @@ router.post('/discussions', requireAuth, upload.array('images', 5), asyncHandler
     const r = await pool.query('INSERT INTO community.discussions (user_id, title, content, category_id) VALUES ($1, $2, $3, $4) RETURNING *', [req.user.id, escapeHtml(title).slice(0, 255), escapeHtml(content).slice(0, 10000), category_id || null]);
     if (req.files && req.files.length) {
         for (let i = 0; i < req.files.length; i++) {
-            await pool.query('INSERT INTO community.discussion_images (discussion_id, image_url, sort_order) VALUES ($1, $2, $3)', [r.rows[0].id, `/uploads/${req.files[i].filename}`, i]);
+            await pool.query('INSERT INTO community.discussion_images (discussion_id, image_url, sort_order) VALUES ($1, $2, $3)', [r.rows[0].id, getFileUrl(req.files[i]), i]);
         }
     }
     res.status(201).json(r.rows[0]);
@@ -460,7 +460,7 @@ router.post('/stories', requireAuth, upload.array('images', 5), asyncHandler(asy
     if (!title || !content) return res.status(400).json({ error: 'Title and content are required' });
     const user = await pool.query('SELECT first_name, last_name, profile_image, role FROM auth.users WHERE id = $1', [req.user.id]);
     const u = user.rows[0] || {};
-    const cover_image = req.files && req.files.length ? `/uploads/${req.files[0].filename}` : null;
+    const cover_image = req.files && req.files.length ? getFileUrl(req.files[0]) : null;
     const r = await pool.query(
         `INSERT INTO community.success_stories (user_id, title, content, author_name, author_role, author_avatar, cover_image, category)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
@@ -469,7 +469,7 @@ router.post('/stories', requireAuth, upload.array('images', 5), asyncHandler(asy
     );
     if (req.files && req.files.length > 1) {
         for (let i = 1; i < req.files.length; i++) {
-            await pool.query('INSERT INTO community.story_images (story_id, image_url, sort_order) VALUES ($1, $2, $3)', [r.rows[0].id, `/uploads/${req.files[i].filename}`, i]);
+            await pool.query('INSERT INTO community.story_images (story_id, image_url, sort_order) VALUES ($1, $2, $3)', [r.rows[0].id, getFileUrl(req.files[i]), i]);
         }
     }
     res.status(201).json(r.rows[0]);

@@ -5,6 +5,26 @@ const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 const crypto = require('crypto');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const useCloudinary = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET;
+
+function getFileUrl(file) {
+    if (!file) return null;
+    if (useCloudinary) {
+        return file.path; // Cloudinary URL
+    } else {
+        return `/uploads/${file.filename}`;
+    }
+}
 
 const pool = new Pool({
     host: process.env.PG_HOST || 'localhost',
@@ -71,13 +91,32 @@ async function blacklistUserTokens(userId) {
     } catch {}
 }
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, path.join(__dirname, '..', 'uploads')),
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname).toLowerCase();
-        cb(null, `${Date.now()}-${crypto.randomBytes(8).toString('hex')}${ext}`);
+// Configure storage based on Cloudinary availability
+let storage;
+if (useCloudinary) {
+    storage = new CloudinaryStorage({
+        cloudinary,
+        params: {
+            folder: 'flower-ecosystem',
+            allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+            transformation: [{ width: 1200, height: 1200, crop: 'limit' }]
+        }
+    });
+    console.log('Using Cloudinary for image storage');
+} else {
+    const uploadsDir = path.join(__dirname, '..', 'uploads');
+    if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
     }
-});
+    storage = multer.diskStorage({
+        destination: (req, file, cb) => cb(null, uploadsDir),
+        filename: (req, file, cb) => {
+            const ext = path.extname(file.originalname).toLowerCase();
+            cb(null, `${Date.now()}-${crypto.randomBytes(8).toString('hex')}${ext}`);
+        }
+    });
+    console.log('Using local disk for image storage');
+}
 
 const upload = multer({
     storage,
@@ -92,8 +131,24 @@ const upload = multer({
     }
 });
 
+// Video storage
+let videoStorage;
+if (useCloudinary) {
+    videoStorage = new CloudinaryStorage({
+        cloudinary,
+        params: {
+            folder: 'flower-ecosystem/videos',
+            resource_type: 'video',
+            allowed_formats: ['mp4', 'webm', 'mov'],
+            transformation: [{ width: 1280, height: 720, crop: 'limit' }]
+        }
+    });
+} else {
+    videoStorage = storage;
+}
+
 const uploadVideo = multer({
-    storage,
+    storage: videoStorage,
     limits: { fileSize: 50 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         const allowed = /\.(mp4|webm|mov|avi|mkv)$/i;
@@ -271,4 +326,6 @@ module.exports = {
     blacklistToken,
     blacklistUserTokens,
     cleanupBlacklist,
+    getFileUrl,
+    useCloudinary,
 };

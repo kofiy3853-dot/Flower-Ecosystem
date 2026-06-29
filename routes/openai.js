@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
-const { asyncHandler, upload, pool, dbAvailable, readJSON, requireAuth } = require('./middleware');
+const { asyncHandler, upload, pool, dbAvailable, readJSON, requireAuth, useCloudinary } = require('./middleware');
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY;
 
@@ -31,6 +31,26 @@ function parseJsonResponse(content) {
     return JSON.parse(clean);
 }
 
+async function getImageBase64(file) {
+    if (!file) return null;
+    
+    if (useCloudinary) {
+        // Cloudinary: file.path is a URL, fetch and convert to base64
+        const response = await fetch(file.path);
+        if (!response.ok) throw new Error(`Failed to fetch image from Cloudinary: ${response.statusText}`);
+        const buffer = await response.arrayBuffer();
+        const base64 = Buffer.from(buffer).toString('base64');
+        const mimeType = file.mimetype || 'image/jpeg';
+        return `data:${mimeType};base64,${base64}`;
+    } else {
+        // Local storage: read file from disk
+        const imageData = fs.readFileSync(file.path);
+        const base64 = imageData.toString('base64');
+        const mimeType = file.mimetype || 'image/jpeg';
+        return `data:${mimeType};base64,${base64}`;
+    }
+}
+
 // ─── Existing endpoints ────────────────────────────────────────────────────
 
 router.post('/analyze-flower', requireAuth, upload.single('image'), asyncHandler(async (req, res) => {
@@ -39,11 +59,11 @@ router.post('/analyze-flower', requireAuth, upload.single('image'), asyncHandler
     let imageUrl = null;
     if (req.file) {
         try {
-            const imageData = fs.readFileSync(req.file.path);
-            const base64Image = imageData.toString('base64');
-            const mimeType = req.file.mimetype || 'image/jpeg';
-            imageUrl = `data:${mimeType};base64,${base64Image}`;
-            fs.unlinkSync(req.file.path);
+            imageUrl = await getImageBase64(req.file);
+            // Clean up local file if not using Cloudinary
+            if (!useCloudinary) {
+                fs.unlinkSync(req.file.path);
+            }
         } catch (error) {
             console.error('Error processing uploaded file:', error);
             return res.status(500).json({ error: 'Failed to process image' });
@@ -115,11 +135,11 @@ router.post('/flower-expert', requireAuth, upload.single('image'), asyncHandler(
     let imageUrl = null;
     if (req.file) {
         try {
-            const imageData = fs.readFileSync(req.file.path);
-            const base64Image = imageData.toString('base64');
-            const mimeType = req.file.mimetype || 'image/jpeg';
-            imageUrl = `data:${mimeType};base64,${base64Image}`;
-            fs.unlinkSync(req.file.path);
+            imageUrl = await getImageBase64(req.file);
+            // Clean up local file if not using Cloudinary
+            if (!useCloudinary) {
+                fs.unlinkSync(req.file.path);
+            }
         } catch (error) {
             console.error('Error processing uploaded file:', error);
             return res.status(500).json({ error: 'Failed to process image' });

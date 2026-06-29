@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
-const { pool, JWT_SECRET, upload, rateLimiter, asyncHandler, dbAvailable, readJSON, requireAuth } = require('./middleware');
+const { pool, JWT_SECRET, upload, rateLimiter, asyncHandler, dbAvailable, readJSON, requireAuth, getFileUrl } = require('./middleware');
 
 router.get('/categories', asyncHandler(async (_, res) => {
     if (!(await dbAvailable())) {
@@ -173,7 +173,7 @@ router.post('/', requireAuth, upload.single('image'), asyncHandler(async (req, r
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
     const { title, description, location, event_date, end_date, event_type, event_category, max_participants, price, difficulty, prerequisites, agenda, is_featured } = req.body;
     if (!title || !event_date) return res.status(400).json({ error: 'Title and date are required' });
-    const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+    const image_url = getFileUrl(req.file);
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     const r = await pool.query(
         `INSERT INTO events.events (title, slug, description, location, event_date, end_date, event_type, event_category, image_url, max_participants, price, difficulty, prerequisites, agenda, is_featured, organizer_id, status)

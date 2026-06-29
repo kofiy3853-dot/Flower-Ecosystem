@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
-const { pool, JWT_SECRET, upload, asyncHandler, escapeHtml, dbAvailable, requireAuth } = require('./middleware');
+const { pool, JWT_SECRET, upload, asyncHandler, escapeHtml, dbAvailable, requireAuth, getFileUrl } = require('./middleware');
 
 router.get('/categories', asyncHandler(async (_, res) => {
     if (await dbAvailable()) {
@@ -107,7 +107,7 @@ router.post('/questions', requireAuth, upload.array('images', 5), asyncHandler(a
     const r = await pool.query('INSERT INTO qa.questions (user_id, title, content, category_id, tags) VALUES ($1, $2, $3, $4, $5) RETURNING *', [req.user.id, escapeHtml(title).slice(0, 255), escapeHtml(content).slice(0, 10000), category_id || null, tags || null]);
     if (req.files && req.files.length) {
         for (let i = 0; i < req.files.length; i++) {
-            await pool.query('INSERT INTO qa.question_images (question_id, image_url, sort_order) VALUES ($1, $2, $3)', [r.rows[0].id, `/uploads/${req.files[i].filename}`, i]);
+            await pool.query('INSERT INTO qa.question_images (question_id, image_url, sort_order) VALUES ($1, $2, $3)', [r.rows[0].id, getFileUrl(req.files[i]), i]);
         }
     }
     await pool.query(`INSERT INTO qa.user_points (user_id, points, questions_asked) VALUES ($1, 5, 1) ON CONFLICT (user_id) DO UPDATE SET points = qa.user_points.points + 5, questions_asked = qa.user_points.questions_asked + 1`, [req.user.id]);

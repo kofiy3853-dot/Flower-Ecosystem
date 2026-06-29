@@ -2,7 +2,7 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const { pool, JWT_SECRET, upload, rateLimiter, asyncHandler, dbAvailable, requireAuth, blacklistToken, blacklistUserTokens, cleanupBlacklist } = require('./middleware');
+const { pool, JWT_SECRET, upload, rateLimiter, asyncHandler, dbAvailable, requireAuth, blacklistToken, blacklistUserTokens, cleanupBlacklist, getFileUrl } = require('./middleware');
 
 // Clean expired reset tokens and blacklisted tokens periodically
 setInterval(async () => {
@@ -16,7 +16,7 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
     const { name, email, password, role, phone, location, city, state, country, zip_code, description,
             business_name, business_type, business_phone, business_email, website,
             social_instagram, social_facebook, social_twitter } = req.body;
-    const profile_image = req.file ? `/uploads/${req.file.filename}` : null;
+    const profile_image = getFileUrl(req.file);
     if (!name || !email || !password) {
         return res.status(400).json({ error: 'Name, email, and password are required' });
     }

@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const path = require('path');
-const { pool, upload, asyncHandler, escapeHtml, dbAvailable, requireAuth } = require('./middleware');
+const { pool, upload, asyncHandler, escapeHtml, dbAvailable, requireAuth, getFileUrl } = require('./middleware');
 
 // Garden Journal
 router.get('/journal/entries', requireAuth, asyncHandler(async (req, res) => {
@@ -43,7 +43,7 @@ router.post('/journal/entries', requireAuth, upload.array('photos', 10), asyncHa
     const entryId = r.rows[0].id;
     if (req.files && req.files.length) {
         for (let i = 0; i < req.files.length; i++) {
-            await pool.query('INSERT INTO garden.journal_photos (entry_id, image_url, sort_order) VALUES ($1, $2, $3)', [entryId, `/uploads/${req.files[i].filename}`, i]);
+            await pool.query('INSERT INTO garden.journal_photos (entry_id, image_url, sort_order) VALUES ($1, $2, $3)', [entryId, getFileUrl(req.files[i]), i]);
         }
     }
     if (plants) {

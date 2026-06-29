@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const { pool, JWT_SECRET, rateLimiter } = require('./routes/middleware');
 const bcrypt = require('bcryptjs');
 

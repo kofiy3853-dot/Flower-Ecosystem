@@ -2,7 +2,7 @@ const router = require('express').Router();
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
-const { pool, JWT_SECRET, upload, uploadVideo, rateLimiter, asyncHandler, escapeHtml, dbAvailable, requireAuth } = require('./middleware');
+const { pool, JWT_SECRET, upload, uploadVideo, rateLimiter, asyncHandler, escapeHtml, dbAvailable, requireAuth, getFileUrl, useCloudinary } = require('./middleware');
 
 function getVideoDuration(filePath) {
     return new Promise((resolve) => {
@@ -101,20 +101,25 @@ router.post('/upload', requireAuth, (req, res, next) => {
     });
 }, asyncHandler(async (req, res) => {
     if (!req.files || req.files.length === 0) return res.status(400).json({ error: 'No image files provided' });
-    const urls = req.files.map(f => `/uploads/${f.filename}`);
+    const urls = req.files.map(f => getFileUrl(f));
     res.status(201).json({ images: urls });
 }));
 
 // Video Upload
 router.post('/upload/video', requireAuth, uploadVideo.single('video'), asyncHandler(async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No video file provided' });
-    const filePath = path.join(__dirname, '..', 'uploads', req.file.filename);
-    const duration = await getVideoDuration(filePath);
-    if (duration !== null && duration > 30) {
-        fs.unlinkSync(filePath);
-        return res.status(400).json({ error: `Video must be 30 seconds or less (your video is ${Math.round(duration)}s)` });
+    
+    // Duration check only for local storage (Cloudinary doesn't provide local file path)
+    if (!useCloudinary) {
+        const filePath = path.join(__dirname, '..', 'uploads', req.file.filename);
+        const duration = await getVideoDuration(filePath);
+        if (duration !== null && duration > 30) {
+            fs.unlinkSync(filePath);
+            return res.status(400).json({ error: `Video must be 30 seconds or less (your video is ${Math.round(duration)}s)` });
+        }
     }
-    const url = `/uploads/${req.file.filename}`;
+    
+    const url = getFileUrl(req.file);
     res.status(201).json({ url });
 }));
 
