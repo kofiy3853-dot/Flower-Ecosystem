@@ -214,7 +214,11 @@ pool.query('SELECT 1')
 
 // ─── Uploads static ───────────────────────────────────────────────────────
 
-app.use('/uploads', require('express').static(path.join(__dirname, 'uploads')));
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use('/uploads', require('express').static(uploadsDir));
 app.use('/images', require('express').static(path.join(__dirname, 'images')));
 
 // ─── API Routes ────────────────────────────────────────────────────────────
