@@ -439,7 +439,17 @@ document.addEventListener('submit',async e=>{
             courses=await api.fetchCourses();renderCourses();
         }catch(err){showToast(err.message||'Failed','error');}
     }
-    if(e.target.id==='admProductForm'){e.preventDefault();closeModal();showToast('Product added!','success');}
+    if(e.target.id==='admProductForm'){
+        e.preventDefault();
+        const form=e.target;
+        const name=form.querySelector('input[required]');
+        const price=form.querySelectorAll('input[type="number"]')[0];
+        const errors=[];
+        if(!name||!name.value.trim()) errors.push('Name is required');
+        if(!price||!price.value||parseFloat(price.value)<0) errors.push('Valid price is required');
+        if(errors.length){showToast(errors.join('. '),'error');return;}
+        closeModal();showToast('Product added!','success');
+    }
     if(e.target.id==='admEventForm'){e.preventDefault();closeModal();showToast('Event created!','success');}
     if(e.target.id==='admArticleForm'){e.preventDefault();closeModal();showToast('Article published!','success');}
     if(e.target.id==='admAnnouncementForm'){e.preventDefault();closeModal();showToast('Announcement published!','success');}
