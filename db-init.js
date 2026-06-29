@@ -30,6 +30,14 @@ async function run() {
             console.log('Migration 001 applied.');
         }
 
+        const migration2Path = path.join(__dirname, 'migrations', '002_add_missing_columns.sql');
+        if (fs.existsSync(migration2Path)) {
+            const migration2 = fs.readFileSync(migration2Path, 'utf8');
+            console.log('Running migration 002...');
+            await client.query(migration2);
+            console.log('Migration 002 applied.');
+        }
+
         console.log('Database initialized successfully.');
     } catch (err) {
         console.error('DB init error:', err.message);
