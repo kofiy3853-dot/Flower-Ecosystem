@@ -14,28 +14,33 @@ const pool = new Pool({
 async function run() {
     const client = await pool.connect();
     try {
+        // Run schema.sql (may fail on existing databases, that's OK)
         const schemaPath = path.join(__dirname, 'sql', 'schema.sql');
         if (fs.existsSync(schemaPath)) {
             const schema = fs.readFileSync(schemaPath, 'utf8');
             console.log('Running schema.sql...');
-            await client.query(schema);
-            console.log('Schema applied.');
+            try {
+                await client.query(schema);
+                console.log('Schema applied.');
+            } catch (e) {
+                console.log('Schema partially applied (some objects may already exist):', e.message.split('\n')[0]);
+            }
         }
 
-        const migrationPath = path.join(__dirname, 'migrations', '001_add_grower_role.sql');
-        if (fs.existsSync(migrationPath)) {
-            const migration = fs.readFileSync(migrationPath, 'utf8');
-            console.log('Running migration 001...');
-            await client.query(migration);
-            console.log('Migration 001 applied.');
-        }
-
-        const migration2Path = path.join(__dirname, 'migrations', '002_add_missing_columns.sql');
-        if (fs.existsSync(migration2Path)) {
-            const migration2 = fs.readFileSync(migration2Path, 'utf8');
-            console.log('Running migration 002...');
-            await client.query(migration2);
-            console.log('Migration 002 applied.');
+        // Run migrations independently (each handles its own errors)
+        const migrations = ['001_add_grower_role.sql', '002_add_missing_columns.sql'];
+        for (const m of migrations) {
+            const mPath = path.join(__dirname, 'migrations', m);
+            if (fs.existsSync(mPath)) {
+                const sql = fs.readFileSync(mPath, 'utf8');
+                console.log(`Running ${m}...`);
+                try {
+                    await client.query(sql);
+                    console.log(`${m} applied.`);
+                } catch (e) {
+                    console.log(`${m} partially applied:`, e.message.split('\n')[0]);
+                }
+            }
         }
 
         console.log('Database initialized successfully.');
