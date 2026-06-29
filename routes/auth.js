@@ -28,7 +28,7 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
         return res.status(400).json({ error: 'Invalid input types' });
     }
 
-    const roleMap = { buyer: 'CUSTOMER', seller: 'SELLER', florist: 'FLORIST', grower: 'GROWER', customer: 'CUSTOMER' };
+    const roleMap = { buyer: 'CUSTOMER', seller: 'SELLER', florist: 'FLORIST', grower: 'GROWER', customer: 'CUSTOMER', admin: 'ADMIN' };
     const dbRole = roleMap[(role || '').toLowerCase()] || 'CUSTOMER';
     const isActive = ['SELLER', 'FLORIST', 'GROWER'].includes(dbRole) ? false : true;
 
@@ -63,15 +63,18 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
 
     // Generate email verification token (for future use when email sending is configured)
+    let verificationToken = null;
     try {
-        const verifyToken = crypto.randomBytes(32).toString('hex');
+        verificationToken = crypto.randomBytes(32).toString('hex');
         await pool.query(
             'INSERT INTO auth.email_verifications (user_id, token, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL \'24 hours\')',
-            [user.id, verifyToken]
+            [user.id, verificationToken]
         );
-    } catch {}
+    } catch (e) {
+        console.error('Email verification token error:', e.message);
+    }
 
-    res.status(201).json({ token, user: { id: user.id, name: user.first_name, email: user.email, role: user.role, profile_image } });
+    res.status(201).json({ token, verificationToken, user: { id: user.id, name: user.first_name, email: user.email, role: user.role, profile_image } });
 }));
 
 router.post('/logout', requireAuth, asyncHandler(async (req, res) => {
