@@ -253,6 +253,16 @@ app.use((req, res) => {
 
 app.use((err, _req, res, _next) => {
     console.error('Unhandled error:', err.message);
+    // Handle multer errors
+    if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({ error: 'File too large. Max size is 5MB for images, 50MB for videos.' });
+    }
+    if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+        return res.status(400).json({ error: 'Too many files uploaded.' });
+    }
+    if (err.code === 'LIMIT_FILE_COUNT') {
+        return res.status(400).json({ error: 'Too many files. Maximum is 10 images.' });
+    }
     const status = err.status || 500;
     const message = process.env.NODE_ENV === 'production' ? 'Internal server error' : (err.message || 'Internal server error');
     if (_req.accepts('html')) {

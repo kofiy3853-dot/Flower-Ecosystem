@@ -86,7 +86,20 @@ router.post('/ai/flower-scan', requireAuth, upload.single('image'), asyncHandler
 }));
 
 // Image Upload
-router.post('/upload', requireAuth, upload.array('images', 10), asyncHandler(async (req, res) => {
+router.post('/upload', requireAuth, (req, res, next) => {
+    upload.array('images', 10)(req, res, (err) => {
+        if (err) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({ error: 'File too large. Max size is 5MB per file.' });
+            }
+            if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+                return res.status(400).json({ error: 'Too many files. Max is 10 images.' });
+            }
+            return res.status(400).json({ error: err.message || 'Upload failed' });
+        }
+        next();
+    });
+}, asyncHandler(async (req, res) => {
     if (!req.files || req.files.length === 0) return res.status(400).json({ error: 'No image files provided' });
     const urls = req.files.map(f => `/uploads/${f.filename}`);
     res.status(201).json({ images: urls });

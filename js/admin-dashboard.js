@@ -442,11 +442,12 @@ document.addEventListener('submit',async e=>{
     if(e.target.id==='admProductForm'){
         e.preventDefault();
         const form=e.target;
-        const name=form.querySelector('input[required]');
-        const price=form.querySelectorAll('input[type="number"]')[0];
+        const inputs=form.querySelectorAll('input,select,textarea');
         const errors=[];
-        if(!name||!name.value.trim()) errors.push('Name is required');
-        if(!price||!price.value||parseFloat(price.value)<0) errors.push('Valid price is required');
+        if(!inputs[0]||!inputs[0].value.trim()) errors.push('Name is required');
+        if(!inputs[1]||!inputs[1].value||parseFloat(inputs[1].value)<0) errors.push('Valid price is required');
+        const catSel=form.querySelector('select');
+        if(!catSel||!catSel.value) errors.push('Category is required');
         if(errors.length){showToast(errors.join('. '),'error');return;}
         closeModal();showToast('Product added!','success');
     }
