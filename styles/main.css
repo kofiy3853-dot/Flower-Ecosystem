@@ -870,11 +870,11 @@ h3 { font-size: 1.15rem; margin-bottom: 0.5rem; font-weight: 600; }
     inset: 0;
     background: linear-gradient(
         to right,
-        rgba(250, 250, 250, 0.98) 0%,
-        rgba(250, 250, 250, 0.92) 28%,
-        rgba(250, 250, 250, 0.5)  48%,
-        rgba(250, 250, 250, 0.08) 65%,
-        transparent 80%
+        rgba(250, 250, 250, 0.95) 0%,
+        rgba(250, 250, 250, 0.85) 20%,
+        rgba(250, 250, 250, 0.5)  45%,
+        rgba(250, 250, 250, 0.15) 65%,
+        transparent 85%
     );
     pointer-events: none;
     z-index: 1;
@@ -1046,11 +1046,11 @@ h3 { font-size: 1.15rem; margin-bottom: 0.5rem; font-weight: 600; }
 :root.dark-mode .hero-section::after {
     background: linear-gradient(
         to right,
-        rgba(13, 12, 16, 0.98) 0%,
-        rgba(13, 12, 16, 0.92) 28%,
-        rgba(13, 12, 16, 0.5)  48%,
-        rgba(13, 12, 16, 0.08) 65%,
-        transparent 80%
+        rgba(13, 12, 16, 0.95) 0%,
+        rgba(13, 12, 16, 0.85) 20%,
+        rgba(13, 12, 16, 0.5)  45%,
+        rgba(13, 12, 16, 0.15) 65%,
+        transparent 85%
     );
 }
 
