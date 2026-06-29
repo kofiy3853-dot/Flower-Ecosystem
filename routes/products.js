@@ -120,7 +120,7 @@ router.get('/:id', asyncHandler(async (req, res) => {
                         p.is_active, p.badge, p.occasion, p.color, p.fresh, p.featured,
                         p.best_seller AS "bestSeller", p.new_arrival AS "newArrival",
                         p.image_url, p.images, p.video_url, p.harvest_date, p.shelf_life_days, p.created_at, p.updated_at,
-                        p.seller_id, p.category_id, p.currency,
+                    p.seller_id, p.category_id, COALESCE(p.currency, 'GHS') AS currency,
                         c.name AS category,
                         c.name AS category_name,
                         (SELECT image_url FROM marketplace.product_images WHERE product_id = p.id ORDER BY sort_order LIMIT 1) AS image,

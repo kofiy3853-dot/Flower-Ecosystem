@@ -81,9 +81,9 @@ async function seedProducts() {
 
         const imagesArr = p.images || [];
         const r = await pool.query(`
-            INSERT INTO marketplace.products (seller_id, category_id, name, description, price, stock_quantity, is_active, badge, occasion, color, fresh, featured, best_seller, new_arrival, image_url, images, harvest_date, shelf_life_days)
-            VALUES ($1, $2, $3, $4, $5, $6, true, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) RETURNING id
-        `, [sellerId, catId, p.name, p.description || '', p.price, 50,
+            INSERT INTO marketplace.products (seller_id, category_id, name, description, price, currency, stock_quantity, is_active, badge, occasion, color, fresh, featured, best_seller, new_arrival, image_url, images, harvest_date, shelf_life_days)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, true, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING id
+        `, [sellerId, catId, p.name, p.description || '', p.price, 'GHS', 50,
             p.badge || null, p.occasion || null, p.color || null,
             p.fresh || false, p.featured || false, p.bestSeller || false, p.newArrival || false,
             p.image || null, imagesArr,
