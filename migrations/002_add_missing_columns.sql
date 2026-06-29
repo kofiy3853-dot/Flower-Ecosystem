@@ -45,3 +45,38 @@ ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT F
 
 -- Add missing product columns
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'GHS';
+
+-- Event speakers table
+CREATE TABLE IF NOT EXISTS events.event_speakers (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    event_id        UUID NOT NULL REFERENCES events.events(id) ON DELETE CASCADE,
+    name            VARCHAR(255) NOT NULL,
+    title           VARCHAR(255),
+    bio             TEXT,
+    photo_url       TEXT,
+    experience_years INT,
+    students_count  INT DEFAULT 0,
+    sort_order      INT DEFAULT 0,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_event_speakers_event ON events.event_speakers(event_id);
+
+-- Identification categories table
+CREATE TABLE IF NOT EXISTS learning.id_categories (
+    id              SERIAL PRIMARY KEY,
+    name            VARCHAR(100) NOT NULL UNIQUE,
+    slug            VARCHAR(100) UNIQUE,
+    icon            VARCHAR(10),
+    description     TEXT,
+    sort_order      INT DEFAULT 0
+);
+
+INSERT INTO learning.id_categories (name, slug, icon, sort_order) VALUES
+    ('Roses', 'roses', '🌹', 1),
+    ('Tulips', 'tulips', '🌷', 2),
+    ('Orchids', 'orchids', '🌺', 3),
+    ('Lilies', 'lilies', '💮', 4),
+    ('Preservation', 'preservation', '🏺', 5),
+    ('General', 'general', '🔍', 6)
+ON CONFLICT (name) DO NOTHING;
