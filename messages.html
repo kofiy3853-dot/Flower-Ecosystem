@@ -93,23 +93,113 @@
 
         let currentConv = null;
         let conversations = [];
+        let ws = null;
+        let myId = null;
+        let myName = '';
+        let typingTimeout = null;
 
+        // ─── WebSocket ────────────────────────────────────────────────
+        function connectWebSocket() {
+            const token = localStorage.getItem('flower-token');
+            if (!token) return;
+
+            try {
+                myId = JSON.parse(atob(token.split('.')[1])).id;
+                myName = JSON.parse(atob(token.split('.')[1])).email || 'User';
+            } catch {}
+
+            const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(`${protocol}//${location.host}`);
+
+            ws.onopen = () => {
+                ws.send(JSON.stringify({ type: 'auth', token }));
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+
+                    if (msg.type === 'message' && msg.conversationId === currentConv) {
+                        // Append message to chat
+                        const el = document.getElementById('msgBody');
+                        const bubble = document.createElement('div');
+                        bubble.className = 'msg-bubble received';
+                        bubble.innerHTML = `
+                            <div style="font-size:0.75rem;font-weight:500;margin-bottom:0.2rem;">${escapeHtml(msg.senderName || 'User')}</div>
+                            ${escapeHtml(msg.content)}
+                            <div class="msg-time">now</div>
+                        `;
+                        el.appendChild(bubble);
+                        el.scrollTop = el.scrollHeight;
+
+                        // Mark as read
+                        fetch(`/api/messages/${msg.conversationId}`, { headers: authHeaders() });
+                    }
+
+                    if (msg.type === 'message' && msg.conversationId !== currentConv) {
+                        // Show notification badge
+                        loadConversations();
+                    }
+
+                    if (msg.type === 'typing' && msg.conversationId === currentConv) {
+                        showTypingIndicator(msg.senderName);
+                    }
+                } catch {}
+            };
+
+            ws.onclose = () => {
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
+
+        function showTypingIndicator(name) {
+            let indicator = document.getElementById('typingIndicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'typingIndicator';
+                indicator.style.cssText = 'font-size:0.75rem;color:var(--text-light);padding:0.25rem 0.75rem;font-style:italic;';
+                document.getElementById('msgBody').appendChild(indicator);
+            }
+            indicator.textContent = `${name} is typing...`;
+            indicator.style.display = 'block';
+
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                indicator.style.display = 'none';
+            }, 2000);
+        }
+
+        function sendTyping() {
+            if (!ws || ws.readyState !== WebSocket.OPEN || !currentConv) return;
+            const conv = conversations.find(c => c.id === currentConv);
+            if (!conv) return;
+            ws.send(JSON.stringify({
+                type: 'typing',
+                conversationId: currentConv,
+                recipientId: conv.other_user_id,
+                senderName: myName
+            }));
+        }
+
+        // ─── Init ─────────────────────────────────────────────────────
         async function init() {
             if (!localStorage.getItem('flower-token')) { document.getElementById('loginPrompt').style.display = 'block'; return; }
             document.getElementById('msgContent').style.display = 'block';
+            connectWebSocket();
             await loadConversations();
-            document.getElementById('msgText').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+            document.getElementById('msgText').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') sendMessage();
+                else sendTyping();
+            });
 
             const params = new URLSearchParams(window.location.search);
             const convId = params.get('conversation');
             const toUserId = params.get('to');
 
             if (convId) {
-                // Reload conversations to make sure we have the latest
                 await loadConversations();
                 selectConversation(convId);
             } else if (toUserId) {
-                // Create or get conversation with this user
                 try {
                     const res = await fetch('/api/messages/conversations', {
                         method: 'POST',
@@ -146,21 +236,17 @@
             currentConv = id;
             const conv = conversations.find(c => c.id === id);
 
-            // Show header
             const header = document.getElementById('msgHeader');
             header.style.display = 'flex';
             document.getElementById('msgAvatar').textContent = (conv?.other_name || '?')[0].toUpperCase();
             document.getElementById('msgName').textContent = conv?.other_name || 'User';
 
-            // Show input — always visible when a conversation is active
             const inputArea = document.getElementById('msgInput');
             inputArea.style.display = 'flex';
 
-            // Hide the "select a conversation" placeholder
             const emptyMsg = document.querySelector('.msg-empty');
             if (emptyMsg) emptyMsg.style.display = 'none';
 
-            // Highlight active conversation in sidebar
             document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
             const activeItem = document.querySelector(`.conv-item[onclick*="${id}"]`);
             if (activeItem) activeItem.classList.add('active');
@@ -172,7 +258,6 @@
             let msgs;
             try { msgs = await fetch(`/api/messages/${convId}`, { headers: authHeaders() }).then(r => r.json()); } catch { msgs = []; }
             const el = document.getElementById('msgBody');
-            const myId = JSON.parse(atob(localStorage.getItem('flower-token').split('.')[1])).id;
             el.innerHTML = msgs.map(m => `
                 <div class="msg-bubble ${m.sender_id === myId ? 'sent' : 'received'}">
                     ${m.sender_id !== myId ? `<div style="font-size:0.75rem;font-weight:500;margin-bottom:0.2rem;">${escapeHtml(m.sender_name)}</div>` : ''}
@@ -188,11 +273,39 @@
             const content = input.value.trim();
             if (!content || !currentConv) return;
             input.value = '';
+
+            const conv = conversations.find(c => c.id === currentConv);
+
+            // Send via API
             try {
                 await fetch(`/api/messages/${currentConv}`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ content }) });
-                await loadMessages(currentConv);
-                await loadConversations();
             } catch {}
+
+            // Also send via WebSocket for real-time delivery
+            if (ws && ws.readyState === WebSocket.OPEN && conv) {
+                ws.send(JSON.stringify({
+                    type: 'message',
+                    conversationId: currentConv,
+                    recipientId: conv.other_user_id,
+                    content,
+                    senderName: myName
+                }));
+
+                // Optimistic UI — show message immediately
+                const el = document.getElementById('msgBody');
+                const bubble = document.createElement('div');
+                bubble.className = 'msg-bubble sent';
+                bubble.innerHTML = `
+                    ${escapeHtml(content)}
+                    <div class="msg-time">now</div>
+                `;
+                el.appendChild(bubble);
+                el.scrollTop = el.scrollHeight;
+            } else {
+                await loadMessages(currentConv);
+            }
+
+            await loadConversations();
         }
 
         init();

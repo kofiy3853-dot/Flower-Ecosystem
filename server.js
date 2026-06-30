@@ -284,8 +284,107 @@ app.use((err, _req, res, _next) => {
     res.status(status).json({ error: message });
 });
 
+// ─── WebSocket Server ─────────────────────────────────────────────────────
+
+const http = require('http');
+const WebSocket = require('ws');
+const jwt = require('jsonwebtoken');
+
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+
+// Store connected clients: { userId: Set<WebSocket> }
+const clients = new Map();
+
+wss.on('connection', (ws, req) => {
+    let userId = null;
+
+    // Authenticate on connect
+    ws.on('message', (data) => {
+        try {
+            const msg = JSON.parse(data);
+
+            if (msg.type === 'auth') {
+                const token = msg.token;
+                if (!token) {
+                    ws.send(JSON.stringify({ type: 'error', message: 'No token provided' }));
+                    ws.close();
+                    return;
+                }
+                try {
+                    const decoded = jwt.verify(token, JWT_SECRET);
+                    userId = decoded.id;
+                    if (!clients.has(userId)) clients.set(userId, new Set());
+                    clients.get(userId).add(ws);
+                    ws.send(JSON.stringify({ type: 'auth', status: 'ok', userId }));
+                    console.log(`WebSocket: User ${userId} connected`);
+                } catch (err) {
+                    ws.send(JSON.stringify({ type: 'error', message: 'Invalid token' }));
+                    ws.close();
+                }
+            }
+
+            if (msg.type === 'message' && userId) {
+                // Broadcast to recipient
+                const recipientId = msg.recipientId;
+                if (recipientId && clients.has(recipientId)) {
+                    const recipientClients = clients.get(recipientId);
+                    const payload = JSON.stringify({
+                        type: 'message',
+                        conversationId: msg.conversationId,
+                        content: msg.content,
+                        senderId: userId,
+                        senderName: msg.senderName,
+                        createdAt: new Date().toISOString()
+                    });
+                    recipientClients.forEach(client => {
+                        if (client.readyState === WebSocket.OPEN) {
+                            client.send(payload);
+                        }
+                    });
+                }
+            }
+
+            if (msg.type === 'typing' && userId) {
+                const recipientId = msg.recipientId;
+                if (recipientId && clients.has(recipientId)) {
+                    const recipientClients = clients.get(recipientId);
+                    const payload = JSON.stringify({
+                        type: 'typing',
+                        conversationId: msg.conversationId,
+                        senderId: userId,
+                        senderName: msg.senderName
+                    });
+                    recipientClients.forEach(client => {
+                        if (client.readyState === WebSocket.OPEN) {
+                            client.send(payload);
+                        }
+                    });
+                }
+            }
+
+        } catch (err) {
+            console.error('WebSocket message error:', err.message);
+        }
+    });
+
+    ws.on('close', () => {
+        if (userId && clients.has(userId)) {
+            clients.get(userId).delete(ws);
+            if (clients.get(userId).size === 0) {
+                clients.delete(userId);
+            }
+            console.log(`WebSocket: User ${userId} disconnected`);
+        }
+    });
+
+    ws.on('error', (err) => {
+        console.error('WebSocket error:', err.message);
+    });
+});
+
 // ─── Start ─────────────────────────────────────────────────────────────────
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Flower Ecosystem running at http://localhost:${PORT}`);
 });
