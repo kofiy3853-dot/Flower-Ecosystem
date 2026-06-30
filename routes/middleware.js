@@ -35,12 +35,13 @@ function getFileUrl(file) {
 }
 
 const pool = new Pool({
-    host: process.env.PG_HOST || 'localhost',
-    port: process.env.PG_PORT || 5432,
-    database: process.env.PG_DATABASE || 'flower_ecosystem',
-    user: process.env.PG_USER || 'postgres',
-    password: process.env.PG_PASSWORD || '',
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    connectionString: process.env.DATABASE_URL || undefined,
+    host: process.env.DATABASE_URL ? undefined : (process.env.PG_HOST || 'localhost'),
+    port: process.env.DATABASE_URL ? undefined : (process.env.PG_PORT || 5432),
+    database: process.env.DATABASE_URL ? undefined : (process.env.PG_DATABASE || 'flower_ecosystem'),
+    user: process.env.DATABASE_URL ? undefined : (process.env.PG_USER || 'postgres'),
+    password: process.env.DATABASE_URL ? undefined : (process.env.PG_PASSWORD || ''),
+    ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : (process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false),
 });
 
 const JWT_SECRET = process.env.JWT_SECRET;

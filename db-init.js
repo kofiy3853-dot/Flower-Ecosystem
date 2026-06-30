@@ -3,12 +3,13 @@ const fs = require('fs');
 const path = require('path');
 
 const pool = new Pool({
-    host: process.env.PG_HOST,
-    port: parseInt(process.env.PG_PORT, 10) || 5432,
-    database: process.env.PG_DATABASE,
-    user: process.env.PG_USER,
-    password: process.env.PG_PASSWORD,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    connectionString: process.env.DATABASE_URL || undefined,
+    host: process.env.DATABASE_URL ? undefined : process.env.PG_HOST,
+    port: process.env.DATABASE_URL ? undefined : (parseInt(process.env.PG_PORT, 10) || 5432),
+    database: process.env.DATABASE_URL ? undefined : process.env.PG_DATABASE,
+    user: process.env.DATABASE_URL ? undefined : process.env.PG_USER,
+    password: process.env.DATABASE_URL ? undefined : process.env.PG_PASSWORD,
+    ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : (process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false),
 });
 
 async function run() {
