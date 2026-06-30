@@ -105,8 +105,8 @@
                     <!-- Header -->
                     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
                         <h1 style="margin:0;">My Products</h1>
-                        <div style="display:flex;gap:0.5rem;align-items:center;">
-                            <input type="text" id="productSearch" placeholder="Search products..." style="padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;width:200px;" oninput="filterProducts()">
+                        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+                            <input type="text" id="productSearch" placeholder="Search products..." style="padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;min-width:0;flex:1;max-width:200px;" oninput="filterProducts()">
                             <select id="productStatusFilter" style="padding:0.5rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;" onchange="filterProducts()">
                                 <option value="all">All Status</option>
                                 <option value="active">Active</option>

@@ -2526,7 +2526,7 @@ h3 { font-size: 1.15rem; margin-bottom: 0.5rem; font-weight: 600; }
     .product-grid { grid-template-columns: 1fr; }
     .category-grid { grid-template-columns: 1fr; }
     .florist-grid { grid-template-columns: 1fr; }
-    .counters-grid { grid-template-columns: repeat(2, 1fr); }
+    .counters-grid { grid-template-columns: 1fr; }
     .quick-stats { grid-template-columns: 1fr; }
 
     .stat-item { border-right: none !important; }
@@ -3021,6 +3021,23 @@ h3 { font-size: 1.15rem; margin-bottom: 0.5rem; font-weight: 600; }
     padding: 2rem 0;
 }
 
+/* Checkout Mobile */
+@media (max-width: 768px) {
+    .checkout-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    .checkout-card.summary {
+        position: static;
+    }
+    .checkout-title {
+        font-size: 1.4rem;
+    }
+    .checkout-card {
+        padding: 1.25rem;
+    }
+}
+
 /* =============================================================================
    MISSING UTILITY CLASSES
 ============================================================================= */
@@ -3194,7 +3211,7 @@ textarea.form-input {
 ============================================================================= */
 .product-img-wrap {
     position: relative;
-    height: 200px;
+    height: 220px;
     overflow: hidden;
 }
 
@@ -3202,7 +3219,7 @@ textarea.form-input {
 .product-img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     transition: transform 0.5s ease;
     display: block;
     background: linear-gradient(135deg, #fdf2f6, #fce7f0);
@@ -3298,6 +3315,7 @@ textarea.form-input {
     position: fixed;
     bottom: 2rem;
     right: 2rem;
+    left: auto;
     background: var(--text-main);
     color: var(--bg-white);
     padding: 0.75rem 1.5rem;
@@ -3308,6 +3326,7 @@ textarea.form-input {
     transform: translateY(20px);
     transition: all 0.3s ease;
     pointer-events: none;
+    max-width: calc(100vw - 2rem);
 }
 
 .toast.show {
