@@ -255,7 +255,7 @@ async function loadLeaderboard() {
 // ─── Ask Question Page ────────────────────────────────────────────────────
 
 async function initAskQuestion() {
-    if (!localStorage.getItem('flower-token')) { window.location.href = 'login.html?redirect=ask-question.html'; return; }
+    if (!localStorage.getItem('flower-token')) { sessionStorage.setItem('pending-redirect', 'ask-question.html'); sessionStorage.setItem('pending-auth', 'login'); if (typeof openAuthModal === 'function') openAuthModal('login'); return; }
 
     let cats;
     try { cats = await fetch('/api/qa/categories').then(r => r.json()); } catch { cats = []; }

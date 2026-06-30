@@ -3,139 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Sign in to your Flower Ecosystem account to manage orders, wishlist, and more.">
-    <title>Sign In | Flower Ecosystem</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/main.css?v=3.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <style>
-        .auth-input { width:100%; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:6px; font-family:var(--font-sans); font-size:0.95rem; background:var(--bg-main); color:var(--text-main); transition:border-color 0.2s; }
-        .auth-input:focus { outline:none; border-color:var(--primary-color); box-shadow:0 0 0 3px rgba(74,144,217,0.12); }
-        .chk-field-error { color:var(--error-color); font-size:0.8rem; margin-top:0.25rem; display:none; }
-        .auth-spinner { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.6s linear infinite; vertical-align:middle; margin-right:0.35rem; }
-        @keyframes spin { to { transform:rotate(360deg); } }
-        .auth-toast { position:fixed; bottom:2rem; right:2rem; padding:1rem 1.5rem; border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,0.15); z-index:9999; font-weight:500; font-size:0.95rem; transform:translateY(20px); opacity:0; transition:all 0.3s ease; }
-        .auth-toast.active { transform:translateY(0); opacity:1; }
-        .auth-toast-success { background:var(--accent-green); color:white; }
-        .auth-toast-error { background:var(--error-color); color:white; }
-        .password-toggle { position:absolute; right:0.75rem; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--text-light); font-size:1rem; padding:0.25rem; }
-    </style>
+    <title>Redirecting... | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <script>
+        var params = new URLSearchParams(window.location.search);
+        var redirect = params.get('redirect');
+        if (redirect) {
+            sessionStorage.setItem('pending-redirect', redirect);
+        }
+        sessionStorage.setItem('pending-auth', 'login');
+        window.location.replace('index.html');
+    </script>
 </head>
 <body>
-    <div id="header-container"></div>
-
-    <section class="section-padding" style="padding-top:7rem;">
-        <div class="container" style="max-width:440px;">
-            <div class="text-center" style="margin-bottom:2rem;">
-                <span class="subtitle">WELCOME BACK</span>
-                <h2>Sign In</h2>
-                <p style="color:var(--text-light);">Access your account to manage orders, wishlist, and more.</p>
-            </div>
-            <form id="loginPageForm" style="background:var(--bg-white); padding:2.5rem; border-radius:12px; box-shadow:var(--shadow-md);" novalidate>
-                <div style="margin-bottom:1.25rem;">
-                    <label for="loginEmail" style="display:block; font-weight:500; margin-bottom:0.5rem; font-size:0.9rem;">Email Address</label>
-                    <input type="email" id="loginEmail" placeholder="your@email.com" class="auth-input" required>
-                    <div class="chk-field-error" id="loginEmailError"></div>
-                </div>
-                <div style="margin-bottom:1.25rem;">
-                    <label for="loginPassword" style="display:block; font-weight:500; margin-bottom:0.5rem; font-size:0.9rem;">Password</label>
-                    <div style="position:relative;">
-                        <input type="password" id="loginPassword" placeholder="————————" class="auth-input" style="padding-right:2.5rem;" required>
-                        <button type="button" id="toggle-loginPw" class="password-toggle" aria-label="Toggle password visibility"><i class="bi bi-eye"></i></button>
-                    </div>
-                    <div class="chk-field-error" id="loginPasswordError"></div>
-                </div>
-                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1.5rem;">
-                    <input type="checkbox" id="loginRemember" style="width:16px; height:16px; accent-color:var(--primary-color);">
-                    <label for="loginRemember" style="font-size:0.9rem; color:var(--text-light); cursor:pointer;">Remember me</label>
-                </div>
-                <button type="submit" class="btn btn-primary w-100" id="loginSubmitBtn" style="padding:0.9rem; font-size:1rem;">Sign In</button>
-                <p id="loginPageError" style="text-align:center; margin-top:1rem; color:#d32f2f; font-weight:500; display:none;"></p>
-            </form>
-            <div style="text-align:center; margin-top:1.5rem;">
-                <p style="color:var(--text-light); font-size:0.9rem;">Don't have an account? <a href="register.html" style="color:var(--primary-color); font-weight:500;">Create one</a></p>
-                <p style="margin-top:0.5rem; font-size:0.85rem;"><a href="forgot-password.html" style="color:var(--text-light);">Forgot password?</a></p>
-            </div>
-        </div>
-    </section>
-
-    <div id="footer-container"></div>
-
-    <script src="js/shared/api.js?v=3.0"></script>
-    <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.2"></script>
-    <script src="js/shared/ui.js?v=3.0"></script>
-    <script src="js/shared/cart.js?v=3.0"></script>
-    <script src="js/shared/components.js?v=3.1"></script>
-    <script src="js/shared/animations.js?v=3.0"></script>
-    <script src="js/auth-pages.js"></script>
-    <script>
-        const loginForm = document.getElementById('loginPageForm');
-        const loginEmail = document.getElementById('loginEmail');
-        const loginPassword = document.getElementById('loginPassword');
-        const loginError = document.getElementById('loginPageError');
-
-        setupPasswordToggle('loginPassword', 'toggle-loginPw');
-
-        loginEmail.addEventListener('blur', () => {
-            if (loginEmail.value.trim() && !validateEmail(loginEmail.value.trim())) {
-                showFieldError('loginEmail', 'loginEmailError', 'Please enter a valid email');
-            } else {
-                clearFieldError('loginEmail', 'loginEmailError');
-            }
-        });
-
-        loginForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const email = loginEmail.value.trim();
-            const password = loginPassword.value.trim();
-
-            if (!email) { showFieldError('loginEmail', 'loginEmailError', 'Email is required'); return; }
-            if (!validateEmail(email)) { showFieldError('loginEmail', 'loginEmailError', 'Please enter a valid email'); return; }
-            if (!password) { showFieldError('loginPassword', 'loginPasswordError', 'Password is required'); return; }
-
-            clearFieldError('loginEmail', 'loginEmailError');
-            clearFieldError('loginPassword', 'loginPasswordError');
-            loginError.style.display = 'none';
-
-            setButtonLoading('loginSubmitBtn', true);
-            try {
-                const result = await apiLogin(email, password);
-                setLoggedIn(result.user, result.token);
-                if (typeof updateAccountUI === 'function') updateAccountUI();
-                showToast('Welcome back!', 'success');
-            } catch (apiErr) {
-                loginError.textContent = apiErr.message || 'Login failed';
-                loginError.style.display = 'block';
-                setButtonLoading('loginSubmitBtn', false, 'Sign In');
-                return;
-            }
-
-            const pendingSell = sessionStorage.getItem('pending-sell');
-            if (pendingSell) {
-                sessionStorage.removeItem('pending-sell');
-                window.location.href = 'sell.html';
-                return;
-            }
-            const params = new URLSearchParams(window.location.search);
-            const explicitRedirect = params.get('redirect');
-            if (explicitRedirect) {
-                setTimeout(() => { window.location.href = explicitRedirect; }, 800);
-            } else {
-                afterAuth();
-            }
-        });
-
-        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
-            toggle.addEventListener('click', function(e) {
-                if (window.innerWidth <= 768) {
-                    e.preventDefault();
-                    this.parentElement.classList.toggle('mobile-open');
-                }
-            });
-        });
-    </script>
+    <p>Redirecting to login...</p>
 </body>
 </html>

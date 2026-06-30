@@ -1,30 +1,21 @@
 // js/shared/ui.js
 
 function initUI() {
-    // Preloader - handled early
-    const preloader = document.querySelector('.preloader');
-    if (preloader) {
-        preloader.classList.add('hidden');
-    }
+    const navbar = document.querySelector('.navbar');
 
     // Sticky Navbar
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            window.requestAnimationFrame(() => {
-                const navbar = document.querySelector('.navbar');
-                if (navbar) {
-                    if (window.scrollY > 50) {
-                        navbar.classList.add('scrolled');
-                    } else {
-                        navbar.classList.remove('scrolled');
-                    }
-                }
-                ticking = false;
-            });
-            ticking = true;
-        }
-    });
+    if (navbar) {
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    navbar.classList.toggle('scrolled', window.scrollY > 50);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+    }
 
     // Event Delegation for UI interactions
     document.addEventListener('click', (e) => {
@@ -79,27 +70,19 @@ function initUI() {
         }
     });
 
-    // Search Enter Key
+    // Keyboard shortcuts: search Enter + role="button" activation
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             const searchInput = document.getElementById('globalSearchInput');
             if (searchInput && document.activeElement === searchInput) {
                 const query = searchInput.value.trim();
-                if (query) {
-                    window.location.href = '/marketplace?q=' + encodeURIComponent(query);
-                }
+                if (query) window.location.href = '/marketplace?q=' + encodeURIComponent(query);
+                return;
             }
         }
-    });
-
-    // Keyboard support for role="button" elements
-    document.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
             const target = e.target.closest('[role="button"]');
-            if (target) {
-                e.preventDefault();
-                target.click();
-            }
+            if (target) { e.preventDefault(); target.click(); }
         }
     });
 

@@ -8,6 +8,7 @@
     <meta property="og:description" content="Track your garden journey with photos, notes, and care reminders.">
     <meta property="og:type" content="website">
     <title>Garden Journal | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -69,7 +70,7 @@
                     <i class="bi bi-journal-text" style="font-size:3rem;display:block;margin-bottom:1rem;color:var(--text-light);"></i>
                     <h2>Sign In Required</h2>
                     <p style="color:var(--text-light);margin-bottom:1rem;">Sign in to create and manage your garden journal.</p>
-                    <a href="login.html?redirect=garden-journal.html" class="btn btn-primary">Sign In</a>
+                    <a href="javascript:void(0)" onclick="sessionStorage.setItem('pending-redirect','garden-journal.html');sessionStorage.setItem('pending-auth','login');if(typeof openAuthModal==='function')openAuthModal('login');else window.location.href='login.html';" class="btn btn-primary">Sign In</a>
                 </div>
 
                 <div id="journalDashboard" style="display:none;">
@@ -111,12 +112,12 @@
     <div id="auth-modal-container"></div>
 
     <script src="js/shared/components.js?v=3.1"></script>
-    <script src="js/shared/auth.js?v=3.2"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
-    <script src="js/shared/api.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
     <script src="js/shared/cart.js?v=3.0"></script>
-    <script src="js/shared/ui.js?v=3.0"></script>
+    <script src="js/shared/ui.js?v=2.0"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
     <script src="js/garden-journal.js"></script>
     <script>

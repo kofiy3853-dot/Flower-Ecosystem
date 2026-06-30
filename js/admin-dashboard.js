@@ -431,7 +431,7 @@ document.addEventListener('submit',async e=>{
         e.preventDefault();
         const data={title:$('#mAdmCourseTitle').value,description:$('#mAdmCourseDesc').value,instructor:$('#mAdmCourseInstructor').value};
         try{
-            const token=window.getToken?window.getToken():null;
+            const token=localStorage.getItem('flower-token');
             const headers={'Content-Type':'application/json'};if(token)headers['Authorization']='Bearer '+token;
             const res=await fetch('/api/courses',{method:'POST',headers,body:JSON.stringify(data)});
             if(!res.ok)throw new Error((await res.json()).error||'Failed');

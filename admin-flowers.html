@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Admin panel for managing flower knowledge profiles in the Flower Ecosystem">
     <title>Admin - Flowers | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -96,10 +97,10 @@
         </div>
     </div>
 
-    <script src="js/shared/api.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.2"></script>
-    <script src="js/shared/ui.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/ui.js?v=2.0"></script>
     <script src="js/shared/components.js?v=3.1"></script>
     <script>
         let allFlowers = [], categories = [], editingSlug = null;
@@ -107,7 +108,7 @@
         document.addEventListener('componentLoaded', async () => {
             try {
                 const token = getToken();
-                if (!token) { document.querySelector('.admin-main').innerHTML = '<div class="empty-state"><i class="bi bi-shield-lock"></i><h2>Login Required</h2><p style="color:var(--text-light);">Please log in as admin.</p><a href="login.html" class="btn btn-primary" style="border-radius:50px;margin-top:1rem;">Go to Login</a></div>'; return; }
+                if (!token) { document.querySelector('.admin-main').innerHTML = '<div class="empty-state"><i class="bi bi-shield-lock"></i><h2>Login Required</h2><p style="color:var(--text-light);">Please log in as admin.</p><a href="javascript:void(0)" onclick="sessionStorage.setItem(\'pending-auth\',\'login\');if(typeof openAuthModal===\'function\')openAuthModal(\'login\');else window.location.href=\'login.html\';" class="btn btn-primary" style="border-radius:50px;margin-top:1rem;">Go to Login</a></div>'; return; }
                 [allFlowers, categories] = await Promise.all([
                     api.apiFetch('/api/admin/knowledge/flowers', ''),
                     api.apiFetch('/api/admin/knowledge/categories', '')

@@ -421,7 +421,7 @@ document.addEventListener('submit',async e=>{
             thumbnail_url:$('#mCourseThumb').value
         };
         try{
-            const token=window.getToken?window.getToken():null;
+            const token=localStorage.getItem('flower-token');
             const headers={'Content-Type':'application/json'};
             if(token)headers['Authorization']='Bearer '+token;
             const res=await fetch('/api/courses',{method:'POST',headers,body:JSON.stringify(data)});

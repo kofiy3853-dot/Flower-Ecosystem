@@ -1,22 +1,54 @@
 document.addEventListener('DOMContentLoaded', () => {
-    loadStats();
-    loadCategories();
-    loadFeaturedProducts();
-    loadArticles();
-    loadVideos();
-    loadCourses();
-    loadFlorists();
-    loadEvents();
+    // Fire all data fetches in parallel — then render
+    Promise.all([
+        fetchJSON('/api/stats',                       60),   // 60s cache
+        fetchJSON('/api/products/list/categories',    120),  // 2 min cache
+        fetchJSON('/api/products?limit=8',            60),
+        fetchJSON('data/articles.json',               300),  // 5 min cache
+        fetchJSON('data/videos.json',                 300),
+        fetchJSON('data/courses.json',                300),
+        fetchJSON('/api/products/list/florists',      120),
+        fetchJSON('data/events.json',                 300),
+    ]).then(([stats, categories, products, articles, videos, courses, florists, events]) => {
+        renderStats(stats);
+        renderCategories(categories);
+        renderFeaturedProducts(products);
+        renderArticles(articles);
+        renderVideos(videos);
+        renderCourses(courses);
+        renderFlorists(florists);
+        renderEvents(events);
+    });
+
     initTabs();
     initNewsletter();
     initRevealAnimations();
 });
 
-async function fetchJSON(path) {
+// ─── CACHED FETCH ────────────────────────────────────────────────────
+// ttlSeconds: how long to keep the response in localStorage before re-fetching
+async function fetchJSON(path, ttlSeconds) {
+    const cacheKey = 'fecache_' + path;
+    const ttl = (ttlSeconds || 0) * 1000;
+    if (ttl > 0) {
+        try {
+            const raw = localStorage.getItem(cacheKey);
+            if (raw) {
+                const { data, expires } = JSON.parse(raw);
+                if (Date.now() < expires) return data;
+            }
+        } catch (_) { /* ignore parse errors */ }
+    }
     try {
         const res = await fetch(path);
         if (!res.ok) throw new Error(`${res.status}`);
-        return await res.json();
+        const data = await res.json();
+        if (ttl > 0) {
+            try {
+                localStorage.setItem(cacheKey, JSON.stringify({ data, expires: Date.now() + ttl }));
+            } catch (_) { /* quota exceeded — skip caching */ }
+        }
+        return data;
     } catch (e) {
         console.warn(`Failed to load ${path}:`, e.message);
         return null;
@@ -56,21 +88,7 @@ function placeholderImg(seed) {
 }
 
 // ─── STATS ──────────────────────────────────────────────────────────
-async function loadStats() {
-    let stats = await fetchJSON('/api/stats');
-
-    // Fallback to counts derived from localData when API is unavailable
-    if (!stats && typeof localData !== 'undefined') {
-        const products = localData['products'];
-        const florists = localData['florists'];
-        const categories = localData['categories'];
-        stats = {
-            products: Array.isArray(products) ? products.length : 50,
-            sellers:  Array.isArray(florists)  ? florists.length  : 200,
-            users:    5000,
-            categories: Array.isArray(categories) ? categories.length : 50
-        };
-    }
+function renderStats(stats) {
     if (!stats) return;
 
     const heroEl = document.getElementById('heroStats');
@@ -115,20 +133,10 @@ const CATEGORY_TAGLINES = {
     'indoor plants': 'Green your living space'
 };
 
-async function loadCategories() {
+function renderCategories(data) {
     const grid = document.getElementById('categoryGrid');
     if (!grid) return;
-    let data = await fetchJSON('/api/products/list/categories');
     let cats = normalizeArray(data, 'categories');
-
-    // Fallback to localData when API is unavailable
-    if (!cats.length && typeof localData !== 'undefined' && localData['categories']) {
-        cats = localData['categories'].map(c => ({
-            name: c.name,
-            image_url: c.image,
-            description: c.tagline
-        }));
-    }
 
     if (!cats.length) {
         grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);grid-column:1/-1;">No categories available</p>';
@@ -148,10 +156,9 @@ async function loadCategories() {
 }
 
 // ─── PRODUCTS ───────────────────────────────────────────────────────
-async function loadFeaturedProducts() {
+function renderFeaturedProducts(data) {
     const grid = document.getElementById('featuredProducts');
     if (!grid) return;
-    const data = await fetchJSON('/api/products?limit=8');
     const items = normalizeArray(data, 'products').slice(0, 8);
     if (!items.length) {
         grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">No products available yet. Check back soon!</p>';
@@ -161,10 +168,9 @@ async function loadFeaturedProducts() {
 }
 
 // ─── ARTICLES ───────────────────────────────────────────────────────
-async function loadArticles() {
+function renderArticles(data) {
     const grid = document.getElementById('articleGrid');
     if (!grid) return;
-    const data = await fetchJSON('data/articles.json');
     const items = normalizeArray(data, 'articles').slice(0, 3);
     if (!items.length) {
         grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">No articles available.</p>';
@@ -187,10 +193,9 @@ async function loadArticles() {
 }
 
 // ─── VIDEOS ─────────────────────────────────────────────────────────
-async function loadVideos() {
+function renderVideos(data) {
     const grid = document.getElementById('videoGrid');
     if (!grid) return;
-    const data = await fetchJSON('data/videos.json');
     const items = normalizeArray(data, 'videos').slice(0, 3);
     if (!items.length) {
         grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">No videos available.</p>';
@@ -221,10 +226,9 @@ async function loadVideos() {
 }
 
 // ─── COURSES ────────────────────────────────────────────────────────
-async function loadCourses() {
+function renderCourses(data) {
     const grid = document.getElementById('courseGrid');
     if (!grid) return;
-    const data = await fetchJSON('data/courses.json');
     const items = normalizeArray(data, 'courses').slice(0, 4);
     if (!items.length) {
         grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">No courses available.</p>';
@@ -251,16 +255,10 @@ async function loadCourses() {
 }
 
 // ─── FLORISTS ───────────────────────────────────────────────────────
-async function loadFlorists() {
+function renderFlorists(data) {
     const grid = document.getElementById('floristGrid');
     if (!grid) return;
-    let data = await fetchJSON('/api/products/list/florists');
     let items = normalizeArray(data, 'florists');
-
-    // Fallback to localData when API is unavailable
-    if (!items.length && typeof localData !== 'undefined' && localData['florists']) {
-        items = localData['florists'];
-    }
 
     if (!items.length) {
         grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">No sellers yet.</p>';
@@ -279,10 +277,9 @@ async function loadFlorists() {
 }
 
 // ─── EVENTS ─────────────────────────────────────────────────────────
-async function loadEvents() {
+function renderEvents(data) {
     const grid = document.getElementById('eventsGrid');
     if (!grid) return;
-    const data = await fetchJSON('data/events.json');
     const items = normalizeArray(data, 'events').slice(0, 3);
     if (!items.length) {
         grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">No upcoming events.</p>';

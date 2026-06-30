@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const compression = require('compression');
 const { pool, JWT_SECRET, rateLimiter } = require('./routes/middleware');
 const bcrypt = require('bcryptjs');
 
@@ -34,6 +35,9 @@ app.use(require('helmet')({
     referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
 }));
 
+// Gzip / Brotli compression — shrinks JS, CSS, HTML, JSON over the wire
+app.use(compression({ threshold: 1024 }));
+
 app.use(require('cors')({
     origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -55,12 +59,16 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get('/favicon.ico', (req, res) => res.redirect('/favicon.svg'));
 app.use(express.static(path.join(__dirname), {
     setHeaders: (res, filePath) => {
         if (filePath.endsWith('.html')) {
             res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
         } else if (filePath.match(/\.(js|css)$/)) {
             res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        } else if (filePath.match(/\.(jpg|jpeg|png|gif|webp|svg|ico)$/i)) {
+            // Cache images for 30 days — single biggest bandwidth win
+            res.setHeader('Cache-Control', 'public, max-age=2592000, stale-while-revalidate=86400');
         }
     }
 }));

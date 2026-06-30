@@ -12,11 +12,14 @@ function getCurrentUser() {
     if (token) {
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
-            return { id: payload.id, email: payload.email, role: payload.role, name: payload.name || payload.email?.split('@')[0] };
+            return { id: payload.id, email: payload.email, role: (payload.role || '').toLowerCase(), name: payload.name || payload.email?.split('@')[0] };
         } catch { }
     }
     const data = localStorage.getItem(AUTH_KEY);
-    return data ? JSON.parse(data) : null;
+    if (!data) return null;
+    const user = JSON.parse(data);
+    if (user && user.role) user.role = user.role.toLowerCase();
+    return user;
 }
 
 function getToken() {
@@ -228,13 +231,24 @@ function loadAuthModal() {
 function afterAuth() {
     closeAuthModal();
     if (typeof updateAccountUI === 'function') updateAccountUI();
+
+    const pendingRedirect = sessionStorage.getItem('pending-redirect');
+    if (pendingRedirect) {
+        sessionStorage.removeItem('pending-redirect');
+        window.location.href = pendingRedirect;
+        return;
+    }
+
     const pendingSell = sessionStorage.getItem('pending-sell');
     if (pendingSell) {
         sessionStorage.removeItem('pending-sell');
         window.location.href = 'sell.html';
         return;
     }
+
     const user = getCurrentUser();
+    // role is always lowercased by getCurrentUser()
+    // Backend stores CUSTOMER, SELLER, FLORIST, GROWER, ADMIN, SUPERADMIN
     const role = (user?.role || '').toLowerCase();
     if (['admin', 'superadmin'].includes(role)) {
         window.location.href = 'admin.html';
@@ -244,6 +258,7 @@ function afterAuth() {
         window.location.href = 'seller-dashboard.html';
         return;
     }
+    // buyer / customer / any other role → buyer dashboard
     window.location.href = 'buyer-dashboard.html';
 }
 
@@ -458,11 +473,34 @@ function initAuth() {
             return;
         }
     });
+
+    // Check if redirected from login.html/register.html — open modal after components load
+    const pendingAuth = sessionStorage.getItem('pending-auth');
+    if (pendingAuth) {
+        sessionStorage.removeItem('pending-auth');
+        setTimeout(() => {
+            if (!isLoggedIn()) {
+                openAuthModal(pendingAuth === 'register' ? 'register' : 'login');
+            } else {
+                afterAuth();
+            }
+        }, 500);
+    }
 }
 
 function shouldInitAuth() {
     return true;
 }
+
+window.getToken = getToken;
+window.isLoggedIn = isLoggedIn;
+window.getCurrentUser = getCurrentUser;
+window.setLoggedIn = setLoggedIn;
+window.logout = logout;
+window.afterAuth = afterAuth;
+window.openAuthModal = openAuthModal;
+window.closeAuthModal = closeAuthModal;
+window.updateAccountUI = updateAccountUI;
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => { if (shouldInitAuth()) initAuth(); });

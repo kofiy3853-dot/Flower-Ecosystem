@@ -5,8 +5,9 @@ let profile = null;
 
 async function initBuyerDashboard() {
     if (!localStorage.getItem('flower-token')) {
-        const lp = document.getElementById('loginPrompt');
-        if (lp) lp.style.display = 'block';
+        sessionStorage.setItem('pending-redirect', 'buyer-dashboard.html');
+        sessionStorage.setItem('pending-auth', 'login');
+        if (typeof openAuthModal === 'function') openAuthModal('login');
         return;
     }
     const dc = document.getElementById('dashContent');
