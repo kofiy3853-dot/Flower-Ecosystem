@@ -186,7 +186,7 @@ function loadAuthModal() {
 
                 <div class="form-group">
                     <label for="register-role">I am a:</label>
-                    <select id="register-role" name="role" required aria-describedby="registerRoleError">
+                    <select id="register-role" name="role" required aria-describedby="registerRoleError" onchange="document.getElementById('sellerFields').style.display = ['seller','grower'].includes(this.value) ? 'block' : 'none'">
                         <option value="">Select your role</option>
                         <option value="buyer">Buyer</option>
                         <option value="seller">Seller/Florist</option>
@@ -195,19 +195,21 @@ function loadAuthModal() {
                     <span class="error-message" id="registerRoleError" aria-live="polite"></span>
                 </div>
 
-                <div class="form-group">
-                    <label for="register-location">Location</label>
-                    <input type="text" id="register-location" name="location" placeholder="City, Country" autocomplete="address-level2">
-                </div>
+                <div id="sellerFields" style="display:none;">
+                    <div class="form-group">
+                        <label for="register-location">Location</label>
+                        <input type="text" id="register-location" name="location" placeholder="City, Country" autocomplete="address-level2">
+                    </div>
 
-                <div class="form-group">
-                    <label for="register-description">Short Bio / Description</label>
-                    <textarea id="register-description" name="description" rows="2" placeholder="Tell us a bit about yourself..." style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:inherit;"></textarea>
-                </div>
+                    <div class="form-group">
+                        <label for="register-description">Short Bio / Description</label>
+                        <textarea id="register-description" name="description" rows="2" placeholder="Tell us a bit about yourself..." style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:inherit;"></textarea>
+                    </div>
 
-                <div class="form-group">
-                    <label for="register-avatar">Profile Picture</label>
-                    <input type="file" id="register-avatar" name="avatar" accept="image/jpeg,image/png,image/webp" style="padding:0.5rem 0;">
+                    <div class="form-group">
+                        <label for="register-avatar">Profile Picture</label>
+                        <input type="file" id="register-avatar" name="avatar" accept="image/jpeg,image/png,image/webp" style="padding:0.5rem 0;">
+                    </div>
                 </div>
 
                 <div class="form-check">
@@ -287,18 +289,17 @@ function handleAuthSubmit(formId, apiFn, getData) {
 
 function updateAccountUI() {
     const btn = document.getElementById('globalAccountLink');
-    const logoutBtn = document.getElementById('globalLogoutBtn');
     if (!btn) return;
     const user = getCurrentUser();
     if (user) {
         btn.innerHTML = `<i class="bi bi-person-check-fill"></i>`;
         btn.title = `Signed in as ${user.name || user.email || 'User'}`;
-        if (logoutBtn) logoutBtn.style.display = 'inline-flex';
     } else {
         btn.innerHTML = `<i class="bi bi-person-circle"></i>`;
         btn.title = 'My Account';
-        if (logoutBtn) logoutBtn.style.display = 'none';
     }
+    // Update notification badge
+    updateNotificationBadge();
     // Show/hide seller-only navigation links based on role
     const sellLink = document.getElementById('navSellLink');
     if (sellLink) {
@@ -314,8 +315,36 @@ function updateAccountUI() {
     }
 }
 
+async function updateNotificationBadge() {
+    const badge = document.getElementById('globalNotifBadge');
+    if (!badge) return;
+    const user = getCurrentUser();
+    if (!user) {
+        badge.style.display = 'none';
+        return;
+    }
+    try {
+        const token = getToken();
+        const res = await fetch('/api/notifications/unread-count', {
+            headers: { 'Authorization': 'Bearer ' + token, 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            const count = data.count || 0;
+            if (count > 0) {
+                badge.textContent = count > 99 ? '99+' : count;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    } catch {}
+}
+
 function initAuth() {
     updateAccountUI();
+    // Refresh notification badge every 30 seconds
+    setInterval(updateNotificationBadge, 30000);
 
     // Wire password toggles when auth-modal component loads via innerHTML
     document.addEventListener('componentLoaded', (e) => {
@@ -363,14 +392,6 @@ function initAuth() {
     );
 
     document.addEventListener('click', (e) => {
-        const logoutBtn = e.target.closest('#globalLogoutBtn');
-        if (logoutBtn) {
-            e.preventDefault();
-            logout();
-            window.location.href = '/index.html';
-            return;
-        }
-
         const accountBtn = e.target.closest('#globalAccountLink');
         if (accountBtn) {
             e.preventDefault();

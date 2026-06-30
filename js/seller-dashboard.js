@@ -6,6 +6,14 @@ var pendingImages = [];
 var pendingVideo = null;
 var pendingTags = [];
 
+function timeAgo(d) {
+    const diff = Math.floor((Date.now() - new Date(d)) / 1000);
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    return Math.floor(diff / 86400) + 'd ago';
+}
+
 function formatDate(dateStr) {
     if (!dateStr) return '—';
     const d = new Date(dateStr);
@@ -272,17 +280,26 @@ async function bulkAction(action) {
     if (!ids.length) return;
     if (action === 'delete' && !confirm(`Delete ${ids.length} product(s)? This cannot be undone.`)) return;
 
+    let errors = [];
     for (const id of ids) {
         try {
+            let res;
             if (action === 'delete') {
-                await fetch(`/api/products/${id}`, { method: 'DELETE', headers: authHeaders() });
+                res = await fetch(`/api/products/${id}`, { method: 'DELETE', headers: authHeaders() });
             } else if (action === 'activate' || action === 'deactivate') {
-                await fetch(`/api/products/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ is_active: action === 'activate', status: action === 'activate' ? 'published' : 'inactive' }) });
+                res = await fetch(`/api/products/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ is_active: action === 'activate', status: action === 'activate' ? 'published' : 'inactive' }) });
             } else if (action === 'featured') {
-                await fetch(`/api/products/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ featured: true }) });
+                res = await fetch(`/api/products/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ featured: true }) });
             }
-        } catch {}
+            if (res && !res.ok) {
+                const data = await res.json();
+                errors.push(data.error || 'Failed');
+            }
+        } catch (e) {
+            errors.push(e.message);
+        }
     }
+    if (errors.length) alert('Some operations failed: ' + errors[0]);
     clearSelection();
     await loadProducts();
 }
@@ -550,17 +567,20 @@ async function markAllRead() {
 }
 
 async function loadMessages() {
-    let messages;
-    try { messages = await fetch('/api/seller/messages', { headers: authHeaders() }).then(r => r.json()); } catch { messages = []; }
+    let conversations;
+    try { conversations = await fetch('/api/messages/conversations', { headers: authHeaders() }).then(r => r.json()); } catch { conversations = []; }
     const el = document.getElementById('messagesSection');
     if (!el) return;
-    if (!messages.length) { el.innerHTML = '<div class="empty-state"><i class="bi bi-chat-dots"></i><p>No messages yet.</p></div>'; return; }
-    el.innerHTML = messages.map(m => `
-        <div style="padding:0.75rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);margin-bottom:0.5rem;${!m.is_read ? 'border-left:3px solid var(--primary-color);' : ''}">
-            <div style="display:flex;justify-content:space-between;font-size:0.85rem;"><strong>${escapeHtml(m.subject || 'No subject')}</strong><span style="color:var(--text-muted);font-size:0.78rem;">${formatDate(m.created_at)}</span></div>
-            <div style="font-size:0.8rem;color:var(--text-light);">From: ${escapeHtml(m.sender_name || 'Anonymous')}</div>
-            <div style="font-size:0.85rem;margin-top:0.3rem;">${escapeHtml((m.content || '').slice(0, 150))}${(m.content || '').length > 150 ? '...' : ''}</div>
-        </div>
+    if (!conversations.length) { el.innerHTML = '<div class="empty-state"><i class="bi bi-chat-dots"></i><p>No conversations yet.</p><p style="font-size:0.85rem;">When buyers contact you, conversations will appear here.</p></div>'; return; }
+    el.innerHTML = conversations.map(c => `
+        <a href="/messages.html?conversation=${c.id}" style="display:flex;gap:0.75rem;padding:0.75rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);margin-bottom:0.5rem;text-decoration:none;color:inherit;transition:all 0.15s;${c.unread_count > 0 ? 'border-left:3px solid var(--primary-color);background:rgba(172,50,80,0.02);' : ''}" onmouseover="this.style.borderColor='var(--primary-color)'" onmouseout="this.style.borderColor='${c.unread_count > 0 ? 'var(--primary-color)' : 'var(--border-color)'}'">
+            <div style="width:40px;height:40px;border-radius:50%;background:var(--bg-light);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">${(c.other_name || '?')[0].toUpperCase()}</div>
+            <div style="flex:1;min-width:0;">
+                <div style="display:flex;justify-content:space-between;font-size:0.85rem;"><strong>${escapeHtml(c.other_name || 'User')}</strong><span style="color:var(--text-muted);font-size:0.78rem;">${c.last_message_at ? timeAgo(c.last_message_at) : ''}</span></div>
+                <div style="font-size:0.8rem;color:var(--text-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(c.last_message || 'Start a conversation')}</div>
+            </div>
+            ${c.unread_count > 0 ? '<div style="width:8px;height:8px;border-radius:50%;background:var(--primary-color);flex-shrink:0;align-self:center;"></div>' : ''}
+        </a>
     `).join('');
 }
 
@@ -891,7 +911,17 @@ function resetProductForm() {
 
 async function deleteProduct(id) {
     if (!confirm('Delete this product?')) return;
-    try { await fetch(`/api/products/${id}`, { method: 'DELETE', headers: authHeaders() }); loadProducts(); loadDashboard(); } catch (err) { handleError(err, 'Failed to delete product'); }
+    try {
+        const res = await fetch(`/api/products/${id}`, { method: 'DELETE', headers: authHeaders() });
+        if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.error || 'Delete failed');
+        }
+        loadProducts();
+        loadDashboard();
+    } catch (err) {
+        handleError(err, 'Failed to delete product');
+    }
 }
 
 async function updateOrder(id, status) {

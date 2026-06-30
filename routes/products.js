@@ -410,9 +410,9 @@ router.get('/list/florists', asyncHandler(async (_, res) => {
                 `SELECT DISTINCT ON (u.id) u.id, u.first_name AS name, u.profile_image AS image, u.role
                  FROM auth.users u WHERE u.role IN ('SELLER', 'FLORIST') AND u.is_active = true ORDER BY u.id, u.first_name`
             );
-            return r.rows;
+            return { florists: r.rows };
         },
-        'florists', res
+        'florists', res, false, (fallback) => ({ florists: fallback })
     );
 }));
 

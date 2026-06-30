@@ -60,6 +60,7 @@
                     </div>
                     <div class="msg-main">
                         <div class="msg-header" id="msgHeader" style="display:none;">
+                            <button class="btn btn-sm" onclick="history.back()" style="background:transparent;border:none;font-size:1.2rem;padding:0.25rem 0.5rem;margin-right:0.25rem;" title="Go back"><i class="bi bi-arrow-left"></i></button>
                             <div class="conv-avatar" id="msgAvatar"></div>
                             <div><div class="name" id="msgName"></div></div>
                         </div>
@@ -101,7 +102,27 @@
 
             const params = new URLSearchParams(window.location.search);
             const convId = params.get('conversation');
-            if (convId) selectConversation(convId);
+            const toUserId = params.get('to');
+
+            if (convId) {
+                // Reload conversations to make sure we have the latest
+                await loadConversations();
+                selectConversation(convId);
+            } else if (toUserId) {
+                // Create or get conversation with this user
+                try {
+                    const res = await fetch('/api/messages/conversations', {
+                        method: 'POST',
+                        headers: authHeaders(),
+                        body: JSON.stringify({ user_id: toUserId })
+                    });
+                    const conv = await res.json();
+                    if (conv.id) {
+                        await loadConversations();
+                        selectConversation(conv.id);
+                    }
+                } catch {}
+            }
         }
 
         async function loadConversations() {
@@ -124,12 +145,27 @@
         async function selectConversation(id) {
             currentConv = id;
             const conv = conversations.find(c => c.id === id);
-            document.getElementById('msgHeader').style.display = 'flex';
+
+            // Show header
+            const header = document.getElementById('msgHeader');
+            header.style.display = 'flex';
             document.getElementById('msgAvatar').textContent = (conv?.other_name || '?')[0].toUpperCase();
             document.getElementById('msgName').textContent = conv?.other_name || 'User';
-            document.getElementById('msgInput').style.display = 'flex';
+
+            // Show input — always visible when a conversation is active
+            const inputArea = document.getElementById('msgInput');
+            inputArea.style.display = 'flex';
+
+            // Hide the "select a conversation" placeholder
+            const emptyMsg = document.querySelector('.msg-empty');
+            if (emptyMsg) emptyMsg.style.display = 'none';
+
+            // Highlight active conversation in sidebar
+            document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
+            const activeItem = document.querySelector(`.conv-item[onclick*="${id}"]`);
+            if (activeItem) activeItem.classList.add('active');
+
             await loadMessages(id);
-            await loadConversations();
         }
 
         async function loadMessages(convId) {

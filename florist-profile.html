@@ -85,7 +85,8 @@
             const id = params.get('id');
             if (!id) { window.location.href = 'florists.html'; return; }
 
-            const florists = await api.fetchFlorists();
+            const floristsData = await api.fetchFlorists();
+            const florists = Array.isArray(floristsData) ? floristsData : (floristsData?.florists || []);
             const f = florists.find(x => x.id === id);
 
             if (!f) {

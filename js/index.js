@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Load stats immediately for faster display
+    loadHeroStats();
+
     // Fire all data fetches in parallel — then render
     Promise.all([
         fetchJSON('/api/stats',                       60),   // 60s cache
@@ -24,6 +27,72 @@ document.addEventListener('DOMContentLoaded', () => {
     initNewsletter();
     initRevealAnimations();
 });
+
+// ─── HERO STATS (fast load) ────────────────────────────────────────
+async function loadHeroStats() {
+    // Show loading state
+    ['statProducts', 'statSellers', 'statUsers', 'statCategories'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('loading');
+    });
+
+    try {
+        const res = await fetch('/api/stats');
+        if (res.ok) {
+            const stats = await res.json();
+            animateCounter('statProducts', stats.products || 0);
+            animateCounter('statSellers', stats.sellers || 0);
+            animateCounter('statUsers', stats.users || 0);
+            animateCounter('statCategories', stats.categories || 0);
+
+            // Update trust count
+            const trustEl = document.getElementById('trustCount');
+            if (trustEl && stats.users) {
+                trustEl.textContent = stats.users.toLocaleString() + '+';
+            }
+        }
+    } catch {}
+
+    // Update explore stats too
+    updateExploreStats();
+}
+
+function animateCounter(elementId, target) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    el.classList.remove('loading');
+    const duration = 1000;
+    const start = 0;
+    const increment = target / (duration / 16);
+    let current = start;
+
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+            el.textContent = target.toLocaleString();
+            clearInterval(timer);
+        } else {
+            el.textContent = Math.floor(current).toLocaleString();
+        }
+    }, 16);
+}
+
+async function updateExploreStats() {
+    try {
+        const res = await fetch('/api/stats');
+        if (res.ok) {
+            const stats = await res.json();
+            const el = document.getElementById('exploreStats');
+            if (el) {
+                const map = { products: stats.products, sellers: stats.sellers, users: stats.users, categories: stats.categories };
+                el.querySelectorAll('[data-stat]').forEach(elem => {
+                    const key = elem.dataset.stat;
+                    if (map[key] !== undefined) elem.textContent = map[key].toLocaleString();
+                });
+            }
+        }
+    } catch {}
+}
 
 // ─── CACHED FETCH ────────────────────────────────────────────────────
 // ttlSeconds: how long to keep the response in localStorage before re-fetching
@@ -91,14 +160,15 @@ function placeholderImg(seed) {
 function renderStats(stats) {
     if (!stats) return;
 
-    const heroEl = document.getElementById('heroStats');
-    if (heroEl) {
-        const vals = [stats.categories + '+', stats.sellers + '+', stats.users + '+', stats.products + '+'];
-        heroEl.querySelectorAll('.stat').forEach((item, i) => {
-            const v = item.querySelector('.stat-value');
-            if (v && vals[i]) v.textContent = vals[i];
-        });
-    }
+    // Update hero stats (already loaded by loadHeroStats, but update if different)
+    const statProducts = document.getElementById('statProducts');
+    const statSellers = document.getElementById('statSellers');
+    const statUsers = document.getElementById('statUsers');
+    const statCategories = document.getElementById('statCategories');
+    if (statProducts) statProducts.textContent = (stats.products || 0).toLocaleString();
+    if (statSellers) statSellers.textContent = (stats.sellers || 0).toLocaleString();
+    if (statUsers) statUsers.textContent = (stats.users || 0).toLocaleString();
+    if (statCategories) statCategories.textContent = (stats.categories || 0).toLocaleString();
 
     const exploreEl = document.getElementById('exploreStats');
     if (exploreEl) {

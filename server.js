@@ -20,13 +20,13 @@ app.use(require('helmet')({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://unpkg.com"],
             scriptSrcAttr: ["'unsafe-inline'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
-            fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
-            imgSrc: ["'self'", "data:", "https:", "blob:"],
-            mediaSrc: ["'self'", "blob:"],
-            connectSrc: ["'self'", "https:"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://unpkg.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://unpkg.com"],
+            imgSrc: ["'self'", "data:", "https:", "http:", "blob:"],
+            mediaSrc: ["'self'", "blob:", "https:", "http:", "data:"],
+            connectSrc: ["'self'", "https:", "http:"],
             frameSrc: ["'self'", "https:"],
             objectSrc: ["'none'"],
         }
@@ -208,7 +208,7 @@ pool.query('SELECT 1')
                         "INSERT INTO auth.users (first_name, last_name, email, password_hash, role) VALUES ('Admin', 'User', $1, $2, 'ADMIN')",
                         [ADMIN_EMAIL, hash]
                     );
-                    console.log(`Default admin created: ${ADMIN_EMAIL} — use the forgot password flow to set a secure password.`);
+                    console.log(`Default admin created: ${ADMIN_EMAIL} — password: ${adminPassword}`);
                 }
             }
         } catch (seedErr) {

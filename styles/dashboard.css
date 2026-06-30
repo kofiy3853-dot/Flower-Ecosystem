@@ -465,6 +465,11 @@ body {
 :root.dark-mode .form-group input, :root.dark-mode .form-group select, :root.dark-mode .form-group textarea { background: rgba(0,0,0,0.2); border-color: var(--border-color); }
 :root.dark-mode .dash-sidebar-profile .info h4 { color: white; }
 
+/* Theme toggle button */
+#themeToggle { display: flex; align-items: center; gap: 0.5rem; }
+#themeToggle i { font-size: 1rem; transition: transform 0.3s; }
+#themeToggle:hover i { transform: rotate(20deg); }
+
 /* Responsive */
 @media(max-width: 1024px) { 
     .dash-layout { grid-template-columns: 1fr; } 

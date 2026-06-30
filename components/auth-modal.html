@@ -73,14 +73,30 @@
 
                 <div class="form-group">
                     <label for="register-role">I am a:</label>
-                    <select id="register-role" name="role" required aria-describedby="registerRoleError">
+                    <select id="register-role" name="role" required aria-describedby="registerRoleError" onchange="document.getElementById('sellerFields').style.display = ['seller','grower'].includes(this.value) ? 'block' : 'none'">
                         <option value="">Select your role</option>
                         <option value="buyer">Buyer</option>
                         <option value="seller">Seller/Florist</option>
                         <option value="grower">Grower</option>
-                        <option value="instructor">Instructor</option>
                     </select>
                     <span class="error-message" id="registerRoleError" aria-live="polite"></span>
+                </div>
+
+                <div id="sellerFields" style="display:none;">
+                    <div class="form-group">
+                        <label for="register-location">Location</label>
+                        <input type="text" id="register-location" name="location" placeholder="City, Country" autocomplete="address-level2">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-description">Short Bio / Description</label>
+                        <textarea id="register-description" name="description" rows="2" placeholder="Tell us a bit about yourself..." style="width:100%; padding:0.75rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:inherit;"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="register-avatar">Profile Picture</label>
+                        <input type="file" id="register-avatar" name="avatar" accept="image/jpeg,image/png,image/webp" style="padding:0.5rem 0;">
+                    </div>
                 </div>
 
                 <div class="form-check">

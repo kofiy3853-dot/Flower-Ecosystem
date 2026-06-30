@@ -82,12 +82,16 @@ const Theme = {
 
     updateThemeIcon() {
         const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
         if (themeIcon) {
             if (this.currentTheme === 'dark') {
                 themeIcon.className = 'bi bi-sun-fill';
             } else {
                 themeIcon.className = 'bi bi-moon-fill';
             }
+        }
+        if (themeText) {
+            themeText.textContent = this.currentTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
         }
     }
 };

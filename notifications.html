@@ -85,8 +85,11 @@
 
         async function markRead(id, link) {
             try { await fetch(`/api/notifications/${id}/read`, { method: 'PUT', headers: authHeaders() }); } catch {}
-            if (link) window.location.href = link;
-            else loadNotifications();
+            if (link) {
+                window.location.href = link;
+            } else {
+                loadNotifications();
+            }
         }
 
         async function markAllRead() {

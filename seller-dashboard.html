@@ -69,6 +69,7 @@
                 <li><a href="#messages" data-section="messages"><i class="bi bi-chat-dots"></i> Messages</a></li>
                 <li><a href="#analytics" data-section="analytics"><i class="bi bi-bar-chart"></i> Analytics</a></li>
                 <li><a href="#settings" data-section="settings"><i class="bi bi-gear"></i> Settings</a></li>
+                <li><a href="#" class="theme-toggle" id="themeToggle"><i class="bi bi-moon-fill" id="themeIcon"></i> <span id="themeText">Dark Mode</span></a></li>
                 <li style="margin-top:1rem;border-top:1px solid var(--border-color);padding-top:0.75rem;"><a href="#" id="sellerLogout" style="color:var(--error-color);"><i class="bi bi-box-arrow-left"></i> Sign Out</a></li>
             </ul>
         </nav>
@@ -83,10 +84,13 @@
 
             <div id="dashContent" style="display:none;">
                 <div id="section-dashboard" class="section active">
-                    <div class="welcome-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
-                        <div>
-                            <h2 id="welcomeTitle">Welcome Back</h2>
-                            <p>Manage your products, orders, and grow your flower business.</p>
+                    <div class="welcome-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; position:relative; z-index:1;">
+                        <div style="display:flex; align-items:center; gap:1rem; position:relative; z-index:2;">
+                            <button class="btn btn-sm" onclick="history.back()" style="background:white; border:none; padding:0.5rem 0.75rem; border-radius:8px; cursor:pointer; display:flex; align-items:center; position:relative; z-index:2;" title="Go back"><i class="bi bi-arrow-left" style="color:var(--primary-color);"></i></button>
+                            <div>
+                                <h2 id="welcomeTitle">Welcome Back</h2>
+                                <p>Manage your products, orders, and grow your flower business.</p>
+                            </div>
                         </div>
                         <button class="btn" onclick="navigateToAddProduct()" style="background:var(--bg-white); color:var(--primary-color); border:none; font-weight:600; padding:0.75rem 1.5rem; border-radius:50px; box-shadow:0 4px 15px rgba(0,0,0,0.15); cursor:pointer; display:flex; align-items:center; gap:0.5rem; z-index:2; position:relative;"><i class="bi bi-plus-lg"></i> Add New Product</button>
                     </div>
@@ -100,7 +104,7 @@
                 <div id="section-products" class="section">
                     <!-- Header -->
                     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
-                        <h1 style="margin:0;">📦 My Products</h1>
+                        <h1 style="margin:0;">My Products</h1>
                         <div style="display:flex;gap:0.5rem;align-items:center;">
                             <input type="text" id="productSearch" placeholder="Search products..." style="padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;width:200px;" oninput="filterProducts()">
                             <select id="productStatusFilter" style="padding:0.5rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;" onchange="filterProducts()">
@@ -136,7 +140,7 @@
                 <div id="section-orders" class="section">
                     <!-- Header -->
                     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
-                        <h1 style="margin:0;">🧾 Orders</h1>
+                        <h1 style="margin:0;">Orders</h1>
                         <div style="display:flex;gap:0.5rem;align-items:center;">
                             <input type="text" id="orderSearch" placeholder="Search orders..." style="padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;width:200px;" oninput="filterOrders()">
                             <select id="orderStatusFilter" style="padding:0.5rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;" onchange="filterOrders()">
@@ -177,7 +181,7 @@
                 <div id="section-notifications" class="section">
                     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
                         <div>
-                            <h1 style="margin:0;">🔔 Notifications</h1>
+                            <h1 style="margin:0;">Notifications</h1>
                             <p style="color:var(--text-light);margin:0.25rem 0 0;font-size:0.9rem;">Stay updated on orders, products, and account activity.</p>
                         </div>
                         <div style="display:flex;gap:0.5rem;">
@@ -195,14 +199,14 @@
                 </div>
 
                 <div id="section-messages" class="section">
-                    <div class="dash-header"><h1>💬 Messages</h1></div>
+                    <div class="dash-header"><h1>Messages</h1></div>
                     <div class="section-card" id="messagesSection"></div>
                 </div>
 
                 <div id="section-analytics" class="section">
                     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
                         <div>
-                            <h1 style="margin:0;">📊 Analytics</h1>
+                            <h1 style="margin:0;">Analytics</h1>
                             <p style="color:var(--text-light);margin:0.25rem 0 0;font-size:0.9rem;">Track your shop performance and growth.</p>
                         </div>
                     </div>
@@ -210,7 +214,7 @@
                 </div>
 
                 <div id="section-settings" class="section">
-                    <div class="dash-header"><h1>⚙️ Shop Settings</h1></div>
+                    <div class="dash-header"><h1>Shop Settings</h1></div>
                     <div class="section-card" id="settingsForm"></div>
                 </div>
 

@@ -243,7 +243,7 @@ async function queryWithFallback(queryFn, jsonKey, res, single = false, fallback
     res.json(fallbackFn ? fallbackFn(fallback) : fallback);
 }
 
-function requireAuth(req, res, next) {
+async function requireAuth(req, res, next) {
     const header = req.headers.authorization;
     if (!header) return res.status(401).json({ error: 'Authorization required' });
     try {
@@ -258,15 +258,14 @@ function requireAuth(req, res, next) {
             return res.status(401).json({ error: 'Token has been revoked' });
         }
         // DB fallback for user-level blacklist after restart
-        pool.query('SELECT 1 FROM auth.token_blacklist WHERE user_id = $1 AND token_hash = $2 AND expires_at > CURRENT_TIMESTAMP', [decoded.id, userHash])
-            .then(r => {
-                if (r.rows.length) {
-                    blacklistedTokens.add(userHash);
-                    return res.status(401).json({ error: 'Token has been revoked' });
-                }
-                next();
-            })
-            .catch(() => next());
+        try {
+            const r = await pool.query('SELECT 1 FROM auth.token_blacklist WHERE user_id = $1 AND token_hash = $2 AND expires_at > CURRENT_TIMESTAMP', [decoded.id, userHash]);
+            if (r.rows.length) {
+                blacklistedTokens.add(userHash);
+                return res.status(401).json({ error: 'Token has been revoked' });
+            }
+        } catch {}
+        next();
     } catch {
         res.status(401).json({ error: 'Invalid or expired token' });
     }

@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { pool, JWT_SECRET, upload, rateLimiter, asyncHandler, dbAvailable, requireAuth, blacklistToken, blacklistUserTokens, cleanupBlacklist, getFileUrl } = require('./middleware');
+const { sendPasswordResetEmail } = require('../utils/email');
 
 // Clean expired reset tokens and blacklisted tokens periodically
 setInterval(async () => {
@@ -30,7 +31,7 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
 
     const roleMap = { buyer: 'CUSTOMER', seller: 'SELLER', florist: 'FLORIST', grower: 'GROWER', customer: 'CUSTOMER', admin: 'ADMIN' };
     const dbRole = roleMap[(role || '').toLowerCase()] || 'CUSTOMER';
-    const isActive = ['SELLER', 'FLORIST', 'GROWER'].includes(dbRole) ? false : true;
+    const isActive = true;
 
     if (!(await dbAvailable())) {
         return res.status(503).json({ error: 'Service unavailable — database not connected' });
@@ -163,14 +164,24 @@ router.post('/forgot-password', rateLimiter(5, 60000), asyncHandler(async (req, 
         return res.status(503).json({ error: 'Service unavailable' });
     }
     const user = await pool.query('SELECT id, is_active FROM auth.users WHERE email = $1', [email]);
+    let token = null;
     if (user.rows.length && user.rows[0].is_active !== false) {
-        const token = crypto.randomBytes(32).toString('hex');
+        token = crypto.randomBytes(32).toString('hex');
         await pool.query(
             'INSERT INTO auth.password_resets (token, email, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL \'1 hour\')',
             [token, email]
         );
+        // Send reset email
+        const baseUrl = process.env.APP_URL || `http://localhost:${process.env.PORT || 3000}`;
+        const resetUrl = `${baseUrl}/reset-password.html?token=${token}`;
+        await sendPasswordResetEmail(email, resetUrl);
     }
-    res.json({ message: 'If the email exists, a reset link has been sent.' });
+    // In development, also include the token in response for easy testing
+    const isDev = process.env.NODE_ENV !== 'production';
+    res.json({
+        message: 'If the email exists, a reset link has been sent.',
+        ...(isDev && token && { token, resetUrl: `${process.env.APP_URL || `http://localhost:${process.env.PORT || 3000}`}/reset-password.html?token=${token}` })
+    });
 }));
 
 router.post('/reset-password', rateLimiter(5, 60000), asyncHandler(async (req, res) => {
@@ -194,10 +205,6 @@ router.post('/reset-password', rateLimiter(5, 60000), asyncHandler(async (req, r
     const hash = await bcrypt.hash(password, 12);
     await pool.query('UPDATE auth.users SET password_hash = $1 WHERE email = $2', [hash, r.rows[0].email]);
     await pool.query('UPDATE auth.password_resets SET used = TRUE WHERE token = $1', [token]);
-    const userResult = await pool.query('SELECT id FROM auth.users WHERE email = $1', [r.rows[0].email]);
-    if (userResult.rows.length) {
-        await blacklistUserTokens(userResult.rows[0].id);
-    }
     res.json({ message: 'Password reset successfully' });
 }));
 
