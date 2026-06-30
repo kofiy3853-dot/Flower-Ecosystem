@@ -45,6 +45,7 @@ ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT F
 
 -- Add missing product columns
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'GHS';
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS unit VARCHAR(50) DEFAULT 'Piece';
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS size VARCHAR(50);
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS fragrance VARCHAR(50);
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS care_level VARCHAR(50);
@@ -53,6 +54,19 @@ ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS water_frequency VARCHA
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS bloom_season VARCHAR(50);
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS features TEXT[] DEFAULT '{}';
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS origin VARCHAR(255);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS sku VARCHAR(100);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS low_stock_alert INT DEFAULT 10;
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS delivery_areas TEXT[] DEFAULT '{}';
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS delivery_time VARCHAR(100);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS shipping_fee NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS pickup_available BOOLEAN DEFAULT TRUE;
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS tags TEXT[] DEFAULT '{}';
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS seo_slug VARCHAR(255);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS meta_description TEXT;
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'published';
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS rating NUMERIC(3,1) DEFAULT 0;
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS review_count INT DEFAULT 0;
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS flower_type VARCHAR(50);
 
 -- Event speakers table
 CREATE TABLE IF NOT EXISTS events.event_speakers (
@@ -69,6 +83,67 @@ CREATE TABLE IF NOT EXISTS events.event_speakers (
 );
 
 CREATE INDEX IF NOT EXISTS idx_event_speakers_event ON events.event_speakers(event_id);
+
+-- Articles table
+CREATE TABLE IF NOT EXISTS learning.articles (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE,
+    content TEXT,
+    excerpt TEXT,
+    image_url TEXT,
+    category VARCHAR(100),
+    author VARCHAR(255),
+    read_time VARCHAR(50),
+    is_published BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Token blacklist
+CREATE TABLE IF NOT EXISTS auth.token_blacklist (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    token_hash TEXT NOT NULL,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_blacklist_hash ON auth.token_blacklist(token_hash);
+
+-- Platform schema for notifications and messages
+CREATE SCHEMA IF NOT EXISTS platform;
+
+CREATE TABLE IF NOT EXISTS platform.notifications (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    type VARCHAR(50) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT,
+    link VARCHAR(500),
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON platform.notifications(user_id);
+
+CREATE TABLE IF NOT EXISTS platform.conversations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    participant_1 UUID NOT NULL REFERENCES auth.users(id),
+    participant_2 UUID NOT NULL REFERENCES auth.users(id),
+    last_message TEXT,
+    last_message_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(participant_1, participant_2)
+);
+
+CREATE TABLE IF NOT EXISTS platform.messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    conversation_id UUID NOT NULL REFERENCES platform.conversations(id) ON DELETE CASCADE,
+    sender_id UUID NOT NULL REFERENCES auth.users(id),
+    content TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Identification categories table
 CREATE TABLE IF NOT EXISTS learning.id_categories (
