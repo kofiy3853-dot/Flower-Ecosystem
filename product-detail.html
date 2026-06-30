@@ -83,6 +83,19 @@
         .pd-shipping{background:var(--bg-light);border-radius:12px;padding:1rem;margin-top:1rem;font-size:.85rem;}
         .pd-shipping-item{display:flex;align-items:center;gap:.5rem;padding:.35rem 0;color:var(--text-main);}
         .pd-shipping-item i{color:var(--primary-color);width:20px;}
+
+        /* Image Lightbox */
+        .lightbox{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;flex-direction:column;}
+        .lightbox.active{display:flex;}
+        .lightbox-img{max-width:90vw;max-height:80vh;object-fit:contain;border-radius:8px;cursor:zoom-out;transition:transform 0.3s;}
+        .lightbox-close{position:absolute;top:1rem;right:1.5rem;background:rgba(255,255,255,0.15);border:none;color:white;font-size:1.8rem;cursor:pointer;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background 0.2s;z-index:10;}
+        .lightbox-close:hover{background:rgba(255,255,255,0.3);}
+        .lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.15);border:none;color:white;font-size:1.5rem;cursor:pointer;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background 0.2s;z-index:10;}
+        .lightbox-nav:hover{background:rgba(255,255,255,0.3);}
+        .lightbox-prev{left:1rem;}
+        .lightbox-next{right:1rem;}
+        .lightbox-counter{color:rgba(255,255,255,0.7);font-size:0.9rem;margin-top:1rem;}
+        .pd-main-img{cursor:zoom-in;}
         @media(max-width:900px){
             .pd-grid{grid-template-columns:1fr;gap:2rem;}
             .pd-gallery{position:static;}
@@ -111,7 +124,7 @@
         <div class="container pd-grid">
             <!-- Gallery -->
             <div class="pd-gallery">
-                <img id="pdMainImg" src="" alt="Product Image" class="pd-main-img">
+                <img id="pdMainImg" src="" alt="Product Image" class="pd-main-img" onclick="if(lightboxImages.length) openLightbox(lightboxImages, lightboxImages.indexOf(this.src));">
                 <div class="pd-thumbs" id="pdThumbs"></div>
                 <div class="pd-video-wrap" id="pdVideoWrap">
                     <iframe id="pdVideoIframe" frameborder="0" allowfullscreen></iframe>
@@ -204,6 +217,15 @@
 
     <div id="footer-container"></div>
 
+    <!-- Image Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <button class="lightbox-nav lightbox-prev" onclick="lightboxNav(-1)"><i class="bi bi-chevron-left"></i></button>
+        <img class="lightbox-img" id="lightboxImg" src="" alt="Full size image" onclick="closeLightbox()">
+        <button class="lightbox-nav lightbox-next" onclick="lightboxNav(1)"><i class="bi bi-chevron-right"></i></button>
+        <div class="lightbox-counter" id="lightboxCounter"></div>
+    </div>
+
     <script src="js/shared/api.js?v=4.0"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/auth.js?v=3.4"></script>
@@ -213,6 +235,42 @@
     <script src="js/shared/animations.js?v=3.0"></script>
     <script>
         let currentProduct = null;
+        let lightboxImages = [];
+        let lightboxIndex = 0;
+
+        function openLightbox(images, index) {
+            lightboxImages = images;
+            lightboxIndex = index;
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightboxImg');
+            img.src = images[index];
+            updateLightboxCounter();
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function lightboxNav(dir) {
+            lightboxIndex = (lightboxIndex + dir + lightboxImages.length) % lightboxImages.length;
+            document.getElementById('lightboxImg').src = lightboxImages[lightboxIndex];
+            updateLightboxCounter();
+        }
+
+        function updateLightboxCounter() {
+            document.getElementById('lightboxCounter').textContent = `${lightboxIndex + 1} / ${lightboxImages.length}`;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const lightbox = document.getElementById('lightbox');
+            if (!lightbox.classList.contains('active')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') lightboxNav(-1);
+            if (e.key === 'ArrowRight') lightboxNav(1);
+        });
 
         function setMainImg(src, el) {
             document.getElementById('pdMainImg').src = src;
@@ -311,9 +369,10 @@
 
             // Gallery
             if (images.length) {
+                lightboxImages = images;
                 document.getElementById('pdMainImg').src = images[0];
                 document.getElementById('pdThumbs').innerHTML = images.map((url, i) =>
-                    `<img src="${escapeHtml(url)}" alt="Thumbnail" class="pd-thumb ${i === 0 ? 'active' : ''}" onclick="setMainImg('${escapeHtml(url)}', this)">`
+                    `<img src="${escapeHtml(url)}" alt="Thumbnail" class="pd-thumb ${i === 0 ? 'active' : ''}" onclick="setMainImg('${escapeHtml(url)}', this); lightboxIndex = ${i};">`
                 ).join('');
             }
 
