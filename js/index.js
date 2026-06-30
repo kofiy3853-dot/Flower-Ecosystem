@@ -2,15 +2,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load stats immediately for faster display
     loadHeroStats();
 
+    // Clear product cache on page load to ensure fresh data
+    localStorage.removeItem('fecache_/api/products?limit=8');
+
     // Fire all data fetches in parallel — then render
     Promise.all([
-        fetchJSON('/api/stats',                       60),   // 60s cache
-        fetchJSON('/api/products/list/categories',    120),  // 2 min cache
-        fetchJSON('/api/products?limit=8',            60),
+        fetchJSON('/api/stats',                       30),   // 30s cache
+        fetchJSON('/api/products/list/categories',    60),   // 1 min cache
+        fetchJSON('/api/products?limit=8',            30),   // 30s cache
         fetchJSON('data/articles.json',               300),  // 5 min cache
         fetchJSON('data/videos.json',                 300),
         fetchJSON('data/courses.json',                300),
-        fetchJSON('/api/products/list/florists',      120),
+        fetchJSON('/api/products/list/florists',      60),   // 1 min cache
         fetchJSON('data/events.json',                 300),
     ]).then(([stats, categories, products, articles, videos, courses, florists, events]) => {
         renderStats(stats);

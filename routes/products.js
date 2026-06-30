@@ -34,7 +34,7 @@ router.get('/', asyncHandler(async (req, res) => {
 
             const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
 
-            const countQ = `SELECT COUNT(*) FROM marketplace.products p JOIN marketplace.categories c ON c.id = p.category_id ${where}`;
+            const countQ = `SELECT COUNT(*) FROM marketplace.products p LEFT JOIN marketplace.categories c ON c.id = p.category_id ${where}`;
             const countR = await pool.query(countQ, values);
             const total = parseInt(countR.rows[0].count, 10);
 
@@ -55,7 +55,7 @@ router.get('/', asyncHandler(async (req, res) => {
                     (SELECT image_url FROM marketplace.product_images WHERE product_id = p.id ORDER BY sort_order LIMIT 1) AS image,
                     COALESCE(json_agg(DISTINCT pi.image_url) FILTER (WHERE pi.image_url IS NOT NULL), '[]') AS images
                 FROM marketplace.products p
-                JOIN marketplace.categories c ON c.id = p.category_id
+                LEFT JOIN marketplace.categories c ON c.id = p.category_id
                 JOIN auth.users u ON u.id = p.seller_id
                 LEFT JOIN marketplace.product_images pi ON pi.product_id = p.id
                 LEFT JOIN marketplace.product_reviews pr ON pr.product_id = p.id

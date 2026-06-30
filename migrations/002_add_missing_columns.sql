@@ -163,3 +163,13 @@ INSERT INTO learning.id_categories (name, slug, icon, sort_order) VALUES
     ('Preservation', 'preservation', '🏺', 5),
     ('General', 'general', '🔍', 6)
 ON CONFLICT (name) DO NOTHING;
+
+-- Seed marketplace categories if empty
+INSERT INTO marketplace.categories (name, slug, description) VALUES
+    ('Bouquets', 'bouquets', 'Curated arrangements for every moment'),
+    ('Roses', 'roses', 'Timeless romance in every petal'),
+    ('Orchids', 'orchids', 'Exotic & sophisticated blooms'),
+    ('Wildflowers', 'wildflowers', 'Natural & free-spirited'),
+    ('Succulents', 'succulents', 'Low maintenance, high beauty'),
+    ('Indoor Plants', 'indoor-plants', 'Green your living space')
+ON CONFLICT (slug) DO NOTHING;
