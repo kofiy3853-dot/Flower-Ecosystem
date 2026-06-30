@@ -6,13 +6,12 @@ const Theme = {
 
     init() {
         const html = document.documentElement;
-        
-        // Check for saved preference or system preference
+
+        // Check for saved preference only (default to light)
         const savedTheme = localStorage.getItem('theme');
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
-        this.currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
-        
+
+        this.currentTheme = savedTheme || 'light';
+
         // Apply theme
         this.applyTheme(this.currentTheme);
         
