@@ -33,7 +33,9 @@ function renderCart() {
 }
 
 function renderCartItems(cartData, container) {
-    container.innerHTML = cartData.map((item, idx) => `
+    container.innerHTML = cartData.map((item, idx) => {
+        const currency = item.currency || 'GHS';
+        return `
         <div class="cart-item" data-idx="${idx}">
             <a href="product-detail.html?id=${escapeHtml(String(item.id))}" class="cart-item-img">
                 <img src="${escapeHtml(item.image || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=120&auto=format&fit=crop')}" alt="${escapeHtml(item.name)}">
@@ -42,7 +44,7 @@ function renderCartItems(cartData, container) {
                 <div class="cart-item-top">
                     <div>
                         <a href="product-detail.html?id=${escapeHtml(String(item.id))}" class="cart-item-name">${escapeHtml(item.name)}</a>
-                        <p class="cart-item-price">$${Number(item.price).toFixed(2)} each</p>
+                        <p class="cart-item-price">${currency} ${Number(item.price).toFixed(2)} each</p>
                     </div>
                     <button class="cart-item-remove" data-action="remove" data-idx="${idx}" data-cart-item-id="${item.cartItemId || ''}" aria-label="Remove item" title="Remove">
                         <i class="bi bi-trash"></i>
@@ -54,14 +56,15 @@ function renderCartItems(cartData, container) {
                         <span class="cart-qty-val">${item.qty || 1}</span>
                         <button class="cart-qty-btn" data-action="qty" data-idx="${idx}" data-delta="1" data-cart-item-id="${item.cartItemId || ''}" aria-label="Increase quantity">+</button>
                     </div>
-                    <div class="cart-item-total">$${(item.price * (item.qty || 1)).toFixed(2)}</div>
+                    <div class="cart-item-total">${currency} ${(item.price * (item.qty || 1)).toFixed(2)}</div>
                     <button class="cart-save-btn" data-action="save" data-idx="${idx}" title="Save for later">
                         <i class="bi bi-heart"></i> Save
                     </button>
                 </div>
             </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function renderSavedItems(savedData, container) {
@@ -94,6 +97,7 @@ function updateSummary(cartData) {
     const subtotal = cartData.reduce((sum, item) => sum + item.price * (item.qty || 1), 0);
     const count = cartData.reduce((sum, item) => sum + (item.qty || 1), 0);
     const discount = parseFloat(sessionStorage.getItem('cart-discount') || '0');
+    const currency = cartData[0]?.currency || 'GHS';
 
     const subtotalEl = document.getElementById('cartSubtotal');
     const totalEl = document.getElementById('cartTotal');
@@ -101,13 +105,13 @@ function updateSummary(cartData) {
     const discountRow = document.getElementById('discountRow');
     const discountEl = document.getElementById('cartDiscount');
 
-    if (subtotalEl) subtotalEl.textContent = '$' + subtotal.toFixed(2);
+    if (subtotalEl) subtotalEl.textContent = currency + ' ' + subtotal.toFixed(2);
     if (countEl) countEl.textContent = `${count} item${count !== 1 ? 's' : ''}`;
-    if (totalEl) totalEl.textContent = '$' + (subtotal - discount).toFixed(2);
+    if (totalEl) totalEl.textContent = currency + ' ' + (subtotal - discount).toFixed(2);
 
     if (discount > 0 && discountRow && discountEl) {
         discountRow.style.display = 'flex';
-        discountEl.textContent = '-$' + discount.toFixed(2);
+        discountEl.textContent = '-' + currency + ' ' + discount.toFixed(2);
     } else if (discountRow) {
         discountRow.style.display = 'none';
     }
@@ -208,9 +212,10 @@ function applyPromoCode() {
         let cart;
         try { cart = JSON.parse(localStorage.getItem('flower-cart')) || []; } catch { cart = []; }
         const subtotal = cart.reduce((sum, item) => sum + item.price * (item.qty || 1), 0);
+        const currency = cart[0]?.currency || 'GHS';
         const discountAmount = Math.min(subtotal * (discount / 100), subtotal);
         sessionStorage.setItem('cart-discount', discountAmount.toFixed(2));
-        msg.textContent = `Code applied! $${discountAmount.toFixed(2)} off your order.`;
+        msg.textContent = `Code applied! ${currency} ${discountAmount.toFixed(2)} off your order.`;
         msg.className = 'promo-msg promo-success';
         input.value = '';
         renderCart();

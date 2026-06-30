@@ -19,6 +19,7 @@
         return;
     }
 
+    const currency = cartData[0]?.currency || 'GHS';
     let subtotal = 0;
     itemsContainer.innerHTML = cartData.map(item => {
         const sub = item.price * (item.qty || 1);
@@ -31,19 +32,19 @@
                 <div class="chk-item-name">${escapeHtml(item.name)}</div>
                 <div class="chk-item-meta">Qty: ${item.qty || 1}</div>
             </div>
-            <div class="chk-item-price">$${sub.toFixed(2)}</div>
+            <div class="chk-item-price">${currency} ${sub.toFixed(2)}</div>
         </div>`;
     }).join('');
 
     const total = subtotal - discount;
-    setText('chkSubtotal', '$' + subtotal.toFixed(2));
-    setText('chkTotal', '$' + total.toFixed(2));
+    setText('chkSubtotal', currency + ' ' + subtotal.toFixed(2));
+    setText('chkTotal', currency + ' ' + total.toFixed(2));
 
     const discountRow = document.getElementById('chkDiscountRow');
     const discountEl = document.getElementById('chkDiscount');
     if (discount > 0 && discountRow && discountEl) {
         discountRow.style.display = 'flex';
-        discountEl.textContent = '-$' + discount.toFixed(2);
+        discountEl.textContent = '-' + currency + ' ' + discount.toFixed(2);
     }
     if (appliedCoupon) {
         const inp = document.getElementById('chkCouponInput');
@@ -71,13 +72,13 @@
             sessionStorage.setItem('cart-coupon', appliedCoupon);
             sessionStorage.setItem('cart-coupon-id', data.coupon.id);
             const total = subtotal - discount;
-            setText('chkTotal', '$' + total.toFixed(2));
+            setText('chkTotal', currency + ' ' + total.toFixed(2));
             if (discountRow && discountEl) {
                 discountRow.style.display = 'flex';
-                discountEl.textContent = '-$' + discount.toFixed(2);
+                discountEl.textContent = '-' + currency + ' ' + discount.toFixed(2);
             }
             inp.disabled = true;
-            msg.textContent = 'Coupon applied! Saved $' + discount.toFixed(2);
+            msg.textContent = 'Coupon applied! Saved ' + currency + ' ' + discount.toFixed(2);
             msg.style.color = 'var(--accent-green)';
             msg.style.display = 'block';
             document.getElementById('chkApplyCoupon').disabled = true;
@@ -271,8 +272,9 @@
             window.location.href = 'orders.html';
             return;
         }
+        const confCurrency = cartData[0]?.currency || 'GHS';
         document.getElementById('confOrderId').textContent = order.id;
-        document.getElementById('confTotal').textContent = '$' + order.total.toFixed(2);
+        document.getElementById('confTotal').textContent = confCurrency + ' ' + order.total.toFixed(2);
         document.getElementById('confEmail').textContent = order.shipping.email;
         document.getElementById('confAddress').textContent = `${order.shipping.address}, ${order.shipping.city} ${order.shipping.zipCode}`;
         document.getElementById('confDate').textContent = order.dateFormatted;
