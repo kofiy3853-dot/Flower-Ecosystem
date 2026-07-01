@@ -145,7 +145,12 @@ let productView = 'grid';
 let selectedProducts = new Set();
 
 async function loadProducts() {
-    try { allProducts = await fetch('/api/seller/products', { headers: authHeaders() }).then(r => r.json()); } catch { allProducts = []; }
+    try {
+        const res = await fetch('/api/seller/products', { headers: authHeaders() });
+        if (!res.ok) { allProducts = []; return; }
+        const data = await res.json();
+        allProducts = Array.isArray(data) ? data : (data.products || []);
+    } catch { allProducts = []; }
     filterProducts();
 }
 
