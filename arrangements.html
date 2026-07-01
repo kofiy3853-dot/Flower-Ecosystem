@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Explore flower arrangements — bouquets, centerpieces, wreaths, corsages, and custom designs for every occasion.">
-    <title>Flower Arrangements | Flower Ecosystem</title>
+    <meta name="description" content="Explore handcrafted floral arrangements for weddings, birthdays, anniversaries, and more. Custom bouquets from trusted florists.">
+    <title>Floral Arrangements | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,117 +12,337 @@
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
-        .arr-hero { background:linear-gradient(135deg, #831843 0%, #be185d 50%, #db2777 100%); padding:5rem 0 3rem; color:white; text-align:center; position:relative; overflow:hidden; }
-        .arr-hero::before { content:''; position:absolute; top:0; left:0; right:0; bottom:0; background:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M40 0c22.09 0 40 17.91 40 40s-17.91 40-40 40S0 62.09 0 40 17.91 0 40 0zm0 60c11.05 0 20-8.95 20-20S51.05 20 40 20 20 28.95 20 40s8.95 20 20 20z'/%3E%3C/g%3E%3C/svg%3E"); }
-        .arr-hero h1 { color:white; font-size:2.2rem; margin-bottom:0.5rem; position:relative; }
-        .arr-hero p { opacity:0.9; font-size:1rem; max-width:600px; margin:0 auto; position:relative; }
+        /* Hero */
+        .arr-hero { background: linear-gradient(135deg, #fdf2f6 0%, #fce7f0 50%, #f8d7e8 100%); padding: 5rem 0 3rem; }
+        .arr-hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+        .arr-hero h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 0.5rem; }
+        .arr-hero p { color: var(--text-light); font-size: 1.05rem; margin-bottom: 1.5rem; }
+        .arr-hero-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .arr-search { display: flex; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
+        .arr-search input { flex: 1; border: none; padding: 1rem 1.25rem; font-size: 1rem; outline: none; }
+        .arr-search button { background: var(--primary-color); color: white; border: none; padding: 1rem 1.5rem; cursor: pointer; }
+        .arr-hero-img { border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .arr-hero-img img { width: 100%; height: 350px; object-fit: cover; }
 
-        .section-title { text-align:center; margin-bottom:2rem; }
-        .section-title h2 { font-size:1.5rem; margin-bottom:0.3rem; }
-        .section-title p { color:var(--text-light); font-size:0.95rem; }
+        /* Section Headers */
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+        .section-header h2 { margin: 0; }
+        .section-header a { font-size: 0.9rem; color: var(--primary-color); font-weight: 500; }
 
-        .cat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:3rem; }
-        .cat-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; text-decoration:none; color:inherit; transition:all 0.3s; cursor:pointer; }
-        .cat-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
-        .cat-card-img { height:140px; overflow:hidden; }
-        .cat-card-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
-        .cat-card:hover .cat-card-img img { transform:scale(1.05); }
-        .cat-card-body { padding:1rem; }
-        .cat-card-body h3 { font-size:0.95rem; margin-bottom:0.2rem; display:flex; align-items:center; gap:0.3rem; }
-        .cat-card-body p { font-size:0.8rem; color:var(--text-light); line-height:1.4; }
-        .cat-card-body .count { font-size:0.7rem; color:var(--primary-color); font-weight:600; margin-top:0.3rem; }
+        /* Featured Cards */
+        .featured-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .featured-card { background: white; border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; transition: all 0.3s; position: relative; }
+        .featured-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
+        .featured-img { height: 220px; overflow: hidden; position: relative; }
+        .featured-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .featured-card:hover .featured-img img { transform: scale(1.08); }
+        .featured-badge { position: absolute; top: 0.75rem; left: 0.75rem; background: var(--primary-color); color: white; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.7rem; font-weight: 600; }
+        .featured-wishlist { position: absolute; top: 0.75rem; right: 0.75rem; background: white; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .featured-body { padding: 1.25rem; }
+        .featured-name { font-weight: 600; font-size: 1rem; margin-bottom: 0.25rem; }
+        .featured-florist { font-size: 0.8rem; color: var(--primary-color); margin-bottom: 0.25rem; }
+        .featured-rating { font-size: 0.8rem; color: #f59e0b; margin-bottom: 0.5rem; }
+        .featured-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; border-top: 1px solid var(--border-light); }
+        .featured-price { font-size: 1.1rem; font-weight: 700; color: var(--primary-color); }
+        .featured-delivery { font-size: 0.75rem; color: var(--accent-green); }
+        .featured-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+        .featured-actions button { flex: 1; padding: 0.5rem; border-radius: 8px; font-size: 0.8rem; font-weight: 500; cursor: pointer; }
+        .btn-view { background: var(--bg-light); border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn-add { background: var(--primary-color); border: none; color: white; }
 
-        .occasion-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:3rem; }
-        .occasion-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; transition:all 0.3s; cursor:pointer; }
-        .occasion-card:hover { border-color:var(--primary-color); box-shadow:var(--shadow-sm); }
-        .occasion-icon { width:48px; height:48px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:0.75rem; }
-        .occasion-card h3 { font-size:1rem; margin-bottom:0.3rem; }
-        .occasion-card p { font-size:0.85rem; color:var(--text-light); line-height:1.5; margin-bottom:0.5rem; }
-        .occasion-flowers { display:flex; gap:0.3rem; flex-wrap:wrap; }
-        .occasion-flowers span { font-size:0.7rem; padding:0.15rem 0.5rem; border-radius:12px; background:var(--bg-light); color:var(--text-light); }
+        /* Occasion Grid */
+        .occasion-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
+        .occasion-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; text-decoration: none; color: inherit; transition: all 0.3s; }
+        .occasion-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-color: var(--primary-color); }
+        .occasion-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .occasion-name { font-size: 0.9rem; font-weight: 500; }
 
-        .featured-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:3rem; }
-        .featured-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; transition:all 0.3s; }
-        .featured-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
-        .featured-img { height:220px; overflow:hidden; position:relative; }
-        .featured-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
-        .featured-card:hover .featured-img img { transform:scale(1.05); }
-        .featured-badge { position:absolute; top:0.75rem; left:0.75rem; background:rgba(255,255,255,0.9); color:var(--primary-color); font-size:0.7rem; font-weight:600; padding:0.2rem 0.6rem; border-radius:4px; }
-        .featured-body { padding:1.25rem; }
-        .featured-body h3 { font-size:1rem; margin-bottom:0.3rem; }
-        .featured-body .florist { font-size:0.8rem; color:var(--primary-color); margin-bottom:0.4rem; }
-        .featured-body p { font-size:0.85rem; color:var(--text-light); line-height:1.5; margin-bottom:0.75rem; }
-        .featured-meta { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid var(--border-light); }
-        .featured-meta .price { font-size:1.1rem; font-weight:700; color:var(--primary-color); }
-        .featured-meta .rating { font-size:0.8rem; color:var(--accent-gold); display:flex; align-items:center; gap:0.2rem; }
+        /* Style Grid */
+        .style-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; }
+        .style-card { background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 1rem; text-align: center; text-decoration: none; color: inherit; transition: all 0.2s; font-size: 0.9rem; font-weight: 500; }
+        .style-card:hover { border-color: var(--primary-color); background: var(--primary-light); }
 
-        .tips-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin-bottom:3rem; }
-        .tip-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; }
-        .tip-card h4 { font-size:0.95rem; margin-bottom:0.4rem; display:flex; align-items:center; gap:0.4rem; }
-        .tip-card p { font-size:0.85rem; color:var(--text-light); line-height:1.5; }
+        /* Color Grid */
+        .color-grid { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+        .color-card { width: 70px; text-align: center; text-decoration: none; color: inherit; }
+        .color-circle { width: 50px; height: 50px; border-radius: 50%; margin: 0 auto 0.35rem; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; transition: transform 0.2s; }
+        .color-card:hover .color-circle { transform: scale(1.15); }
+        .color-name { font-size: 0.75rem; }
 
-        .size-guide { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:3rem; }
-        .size-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; text-align:center; }
-        .size-card .icon { font-size:2rem; margin-bottom:0.5rem; }
-        .size-card h4 { font-size:0.9rem; margin-bottom:0.2rem; }
-        .size-card .stems { font-size:0.75rem; color:var(--primary-color); font-weight:600; margin-bottom:0.3rem; }
-        .size-card p { font-size:0.78rem; color:var(--text-light); }
+        /* Builder */
+        .builder-section { background: linear-gradient(135deg, var(--primary-light), #fce7f0); border-radius: 16px; padding: 2.5rem; margin: 2rem 0; }
+        .builder-steps { display: flex; gap: 0; margin-bottom: 2rem; justify-content: center; flex-wrap: wrap; }
+        .builder-step { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 500; color: var(--text-light); }
+        .builder-step.active { color: var(--primary-color); font-weight: 600; }
+        .builder-step .step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 600; }
+        .builder-step.active .step-num { background: var(--primary-color); color: white; }
+        .builder-step .step-line { width: 30px; height: 2px; background: var(--border-color); }
+        .builder-content { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; }
+        .builder-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .builder-option { background: white; border: 2px solid var(--border-color); border-radius: 10px; padding: 1rem; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .builder-option:hover, .builder-option.selected { border-color: var(--primary-color); background: var(--primary-light); }
+        .builder-option-icon { font-size: 1.5rem; margin-bottom: 0.35rem; }
+        .builder-option-name { font-size: 0.85rem; font-weight: 500; }
+        .builder-option-price { font-size: 0.75rem; color: var(--primary-color); }
+        .builder-preview { background: white; border-radius: 12px; padding: 1.5rem; position: sticky; top: 100px; }
+        .builder-preview h4 { margin-bottom: 1rem; }
+        .builder-preview-item { display: flex; justify-content: space-between; padding: 0.5rem 0; font-size: 0.85rem; border-bottom: 1px solid var(--border-light); }
+        .builder-preview-total { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--border-color); color: var(--primary-color); }
 
-        .cta-banner { background:linear-gradient(135deg, var(--primary-color), #be185d); border-radius:var(--radius-md); padding:3rem; text-align:center; color:white; margin-bottom:2rem; }
-        .cta-banner h2 { color:white; margin-bottom:0.5rem; }
-        .cta-banner p { color:rgba(255,255,255,0.85); margin-bottom:1.25rem; max-width:500px; margin-left:auto; margin-right:auto; }
+        /* Florists Scroll */
+        .florists-scroll { display: flex; gap: 1.25rem; overflow-x: auto; padding: 1rem 0; scrollbar-width: thin; }
+        .florist-card { min-width: 200px; background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; flex-shrink: 0; text-decoration: none; color: inherit; }
+        .florist-avatar { width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 0.75rem; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--primary-color); }
+        .florist-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem; }
+        .florist-rating { font-size: 0.8rem; color: #f59e0b; }
+        .florist-meta { font-size: 0.75rem; color: var(--text-light); margin: 0.25rem 0 0.5rem; }
 
-        @media(max-width:1024px) { .cat-grid { grid-template-columns:repeat(2,1fr); } .occasion-grid, .featured-grid { grid-template-columns:repeat(2,1fr); } .size-guide { grid-template-columns:repeat(2,1fr); } }
-        @media(max-width:640px) { .cat-grid, .occasion-grid, .featured-grid, .size-guide, .tips-grid { grid-template-columns:1fr; } }
+        /* Reviews */
+        .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .review-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; }
+        .review-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+        .review-author { font-weight: 600; font-size: 0.9rem; }
+        .review-rating { color: #f59e0b; font-size: 0.85rem; }
+        .review-text { font-size: 0.85rem; color: var(--text-light); line-height: 1.5; }
+        .review-product { font-size: 0.75rem; color: var(--primary-color); margin-top: 0.5rem; }
+
+        /* FAQ */
+        .faq-item { background: white; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 0.75rem; overflow: hidden; }
+        .faq-question { padding: 1rem 1.25rem; font-weight: 500; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .faq-question:hover { background: var(--bg-light); }
+        .faq-answer { padding: 0 1.25rem 1rem; font-size: 0.9rem; color: var(--text-light); line-height: 1.6; display: none; }
+        .faq-item.open .faq-answer { display: block; }
+        .faq-item.open .faq-toggle { transform: rotate(180deg); }
+        .faq-toggle { transition: transform 0.2s; }
+
+        /* CTA */
+        .arr-cta { background: linear-gradient(135deg, var(--primary-color), #be185d); border-radius: 16px; padding: 3rem; text-align: center; color: white; margin-top: 2rem; }
+        .arr-cta h2 { color: white; margin-bottom: 0.5rem; }
+        .arr-cta p { color: rgba(255,255,255,0.85); margin-bottom: 1.5rem; }
+
+        @media (max-width: 900px) {
+            .arr-hero-inner { grid-template-columns: 1fr; }
+            .arr-hero-img { display: none; }
+            .featured-grid, .reviews-grid { grid-template-columns: repeat(2, 1fr); }
+            .builder-content { grid-template-columns: 1fr; }
+            .builder-options { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .featured-grid, .reviews-grid { grid-template-columns: 1fr; }
+            .builder-options { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
+
     <div id="header-container"></div>
 
+    <!-- ===== HERO ===== -->
     <section class="arr-hero">
         <div class="container">
-            <h1><i class="bi bi-flower1"></i> Flower Arrangements</h1>
-            <p>From hand-tied bouquets to elaborate centerpieces — find the perfect arrangement for every moment</p>
+            <div class="arr-hero-inner reveal-up">
+                <div>
+                    <h1>Floral Arrangements Designed to Make Every Moment Special</h1>
+                    <p>Explore handcrafted bouquets and floral designs created by trusted florists for every celebration and occasion.</p>
+                    <div class="arr-hero-btns">
+                        <a href="#featured" class="btn btn-primary">Shop Arrangements</a>
+                        <a href="#builder" class="btn btn-outline">Create Custom</a>
+                    </div>
+                    <div class="arr-search">
+                        <input type="search" id="arrSearch" placeholder="Search bouquets, wedding flowers, birthday flowers...">
+                        <button onclick="searchArrangements()"><i class="bi bi-search"></i></button>
+                    </div>
+                </div>
+                <div class="arr-hero-img">
+                    <img src="https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=80&w=800&auto=format&fit=crop" alt="Beautiful floral arrangement" loading="eager">
+                </div>
+            </div>
         </div>
     </section>
 
-    <section class="section-padding">
+    <!-- ===== FEATURED ARRANGEMENTS ===== -->
+    <section class="section-padding" id="featured">
         <div class="container">
-            <div class="section-title reveal-up">
-                <h2>Arrangement Types</h2>
-                <p>Explore our curated collection of floral arrangement styles</p>
-            </div>
-            <div class="cat-grid reveal-up" id="catGrid"></div>
+            <div class="section-header"><h2>Featured Arrangements</h2><a href="marketplace">View All</a></div>
+            <div class="featured-grid" id="featuredGrid"></div>
+        </div>
+    </section>
 
-            <div class="section-title reveal-up">
-                <h2>Shop by Occasion</h2>
-                <p>The right flowers for every celebration and milestone</p>
+    <!-- ===== SHOP BY OCCASION ===== -->
+    <section class="section-padding bg-light" style="padding-top:2rem;padding-bottom:2rem;">
+        <div class="container">
+            <div class="section-header"><h2>Shop by Occasion</h2></div>
+            <div class="occasion-grid">
+                <a href="marketplace?occasion=wedding" class="occasion-card"><div class="occasion-icon">💍</div><div class="occasion-name">Wedding</div></a>
+                <a href="marketplace?occasion=anniversary" class="occasion-card"><div class="occasion-icon">❤️</div><div class="occasion-name">Anniversary</div></a>
+                <a href="marketplace?occasion=birthday" class="occasion-card"><div class="occasion-icon">🎂</div><div class="occasion-name">Birthday</div></a>
+                <a href="marketplace?occasion=graduation" class="occasion-card"><div class="occasion-icon">🎓</div><div class="occasion-name">Graduation</div></a>
+                <a href="marketplace?occasion=sympathy" class="occasion-card"><div class="occasion-icon">🕊️</div><div class="occasion-name">Sympathy</div></a>
+                <a href="marketplace?occasion=corporate" class="occasion-card"><div class="occasion-icon">💼</div><div class="occasion-name">Corporate</div></a>
+                <a href="marketplace?occasion=holiday" class="occasion-card"><div class="occasion-icon">🎄</div><div class="occasion-name">Holiday</div></a>
             </div>
-            <div class="occasion-grid reveal-up" id="occasionGrid"></div>
+        </div>
+    </section>
 
-            <div class="section-title reveal-up">
-                <h2>Featured Arrangements</h2>
-                <p>Handpicked designs from top florists</p>
+    <!-- ===== SHOP BY STYLE ===== -->
+    <section class="section-padding" style="padding-top:2rem;padding-bottom:2rem;">
+        <div class="container">
+            <div class="section-header"><h2>Shop by Style</h2></div>
+            <div class="style-grid">
+                <a href="marketplace?style=minimalist" class="style-card">Minimalist</a>
+                <a href="marketplace?style=luxury" class="style-card">Luxury</a>
+                <a href="marketplace?style=rustic" class="style-card">Rustic</a>
+                <a href="marketplace?style=modern" class="style-card">Modern</a>
+                <a href="marketplace?style=garden" class="style-card">Garden Style</a>
+                <a href="marketplace?style=classic" class="style-card">Classic</a>
+                <a href="marketplace?style=romantic" class="style-card">Romantic</a>
+                <a href="marketplace?style=bohemian" class="style-card">Bohemian</a>
+                <a href="marketplace?style=wildflower" class="style-card">Wildflower</a>
+                <a href="marketplace?style=elegant" class="style-card">Elegant</a>
             </div>
-            <div class="featured-grid reveal-up" id="featuredGrid"></div>
+        </div>
+    </section>
 
-            <div class="section-title reveal-up">
-                <h2>Arrangement Size Guide</h2>
-                <p>Choose the right size for your space and occasion</p>
+    <!-- ===== SHOP BY COLOR ===== -->
+    <section class="section-padding bg-light" style="padding-top:2rem;padding-bottom:2rem;">
+        <div class="container">
+            <div class="section-header"><h2>Shop by Color</h2></div>
+            <div class="color-grid">
+                <a href="marketplace?color=red" class="color-card"><div class="color-circle" style="background:#ef4444;"></div><div class="color-name">Red</div></a>
+                <a href="marketplace?color=pink" class="color-card"><div class="color-circle" style="background:#ec4899;"></div><div class="color-name">Pink</div></a>
+                <a href="marketplace?color=white" class="color-card"><div class="color-circle" style="background:#f8f9fa;"></div><div class="color-name">White</div></a>
+                <a href="marketplace?color=purple" class="color-card"><div class="color-circle" style="background:#8b5cf6;"></div><div class="color-name">Purple</div></a>
+                <a href="marketplace?color=yellow" class="color-card"><div class="color-circle" style="background:#f59e0b;"></div><div class="color-name">Yellow</div></a>
+                <a href="marketplace?color=orange" class="color-card"><div class="color-circle" style="background:#f97316;"></div><div class="color-name">Orange</div></a>
+                <a href="marketplace?color=blue" class="color-card"><div class="color-circle" style="background:#3b82f6;"></div><div class="color-name">Blue</div></a>
+                <a href="marketplace?color=green" class="color-card"><div class="color-circle" style="background:#10b981;"></div><div class="color-name">Green</div></a>
             </div>
-            <div class="size-guide reveal-up" id="sizeGuide"></div>
+        </div>
+    </section>
 
-            <div class="section-title reveal-up">
-                <h2>Arrangement Care Tips</h2>
-                <p>Keep your flowers fresh and beautiful longer</p>
+    <!-- ===== CUSTOM BUILDER ===== -->
+    <section class="section-padding" id="builder">
+        <div class="container">
+            <div class="section-header"><h2>Custom Arrangement Builder</h2></div>
+            <div class="builder-section reveal-up">
+                <div class="builder-steps">
+                    <div class="builder-step active" data-step="1"><span class="step-num">1</span> Choose Flowers <span class="step-line"></span></div>
+                    <div class="builder-step" data-step="2"><span class="step-num">2</span> Choose Colors <span class="step-line"></span></div>
+                    <div class="builder-step" data-step="3"><span class="step-num">3</span> Choose Wrapping <span class="step-line"></span></div>
+                    <div class="builder-step" data-step="4"><span class="step-num">4</span> Add Extras <span class="step-line"></span></div>
+                    <div class="builder-step" data-step="5"><span class="step-num">5</span> Checkout</div>
+                </div>
+
+                <div class="builder-content">
+                    <div>
+                        <!-- Step 1: Flowers -->
+                        <div class="builder-step-content" id="step1" style="display:block;">
+                            <h3 style="margin-bottom:1rem;">Choose Your Flowers</h3>
+                            <div class="builder-options">
+                                <div class="builder-option" onclick="selectOption(this, 'flower', 'roses', 15)"><div class="builder-option-icon">🌹</div><div class="builder-option-name">Roses</div><div class="builder-option-price">+GHS 15</div></div>
+                                <div class="builder-option" onclick="selectOption(this, 'flower', 'tulips', 12)"><div class="builder-option-icon">🌷</div><div class="builder-option-name">Tulips</div><div class="builder-option-price">+GHS 12</div></div>
+                                <div class="builder-option" onclick="selectOption(this, 'flower', 'sunflowers', 10)"><div class="builder-option-icon">🌻</div><div class="builder-option-name">Sunflowers</div><div class="builder-option-price">+GHS 10</div></div>
+                                <div class="builder-option" onclick="selectOption(this, 'flower', 'orchids', 20)"><div class="builder-option-icon">🌸</div><div class="builder-option-name">Orchids</div><div class="builder-option-price">+GHS 20</div></div>
+                                <div class="builder-option" onclick="selectOption(this, 'flower', 'lilies', 14)"><div class="builder-option-icon">🌺</div><div class="builder-option-name">Lilies</div><div class="builder-option-price">+GHS 14</div></div>
+                                <div class="builder-option" onclick="selectOption(this, 'flower', 'peonies', 18)"><div class="builder-option-icon">🌸</div><div class="builder-option-name">Peonies</div><div class="builder-option-price">+GHS 18</div></div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Colors -->
+                        <div class="builder-step-content" id="step2" style="display:none;">
+                            <h3 style="margin-bottom:1rem;">Choose Colors</h3>
+                            <div class="builder-options">
+                                <div class="builder-option" onclick="selectOption(this, 'color', 'red', 0)"><div class="builder-option-icon" style="width:40px;height:40px;border-radius:50%;background:#ef4444;margin:0 auto;"></div><div class="builder-option-name">Red</div></div>
+                                <div class="builder-option" onclick="selectOption(this, 'color', 'pink', 0)"><div class="builder-option-icon" style="width:40px;height:40px;border-radius:50%;background:#ec4899;margin:0 auto;"></div><div class="builder-option-name">Pink</div></div>
+                                <div class="builder-option" onclick="selectOption(this, 'color', 'white', 0)"><div class="builder-option-icon" style="width:40px;height:40px;border-radius:50%;background:#f8f9fa;border:1px solid #ddd;margin:0 auto;"></div><div class="builder-option-name">White</div></div>
+                                <div class="builder-option" onclick="selectOption(this, 'color', 'purple', 0)"><div class="builder-option-icon" style="width:40px;height:40px;border-radius:50%;background:#8b5cf6;margin:0 auto;"></div><div class="builder-option-name">Purple</div></div>
+                                <div class="builder-option" onclick="selectOption(this, 'color', 'yellow', 0)"><div class="builder-option-icon" style="width:40px;height:40px;border-radius:50%;background:#f59e0b;margin:0 auto;"></div><div class="builder-option-name">Yellow</div></div>
+                                <div class="builder-option" onclick="selectOption(this, 'color', 'multi', 5)"><div class="builder-option-icon" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#ef4444,#8b5cf6,#3b82f6);margin:0 auto;"></div><div class="builder-option-name">Multi +GHS 5</div></div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Wrapping -->
+                        <div class="builder-step-content" id="step3" style="display:none;">
+                            <h3 style="margin-bottom:1rem;">Choose Wrapping</h3>
+                            <div class="builder-options">
+                                <div class="builder-option" onclick="selectOption(this, 'wrapping', 'kraft', 0)"><div class="builder-option-icon">📦</div><div class="builder-option-name">Kraft Paper</div><div class="builder-option-price">Free</div></div>
+                                <div class="builder-option" onclick="selectOption(this, 'wrapping', 'luxury-box', 15)"><div class="builder-option-icon">🎁</div><div class="builder-option-name">Luxury Box</div><div class="builder-option-price">+GHS 15</div></div>
+                                <div class="builder-option" onclick="selectOption(this, 'wrapping', 'satin', 10)"><div class="builder-option-icon">🎀</div><div class="builder-option-name">Satin Wrap</div><div class="builder-option-price">+GHS 10</div></div>
+                                <div class="builder-option" onclick="selectOption(this, 'wrapping', 'vase', 20)"><div class="builder-option-icon">🏺</div><div class="builder-option-name">Glass Vase</div><div class="builder-option-price">+GHS 20</div></div>
+                                <div class="builder-option" onclick="selectOption(this, 'wrapping', 'basket', 25)"><div class="builder-option-icon">🧺</div><div class="builder-option-name">Basket</div><div class="builder-option-price">+GHS 25</div></div>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Extras -->
+                        <div class="builder-step-content" id="step4" style="display:none;">
+                            <h3 style="margin-bottom:1rem;">Add Extras</h3>
+                            <div class="builder-options">
+                                <div class="builder-option" onclick="toggleOption(this, 'extras', 'chocolates', 20)"><div class="builder-option-icon">🍫</div><div class="builder-option-name">Chocolates</div><div class="builder-option-price">+GHS 20</div></div>
+                                <div class="builder-option" onclick="toggleOption(this, 'extras', 'teddy', 25)"><div class="builder-option-icon">🧸</div><div class="builder-option-name">Teddy Bear</div><div class="builder-option-price">+GHS 25</div></div>
+                                <div class="builder-option" onclick="toggleOption(this, 'extras', 'card', 5)"><div class="builder-option-icon">💌</div><div class="builder-option-name">Greeting Card</div><div class="builder-option-price">+GHS 5</div></div>
+                                <div class="builder-option" onclick="toggleOption(this, 'extras', 'balloons', 15)"><div class="builder-option-icon">🎈</div><div class="builder-option-name">Balloons</div><div class="builder-option-price">+GHS 15</div></div>
+                                <div class="builder-option" onclick="toggleOption(this, 'extras', 'wine', 50)"><div class="builder-option-icon">🍷</div><div class="builder-option-name">Wine</div><div class="builder-option-price">+GHS 50</div></div>
+                                <div class="builder-option" onclick="toggleOption(this, 'extras', 'candles', 15)"><div class="builder-option-icon">🕯️</div><div class="builder-option-name">Candles</div><div class="builder-option-price">+GHS 15</div></div>
+                            </div>
+                        </div>
+
+                        <!-- Step 5: Summary -->
+                        <div class="builder-step-content" id="step5" style="display:none;">
+                            <h3 style="margin-bottom:1rem;">Your Custom Arrangement</h3>
+                            <div id="builderSummary" style="background:white;border-radius:12px;padding:1.5rem;"></div>
+                            <button class="btn btn-primary w-100" style="margin-top:1rem;" onclick="addBuilderToCart()">Add to Cart</button>
+                        </div>
+
+                        <div style="display:flex;gap:1rem;margin-top:1.5rem;">
+                            <button class="btn btn-outline" id="prevStep" onclick="prevBuilderStep()" style="display:none;">Previous</button>
+                            <button class="btn btn-primary" id="nextStep" onclick="nextBuilderStep()" style="flex:1;">Next Step</button>
+                        </div>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="builder-preview">
+                        <h4>Order Summary</h4>
+                        <div id="builderPreview">
+                            <p style="color:var(--text-light);font-size:0.85rem;">Select options to build your arrangement</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="tips-grid reveal-up" id="tipsGrid"></div>
+        </div>
+    </section>
 
-            <div class="cta-banner reveal-up">
+    <!-- ===== FEATURED FLORISTS ===== -->
+    <section class="section-padding bg-light" style="padding-top:2rem;padding-bottom:2rem;">
+        <div class="container">
+            <div class="section-header"><h2>Featured Florists</h2><a href="florists.html">View All</a></div>
+            <div class="florists-scroll" id="floristsScroll"></div>
+        </div>
+    </section>
+
+    <!-- ===== REVIEWS ===== -->
+    <section class="section-padding" style="padding-top:2rem;padding-bottom:2rem;">
+        <div class="container">
+            <div class="section-header"><h2>Customer Reviews</h2></div>
+            <div class="reviews-grid" id="reviewsGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section class="section-padding bg-light" style="padding-top:2rem;padding-bottom:2rem;">
+        <div class="container" style="max-width:700px;">
+            <div class="section-header"><h2>Frequently Asked Questions</h2></div>
+            <div id="faqList"></div>
+        </div>
+    </section>
+
+    <!-- ===== CTA ===== -->
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container">
+            <div class="arr-cta reveal-up">
                 <h2>Need a Custom Arrangement?</h2>
                 <p>Work with our expert florists to create something unique for your special occasion.</p>
                 <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
-                    <a href="florists.html" class="btn" style="background:white;color:var(--primary-color);font-weight:600;">Find a Florist</a>
+                    <a href="florists.html" class="btn" style="background:white;color:var(--primary-color);">Find a Florist</a>
                     <a href="marketplace.html" class="btn" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);">Browse Marketplace</a>
                 </div>
             </div>
@@ -131,18 +351,217 @@
 
     <div id="footer-container"></div>
 
-    <script src="js/shared/api.js?v=4.0"></script>
-    <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.4"></script>
-    <script src="js/shared/ui.js?v=2.0"></script>
-    <script src="js/shared/cart.js?v=3.0"></script>
     <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
-    <script src="js/arrangements.js"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/shared/cart.js?v=3.0"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            initArrangementsPage();
+        // ─── State ─────────────────────────────────────────────────────
+        let builderState = { step: 1, flower: null, flowerPrice: 0, color: null, wrapping: null, wrappingPrice: 0, extras: [], extrasPrice: 0 };
+
+        // ─── Featured Arrangements ─────────────────────────────────────
+        async function loadFeatured() {
+            try {
+                const data = await fetch('/api/products?limit=6&featured=true').then(r => r.json());
+                const products = data.products || data || [];
+                const grid = document.getElementById('featuredGrid');
+                if (!products.length) { grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--text-light);">No featured arrangements yet.</p>'; return; }
+                grid.innerHTML = products.map(p => `
+                    <div class="featured-card">
+                        <div class="featured-img">
+                            <img src="${p.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 300 220%22><rect fill=%22%23fce7f0%22 width=%22300%22 height=%22220%22/><text x=%22150%22 y=%22120%22 text-anchor=%22middle%22 fill=%22%23d8447c%22 font-size=%2248%22>✿</text></svg>'}" alt="${p.name}" loading="lazy">
+                            ${p.badge ? `<div class="featured-badge">${p.badge}</div>` : ''}
+                            <button class="featured-wishlist" onclick="event.stopPropagation()"><i class="bi bi-heart"></i></button>
+                        </div>
+                        <div class="featured-body">
+                            <div class="featured-name">${p.name}</div>
+                            <div class="featured-florist">${p.seller || 'Florist'}</div>
+                            <div class="featured-rating">${renderStars(p.rating || 0)} (${p.reviews || 0})</div>
+                            <div class="featured-footer">
+                                <div class="featured-price">${p.currency || 'GHS'} ${Number(p.price).toFixed(2)}</div>
+                                <div class="featured-delivery"><i class="bi bi-truck"></i> Same-Day</div>
+                            </div>
+                            <div class="featured-actions">
+                                <button class="btn-view" onclick="window.location.href='product-detail.html?id=${p.id}'">Quick View</button>
+                                <button class="btn-add" onclick="addToCart('${p.id}','${p.name.replace(/'/g,"\\'")}',${p.price})">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch {}
+        }
+
+        function renderStars(rating) {
+            const full = Math.floor(rating);
+            let html = '';
+            for (let i = 0; i < full; i++) html += '<i class="bi bi-star-fill"></i>';
+            for (let i = full; i < 5; i++) html += '<i class="bi bi-star"></i>';
+            return html;
+        }
+
+        // ─── Florists ──────────────────────────────────────────────────
+        async function loadFlorists() {
+            try {
+                const data = await fetch('/api/products/list/florists').then(r => r.json());
+                const sellers = data.florists || data || [];
+                const el = document.getElementById('floristsScroll');
+                if (!sellers.length) { el.innerHTML = '<p style="color:var(--text-light);">No florists yet.</p>'; return; }
+                el.innerHTML = sellers.map(s => `
+                    <a href="florist-profile.html?id=${s.id}" class="florist-card">
+                        <div class="florist-avatar">${(s.name || '?')[0]}</div>
+                        <div class="florist-name">${s.name}</div>
+                        <div class="florist-rating">${renderStars(4.5)} (4.5)</div>
+                        <div class="florist-meta">${s.products || 0} arrangements</div>
+                        <button class="btn btn-primary btn-sm w-100">Visit Shop</button>
+                    </a>
+                `).join('');
+            } catch {}
+        }
+
+        // ─── Reviews ───────────────────────────────────────────────────
+        function loadReviews() {
+            const reviews = [
+                { author: 'Sarah M.', rating: 5, text: 'Absolutely stunning wedding bouquet! The florist understood exactly what I wanted.', product: 'Luxury Rose Bouquet' },
+                { author: 'John K.', rating: 5, text: 'My wife loved the anniversary arrangement. Fresh and beautifully wrapped.', product: 'Romantic Peony Bundle' },
+                { author: 'Ama D.', rating: 4, text: 'Beautiful birthday flowers delivered on time. Great quality!', product: 'Birthday Bloom Box' },
+                { author: 'Kofi A.', rating: 5, text: 'Professional service and gorgeous arrangements. Highly recommend!', product: 'Corporate Reception Set' },
+                { author: 'Efua B.', rating: 5, text: 'The sympathy arrangement was elegant and tasteful. Thank you.', product: 'White Sympathy Bouquet' },
+                { author: 'Nana O.', rating: 4, text: 'Lovely tropical arrangement. Would order again.', product: 'Tropical Paradise Basket' }
+            ];
+            document.getElementById('reviewsGrid').innerHTML = reviews.map(r => `
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="review-author">${r.author}</div>
+                        <div class="review-rating">${renderStars(r.rating)}</div>
+                    </div>
+                    <div class="review-text">${r.text}</div>
+                    <div class="review-product">Purchased: ${r.product}</div>
+                </div>
+            `).join('');
+        }
+
+        // ─── FAQ ───────────────────────────────────────────────────────
+        function loadFAQ() {
+            const faqs = [
+                { q: 'How long do arrangements stay fresh?', a: 'Most arrangements stay fresh for 5-7 days with proper care. We include care instructions with every order.' },
+                { q: 'Can I customize my bouquet?', a: 'Yes! Use our Custom Arrangement Builder to choose flowers, colors, wrapping, and extras.' },
+                { q: 'Do you offer same-day delivery?', a: 'Yes, same-day delivery is available for orders placed before 2 PM in most areas.' },
+                { q: 'Can I include a personalized message?', a: 'Absolutely! You can add a custom greeting card with any order.' },
+                { q: 'How are flowers packaged?', a: 'Flowers are carefully arranged in water-filled containers and wrapped in protective packaging to ensure they arrive fresh.' }
+            ];
+            document.getElementById('faqList').innerHTML = faqs.map((f, i) => `
+                <div class="faq-item${i === 0 ? ' open' : ''}" onclick="this.classList.toggle('open')">
+                    <div class="faq-question">${f.q} <i class="bi bi-chevron-down faq-toggle"></i></div>
+                    <div class="faq-answer">${f.a}</div>
+                </div>
+            `).join('');
+        }
+
+        // ─── Builder ───────────────────────────────────────────────────
+        function selectOption(el, type, value, price) {
+            el.parentElement.querySelectorAll('.builder-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            if (type === 'flower') { builderState.flower = value; builderState.flowerPrice = price; }
+            if (type === 'color') { builderState.color = value; }
+            if (type === 'wrapping') { builderState.wrapping = value; builderState.wrappingPrice = price; }
+            updatePreview();
+        }
+
+        function toggleOption(el, type, value, price) {
+            el.classList.toggle('selected');
+            if (el.classList.contains('selected')) {
+                builderState.extras.push({ name: value, price });
+                builderState.extrasPrice += price;
+            } else {
+                builderState.extras = builderState.extras.filter(e => e.name !== value);
+                builderState.extrasPrice -= price;
+            }
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const total = 25 + builderState.flowerPrice + builderState.wrappingPrice + builderState.extrasPrice;
+            let html = '<div class="builder-preview-item"><span>Base Arrangement</span><span>GHS 25.00</span></div>';
+            if (builderState.flower) html += `<div class="builder-preview-item"><span>${builderState.flower}</span><span>+GHS ${builderState.flowerPrice}</span></div>`;
+            if (builderState.wrapping) html += `<div class="builder-preview-item"><span>${builderState.wrapping}</span><span>+GHS ${builderState.wrappingPrice}</span></div>`;
+            builderState.extras.forEach(e => {
+                html += `<div class="builder-preview-item"><span>${e.name}</span><span>+GHS ${e.price}</span></div>`;
+            });
+            html += `<div class="builder-preview-total"><span>Total</span><span>GHS ${total.toFixed(2)}</span></div>`;
+            document.getElementById('builderPreview').innerHTML = html;
+        }
+
+        let currentStep = 1;
+        function nextBuilderStep() {
+            if (currentStep >= 5) return;
+            document.getElementById('step' + currentStep).style.display = 'none';
+            currentStep++;
+            document.getElementById('step' + currentStep).style.display = 'block';
+            document.querySelectorAll('.builder-step').forEach(s => {
+                s.classList.toggle('active', parseInt(s.dataset.step) <= currentStep);
+            });
+            document.getElementById('prevStep').style.display = currentStep > 1 ? 'block' : 'none';
+            document.getElementById('nextStep').style.display = currentStep < 5 ? 'flex' : 'none';
+            if (currentStep === 5) renderBuilderSummary();
+        }
+
+        function prevBuilderStep() {
+            if (currentStep <= 1) return;
+            document.getElementById('step' + currentStep).style.display = 'none';
+            currentStep--;
+            document.getElementById('step' + currentStep).style.display = 'block';
+            document.querySelectorAll('.builder-step').forEach(s => {
+                s.classList.toggle('active', parseInt(s.dataset.step) <= currentStep);
+            });
+            document.getElementById('prevStep').style.display = currentStep > 1 ? 'block' : 'none';
+            document.getElementById('nextStep').style.display = 'flex';
+        }
+
+        function renderBuilderSummary() {
+            const total = 25 + builderState.flowerPrice + builderState.wrappingPrice + builderState.extrasPrice;
+            document.getElementById('builderSummary').innerHTML = `
+                <p><strong>Flower:</strong> ${builderState.flower || 'Not selected'}</p>
+                <p><strong>Color:</strong> ${builderState.color || 'Not selected'}</p>
+                <p><strong>Wrapping:</strong> ${builderState.wrapping || 'Not selected'}</p>
+                <p><strong>Extras:</strong> ${builderState.extras.map(e => e.name).join(', ') || 'None'}</p>
+                <p style="font-size:1.25rem;font-weight:700;color:var(--primary-color);margin-top:1rem;">Total: GHS ${total.toFixed(2)}</p>
+            `;
+        }
+
+        function addBuilderToCart() {
+            const total = 25 + builderState.flowerPrice + builderState.wrappingPrice + builderState.extrasPrice;
+            const name = `Custom ${builderState.flower || 'Flower'} Arrangement`;
+            let cart = JSON.parse(localStorage.getItem('flower-cart') || '[]');
+            cart.push({ id: 'custom-' + Date.now(), name, price: total, qty: 1 });
+            localStorage.setItem('flower-cart', JSON.stringify(cart));
+            alert('Custom arrangement added to cart!');
+        }
+
+        function addToCart(id, name, price) {
+            let cart = JSON.parse(localStorage.getItem('flower-cart') || '[]');
+            const existing = cart.find(i => i.id === id);
+            if (existing) existing.qty = (existing.qty || 1) + 1;
+            else cart.push({ id, name, price, qty: 1 });
+            localStorage.setItem('flower-cart', JSON.stringify(cart));
+            alert('Added to cart!');
+        }
+
+        function searchArrangements() {
+            const q = document.getElementById('arrSearch').value.trim();
+            if (q) window.location.href = `marketplace?q=${encodeURIComponent(q)}`;
+        }
+
+        document.getElementById('arrSearch')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') searchArrangements();
         });
+
+        // ─── Init ──────────────────────────────────────────────────────
+        loadFeatured();
+        loadFlorists();
+        loadReviews();
+        loadFAQ();
     </script>
 </body>
 </html>
