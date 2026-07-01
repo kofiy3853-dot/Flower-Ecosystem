@@ -47,12 +47,15 @@ app.use(require('cors')({
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: false }));
 
-// CSRF protection
+// CSRF protection — block form-encoded cross-origin POSTs
 app.use((req, res, next) => {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
         const xRequestedWith = req.get('X-Requested-With');
         const hasAuth = !!req.get('Authorization');
-        if (xRequestedWith !== 'XMLHttpRequest' && !hasAuth) {
+        const contentType = req.get('Content-Type') || '';
+        const isJson = contentType.includes('application/json');
+        const isMultipart = contentType.includes('multipart/form-data');
+        if (xRequestedWith !== 'XMLHttpRequest' && !hasAuth && !isJson && !isMultipart) {
             return res.status(403).json({ error: 'Missing required header' });
         }
     }
@@ -265,6 +268,8 @@ app.use((req, res) => {
 });
 
 app.use((err, _req, res, _next) => {
+    // Ignore client disconnects — these are normal (page nav, refresh, timeouts)
+    if (err.code === 'ECONNRESET' || err.type === 'aborted' || err.message === 'Request aborted') return;
     console.error('Unhandled error:', err.message);
     // Handle multer errors
     if (err.code === 'LIMIT_FILE_SIZE') {

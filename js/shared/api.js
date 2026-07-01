@@ -137,7 +137,7 @@ const api = {
         return apiFetch(url, 'products');
     },
     fetchProduct(id) { return apiFetch('/api/products/' + encodeURIComponent(id)); },
-    fetchRelated(id) { return apiFetch('/api/products/' + encodeURIComponent(id) + '/related'); },
+    fetchRelated(id) { return apiFetch('/api/products/' + encodeURIComponent(id) + '/related', 'products'); },
     fetchCategories() { return apiFetch('/api/products/list/categories', 'categories'); },
     fetchFlorists() { return apiFetch('/api/products/list/florists', 'florists'); },
     fetchArticles() { return apiFetch('/api/articles', 'articles'); },
