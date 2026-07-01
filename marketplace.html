@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Shop fresh flowers, bouquets, plants and arrangements from verified sellers on Flower Ecosystem.">
     <meta property="og:title" content="Flower Marketplace | Flower Ecosystem">
-    <meta property="og:description" content="Shop fresh flowers, curated bouquets, and unique arrangements from trusted sellers worldwide.">
-    <meta property="og:type" content="website">
     <title>Shop Flowers | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,41 +13,133 @@
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
-        .mkt-hero { background: linear-gradient(135deg, #fdf2f6 0%, #fce7f0 50%, #f8d7e8 100%); padding: 5rem 0 3rem; text-align: center; }
-        .mkt-hero-title { font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 0.5rem; }
-        .mkt-hero-sub { color: var(--text-light); font-size: 1.1rem; margin-bottom: 2rem; }
-        .mkt-search-wrap { max-width: 600px; margin: 0 auto 1.5rem; display: flex; background: white; border-radius: 50px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
-        .mkt-search-icon { padding: 1rem 0 1rem 1.5rem; color: var(--text-muted); }
-        .mkt-search-input { flex: 1; border: none; padding: 1rem; font-size: 1rem; outline: none; }
-        .mkt-search-btn { border-radius: 0 50px 50px 0 !important; padding: 1rem 2rem !important; }
-        .mkt-cat-pills { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
-        .mkt-cat-pill { padding: 0.5rem 1rem; border-radius: 50px; background: white; color: var(--text-main); text-decoration: none; font-size: 0.9rem; font-weight: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.2s; }
-        .mkt-cat-pill:hover, .mkt-cat-pill.active { background: var(--primary-color); color: white; transform: translateY(-2px); }
-        .mkt-filter-bar { background: white; border-bottom: 1px solid var(--border-color); padding: 1rem 0; position: sticky; top: 60px; z-index: 50; }
-        .mkt-filters { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
-        .mkt-filter-select { padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.85rem; background: white; min-width: 120px; }
-        .mkt-clear-btn { padding: 0.5rem 1rem; font-size: 0.85rem; }
-        .mkt-active-filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
-        .mkt-chip { display: flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.75rem; background: var(--primary-light); color: var(--primary-color); border-radius: 50px; font-size: 0.8rem; font-weight: 500; }
-        .mkt-chip button { background: none; border: none; cursor: pointer; color: var(--primary-color); font-size: 1rem; line-height: 1; }
-        .occasion-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
-        .occasion-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; text-decoration: none; color: inherit; transition: all 0.3s; }
+        /* Hero */
+        .shop-hero { background: linear-gradient(135deg, #fdf2f6 0%, #fce7f0 50%, #f8d7e8 100%); padding: 5rem 0 3rem; }
+        .shop-hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+        .shop-hero h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 0.5rem; }
+        .shop-hero p { color: var(--text-light); font-size: 1rem; margin-bottom: 1.5rem; }
+        .shop-search-wrap { display: flex; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; margin-bottom: 1rem; }
+        .shop-search-icon { padding: 1rem 0 1rem 1.25rem; color: var(--text-muted); }
+        .shop-search-input { flex: 1; border: none; padding: 1rem; font-size: 1rem; outline: none; }
+        .shop-search-btn { border-radius: 0 12px 12px 0 !important; padding: 1rem 1.5rem !important; }
+        .shop-quick-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .shop-quick-btn { padding: 0.5rem 1rem; border-radius: 50px; background: white; border: 1px solid var(--border-color); color: var(--text-main); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; }
+        .shop-quick-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+        .shop-hero-img { border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .shop-hero-img img { width: 100%; height: 350px; object-fit: cover; }
+
+        /* Layout */
+        .shop-layout { display: grid; grid-template-columns: 260px 1fr; gap: 2rem; padding: 2rem 0; }
+        .shop-sidebar { position: sticky; top: 80px; height: fit-content; max-height: calc(100vh - 100px); overflow-y: auto; }
+        .filter-group { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+        .filter-group h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+        .filter-group h4 i { color: var(--primary-color); }
+        .filter-option { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0; font-size: 0.88rem; cursor: pointer; }
+        .filter-option input { accent-color: var(--primary-color); }
+        .color-options { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .color-circle { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border-color); cursor: pointer; transition: all 0.2s; }
+        .color-circle:hover, .color-circle.active { border-color: var(--primary-color); transform: scale(1.1); }
+        .price-range { display: flex; gap: 0.5rem; align-items: center; }
+        .price-range input { width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.85rem; }
+        .rating-filter { display: flex; gap: 0.25rem; }
+        .rating-star { color: #f59e0b; cursor: pointer; font-size: 1.1rem; }
+        .rating-star.empty { color: var(--border-color); }
+
+        /* Toolbar */
+        .shop-toolbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+        .shop-count { font-size: 0.9rem; color: var(--text-light); }
+        .shop-actions { display: flex; gap: 0.75rem; align-items: center; }
+        .view-toggle { display: flex; background: var(--bg-light); border-radius: 8px; padding: 0.25rem; }
+        .view-btn { padding: 0.4rem 0.75rem; border: none; background: none; border-radius: 6px; cursor: pointer; color: var(--text-light); }
+        .view-btn.active { background: white; color: var(--text-main); box-shadow: var(--shadow-xs); }
+        .sort-select { padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.85rem; }
+
+        /* Product Grid */
+        .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+        .shop-card { background: white; border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; transition: all 0.3s; position: relative; }
+        .shop-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
+        .shop-card-img { height: 220px; overflow: hidden; position: relative; }
+        .shop-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .shop-card:hover .shop-card-img img { transform: scale(1.08); }
+        .shop-card-badge { position: absolute; top: 0.75rem; left: 0.75rem; background: var(--primary-color); color: white; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.7rem; font-weight: 600; }
+        .shop-card-wishlist { position: absolute; top: 0.75rem; right: 0.75rem; background: white; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.2s; }
+        .shop-card-wishlist:hover { background: var(--primary-color); color: white; }
+        .shop-card-actions { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 1rem; display: flex; gap: 0.5rem; opacity: 0; transition: opacity 0.3s; }
+        .shop-card:hover .shop-card-actions { opacity: 1; }
+        .shop-card-actions button { flex: 1; padding: 0.5rem; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 500; cursor: pointer; }
+        .btn-quick-view { background: white; color: var(--text-main); }
+        .btn-add-cart { background: var(--primary-color); color: white; }
+        .shop-card-body { padding: 1rem; }
+        .shop-card-seller { font-size: 0.78rem; color: var(--text-light); margin-bottom: 0.25rem; }
+        .shop-card-name { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .shop-card-rating { font-size: 0.8rem; color: #f59e0b; margin-bottom: 0.25rem; }
+        .shop-card-rating span { color: var(--text-muted); }
+        .shop-card-price { font-size: 1.1rem; font-weight: 700; color: var(--primary-color); }
+        .shop-card-delivery { font-size: 0.75rem; color: var(--accent-green); margin-top: 0.25rem; }
+        .shop-card-stock { font-size: 0.75rem; color: var(--error-color); margin-top: 0.25rem; }
+
+        /* Collections */
+        .collections-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .collection-card { position: relative; border-radius: 12px; overflow: hidden; height: 200px; cursor: pointer; }
+        .collection-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .collection-card:hover img { transform: scale(1.1); }
+        .collection-overlay { position: absolute; inset: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); display: flex; align-items: flex-end; padding: 1rem; }
+        .collection-overlay h3 { color: white; font-size: 1rem; }
+
+        /* Sellers */
+        .sellers-scroll { display: flex; gap: 1rem; overflow-x: auto; padding: 1rem 0; scrollbar-width: thin; }
+        .seller-card { min-width: 200px; background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; flex-shrink: 0; }
+        .seller-avatar { width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 0.75rem; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--primary-color); }
+        .seller-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem; }
+        .seller-rating { font-size: 0.8rem; color: #f59e0b; }
+        .seller-products { font-size: 0.78rem; color: var(--text-light); margin: 0.25rem 0 0.5rem; }
+
+        /* Occasion */
+        .occasion-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; }
+        .occasion-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; text-align: center; text-decoration: none; color: inherit; transition: all 0.3s; }
         .occasion-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-color: var(--primary-color); }
-        .occasion-icon { font-size: 2rem; margin-bottom: 0.5rem; }
-        .occasion-name { font-size: 0.9rem; font-weight: 600; }
-        .trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 1.5rem; }
-        .trust-item { text-align: center; padding: 1.5rem; background: white; border-radius: 12px; border: 1px solid var(--border-color); }
-        .trust-icon { font-size: 2rem; margin-bottom: 0.5rem; color: var(--primary-color); }
-        .trust-title { font-weight: 600; margin-bottom: 0.25rem; }
-        .trust-desc { font-size: 0.85rem; color: var(--text-light); }
-        .sell-cta { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); color: white; border-radius: 16px; padding: 3rem; text-align: center; margin-top: 3rem; }
-        .sell-cta h2 { color: white; margin-bottom: 0.5rem; }
-        .sell-cta p { color: rgba(255,255,255,0.85); margin-bottom: 1.5rem; }
-        .sell-cta .btn { background: white; color: var(--primary-color); }
-        .sell-cta .btn:hover { background: rgba(255,255,255,0.9); }
-        @media (max-width: 768px) {
-            .mkt-filters { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 0.5rem; }
-            .trust-grid { grid-template-columns: repeat(2, 1fr); }
+        .occasion-icon { font-size: 1.75rem; margin-bottom: 0.35rem; }
+        .occasion-name { font-size: 0.85rem; font-weight: 500; }
+
+        /* Recently Viewed */
+        .recent-scroll { display: flex; gap: 1rem; overflow-x: auto; padding: 1rem 0; scrollbar-width: thin; }
+        .recent-card { min-width: 150px; flex-shrink: 0; text-decoration: none; color: inherit; }
+        .recent-card img { width: 150px; height: 150px; object-fit: cover; border-radius: 10px; }
+        .recent-card-name { font-size: 0.8rem; font-weight: 500; margin-top: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+
+        /* Empty State */
+        .shop-empty { text-align: center; padding: 4rem 2rem; grid-column: 1/-1; }
+        .shop-empty i { font-size: 4rem; color: var(--text-light); margin-bottom: 1rem; }
+        .shop-empty h3 { margin-bottom: 0.5rem; }
+        .shop-empty p { color: var(--text-light); margin-bottom: 1.5rem; }
+
+        /* Pagination */
+        .shop-pagination { display: flex; justify-content: center; align-items: center; gap: 0.5rem; padding: 2rem 0; }
+        .page-btn { padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); background: white; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+        .page-btn:hover, .page-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+
+        /* Trust */
+        .trust-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; padding: 2rem 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); margin: 2rem 0; }
+        .trust-item { text-align: center; }
+        .trust-item i { font-size: 1.5rem; color: var(--primary-color); margin-bottom: 0.35rem; }
+        .trust-item h5 { font-size: 0.85rem; margin-bottom: 0.15rem; }
+        .trust-item p { font-size: 0.78rem; color: var(--text-light); }
+
+        /* Mobile */
+        .mobile-filter-btn { display: none; padding: 0.5rem 1rem; border: 1px solid var(--border-color); background: white; border-radius: 8px; font-size: 0.85rem; cursor: pointer; }
+        @media (max-width: 900px) {
+            .shop-hero-inner { grid-template-columns: 1fr; }
+            .shop-hero-img { display: none; }
+            .shop-layout { grid-template-columns: 1fr; }
+            .shop-sidebar { display: none; position: fixed; top: 0; left: 0; width: 300px; height: 100vh; z-index: 1000; background: white; padding: 1rem; overflow-y: auto; box-shadow: 4px 0 20px rgba(0,0,0,0.15); }
+            .shop-sidebar.open { display: block; }
+            .mobile-filter-btn { display: block; }
+            .collections-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .shop-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .shop-card-img { height: 160px; }
+            .shop-card-body { padding: 0.75rem; }
         }
     </style>
 </head>
@@ -58,189 +148,205 @@
     <div id="header-container"></div>
 
     <!-- ===== HERO ===== -->
-    <section class="mkt-hero">
+    <section class="shop-hero">
         <div class="container">
-            <div class="reveal-up">
-                <h1 class="mkt-hero-title">Fresh Flowers for Every Occasion</h1>
-                <p class="mkt-hero-sub">Discover bouquets, potted plants, rare flowers, and trusted local florists</p>
-
-                <div class="mkt-search-wrap">
-                    <i class="bi bi-search mkt-search-icon"></i>
-                    <input type="search" id="heroSearch" class="mkt-search-input" placeholder="Search roses, bouquets, orchids...">
-                    <button class="btn btn-primary mkt-search-btn">Search</button>
+            <div class="shop-hero-inner reveal-up">
+                <div>
+                    <h1>Find the Perfect Flowers for Every Occasion</h1>
+                    <p>Browse fresh flowers, bouquets, potted plants, and floral arrangements from trusted florists and growers.</p>
+                    <div class="shop-search-wrap">
+                        <i class="bi bi-search shop-search-icon"></i>
+                        <input type="search" id="heroSearch" class="shop-search-input" placeholder="Search flowers, bouquets, florists...">
+                        <button class="btn btn-primary shop-search-btn">Search</button>
+                    </div>
+                    <div class="shop-quick-btns">
+                        <a href="marketplace?category=roses" class="shop-quick-btn">Roses</a>
+                        <a href="marketplace?category=bouquets" class="shop-quick-btn">Bouquets</a>
+                        <a href="marketplace?category=plants" class="shop-quick-btn">Indoor Plants</a>
+                        <a href="marketplace?occasion=wedding" class="shop-quick-btn">Wedding Flowers</a>
+                    </div>
                 </div>
-
-                <div class="mkt-cat-pills" id="catPills">
-                    <a href="category-listing.html?cat=bouquets" class="mkt-cat-pill" data-cat="bouquets">Bouquets</a>
-                    <a href="category-listing.html?cat=roses" class="mkt-cat-pill" data-cat="roses">Roses</a>
-                    <a href="category-listing.html?cat=orchids" class="mkt-cat-pill" data-cat="orchids">Orchids</a>
-                    <a href="category-listing.html?cat=wildflowers" class="mkt-cat-pill" data-cat="wildflowers">Wildflowers</a>
-                    <a href="category-listing.html?cat=succulents" class="mkt-cat-pill" data-cat="succulents">Succulents</a>
-                    <a href="category-listing.html?cat=plants" class="mkt-cat-pill" data-cat="plants">Indoor Plants</a>
+                <div class="shop-hero-img">
+                    <img src="https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=80&w=800&auto=format&fit=crop" alt="Fresh flowers">
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== FILTERS ===== -->
-    <div class="mkt-filter-bar" id="filterBar">
+    <!-- ===== MAIN CONTENT ===== -->
+    <section class="section-padding" style="padding-top:1.5rem;">
         <div class="container">
-            <div class="mkt-filters" id="filtersRow">
-                <select id="categoryFilter" class="form-select mkt-filter-select" aria-label="Category">
-                    <option value="all">All Categories</option>
-                    <option value="roses">Roses</option>
-                    <option value="bouquets">Bouquets</option>
-                    <option value="orchids">Orchids</option>
-                    <option value="succulents">Succulents</option>
-                    <option value="wildflowers">Wildflowers</option>
-                    <option value="plants">Indoor Plants</option>
-                </select>
-                <select id="occasionFilter" class="form-select mkt-filter-select" aria-label="Occasion">
-                    <option value="all">Any Occasion</option>
-                    <option value="romance">Romance</option>
-                    <option value="wedding">Wedding</option>
-                    <option value="birthday">Birthday</option>
-                    <option value="graduation">Graduation</option>
-                    <option value="sympathy">Sympathy</option>
-                    <option value="corporate">Corporate</option>
-                </select>
-                <select id="colorFilter" class="form-select mkt-filter-select" aria-label="Color">
-                    <option value="all">Any Color</option>
-                    <option value="red">Red</option>
-                    <option value="pink">Pink</option>
-                    <option value="white">White</option>
-                    <option value="yellow">Yellow</option>
-                    <option value="purple">Purple</option>
-                    <option value="green">Green</option>
-                    <option value="multi">Multi</option>
-                </select>
-                <select id="priceFilter" class="form-select mkt-filter-select" aria-label="Price">
-                    <option value="all">Any Price</option>
-                    <option value="0-50">Under GHS 50</option>
-                    <option value="50-100">GHS 50 — 100</option>
-                    <option value="100-200">GHS 100 — 200</option>
-                    <option value="200+">GHS 200+</option>
-                </select>
-                <select id="typeFilter" class="form-select mkt-filter-select" aria-label="Type">
-                    <option value="all">All Types</option>
-                    <option value="fresh">Fresh Flowers</option>
-                    <option value="potted">Potted Plants</option>
-                    <option value="dried">Dried / Artificial</option>
-                </select>
-                <select id="sortFilter" class="form-select mkt-filter-select" aria-label="Sort by">
-                    <option value="newest">Newest</option>
-                    <option value="price-asc">Price: Low to High</option>
-                    <option value="price-desc">Price: High to Low</option>
-                    <option value="rating">Top Rated</option>
-                </select>
-                <button class="btn btn-outline mkt-clear-btn" id="clearFiltersBtn">Clear</button>
+            <div class="shop-layout">
+
+                <!-- Sidebar Filters -->
+                <aside class="shop-sidebar" id="filterSidebar">
+                    <div class="filter-group">
+                        <h4><i class="bi bi-grid"></i> Categories</h4>
+                        <label class="filter-option"><input type="checkbox" name="cat" value="bouquets"> Bouquets</label>
+                        <label class="filter-option"><input type="checkbox" name="cat" value="roses"> Roses</label>
+                        <label class="filter-option"><input type="checkbox" name="cat" value="tulips"> Tulips</label>
+                        <label class="filter-option"><input type="checkbox" name="cat" value="orchids"> Orchids</label>
+                        <label class="filter-option"><input type="checkbox" name="cat" value="lilies"> Lilies</label>
+                        <label class="filter-option"><input type="checkbox" name="cat" value="sunflowers"> Sunflowers</label>
+                        <label class="filter-option"><input type="checkbox" name="cat" value="plants"> Indoor Plants</label>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4><i class="bi bi-calendar-event"></i> Occasion</h4>
+                        <label class="filter-option"><input type="checkbox" name="occasion" value="birthday"> Birthday</label>
+                        <label class="filter-option"><input type="checkbox" name="occasion" value="wedding"> Wedding</label>
+                        <label class="filter-option"><input type="checkbox" name="occasion" value="anniversary"> Anniversary</label>
+                        <label class="filter-option"><input type="checkbox" name="occasion" value="sympathy"> Sympathy</label>
+                        <label class="filter-option"><input type="checkbox" name="occasion" value="graduation"> Graduation</label>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4><i class="bi bi-currency-dollar"></i> Price</h4>
+                        <div class="price-range">
+                            <input type="number" id="priceMin" placeholder="Min" min="0">
+                            <span>—</span>
+                            <input type="number" id="priceMax" placeholder="Max" min="0">
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4><i class="bi bi-palette"></i> Color</h4>
+                        <div class="color-options">
+                            <div class="color-circle" style="background:#ef4444;" data-color="red" title="Red"></div>
+                            <div class="color-circle" style="background:#f59e0b;" data-color="yellow" title="Yellow"></div>
+                            <div class="color-circle" style="background:#f8f9fa; border-color:#ccc;" data-color="white" title="White"></div>
+                            <div class="color-circle" style="background:#8b5cf6;" data-color="purple" title="Purple"></div>
+                            <div class="color-circle" style="background:#ec4899;" data-color="pink" title="Pink"></div>
+                            <div class="color-circle" style="background:#f97316;" data-color="orange" title="Orange"></div>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4><i class="bi bi-flower1"></i> Freshness</h4>
+                        <label class="filter-option"><input type="checkbox" name="type" value="fresh"> Fresh Cut</label>
+                        <label class="filter-option"><input type="checkbox" name="type" value="potted"> Potted</label>
+                        <label class="filter-option"><input type="checkbox" name="type" value="artificial"> Artificial</label>
+                        <label class="filter-option"><input type="checkbox" name="type" value="dried"> Dried</label>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4><i class="bi bi-star"></i> Rating</h4>
+                        <div class="rating-filter" id="ratingFilter">
+                            <i class="bi bi-star-fill rating-star" data-rating="5"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="4"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="3"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="2"></i>
+                            <i class="bi bi-star-fill rating-star" data-rating="1"></i>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4><i class="bi bi-truck"></i> Delivery</h4>
+                        <label class="filter-option"><input type="checkbox" name="delivery" value="sameday"> Same-Day Delivery</label>
+                        <label class="filter-option"><input type="checkbox" name="delivery" value="free"> Free Delivery</label>
+                        <label class="filter-option"><input type="checkbox" name="delivery" value="pickup"> Pickup Available</label>
+                    </div>
+
+                    <button class="btn btn-primary w-100" onclick="applySidebarFilters()">Apply Filters</button>
+                    <button class="btn btn-outline w-100" style="margin-top:0.5rem;" onclick="clearAllFilters()">Clear All</button>
+                </aside>
+
+                <!-- Main Content -->
+                <div>
+                    <!-- Toolbar -->
+                    <div class="shop-toolbar">
+                        <div style="display:flex;align-items:center;gap:1rem;">
+                            <button class="mobile-filter-btn" onclick="toggleSidebar()"><i class="bi bi-funnel"></i> Filters</button>
+                            <span class="shop-count" id="productCount">Loading products...</span>
+                        </div>
+                        <div class="shop-actions">
+                            <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+                                <option value="newest">Newest</option>
+                                <option value="popular">Most Popular</option>
+                                <option value="rating">Best Rated</option>
+                                <option value="price-asc">Price: Low to High</option>
+                                <option value="price-desc">Price: High to Low</option>
+                            </select>
+                            <div class="view-toggle">
+                                <button class="view-btn active" data-view="grid" onclick="setView('grid')"><i class="bi bi-grid-3x3-gap"></i></button>
+                                <button class="view-btn" data-view="list" onclick="setView('list')"><i class="bi bi-list-ul"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Grid -->
+                    <div class="shop-grid" id="productGrid"></div>
+
+                    <!-- Pagination -->
+                    <div class="shop-pagination" id="pagination"></div>
+                </div>
             </div>
-            <div class="mkt-active-filters" id="activeFilters"></div>
+        </div>
+    </section>
+
+    <!-- ===== TRUST STRIP ===== -->
+    <div class="container">
+        <div class="trust-strip">
+            <div class="trust-item"><i class="bi bi-patch-check-fill"></i><h5>Verified Sellers</h5><p>Every seller is verified</p></div>
+            <div class="trust-item"><i class="bi bi-flower1"></i><h5>Fresh Flowers</h5><p>Farm-fresh guarantee</p></div>
+            <div class="trust-item"><i class="bi bi-shield-lock"></i><h5>Secure Payments</h5><p>Protected checkout</p></div>
+            <div class="trust-item"><i class="bi bi-truck"></i><h5>Fast Delivery</h5><p>Same-day available</p></div>
         </div>
     </div>
 
-    <!-- ===== SHOP BY OCCASION ===== -->
-    <section class="section-padding" style="padding-bottom:2rem;">
+    <!-- ===== FEATURED COLLECTIONS ===== -->
+    <section class="section-padding" style="padding-top:0;">
         <div class="container">
-            <div class="text-center reveal-up">
-                <span class="subtitle">SHOP BY OCCASION</span>
-                <h2>Find the Perfect Flowers</h2>
+            <h2 style="margin-bottom:1rem;">Featured Collections</h2>
+            <div class="collections-grid">
+                <div class="collection-card" onclick="location.href='marketplace?occasion=wedding'">
+                    <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=600&auto=format&fit=crop" alt="Wedding Collection" loading="lazy">
+                    <div class="collection-overlay"><h3>Wedding Collection</h3></div>
+                </div>
+                <div class="collection-card" onclick="location.href='marketplace?occasion=birthday'">
+                    <img src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=600&auto=format&fit=crop" alt="Birthday Collection" loading="lazy">
+                    <div class="collection-overlay"><h3>Birthday Collection</h3></div>
+                </div>
+                <div class="collection-card" onclick="location.href='marketplace?category=luxury'">
+                    <img src="https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=600&auto=format&fit=crop" alt="Luxury Collection" loading="lazy">
+                    <div class="collection-overlay"><h3>Luxury Collection</h3></div>
+                </div>
+                <div class="collection-card" onclick="location.href='marketplace?sort=newest'">
+                    <img src="https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=600&auto=format&fit=crop" alt="Seasonal Collection" loading="lazy">
+                    <div class="collection-overlay"><h3>Seasonal Collection</h3></div>
+                </div>
             </div>
-            <div class="occasion-grid reveal-up">
-                <a href="marketplace?occasion=wedding" class="occasion-card"><div class="occasion-icon">💍</div><div class="occasion-name">Weddings</div></a>
-                <a href="marketplace?occasion=birthday" class="occasion-card"><div class="occasion-icon">🎂</div><div class="occasion-name">Birthdays</div></a>
-                <a href="marketplace?occasion=romance" class="occasion-card"><div class="occasion-icon">❤️</div><div class="occasion-name">Romance</div></a>
-                <a href="marketplace?occasion=graduation" class="occasion-card"><div class="occasion-icon">🎓</div><div class="occasion-name">Graduation</div></a>
+        </div>
+    </section>
+
+    <!-- ===== FEATURED SELLERS ===== -->
+    <section class="section-padding bg-light" style="padding-top:2rem;padding-bottom:2rem;">
+        <div class="container">
+            <h2 style="margin-bottom:1rem;">Featured Sellers</h2>
+            <div class="sellers-scroll" id="sellersScroll"></div>
+        </div>
+    </section>
+
+    <!-- ===== SHOP BY OCCASION ===== -->
+    <section class="section-padding" style="padding-top:2rem;">
+        <div class="container">
+            <h2 style="margin-bottom:1rem;">Shop by Occasion</h2>
+            <div class="occasion-grid">
+                <a href="marketplace?occasion=wedding" class="occasion-card"><div class="occasion-icon">💍</div><div class="occasion-name">Wedding</div></a>
+                <a href="marketplace?occasion=birthday" class="occasion-card"><div class="occasion-icon">🎂</div><div class="occasion-name">Birthday</div></a>
+                <a href="marketplace?occasion=anniversary" class="occasion-card"><div class="occasion-icon">❤️</div><div class="occasion-name">Anniversary</div></a>
                 <a href="marketplace?occasion=sympathy" class="occasion-card"><div class="occasion-icon">🕊️</div><div class="occasion-name">Sympathy</div></a>
+                <a href="marketplace?occasion=graduation" class="occasion-card"><div class="occasion-icon">🎓</div><div class="occasion-name">Graduation</div></a>
                 <a href="marketplace?occasion=corporate" class="occasion-card"><div class="occasion-icon">🏢</div><div class="occasion-name">Corporate</div></a>
             </div>
         </div>
     </section>
 
-    <!-- ===== FEATURED ===== -->
-    <section id="featured-section" class="section-padding">
+    <!-- ===== RECENTLY VIEWED ===== -->
+    <section class="section-padding bg-light" style="padding-top:2rem;padding-bottom:2rem;" id="recentSection" style="display:none;">
         <div class="container">
-            <div class="flex-between reveal-up">
-                <div>
-                    <span class="subtitle">HAND-PICKED</span>
-                    <h2>Featured Products</h2>
-                </div>
-                <button class="btn btn-outline" onclick="document.getElementById('all-products').scrollIntoView({behavior:'smooth'})">View All</button>
-            </div>
-            <div class="product-grid reveal-up" id="featuredGrid"></div>
-        </div>
-    </section>
-
-    <!-- ===== BEST SELLERS ===== -->
-    <section id="bestsellers-section" class="section-padding bg-light">
-        <div class="container">
-            <div class="flex-between reveal-up">
-                <div>
-                    <span class="subtitle">TOP RATED</span>
-                    <h2>Best Sellers</h2>
-                </div>
-                <button class="btn btn-outline" onclick="document.getElementById('all-products').scrollIntoView({behavior:'smooth'})">View All</button>
-            </div>
-            <div class="product-grid reveal-up" id="bestsellerGrid"></div>
-        </div>
-    </section>
-
-    <!-- ===== NEW ARRIVALS ===== -->
-    <section id="newarrivals-section" class="section-padding">
-        <div class="container">
-            <div class="flex-between reveal-up">
-                <div>
-                    <span class="subtitle">JUST ADDED</span>
-                    <h2>New Arrivals</h2>
-                </div>
-                <button class="btn btn-outline" onclick="document.getElementById('all-products').scrollIntoView({behavior:'smooth'})">View All</button>
-            </div>
-            <div class="product-grid reveal-up" id="newArrivalGrid"></div>
-        </div>
-    </section>
-
-    <!-- ===== ALL PRODUCTS ===== -->
-    <section id="all-products" class="section-padding bg-light">
-        <div class="container">
-            <div class="flex-between reveal-up">
-                <div>
-                    <span class="subtitle">ALL PRODUCTS</span>
-                    <h2>Browse Everything</h2>
-                </div>
-                <p class="section-subtitle" id="productCount" style="margin:0;align-self:flex-end;"></p>
-            </div>
-            <div class="product-grid reveal-up" id="productGrid" style="margin-top:1.5rem;"></div>
-            <div class="text-center mt-4 reveal-up">
-                <button class="btn btn-outline" id="loadMoreBtn">Load More</button>
-                <span id="pageInfo" style="margin-left:1rem;color:var(--text-light);font-size:0.875rem;"></span>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== TRUST ===== -->
-    <section class="section-padding">
-        <div class="container">
-            <div class="text-center reveal-up">
-                <span class="subtitle">WHY BUY HERE</span>
-                <h2>Trusted by Thousands</h2>
-            </div>
-            <div class="trust-grid reveal-up">
-                <div class="trust-item"><div class="trust-icon"><i class="bi bi-patch-check-fill"></i></div><div class="trust-title">Verified Sellers</div><div class="trust-desc">Every seller is verified for quality</div></div>
-                <div class="trust-item"><div class="trust-icon"><i class="bi bi-flower1"></i></div><div class="trust-title">Fresh Flowers</div><div class="trust-desc">Farm-fresh guarantee on all orders</div></div>
-                <div class="trust-item"><div class="trust-icon"><i class="bi bi-shield-lock"></i></div><div class="trust-title">Secure Payments</div><div class="trust-desc">Your payment info is always protected</div></div>
-                <div class="trust-item"><div class="trust-icon"><i class="bi bi-truck"></i></div><div class="trust-title">Fast Delivery</div><div class="trust-desc">Same-day delivery available</div></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== SELL CTA ===== -->
-    <section class="section-padding" style="padding-top:0;">
-        <div class="container">
-            <div class="sell-cta reveal-up">
-                <h2>Start Selling on Flower Ecosystem</h2>
-                <p>Reach thousands of customers looking for flowers every day. Join our community of sellers.</p>
-                <a href="sell.html" class="btn btn-lg">Become a Seller</a>
-            </div>
+            <h2 style="margin-bottom:1rem;">Recently Viewed</h2>
+            <div class="recent-scroll" id="recentScroll"></div>
         </div>
     </section>
 
@@ -255,6 +361,278 @@
     <script src="js/shared/cart.js?v=3.0"></script>
     <script src="js/shared/ui.js?v=2.0"></script>
     <script src="js/shared/empty-state.js"></script>
-    <script src="js/marketplace.js"></script>
+    <script>
+        // ─── State ─────────────────────────────────────────────────────
+        let allProducts = [];
+        let filteredProducts = [];
+        let currentPage = 1;
+        const perPage = 12;
+        let currentView = 'grid';
+        let selectedFilters = { categories: [], occasions: [], colors: [], types: [], delivery: [], minPrice: null, maxPrice: null, rating: 0, search: '' };
+
+        // ─── Init ──────────────────────────────────────────────────────
+        async function initShop() {
+            try {
+                const data = await fetch('/api/products?limit=100').then(r => r.json());
+                allProducts = data.products || data || [];
+            } catch { allProducts = []; }
+            filteredProducts = [...allProducts];
+            renderProducts();
+            loadSellers();
+            loadRecentlyViewed();
+            loadOccasionFromURL();
+        }
+
+        function loadOccasionFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const occasion = params.get('occasion');
+            const category = params.get('category');
+            const search = params.get('q') || params.get('search');
+            if (occasion) {
+                selectedFilters.occasions = [occasion];
+                document.querySelectorAll('input[name="occasion"]').forEach(cb => { if (cb.value === occasion) cb.checked = true; });
+            }
+            if (category) {
+                selectedFilters.categories = [category];
+                document.querySelectorAll('input[name="cat"]').forEach(cb => { if (cb.value === category) cb.checked = true; });
+            }
+            if (search) {
+                selectedFilters.search = search;
+                document.getElementById('heroSearch').value = search;
+            }
+            if (occasion || category || search) applyFilters();
+        }
+
+        // ─── Filters ───────────────────────────────────────────────────
+        function applySidebarFilters() {
+            selectedFilters.categories = [...document.querySelectorAll('input[name="cat"]:checked')].map(c => c.value);
+            selectedFilters.occasions = [...document.querySelectorAll('input[name="occasion"]:checked')].map(c => c.value);
+            selectedFilters.types = [...document.querySelectorAll('input[name="type"]:checked')].map(c => c.value);
+            selectedFilters.delivery = [...document.querySelectorAll('input[name="delivery"]:checked')].map(c => c.value);
+            selectedFilters.minPrice = document.getElementById('priceMin')?.value ? Number(document.getElementById('priceMin').value) : null;
+            selectedFilters.maxPrice = document.getElementById('priceMax')?.value ? Number(document.getElementById('priceMax').value) : null;
+            const activeColor = document.querySelector('.color-circle.active');
+            selectedFilters.colors = activeColor ? [activeColor.dataset.color] : [];
+            applyFilters();
+            toggleSidebar(false);
+        }
+
+        function applyFilters() {
+            const q = selectedFilters.search.toLowerCase();
+            const sort = document.getElementById('sortSelect')?.value || 'newest';
+            filteredProducts = allProducts.filter(p => {
+                if (q && !`${p.name} ${p.description || ''} ${p.seller || ''} ${p.category || ''}`.toLowerCase().includes(q)) return false;
+                if (selectedFilters.categories.length && !selectedFilters.categories.includes(p.category)) return false;
+                if (selectedFilters.occasions.length && !selectedFilters.occasions.includes(p.occasion)) return false;
+                if (selectedFilters.colors.length && !selectedFilters.colors.includes(p.color)) return false;
+                if (selectedFilters.types.length) {
+                    const type = (p.flower_cond || '').toLowerCase();
+                    if (selectedFilters.types.includes('fresh') && !['fresh cut', 'natural'].includes(type)) return false;
+                    if (selectedFilters.types.includes('potted') && !type.includes('potted')) return false;
+                    if (selectedFilters.types.includes('artificial') && !type.includes('artificial')) return false;
+                    if (selectedFilters.types.includes('dried') && !type.includes('dried')) return false;
+                }
+                if (selectedFilters.minPrice !== null && p.price < selectedFilters.minPrice) return false;
+                if (selectedFilters.maxPrice !== null && p.price > selectedFilters.maxPrice) return false;
+                if (selectedFilters.rating && (p.rating || 0) < selectedFilters.rating) return false;
+                return true;
+            });
+            if (sort === 'price-asc') filteredProducts.sort((a, b) => a.price - b.price);
+            else if (sort === 'price-desc') filteredProducts.sort((a, b) => b.price - a.price);
+            else if (sort === 'rating') filteredProducts.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            else if (sort === 'popular') filteredProducts.sort((a, b) => (b.reviews || 0) - (a.reviews || 0));
+            else filteredProducts.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+
+            currentPage = 1;
+            renderProducts();
+        }
+
+        function clearAllFilters() {
+            selectedFilters = { categories: [], occasions: [], colors: [], types: [], delivery: [], minPrice: null, maxPrice: null, rating: 0, search: '' };
+            document.querySelectorAll('.shop-sidebar input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('active'));
+            document.getElementById('priceMin').value = '';
+            document.getElementById('priceMax').value = '';
+            document.getElementById('heroSearch').value = '';
+            document.querySelectorAll('.rating-star').forEach(s => s.classList.remove('active'));
+            applyFilters();
+        }
+
+        // ─── Render ────────────────────────────────────────────────────
+        function renderProducts() {
+            const grid = document.getElementById('productGrid');
+            const count = document.getElementById('productCount');
+            const start = (currentPage - 1) * perPage;
+            const pageItems = filteredProducts.slice(start, start + perPage);
+            count.textContent = `Showing ${start + 1}–${Math.min(start + perPage, filteredProducts.length)} of ${filteredProducts.length} flowers`;
+            if (!pageItems.length) {
+                grid.innerHTML = '<div class="shop-empty"><i class="bi bi-flower1"></i><h3>No flowers match your search</h3><p>Try adjusting your filters or explore another category.</p><button class="btn btn-primary" onclick="clearAllFilters()">Clear Filters</button></div>';
+            } else {
+                grid.className = currentView === 'grid' ? 'shop-grid' : 'shop-grid';
+                grid.innerHTML = pageItems.map(p => {
+                    const img = p.image || (p.images && p.images[0]) || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220"><rect fill="%23fce7f0" width="300" height="220"/><text x="150" y="120" text-anchor="middle" fill="%23d8447c" font-size="48">✿</text></svg>';
+                    return `
+                    <div class="shop-card" onclick="viewProduct('${p.id}')">
+                        <div class="shop-card-img">
+                            <img src="${img}" alt="${p.name}" loading="lazy">
+                            ${p.badge ? `<div class="shop-card-badge">${p.badge}</div>` : ''}
+                            <button class="shop-card-wishlist" onclick="event.stopPropagation()"><i class="bi bi-heart"></i></button>
+                            <div class="shop-card-actions">
+                                <button class="btn-quick-view" onclick="event.stopPropagation();viewProduct('${p.id}')"><i class="bi bi-eye"></i> View</button>
+                                <button class="btn-add-cart" onclick="event.stopPropagation();addToCart('${p.id}','${p.name.replace(/'/g,"\\'")}',${p.price},'${img}')"><i class="bi bi-cart-plus"></i> Add</button>
+                            </div>
+                        </div>
+                        <div class="shop-card-body">
+                            <div class="shop-card-seller">${p.seller || 'Seller'}</div>
+                            <div class="shop-card-name">${p.name}</div>
+                            <div class="shop-card-rating">${renderStars(p.rating || 0)} <span>(${p.reviews || 0})</span></div>
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <div class="shop-card-price">${p.currency || 'GHS'} ${Number(p.price).toFixed(2)}</div>
+                                ${p.fresh ? '<div class="shop-card-delivery"><i class="bi bi-lightning"></i> Fresh</div>' : ''}
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+            renderPagination();
+            saveRecentlyViewed();
+        }
+
+        function renderStars(rating) {
+            const full = Math.floor(rating);
+            const half = rating % 1 >= 0.5;
+            let html = '';
+            for (let i = 0; i < full; i++) html += '<i class="bi bi-star-fill"></i>';
+            if (half) html += '<i class="bi bi-star-half"></i>';
+            for (let i = full + (half ? 1 : 0); i < 5; i++) html += '<i class="bi bi-star"></i>';
+            return html;
+        }
+
+        function renderPagination() {
+            const el = document.getElementById('pagination');
+            const totalPages = Math.ceil(filteredProducts.length / perPage);
+            if (totalPages <= 1) { el.innerHTML = ''; return; }
+            let html = `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Prev</button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="page-btn${i === currentPage ? ' active' : ''}" onclick="goPage(${i})">${i}</button>`;
+            }
+            html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next &raquo;</button>`;
+            el.innerHTML = html;
+        }
+
+        function goPage(page) {
+            const totalPages = Math.ceil(filteredProducts.length / perPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderProducts();
+            document.getElementById('productGrid').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ─── Helpers ───────────────────────────────────────────────────
+        function viewProduct(id) { window.location.href = `product-detail.html?id=${id}`; }
+
+        function addToCart(id, name, price, image) {
+            let cart = JSON.parse(localStorage.getItem('flower-cart') || '[]');
+            const existing = cart.find(i => i.id === id);
+            if (existing) existing.qty = (existing.qty || 1) + 1;
+            else cart.push({ id, name, price, image, qty: 1 });
+            localStorage.setItem('flower-cart', JSON.stringify(cart));
+            if (typeof updateAllBadges === 'function') updateAllBadges();
+            alert('Added to cart!');
+        }
+
+        function toggleSidebar(open) {
+            const sidebar = document.getElementById('filterSidebar');
+            if (open === undefined) sidebar.classList.toggle('open');
+            else if (open) sidebar.classList.add('open');
+            else sidebar.classList.remove('open');
+        }
+
+        function setView(view) {
+            currentView = view;
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+            renderProducts();
+        }
+
+        // ─── Color Circles ─────────────────────────────────────────────
+        document.querySelectorAll('.color-circle').forEach(c => {
+            c.addEventListener('click', () => {
+                document.querySelectorAll('.color-circle').forEach(x => x.classList.remove('active'));
+                c.classList.toggle('active');
+            });
+        });
+
+        // ─── Rating Stars ──────────────────────────────────────────────
+        document.querySelectorAll('.rating-star').forEach(star => {
+            star.addEventListener('click', () => {
+                const rating = parseInt(star.dataset.rating);
+                selectedFilters.rating = selectedFilters.rating === rating ? 0 : rating;
+                document.querySelectorAll('.rating-star').forEach(s => {
+                    s.classList.toggle('active', parseInt(s.dataset.rating) <= selectedFilters.rating);
+                });
+            });
+        });
+
+        // ─── Search ────────────────────────────────────────────────────
+        document.getElementById('heroSearch')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                selectedFilters.search = e.target.value.trim();
+                applyFilters();
+            }
+        });
+        document.querySelector('.shop-search-btn')?.addEventListener('click', () => {
+            selectedFilters.search = document.getElementById('heroSearch').value.trim();
+            applyFilters();
+        });
+
+        // ─── Sellers ───────────────────────────────────────────────────
+        async function loadSellers() {
+            try {
+                const data = await fetch('/api/products/list/florists').then(r => r.json());
+                const sellers = data.florists || data || [];
+                const el = document.getElementById('sellersScroll');
+                if (!sellers.length) { el.innerHTML = '<p style="color:var(--text-light);">No sellers yet.</p>'; return; }
+                el.innerHTML = sellers.map(s => `
+                    <a href="florist-profile.html?id=${s.id}" class="seller-card" style="text-decoration:none;color:inherit;">
+                        <div class="seller-avatar">${(s.name || '?')[0]}</div>
+                        <div class="seller-name">${s.name}</div>
+                        <div class="seller-rating">${renderStars(s.rating || 4.5)} (${s.reviews || 0})</div>
+                        <div class="seller-products">${s.products || 0} products</div>
+                        <button class="btn btn-primary btn-sm w-100">Visit Store</button>
+                    </a>
+                `).join('');
+            } catch {}
+        }
+
+        // ─── Recently Viewed ───────────────────────────────────────────
+        function saveRecentlyViewed() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (!id) return;
+            const product = allProducts.find(p => p.id === id);
+            if (!product) return;
+            let recent = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+            recent = recent.filter(r => r.id !== id);
+            recent.unshift({ id: product.id, name: product.name, image: product.image });
+            recent = recent.slice(0, 6);
+            localStorage.setItem('recentlyViewed', JSON.stringify(recent));
+        }
+
+        function loadRecentlyViewed() {
+            const recent = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+            const section = document.getElementById('recentSection');
+            const scroll = document.getElementById('recentScroll');
+            if (!recent.length || !section) { section.style.display = 'none'; return; }
+            section.style.display = 'block';
+            scroll.innerHTML = recent.map(r => `
+                <a href="product-detail.html?id=${r.id}" class="recent-card">
+                    <img src="${r.image || ''}" alt="${r.name}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 150 150%22><rect fill=%22%23fce7f0%22 width=%22150%22 height=%22150%22/><text x=%2275%22 y=%2285%22 text-anchor=%22middle%22 fill=%22%23d8447c%22 font-size=%2236%22>✿</text></svg>'">
+                    <div class="recent-card-name">${r.name}</div>
+                </a>
+            `).join('');
+        }
+
+        initShop();
+    </script>
 </body>
 </html>
