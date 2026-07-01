@@ -19,7 +19,7 @@
         .pd-main{padding:2rem 0 4rem;}
         .pd-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;}
         .pd-gallery{position:sticky;top:100px;}
-        .pd-main-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.08);transition:opacity .3s;}
+        .pd-main-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.08);transition:opacity .3s;cursor:zoom-in;}
         .pd-thumbs{display:flex;gap:.6rem;margin-top:1rem;overflow-x:auto;padding-bottom:.25rem;}
         .pd-thumb{width:72px;height:72px;object-fit:cover;border-radius:10px;cursor:pointer;border:2px solid transparent;transition:all .25s;opacity:.6;flex-shrink:0;}
         .pd-thumb:hover{opacity:.85;}
@@ -37,6 +37,7 @@
         .pd-price .discount{font-size:.85rem;color:#e74c3c;font-weight:600;margin-left:.5rem;}
         .pd-stock{font-size:.85rem;color:#27ae60;margin-bottom:1.25rem;display:flex;align-items:center;gap:.35rem;}
         .pd-stock.out{color:#e74c3c;}
+        .pd-stock.low{color:#e67e22;}
         .pd-desc{font-size:.95rem;color:var(--text-light);line-height:1.75;margin-bottom:1.5rem;}
         .pd-features{list-style:none;padding:1.25rem 0;margin-bottom:1.5rem;border-top:1px solid var(--border-color);border-bottom:1px solid var(--border-color);}
         .pd-features li{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;font-size:.88rem;color:var(--text-main);}
@@ -57,8 +58,8 @@
         .pd-seller{background:var(--bg-light);border-radius:12px;padding:1.15rem 1.25rem;display:flex;align-items:center;gap:1rem;border:1px solid var(--border-color);transition:border-color .2s;}
         .pd-seller:hover{border-color:var(--primary-color);}
         .pd-seller-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--primary-color),#e84393);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
-        .pd-tabs{display:flex;gap:0;border-bottom:2px solid var(--border-color);margin-bottom:1.5rem;}
-        .pd-tab{padding:.75rem 1.5rem;border:none;background:none;cursor:pointer;font-size:.95rem;font-weight:500;color:var(--text-light);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;}
+        .pd-tabs{display:flex;gap:0;border-bottom:2px solid var(--border-color);margin-bottom:1.5rem;overflow-x:auto;}
+        .pd-tab{padding:.75rem 1.5rem;border:none;background:none;cursor:pointer;font-size:.95rem;font-weight:500;color:var(--text-light);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap;}
         .pd-tab:hover{color:var(--primary-color);}
         .pd-tab.active{color:var(--primary-color);border-bottom-color:var(--primary-color);}
         .pd-tab-panel{display:none;}
@@ -84,22 +85,50 @@
         .pd-shipping-item{display:flex;align-items:center;gap:.5rem;padding:.35rem 0;color:var(--text-main);}
         .pd-shipping-item i{color:var(--primary-color);width:20px;}
 
-        /* Image Lightbox */
+        /* Trust Badges */
+        .pd-trust{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2rem;padding-top:2rem;border-top:1px solid var(--border-color);}
+        .pd-trust-item{text-align:center;padding:.75rem;}
+        .pd-trust-item i{font-size:1.25rem;color:var(--primary-color);margin-bottom:.35rem;}
+        .pd-trust-item h5{font-size:.8rem;margin-bottom:.1rem;}
+        .pd-trust-item p{font-size:.72rem;color:var(--text-light);}
+
+        /* Specs Table */
+        .specs-table{width:100%;border-collapse:collapse;}
+        .specs-table tr{border-bottom:1px solid var(--border-light);}
+        .specs-table td{padding:.75rem 0;font-size:.9rem;}
+        .specs-table td:first-child{font-weight:500;color:var(--text-main);width:40%;}
+        .specs-table td:last-child{color:var(--text-light);}
+
+        /* Recently Viewed */
+        .recent-scroll{display:flex;gap:1rem;overflow-x:auto;padding:1rem 0;}
+        .recent-card{min-width:140px;flex-shrink:0;text-decoration:none;color:inherit;}
+        .recent-card img{width:140px;height:140px;object-fit:cover;border-radius:10px;}
+        .recent-card-name{font-size:.8rem;font-weight:500;margin-top:.5rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;}
+
+        /* Lightbox */
         .lightbox{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;flex-direction:column;}
         .lightbox.active{display:flex;}
-        .lightbox-img{max-width:90vw;max-height:80vh;object-fit:contain;border-radius:8px;cursor:zoom-out;transition:transform 0.3s;}
-        .lightbox-close{position:absolute;top:1rem;right:1.5rem;background:rgba(255,255,255,0.15);border:none;color:white;font-size:1.8rem;cursor:pointer;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background 0.2s;z-index:10;}
+        .lightbox-img{max-width:90vw;max-height:80vh;object-fit:contain;border-radius:8px;cursor:zoom-out;}
+        .lightbox-close{position:absolute;top:1rem;right:1.5rem;background:rgba(255,255,255,0.15);border:none;color:white;font-size:1.8rem;cursor:pointer;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
         .lightbox-close:hover{background:rgba(255,255,255,0.3);}
-        .lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.15);border:none;color:white;font-size:1.5rem;cursor:pointer;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background 0.2s;z-index:10;}
+        .lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.15);border:none;color:white;font-size:1.5rem;cursor:pointer;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
         .lightbox-nav:hover{background:rgba(255,255,255,0.3);}
         .lightbox-prev{left:1rem;}
         .lightbox-next{right:1rem;}
         .lightbox-counter{color:rgba(255,255,255,0.7);font-size:0.9rem;margin-top:1rem;}
-        .pd-main-img{cursor:zoom-in;}
+
+        /* Mobile Sticky Add to Cart */
+        .pd-mobile-cart{display:none;position:fixed;bottom:0;left:0;right:0;background:white;padding:.75rem 1rem;box-shadow:0 -2px 10px rgba(0,0,0,0.1);z-index:100;gap:.75rem;align-items:center;}
+        .pd-mobile-cart .pd-add-btn{flex:1;margin:0;}
+        .pd-mobile-cart .pd-mobile-price{font-size:1.1rem;font-weight:700;color:var(--primary-color);white-space:nowrap;}
+
         @media(max-width:900px){
             .pd-grid{grid-template-columns:1fr;gap:2rem;}
             .pd-gallery{position:static;}
             .pd-related-grid{grid-template-columns:repeat(2,1fr);}
+            .pd-trust{grid-template-columns:repeat(2,1fr);}
+            .pd-mobile-cart{display:flex;}
+            .pd-main{padding-bottom:80px;}
         }
         @media(max-width:480px){
             .pd-title{font-size:1.5rem;}
@@ -115,7 +144,7 @@
     <div class="pd-breadcrumb">
         <div class="container">
             <a href="index.html">Home</a> <span style="margin:0 .5rem;opacity:.5;">›</span>
-            <a href="shop.html">Shop</a> <span style="margin:0 .5rem;opacity:.5;">›</span>
+            <a href="marketplace.html">Market</a> <span style="margin:0 .5rem;opacity:.5;">›</span>
             <span id="pdBreadcrumb" style="color:var(--text-main);font-weight:500;"></span>
         </div>
     </div>
@@ -178,18 +207,30 @@
                     <div class="pd-shipping-item"><i class="bi bi-clock"></i> Estimated delivery: 1-3 business days</div>
                     <div class="pd-shipping-item"><i class="bi bi-shield-check"></i> Secure payment checkout</div>
                 </div>
+
+                <!-- Trust Badges -->
+                <div class="pd-trust">
+                    <div class="pd-trust-item"><i class="bi bi-patch-check"></i><h5>Verified Seller</h5><p>Trusted florist</p></div>
+                    <div class="pd-trust-item"><i class="bi bi-flower1"></i><h5>Fresh Guarantee</h5><p>5+ day freshness</p></div>
+                    <div class="pd-trust-item"><i class="bi bi-truck"></i><h5>Fast Delivery</h5><p>Same-day available</p></div>
+                    <div class="pd-trust-item"><i class="bi bi-shield-lock"></i><h5>Secure Pay</h5><p>Protected checkout</p></div>
+                </div>
             </div>
         </div>
 
-        <!-- Tabs: Description / Reviews / Shipping -->
+        <!-- Tabs -->
         <div class="container" style="margin-top:3rem;">
             <div class="pd-tabs">
                 <button class="pd-tab active" data-tab="description">Description</button>
+                <button class="pd-tab" data-tab="specs">Specifications</button>
                 <button class="pd-tab" data-tab="reviews">Reviews (<span id="pdReviewCount">0</span>)</button>
                 <button class="pd-tab" data-tab="shipping">Shipping & Returns</button>
             </div>
             <div class="pd-tab-panel active" id="tab-description">
                 <div id="pdFullDesc" style="font-size:.95rem;color:var(--text-light);line-height:1.8;"></div>
+            </div>
+            <div class="pd-tab-panel" id="tab-specs">
+                <table class="specs-table" id="pdSpecs"></table>
             </div>
             <div class="pd-tab-panel" id="tab-reviews">
                 <div id="pdReviewList"></div>
@@ -213,7 +254,21 @@
                 <div class="pd-related-grid" id="pdRelated"></div>
             </div>
         </div>
+
+        <!-- Recently Viewed -->
+        <div class="container" id="recentSection" style="display:none;">
+            <div class="pd-related">
+                <h2>Recently Viewed</h2>
+                <div class="recent-scroll" id="recentScroll"></div>
+            </div>
+        </div>
     </main>
+
+    <!-- Mobile Sticky Cart -->
+    <div class="pd-mobile-cart" id="mobileCart">
+        <div class="pd-mobile-price" id="mobilePrice"></div>
+        <button class="pd-add-btn" onclick="document.getElementById('pdAddBtn').click()"><i class="bi bi-cart-plus"></i> Add to Cart</button>
+    </div>
 
     <div id="footer-container"></div>
 
@@ -241,11 +296,9 @@
         function openLightbox(images, index) {
             lightboxImages = images;
             lightboxIndex = index;
-            const lightbox = document.getElementById('lightbox');
-            const img = document.getElementById('lightboxImg');
-            img.src = images[index];
+            document.getElementById('lightboxImg').src = images[index];
             updateLightboxCounter();
-            lightbox.classList.add('active');
+            document.getElementById('lightbox').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
@@ -265,8 +318,7 @@
         }
 
         document.addEventListener('keydown', (e) => {
-            const lightbox = document.getElementById('lightbox');
-            if (!lightbox.classList.contains('active')) return;
+            if (!document.getElementById('lightbox').classList.contains('active')) return;
             if (e.key === 'Escape') closeLightbox();
             if (e.key === 'ArrowLeft') lightboxNav(-1);
             if (e.key === 'ArrowRight') lightboxNav(1);
@@ -337,10 +389,11 @@
             });
         });
 
+        // ─── Load Product ──────────────────────────────────────────────
         (async () => {
             const params = new URLSearchParams(window.location.search);
             const id = params.get('id');
-            if (!id) { window.location.href = 'shop.html'; return; }
+            if (!id) { window.location.href = 'marketplace.html'; return; }
 
             let p;
             try {
@@ -363,6 +416,7 @@
             const videoUrl = p.video_url || p.videoUrl || null;
             const images = (p.images && p.images.length) ? p.images : (p.image ? [p.image] : []);
             const discount = oldPrice > price ? Math.round((1 - price / oldPrice) * 100) : 0;
+            const currency = p.currency || 'GHS';
 
             document.title = `${p.name} – Flower Ecosystem`;
             document.getElementById('pdBreadcrumb').textContent = p.name;
@@ -393,8 +447,8 @@
 
             // Info
             document.getElementById('pdTitle').textContent = p.name;
-            const currency = p.currency || 'GHS';
             document.getElementById('pdPrice').innerHTML = `${currency} ${price.toFixed(2)}${oldPrice > price ? `<span class="old">${currency} ${oldPrice.toFixed(2)}</span><span class="discount">-${discount}%</span>` : ''}`;
+            document.getElementById('mobilePrice').textContent = `${currency} ${price.toFixed(2)}`;
             document.getElementById('pdDesc').textContent = p.description || '';
             document.getElementById('pdFullDesc').textContent = p.description || 'No detailed description available.';
             document.getElementById('pdCategory').textContent = categoryName;
@@ -403,9 +457,8 @@
 
             // Badge
             if (p.badge) {
-                const badgeEl = document.getElementById('pdBadge');
-                badgeEl.textContent = p.badge;
-                badgeEl.style.display = 'inline';
+                document.getElementById('pdBadge').textContent = p.badge;
+                document.getElementById('pdBadge').style.display = 'inline';
             }
 
             // Rating
@@ -414,8 +467,7 @@
             }
 
             // Reviews
-            const reviews = p.reviewList || p.reviews || [];
-            renderReviews(reviews);
+            renderReviews(p.reviewList || p.reviews || []);
 
             // Stock
             const stockEl = document.getElementById('pdStock');
@@ -423,11 +475,29 @@
                 stockEl.innerHTML = '<i class="bi bi-x-circle-fill"></i> Out of Stock';
                 stockEl.classList.add('out');
                 document.getElementById('pdAddBtn').disabled = true;
+            } else if (p.stock_quantity <= 5) {
+                stockEl.innerHTML = `<i class="bi bi-exclamation-circle-fill"></i> Only ${p.stock_quantity} left — order soon!`;
+                stockEl.classList.add('low');
             } else if (p.fresh) {
                 stockEl.innerHTML = `<i class="bi bi-check-circle-fill"></i> Fresh — In Stock (${p.stock_quantity} available)`;
             } else {
                 stockEl.innerHTML = `<i class="bi bi-check-circle-fill"></i> In Stock (${p.stock_quantity} available)`;
             }
+
+            // Specifications
+            const specs = [
+                { label: 'Category', value: categoryName },
+                { label: 'Color', value: p.color || 'Assorted' },
+                { label: 'Condition', value: p.flower_cond || 'Fresh Cut' },
+                { label: 'Occasion', value: p.occasion || 'Any' },
+                { label: 'Shelf Life', value: (p.shelf_life_days || 7) + ' days' },
+                { label: 'Size', value: p.size || 'Standard' },
+                { label: 'Fragrance', value: p.fragrance || 'Natural' },
+                { label: 'Origin', value: p.origin || 'Local' }
+            ].filter(s => s.value && s.value !== 'null' && s.value !== 'undefined');
+            document.getElementById('pdSpecs').innerHTML = specs.map(s =>
+                `<tr><td>${s.label}</td><td>${s.value}</td></tr>`
+            ).join('');
 
             // Add to cart
             document.getElementById('pdAddBtn').addEventListener('click', async () => {
@@ -482,13 +552,35 @@
                                 </div>
                             </a>`;
                     }).join('');
-                } else {
-                    grid.innerHTML = '<p style="color:var(--text-light);">No related products found.</p>';
                 }
-            } catch (_) {
-                document.getElementById('pdRelated').innerHTML = '<p style="color:var(--text-light);">Could not load related products.</p>';
-            }
+            } catch (_) {}
+
+            // Recently Viewed
+            saveRecent(p);
+            loadRecent();
         })();
+
+        // ─── Recently Viewed ───────────────────────────────────────────
+        function saveRecent(product) {
+            let recent = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+            recent = recent.filter(r => r.id !== product.id);
+            const img = product.image || (product.images && product.images[0]) || '';
+            recent.unshift({ id: product.id, name: product.name, image: img });
+            recent = recent.slice(0, 6);
+            localStorage.setItem('recentlyViewed', JSON.stringify(recent));
+        }
+
+        function loadRecent() {
+            const recent = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+            if (recent.length < 2) return;
+            document.getElementById('recentSection').style.display = 'block';
+            document.getElementById('recentScroll').innerHTML = recent.map(r => `
+                <a href="product-detail.html?id=${r.id}" class="recent-card">
+                    <img src="${r.image || ''}" alt="${r.name}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 140 140%22><rect fill=%22%23fce7f0%22 width=%22140%22 height=%22140%22/><text x=%2270%22 y=%2280%22 text-anchor=%22middle%22 fill=%22%23d8447c%22 font-size=%2236%22>✿</text></svg>'">
+                    <div class="recent-card-name">${r.name}</div>
+                </a>
+            `).join('');
+        }
     </script>
 </body>
 </html>
