@@ -289,15 +289,43 @@ function handleAuthSubmit(formId, apiFn, getData) {
 
 function updateAccountUI() {
     const btn = document.getElementById('globalAccountLink');
-    if (!btn) return;
+    const signInLink = document.getElementById('headerSignIn');
+    const signInIcon = document.getElementById('headerSignInIcon');
+    const signInText = document.getElementById('headerSignInText');
     const user = getCurrentUser();
-    if (user) {
-        btn.innerHTML = `<i class="bi bi-person-check-fill"></i>`;
-        btn.title = `Signed in as ${user.name || user.email || 'User'}`;
-    } else {
-        btn.innerHTML = `<i class="bi bi-person-circle"></i>`;
-        btn.title = 'My Account';
+
+    if (btn) {
+        if (user) {
+            btn.innerHTML = `<i class="bi bi-person-check-fill"></i>`;
+            btn.title = `Signed in as ${user.name || user.email || 'User'}`;
+        } else {
+            btn.innerHTML = `<i class="bi bi-person-circle"></i>`;
+            btn.title = 'My Account';
+        }
     }
+
+    // Update header sign-in link
+    if (signInLink && signInIcon && signInText) {
+        if (user) {
+            signInIcon.className = 'bi bi-person-check-fill';
+            signInText.textContent = user.name || user.email || 'Account';
+            signInLink.onclick = function(e) {
+                e.preventDefault();
+                const role = (user.role || '').toLowerCase();
+                if (['admin', 'superadmin'].includes(role)) window.location.href = 'admin.html';
+                else if (['seller', 'florist', 'grower'].includes(role)) window.location.href = 'seller-dashboard.html';
+                else window.location.href = 'buyer-dashboard.html';
+            };
+        } else {
+            signInIcon.className = 'bi bi-person-circle';
+            signInText.textContent = 'Sign In';
+            signInLink.onclick = function(e) {
+                e.preventDefault();
+                openAuthModal('login');
+            };
+        }
+    }
+
     // Update notification badge
     updateNotificationBadge();
     // Show/hide seller-only navigation links based on role
