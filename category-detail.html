@@ -665,7 +665,12 @@
             `).join('');
         }
 
-        initCategoryPage();
+        // Init with error handling
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => initCategoryPage().catch(e => console.error('Init error:', e)));
+        } else {
+            initCategoryPage().catch(e => console.error('Init error:', e));
+        }
     </script>
 </body>
 </html>
