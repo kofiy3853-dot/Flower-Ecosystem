@@ -360,11 +360,25 @@
             });
 
             // Follow button
-            document.getElementById('fpFollowBtn').addEventListener('click', function() {
+            const followBtn = document.getElementById('fpFollowBtn');
+            const followKey = 'flower-following';
+            let following = JSON.parse(localStorage.getItem(followKey) || '[]');
+            if (following.includes(id)) {
+                followBtn.classList.add('active');
+                const icon = followBtn.querySelector('i');
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+            }
+            followBtn.addEventListener('click', function() {
                 this.classList.toggle('active');
                 const icon = this.querySelector('i');
                 icon.classList.toggle('bi-heart');
                 icon.classList.toggle('bi-heart-fill');
+                following = JSON.parse(localStorage.getItem(followKey) || '[]');
+                const idx = following.indexOf(id);
+                if (idx >= 0) following.splice(idx, 1);
+                else following.push(id);
+                localStorage.setItem(followKey, JSON.stringify(following));
             });
 
             // Load products
