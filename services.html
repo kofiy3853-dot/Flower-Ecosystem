@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Book professional floral services - weddings, events, landscaping, and more on Flower Ecosystem.">
+    <title>Floral Services | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .svc-hero { background:linear-gradient(135deg, #fdf2f6 0%, #fce7f0 50%, #f8d7e8 100%); padding:5rem 0 3rem; }
+        .svc-hero-inner { display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:center; }
+        .svc-hero h1 { font-size:clamp(2rem, 4vw, 2.8rem); margin-bottom:0.5rem; }
+        .svc-hero p { color:var(--text-light); font-size:1.05rem; margin-bottom:1.5rem; line-height:1.6; }
+        .svc-search { display:flex; background:white; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); overflow:hidden; margin-bottom:1rem; }
+        .svc-search input { flex:1; border:none; padding:1rem 1.25rem; font-size:1rem; outline:none; }
+        .svc-search button { background:var(--primary-color); color:white; border:none; padding:1rem 1.5rem; cursor:pointer; }
+        .svc-hero-btns { display:flex; gap:0.75rem; }
+        .svc-hero-img { border-radius:16px; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.1); }
+        .svc-hero-img img { width:100%; height:350px; object-fit:cover; }
+
+        /* Categories */
+        .svc-cat-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:1.25rem; }
+        .svc-cat-card { background:white; border:1px solid var(--border-color); border-radius:14px; padding:1.5rem; text-align:center; text-decoration:none; color:inherit; transition:all 0.3s; cursor:pointer; }
+        .svc-cat-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); border-color:var(--primary-color); }
+        .svc-cat-icon { font-size:2.5rem; margin-bottom:0.75rem; }
+        .svc-cat-name { font-weight:600; font-size:1rem; margin-bottom:0.25rem; }
+        .svc-cat-desc { font-size:0.82rem; color:var(--text-light); line-height:1.4; }
+        .svc-cat-count { font-size:0.75rem; color:var(--primary-color); font-weight:500; margin-top:0.5rem; }
+
+        /* Provider Cards */
+        .svc-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:1.5rem; }
+        .svc-card { background:white; border:1px solid var(--border-color); border-radius:14px; overflow:hidden; transition:all 0.3s; }
+        .svc-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); }
+        .svc-card-img { height:180px; overflow:hidden; position:relative; }
+        .svc-card-img img { width:100%; height:100%; object-fit:cover; }
+        .svc-card-badge { position:absolute; top:0.75rem; left:0.75rem; background:var(--accent-green); color:white; padding:0.2rem 0.6rem; border-radius:6px; font-size:0.7rem; font-weight:600; display:flex; align-items:center; gap:0.3rem; }
+        .svc-card-fav { position:absolute; top:0.75rem; right:0.75rem; background:white; border:none; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+        .svc-card-body { padding:1.25rem; }
+        .svc-card-header { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem; }
+        .svc-card-avatar { width:48px; height:48px; border-radius:50%; background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:1.25rem; color:var(--primary-color); flex-shrink:0; }
+        .svc-card-name { font-weight:600; font-size:1rem; }
+        .svc-card-rating { font-size:0.8rem; color:#f59e0b; }
+        .svc-card-specialty { font-size:0.82rem; color:var(--primary-color); margin-bottom:0.5rem; }
+        .svc-card-meta { display:flex; gap:1rem; font-size:0.8rem; color:var(--text-light); margin-bottom:0.75rem; }
+        .svc-card-price { font-size:1.1rem; font-weight:700; color:var(--primary-color); margin-bottom:0.75rem; }
+        .svc-card-footer { display:flex; gap:0.5rem; }
+        .svc-card-footer .btn { flex:1; }
+
+        /* How It Works */
+        .steps-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem; margin:2rem 0; }
+        .step-card { text-align:center; padding:1.5rem; background:white; border-radius:14px; border:1px solid var(--border-color); position:relative; }
+        .step-num { width:40px; height:40px; border-radius:50%; background:var(--primary-color); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; margin:0 auto 0.75rem; }
+        .step-title { font-weight:600; margin-bottom:0.25rem; }
+        .step-desc { font-size:0.85rem; color:var(--text-light); }
+        .step-arrow { position:absolute; right:-1.25rem; top:50%; transform:translateY(-50%); font-size:1.5rem; color:var(--primary-color); }
+
+        /* Reviews */
+        .reviews-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; }
+        .review-card { background:white; border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; }
+        .review-stars { color:#f59e0b; margin-bottom:0.5rem; }
+        .review-text { font-size:0.88rem; color:var(--text-light); line-height:1.5; margin-bottom:0.5rem; }
+        .review-author { font-weight:600; font-size:0.85rem; }
+        .review-event { font-size:0.78rem; color:var(--primary-color); }
+
+        /* CTA */
+        .svc-cta { background:linear-gradient(135deg, var(--primary-color), #be185d); border-radius:16px; padding:3rem; text-align:center; color:white; margin:2rem 0; }
+        .svc-cta h2 { color:white; margin-bottom:0.5rem; }
+        .svc-cta p { color:rgba(255,255,255,0.85); margin-bottom:1.5rem; max-width:500px; margin-left:auto; margin-right:auto; }
+        .svc-cta .btn { background:white; color:var(--primary-color); }
+
+        /* FAQ */
+        .faq-item { background:white; border:1px solid var(--border-color); border-radius:10px; margin-bottom:0.75rem; }
+        .faq-q { padding:1rem 1.25rem; font-weight:500; cursor:pointer; display:flex; justify-content:space-between; }
+        .faq-a { padding:0 1.25rem 1rem; font-size:0.9rem; color:var(--text-light); line-height:1.6; display:none; }
+        .faq-item.open .faq-a { display:block; }
+
+        @media (max-width:900px) {
+            .svc-hero-inner { grid-template-columns:1fr; }
+            .svc-hero-img { display:none; }
+            .svc-cat-grid { grid-template-columns:repeat(2, 1fr); }
+            .steps-grid { grid-template-columns:repeat(2, 1fr); }
+            .step-arrow { display:none; }
+        }
+        @media (max-width:600px) {
+            .svc-cat-grid, .reviews-grid { grid-template-columns:1fr; }
+            .svc-grid { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="svc-hero">
+        <div class="container">
+            <div class="svc-hero-inner reveal-up">
+                <div>
+                    <h1>Book Professional Floral Services</h1>
+                    <p>Find experienced florists, decorators, landscapers, and garden experts for weddings, birthdays, corporate events, homes, and more.</p>
+                    <div class="svc-search">
+                        <input type="search" id="svcSearch" placeholder="Search services, providers, or locations...">
+                        <button onclick="searchServices()"><i class="bi bi-search"></i></button>
+                    </div>
+                    <div class="svc-hero-btns">
+                        <a href="#services" class="btn btn-primary">Find a Service</a>
+                        <a href="#become" class="btn btn-outline">Become a Provider</a>
+                    </div>
+                </div>
+                <div class="svc-hero-img">
+                    <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop" alt="Floral services" loading="eager">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="section-padding" id="services">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+                <div>
+                    <span class="subtitle">BROWSE SERVICES</span>
+                    <h2>Service Categories</h2>
+                </div>
+            </div>
+            <div class="svc-cat-grid" id="catGrid"></div>
+        </div>
+    </section>
+
+    <!-- Featured Providers -->
+    <section class="section-padding bg-light" style="padding-top:2rem;">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+                <div>
+                    <span class="subtitle">TOP RATED</span>
+                    <h2>Featured Providers</h2>
+                </div>
+                <a href="#" style="color:var(--primary-color);font-size:0.9rem;">View All</a>
+            </div>
+            <div class="svc-grid" id="providersGrid"></div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="section-padding">
+        <div class="container">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <span class="subtitle">SIMPLE PROCESS</span>
+                <h2>How It Works</h2>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-num">1</div>
+                    <div class="step-title">Browse Services</div>
+                    <div class="step-desc">Explore categories and find the service you need</div>
+                    <div class="step-arrow">→</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">2</div>
+                    <div class="step-title">Compare Providers</div>
+                    <div class="step-desc">Read reviews, view portfolios, and compare prices</div>
+                    <div class="step-arrow">→</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">3</div>
+                    <div class="step-title">Book or Request Quote</div>
+                    <div class="step-desc">Book directly or submit a custom project request</div>
+                    <div class="step-arrow">→</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">4</div>
+                    <div class="step-title">Enjoy Your Event</div>
+                    <div class="step-desc">Professional florists make your vision come to life</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <span class="subtitle">TESTIMONIALS</span>
+                <h2>Customer Reviews</h2>
+            </div>
+            <div class="reviews-grid" id="reviewsGrid"></div>
+        </div>
+    </section>
+
+    <!-- Become a Provider -->
+    <section class="section-padding" id="become">
+        <div class="container">
+            <div class="svc-cta reveal-up">
+                <h2>Become a Service Provider</h2>
+                <p>Join our network of professional florists, decorators, landscapers, and garden experts. Reach thousands of customers looking for floral services.</p>
+                <a href="sell.html" class="btn btn-lg">Register Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section-padding bg-light">
+        <div class="container" style="max-width:700px;">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <span class="subtitle">FAQ</span>
+                <h2>Frequently Asked Questions</h2>
+            </div>
+            <div id="faqList"></div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        const serviceCategories = [
+            { name: 'Wedding Decoration', icon: '💍', desc: 'Bridal bouquets, ceremony and reception decor', count: 0 },
+            { name: 'Birthday Decoration', icon: '🎂', desc: 'Floral decorations and bouquets', count: 0 },
+            { name: 'Corporate Services', icon: '💼', desc: 'Offices, hotels, conferences', count: 0 },
+            { name: 'Landscaping', icon: '🏡', desc: 'Residential and commercial gardens', count: 0 },
+            { name: 'Garden Maintenance', icon: '🌿', desc: 'Regular care and pruning', count: 0 },
+            { name: 'Custom Bouquets', icon: '🎁', desc: 'Personalized floral gifts', count: 0 },
+            { name: 'Sympathy Services', icon: '🕊️', desc: 'Wreaths and memorial arrangements', count: 0 },
+            { name: 'Plant Consultation', icon: '🌱', desc: 'Care advice and plant selection', count: 0 }
+        ];
+
+        const providers = [
+            { name: 'Bloom Events', specialty: 'Wedding Specialist', rating: 4.9, projects: 120, location: 'Accra', price: 'GHS 500', verified: true, img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=200&auto=format&fit=crop' },
+            { name: 'Garden Pro', specialty: 'Landscaping Expert', rating: 4.8, projects: 85, location: 'Kumasi', price: 'GHS 300', verified: true, img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=200&auto=format&fit=crop' },
+            { name: 'Petal Studio', specialty: 'Floral Designer', rating: 4.7, projects: 95, location: 'Accra', price: 'GHS 250', verified: true, img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=200&auto=format&fit=crop' },
+            { name: 'Earth & Bloom', specialty: 'Eco-Friendly Florist', rating: 4.9, projects: 67, location: 'Cape Coast', price: 'GHS 200', verified: true, img: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?q=200&auto=format&fit=crop' },
+            { name: 'Event Masters', specialty: 'Event Decoration', rating: 4.6, projects: 150, location: 'Tema', price: 'GHS 400', verified: true, img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=200&auto=format&fit=crop' },
+            { name: 'Green Thumb', specialty: 'Garden Maintenance', rating: 4.8, projects: 200, location: 'Accra', price: 'GHS 150', verified: true, img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=200&auto=format&fit=crop' }
+        ];
+
+        const reviews = [
+            { rating: 5, text: 'Bloom Events made our wedding absolutely magical. The floral arrangements were beyond our expectations!', author: 'Sarah & John', event: 'Wedding' },
+            { rating: 5, text: 'Garden Pro transformed our backyard into a stunning garden. Professional and timely service.', author: 'Kwame A.', event: 'Landscaping' },
+            { rating: 4, text: 'Beautiful corporate flowers delivered weekly. Our office has never looked better!', author: 'Tech Solutions Ltd', event: 'Corporate' },
+            { rating: 5, text: 'Petal Studio created the most amazing birthday surprise for my wife. Highly recommended!', author: 'Michael O.', event: 'Birthday' },
+            { rating: 5, text: 'Earth & Bloom provided eco-friendly arrangements that were both beautiful and sustainable.', author: 'Ama K.', event: 'Custom Bouquet' },
+            { rating: 4, text: 'Professional sympathy arrangements delivered with care and respect. Thank you.', author: 'The Mensah Family', event: 'Sympathy' }
+        ];
+
+        const faqs = [
+            { q: 'How do I book a service?', a: 'Browse services, view provider profiles, and either book directly or submit a quote request. The provider will confirm within 24 hours.' },
+            { q: 'Can I request a custom quote?', a: 'Yes! Use the "Request Quote" button on any provider profile to submit your project details and budget.' },
+            { q: 'Are the service providers verified?', a: 'Yes, all providers go through a verification process including portfolio review and background check.' },
+            { q: 'What if I\'m not satisfied?', a: 'We offer a satisfaction guarantee. If you\'re not happy with the service, contact us for a resolution.' },
+            { q: 'Can I cancel a booking?', a: 'Cancellations are accepted up to 48 hours before the event for a full refund.' }
+        ];
+
+        function initServices() {
+            document.getElementById('catGrid').innerHTML = serviceCategories.map(c => `
+                <div class="svc-cat-card" onclick="filterByCategory('${c.name}')">
+                    <div class="svc-cat-icon">${c.icon}</div>
+                    <div class="svc-cat-name">${c.name}</div>
+                    <div class="svc-cat-desc">${c.desc}</div>
+                    <div class="svc-cat-count">${c.count} Providers</div>
+                </div>
+            `).join('');
+
+            document.getElementById('providersGrid').innerHTML = providers.map(p => `
+                <div class="svc-card">
+                    <div class="svc-card-img">
+                        <img src="${p.img}" alt="${p.name}" loading="lazy">
+                        ${p.verified ? '<div class="svc-card-badge"><i class="bi bi-patch-check-fill"></i> Verified</div>' : ''}
+                        <button class="svc-card-fav"><i class="bi bi-heart"></i></button>
+                    </div>
+                    <div class="svc-card-body">
+                        <div class="svc-card-header">
+                            <div class="svc-card-avatar">${p.name[0]}</div>
+                            <div>
+                                <div class="svc-card-name">${p.name}</div>
+                                <div class="svc-card-rating">${renderStars(p.rating)} ${p.rating}</div>
+                            </div>
+                        </div>
+                        <div class="svc-card-specialty">${p.specialty}</div>
+                        <div class="svc-card-meta">
+                            <span><i class="bi bi-briefcase"></i> ${p.projects} Projects</span>
+                            <span><i class="bi bi-geo-alt"></i> ${p.location}</span>
+                        </div>
+                        <div class="svc-card-price">Starting from ${p.price}</div>
+                        <div class="svc-card-footer">
+                            <a href="#" class="btn btn-outline btn-sm">View Profile</a>
+                            <a href="#" class="btn btn-primary btn-sm">Request Quote</a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('reviewsGrid').innerHTML = reviews.map(r => `
+                <div class="review-card">
+                    <div class="review-stars">${renderStars(r.rating)}</div>
+                    <div class="review-text">"${r.text}"</div>
+                    <div class="review-author">— ${r.author}</div>
+                    <div class="review-event">${r.event}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('faqList').innerHTML = faqs.map((f, i) => `
+                <div class="faq-item${i === 0 ? ' open' : ''}" onclick="this.classList.toggle('open')">
+                    <div class="faq-q">${f.q} <i class="bi bi-chevron-down" style="transition:transform 0.2s;"></i></div>
+                    <div class="faq-a">${f.a}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderStars(r) {
+            const f = Math.floor(r);
+            let s = '';
+            for (let i = 0; i < f; i++) s += '<i class="bi bi-star-fill"></i>';
+            for (let i = f; i < 5; i++) s += '<i class="bi bi-star"></i>';
+            return s;
+        }
+
+        function searchServices() {
+            const q = document.getElementById('svcSearch').value.trim();
+            if (q) alert(`Searching for: ${q}`);
+        }
+
+        function filterByCategory(cat) {
+            alert(`Browsing: ${cat}`);
+        }
+
+        initServices();
+    </script>
+</body>
+</html>
