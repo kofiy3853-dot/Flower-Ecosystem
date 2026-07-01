@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover exclusive discounts, flash sales, bundle offers, and seasonal promotions on Flower Ecosystem.">
+    <title>Deals & Offers | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .deal-hero { background:linear-gradient(135deg, #ff6b6b 0%, #ee5a24 50%, #f39c12 100%); padding:5rem 0 3rem; color:white; }
+        .deal-hero h1 { font-size:clamp(2rem, 4vw, 2.8rem); margin-bottom:0.5rem; color:white; }
+        .deal-hero p { opacity:0.9; font-size:1.05rem; max-width:600px; margin:0 auto 1.5rem; }
+        .deal-search { display:flex; background:white; border-radius:12px; overflow:hidden; max-width:500px; margin:0 auto 1.5rem; }
+        .deal-search input { flex:1; border:none; padding:1rem 1.25rem; font-size:1rem; outline:none; }
+        .deal-search button { background:#e74c3c; color:white; border:none; padding:1rem 1.5rem; cursor:pointer; }
+
+        /* Countdown */
+        .countdown-section { background:linear-gradient(135deg, #1a1a2e, #16213e); color:white; padding:2rem 0; text-align:center; }
+        .countdown-title { font-size:1.25rem; margin-bottom:1rem; }
+        .countdown-title i { color:#f39c12; }
+        .countdown-timer { display:flex; justify-content:center; gap:1rem; }
+        .countdown-item { background:rgba(255,255,255,0.1); border-radius:10px; padding:0.75rem 1.25rem; min-width:80px; }
+        .countdown-num { font-size:1.75rem; font-weight:700; }
+        .countdown-label { font-size:0.75rem; opacity:0.7; }
+
+        /* Categories */
+        .deal-cats { display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem; }
+        .deal-cat { background:white; border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; text-decoration:none; color:inherit; transition:all 0.3s; cursor:pointer; }
+        .deal-cat:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,0.1); border-color:#e74c3c; }
+        .deal-cat-icon { font-size:2rem; margin-bottom:0.5rem; }
+        .deal-cat-name { font-weight:600; font-size:0.9rem; }
+
+        /* Product Grid */
+        .deal-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:1.25rem; }
+
+        /* Discount Badge */
+        .deal-badge { position:absolute; top:0.75rem; left:0.75rem; background:#e74c3c; color:white; padding:0.25rem 0.6rem; border-radius:6px; font-size:0.75rem; font-weight:700; z-index:2; }
+        .deal-badge.flash { background:#f39c12; animation:pulse-badge 2s infinite; }
+        .deal-badge.bundle { background:#8b5cf6; }
+        .deal-badge.clearance { background:#6b7280; }
+        .deal-badge.new { background:#10b981; }
+
+        @keyframes pulse-badge {
+            0% { box-shadow:0 0 0 0 rgba(243,156,18,0.6); }
+            50% { box-shadow:0 0 0 6px rgba(243,156,18,0); }
+            100% { box-shadow:0 0 0 0 rgba(243,156,18,0); }
+        }
+
+        /* Price Display */
+        .deal-price { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+        .deal-price-now { font-size:1.15rem; font-weight:700; color:#e74c3c; }
+        .deal-price-was { font-size:0.85rem; color:var(--text-light); text-decoration:line-through; }
+        .deal-price-save { font-size:0.75rem; color:#10b981; font-weight:600; }
+
+        /* Stock Indicator */
+        .deal-stock { font-size:0.78rem; color:#e74c3c; font-weight:500; margin-top:0.25rem; }
+        .deal-stock.low { color:#f39c12; }
+
+        /* Bundle Card */
+        .bundle-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:1.5rem; }
+        .bundle-card { background:white; border:1px solid var(--border-color); border-radius:14px; overflow:hidden; transition:all 0.3s; }
+        .bundle-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); }
+        .bundle-header { background:linear-gradient(135deg, #8b5cf6, #6366f1); padding:1.5rem; color:white; }
+        .bundle-header h3 { margin-bottom:0.25rem; }
+        .bundle-header p { opacity:0.85; font-size:0.9rem; }
+        .bundle-body { padding:1.25rem; }
+        .bundle-item { display:flex; align-items:center; gap:0.75rem; padding:0.5rem 0; border-bottom:1px solid var(--border-light); }
+        .bundle-item:last-child { border-bottom:none; }
+        .bundle-item-icon { font-size:1.25rem; }
+        .bundle-savings { background:#d4edda; color:#155724; padding:0.75rem; border-radius:8px; text-align:center; font-weight:600; margin-top:0.75rem; }
+
+        /* Seasonal Banner */
+        .seasonal-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:1rem; }
+        .seasonal-card { position:relative; border-radius:14px; overflow:hidden; height:200px; cursor:pointer; }
+        .seasonal-card img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .seasonal-card:hover img { transform:scale(1.08); }
+        .seasonal-overlay { position:absolute; inset:0; background:linear-gradient(transparent, rgba(0,0,0,0.7)); display:flex; flex-direction:column; justify-content:flex-end; padding:1.5rem; color:white; }
+        .seasonal-overlay h3 { margin-bottom:0.25rem; }
+        .seasonal-overlay p { opacity:0.85; font-size:0.88rem; }
+
+        /* Sellers */
+        .sellers-scroll { display:flex; gap:1.25rem; overflow-x:auto; padding:1rem 0; }
+        .seller-card { min-width:200px; background:white; border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; flex-shrink:0; text-decoration:none; color:inherit; }
+        .seller-avatar { width:60px; height:60px; border-radius:50%; margin:0 auto 0.75rem; background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:var(--primary-color); }
+
+        /* Member Deals */
+        .member-section { background:linear-gradient(135deg, #1a1a2e, #16213e); border-radius:16px; padding:2.5rem; color:white; margin:2rem 0; }
+        .member-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; margin-top:1.5rem; }
+        .member-card { background:rgba(255,255,255,0.1); border-radius:10px; padding:1.25rem; text-align:center; }
+        .member-icon { font-size:2rem; margin-bottom:0.5rem; }
+        .member-title { font-weight:600; margin-bottom:0.25rem; }
+        .member-desc { font-size:0.82rem; opacity:0.8; }
+
+        /* FAQ */
+        .faq-item { background:white; border:1px solid var(--border-color); border-radius:10px; margin-bottom:0.75rem; }
+        .faq-q { padding:1rem 1.25rem; font-weight:500; cursor:pointer; display:flex; justify-content:space-between; }
+        .faq-a { padding:0 1.25rem 1rem; font-size:0.9rem; color:var(--text-light); line-height:1.6; display:none; }
+        .faq-item.open .faq-a { display:block; }
+
+        @media (max-width:768px) {
+            .deal-cats { grid-template-columns:repeat(2, 1fr); }
+            .seasonal-grid { grid-template-columns:1fr; }
+            .member-grid { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="deal-hero">
+        <div class="container" style="text-align:center;">
+            <h1>Bloom More, Spend Less 🌸</h1>
+            <p>Discover exclusive discounts, flash sales, bundle offers, and seasonal promotions from trusted florists and growers.</p>
+            <div class="deal-search">
+                <input type="search" id="dealSearch" placeholder="Search deals...">
+                <button onclick="searchDeals()"><i class="bi bi-search"></i></button>
+            </div>
+            <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                <a href="#today" class="btn" style="background:white;color:#e74c3c;">Shop Deals</a>
+                <a href="#flash" class="btn" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);">Flash Sales</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Countdown -->
+    <section class="countdown-section">
+        <div class="container">
+            <div class="countdown-title"><i class="bi bi-fire"></i> Flash Sale Ends In</div>
+            <div class="countdown-timer" id="countdownTimer">
+                <div class="countdown-item"><div class="countdown-num" id="cdHours">08</div><div class="countdown-label">Hours</div></div>
+                <div class="countdown-item"><div class="countdown-num" id="cdMins">24</div><div class="countdown-label">Minutes</div></div>
+                <div class="countdown-item"><div class="countdown-num" id="cdSecs">15</div><div class="countdown-label">Seconds</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Deal Categories -->
+    <section class="section-padding" style="padding-bottom:2rem;">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+                <h2>Deal Categories</h2>
+            </div>
+            <div class="deal-cats">
+                <div class="deal-cat" onclick="filterDeals('flash')"><div class="deal-cat-icon">🔥</div><div class="deal-cat-name">Flash Sales</div></div>
+                <div class="deal-cat" onclick="filterDeals('bundle')"><div class="deal-cat-icon">🎁</div><div class="deal-cat-name">Bundle Offers</div></div>
+                <div class="deal-cat" onclick="filterDeals('bouquet')"><div class="deal-cat-icon">🌹</div><div class="deal-cat-name">Bouquet Deals</div></div>
+                <div class="deal-cat" onclick="filterDeals('plant')"><div class="deal-cat-icon">🌿</div><div class="deal-cat-name">Plant Deals</div></div>
+                <div class="deal-cat" onclick="filterDeals('seasonal')"><div class="deal-cat-icon">🌸</div><div class="deal-cat-name">Seasonal Offers</div></div>
+                <div class="deal-cat" onclick="filterDeals('value')"><div class="deal-cat-icon">⭐</div><div class="deal-cat-name">Best Value</div></div>
+                <div class="deal-cat" onclick="filterDeals('new')"><div class="deal-cat-icon">🆕</div><div class="deal-cat-name">New Discounts</div></div>
+                <div class="deal-cat" onclick="filterDeals('clearance')"><div class="deal-cat-icon">🛒</div><div class="deal-cat-name">Clearance</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Today's Top Deals -->
+    <section class="section-padding bg-light" id="today" style="padding-top:2rem;">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+                <div><span class="subtitle" style="color:#e74c3c;">TODAY'S BEST</span><h2>Top Deals</h2></div>
+                <a href="marketplace.html" style="color:var(--primary-color);font-size:0.9rem;">View All</a>
+            </div>
+            <div class="deal-grid" id="dealsGrid"></div>
+        </div>
+    </section>
+
+    <!-- Bundle Offers -->
+    <section class="section-padding" id="bundles">
+        <div class="container">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <span class="subtitle">SAVE MORE</span>
+                <h2>Bundle Offers</h2>
+            </div>
+            <div class="bundle-grid" id="bundleGrid"></div>
+        </div>
+    </section>
+
+    <!-- Seasonal Deals -->
+    <section class="section-padding bg-light" style="padding-top:2rem;">
+        <div class="container">
+            <div style="text-align:center;margin-bottom:1.5rem;">
+                <span class="subtitle">LIMITED TIME</span>
+                <h2>Seasonal Promotions</h2>
+            </div>
+            <div class="seasonal-grid" id="seasonalGrid"></div>
+        </div>
+    </section>
+
+    <!-- Featured Sellers -->
+    <section class="section-padding" style="padding-top:2rem;">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <h2>Sellers with Deals</h2><a href="florists.html" style="color:var(--primary-color);font-size:0.9rem;">View All</a>
+            </div>
+            <div class="sellers-scroll" id="sellersScroll"></div>
+        </div>
+    </section>
+
+    <!-- Member Deals -->
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container">
+            <div class="member-section">
+                <h2 style="color:white;">Member Exclusive Deals</h2>
+                <p style="opacity:0.85;">Special discounts for registered members</p>
+                <div class="member-grid">
+                    <div class="member-card"><div class="member-icon">🎉</div><div class="member-title">10% Off First Order</div><div class="member-desc">Welcome discount for new members</div></div>
+                    <div class="member-card"><div class="member-icon">🚚</div><div class="member-title">Free Delivery</div><div class="member-desc">On orders above GHS 300</div></div>
+                    <div class="member-card"><div class="member-icon">💎</div><div class="member-title">Loyalty Rewards</div><div class="member-desc">Earn points with every purchase</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section-padding bg-light" style="padding-top:2rem;">
+        <div class="container" style="max-width:700px;">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <span class="subtitle">FAQ</span>
+                <h2>Frequently Asked Questions</h2>
+            </div>
+            <div id="faqList"></div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/shared/cart.js?v=3.0"></script>
+    <script>
+        // ─── Countdown Timer ───────────────────────────────────────────
+        function startCountdown() {
+            const now = new Date();
+            const end = new Date(now);
+            end.setHours(23, 59, 59, 0);
+
+            setInterval(() => {
+                const diff = end - new Date();
+                if (diff <= 0) return;
+                const h = Math.floor(diff / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                document.getElementById('cdHours').textContent = String(h).padStart(2, '0');
+                document.getElementById('cdMins').textContent = String(m).padStart(2, '0');
+                document.getElementById('cdSecs').textContent = String(s).padStart(2, '0');
+            }, 1000);
+        }
+        startCountdown();
+
+        // ─── Load Deals ────────────────────────────────────────────────
+        let allProducts = [];
+
+        async function loadDeals() {
+            try {
+                const data = await fetch('/api/products?limit=50').then(r => r.json());
+                allProducts = data.products || data || [];
+            } catch { allProducts = []; }
+
+            // Add deal info
+            const products = allProducts.map((p, i) => ({
+                ...p,
+                discount: [30, 25, 40, 20, 35, 15, 50, 25][i % 8],
+                stock: Math.floor(Math.random() * 20) + 5,
+                flash: i < 4,
+                isNew: i >= 8 && i < 12
+            }));
+
+            renderDeals(products);
+            renderBundles();
+            renderSeasonal();
+            loadSellers();
+            loadFAQ();
+        }
+
+        function renderDeals(products) {
+            const grid = document.getElementById('dealsGrid');
+            grid.innerHTML = products.slice(0, 8).map(p => {
+                const img = p.image || (p.images && p.images[0]) || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200"><rect fill="%23fce7f0" width="300" height="200"/><text x="150" y="110" text-anchor="middle" fill="%23d8447c" font-size="40">✿</text></svg>';
+                const oldPrice = p.price / (1 - p.discount / 100);
+                const savings = oldPrice - p.price;
+                return `
+                <div class="p-card" onclick="window.location.href='product-detail.html?id=${p.id}'">
+                    <div class="p-card-img">
+                        <img src="${img}" alt="${p.name}" loading="lazy">
+                        <div class="deal-badge${p.flash ? ' flash' : ''}">-${p.discount}%</div>
+                    </div>
+                    <div class="p-card-body">
+                        <div class="p-card-seller">${p.seller || 'Seller'}</div>
+                        <div class="p-card-name">${p.name}</div>
+                        <div class="p-card-rating">${renderStars(p.rating || 0)}</div>
+                        <div class="deal-price">
+                            <span class="deal-price-now">${p.currency || 'GHS'} ${p.price.toFixed(2)}</span>
+                            <span class="deal-price-was">${p.currency || 'GHS'} ${oldPrice.toFixed(2)}</span>
+                        </div>
+                        <div class="deal-price-save">Save ${p.currency || 'GHS'} ${savings.toFixed(2)}</div>
+                        ${p.stock <= 5 ? `<div class="deal-stock low">Only ${p.stock} left!</div>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderBundles() {
+            const bundles = [
+                { name: 'Romantic Gift Bundle', items: ['🌹 Rose Bouquet', '🧸 Teddy Bear', '🍫 Chocolate', '💌 Greeting Card'], save: 80, price: 250, color: '#e74c3c' },
+                { name: 'Wedding Starter Bundle', items: ['💐 Bridal Bouquet', '🌺 Table Flowers', '🌸 Buttonholes'], save: 250, price: 800, color: '#8b5cf6' },
+                { name: 'Indoor Plant Bundle', items: ['🪴 Snake Plant', '🌿 Peace Lily', '🏺 Decorative Pot'], save: 60, price: 180, color: '#10b981' }
+            ];
+            document.getElementById('bundleGrid').innerHTML = bundles.map(b => `
+                <div class="bundle-card">
+                    <div class="bundle-header" style="background:linear-gradient(135deg, ${b.color}, ${b.color}dd);">
+                        <h3>${b.name}</h3>
+                        <p>GHS ${b.price}</p>
+                    </div>
+                    <div class="bundle-body">
+                        ${b.items.map(item => `<div class="bundle-item"><span class="bundle-item-icon">${item.split(' ')[0]}</span><span>${item.split(' ').slice(1).join(' ')}</span></div>`).join('')}
+                        <div class="bundle-savings">You Save GHS ${b.save}</div>
+                        <button class="btn btn-primary w-100" style="margin-top:0.75rem;" onclick="addToCart('bundle-${b.name.replace(/\s+/g, '-').toLowerCase()}', '${b.name}', ${b.price})">Add Bundle to Cart</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderSeasonal() {
+            const seasons = [
+                { name: 'Valentine\'s Sale', desc: 'Up to 40% off romantic bouquets', img: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=600&auto=format&fit=crop' },
+                { name: 'Mother\'s Day Specials', desc: 'Show mom some love with flowers', img: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=600&auto=format&fit=crop' },
+                { name: 'Wedding Season Offers', desc: 'Save on bridal arrangements', img: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=600&auto=format&fit=crop' },
+                { name: 'Graduation Collection', desc: 'Celebrate with fresh blooms', img: 'https://images.unsplash.com/photo-1507290439931-a861b5a38200?q=600&auto=format&fit=crop' }
+            ];
+            document.getElementById('seasonalGrid').innerHTML = seasons.map(s => `
+                <div class="seasonal-card" onclick="location.href='marketplace?q=${encodeURIComponent(s.name)}'">
+                    <img src="${s.img}" alt="${s.name}" loading="lazy">
+                    <div class="seasonal-overlay">
+                        <h3>${s.name}</h3>
+                        <p>${s.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function loadSellers() {
+            try {
+                const data = await fetch('/api/products/list/florists').then(r => r.json());
+                const sellers = data.florists || data || [];
+                document.getElementById('sellersScroll').innerHTML = sellers.map(s => `
+                    <a href="florist-profile.html?id=${s.id}" class="seller-card">
+                        <div class="seller-avatar">${(s.name || '?')[0]}</div>
+                        <div style="font-weight:600;font-size:0.9rem;margin-bottom:0.25rem;">${s.name}</div>
+                        <div style="font-size:0.8rem;color:#f59e0b;">${renderStars(4.5)}</div>
+                        <div style="font-size:0.75rem;color:var(--text-light);margin:0.25rem 0 0.5rem;">15 Active Deals</div>
+                        <button class="btn btn-primary btn-sm w-100">Visit Store</button>
+                    </a>
+                `).join('');
+            } catch {}
+        }
+
+        function loadFAQ() {
+            const faqs = [
+                { q: 'How long do deals last?', a: 'Most deals are available for a limited time. Flash sales typically last 24 hours. Check each deal for its expiration date.' },
+                { q: 'Can I combine multiple deals?', a: 'Some deals can be combined. Check the terms of each promotion for details.' },
+                { q: 'How do bundle offers work?', a: 'Bundle offers combine multiple products at a discounted price. Add the bundle to your cart and the discount is applied automatically.' },
+                { q: 'Are deals available for all members?', a: 'Some deals are exclusive to registered members. Create a free account to access all offers.' }
+            ];
+            document.getElementById('faqList').innerHTML = faqs.map((f, i) => `
+                <div class="faq-item${i === 0 ? ' open' : ''}" onclick="this.classList.toggle('open')">
+                    <div class="faq-q">${f.q} <i class="bi bi-chevron-down" style="transition:transform 0.2s;"></i></div>
+                    <div class="faq-a">${f.a}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderStars(r) {
+            const f = Math.floor(r);
+            let s = '';
+            for (let i = 0; i < f; i++) s += '<i class="bi bi-star-fill"></i>';
+            for (let i = f; i < 5; i++) s += '<i class="bi bi-star"></i>';
+            return s;
+        }
+
+        function addToCart(id, name, price) {
+            let cart = JSON.parse(localStorage.getItem('flower-cart') || '[]');
+            cart.push({ id, name, price, qty: 1 });
+            localStorage.setItem('flower-cart', JSON.stringify(cart));
+            alert('Added to cart!');
+        }
+
+        function searchDeals() {
+            const q = document.getElementById('dealSearch').value.trim();
+            if (q) window.location.href = `marketplace?q=${encodeURIComponent(q)}`;
+        }
+
+        function filterDeals(type) {
+            alert(`Browsing ${type} deals`);
+        }
+
+        loadDeals();
+    </script>
+</body>
+</html>
