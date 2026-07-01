@@ -343,7 +343,7 @@
     </section>
 
     <!-- ===== RECENTLY VIEWED ===== -->
-    <section class="section-padding bg-light" style="padding-top:2rem;padding-bottom:2rem;" id="recentSection" style="display:none;">
+    <section class="section-padding bg-light" id="recentSection" style="display:none;padding-top:2rem;padding-bottom:2rem;">
         <div class="container">
             <h2 style="margin-bottom:1rem;">Recently Viewed</h2>
             <div class="recent-scroll" id="recentScroll"></div>
@@ -470,7 +470,7 @@
             } else {
                 grid.className = currentView === 'grid' ? 'shop-grid' : 'shop-grid';
                 grid.innerHTML = pageItems.map(p => {
-                    const img = p.image || (p.images && p.images[0]) || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220"><rect fill="%23fce7f0" width="300" height="220"/><text x="150" y="120" text-anchor="middle" fill="%23d8447c" font-size="48">✿</text></svg>';
+                    const img = p.image || (p.images && p.images[0]) || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220"><rect fill="%23fce7f0" width="300" height="220"/><text x="150" y="120" text-anchor="middle" fill="%23d8447c" font-size="24">No Image</text></svg>';
                     return `
                     <div class="shop-card" onclick="viewProduct('${p.id}')">
                         <div class="shop-card-img">
@@ -495,7 +495,6 @@
                 }).join('');
             }
             renderPagination();
-            saveRecentlyViewed();
         }
 
         function renderStars(rating) {
@@ -538,7 +537,12 @@
             else cart.push({ id, name, price, image, qty: 1 });
             localStorage.setItem('flower-cart', JSON.stringify(cart));
             if (typeof updateAllBadges === 'function') updateAllBadges();
-            alert('Added to cart!');
+            if (typeof Toast !== 'undefined') {
+                Toast.success('Added to cart!');
+            } else {
+                const btn = document.querySelector(`[onclick*="'${id}'"][onclick*="addToCart"]`);
+                if (btn) { btn.textContent = 'Added!'; setTimeout(() => { btn.innerHTML = '<i class="bi bi-cart-plus"></i> Add'; }, 1500); }
+            }
         }
 
         function toggleSidebar(open) {
@@ -626,7 +630,7 @@
             section.style.display = 'block';
             scroll.innerHTML = recent.map(r => `
                 <a href="product-detail.html?id=${r.id}" class="recent-card">
-                    <img src="${r.image || ''}" alt="${r.name}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 150 150%22><rect fill=%22%23fce7f0%22 width=%22150%22 height=%22150%22/><text x=%2275%22 y=%2285%22 text-anchor=%22middle%22 fill=%22%23d8447c%22 font-size=%2236%22>✿</text></svg>'">
+                    <img src="${r.image || ''}" alt="${r.name}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 150 150%22><rect fill=%22%23fce7f0%22 width=%22150%22 height=%22150%22/><text x=%2275%22 y=%2285%22 text-anchor=%22middle%22 fill=%22%23d8447c%22 font-size=%2218%22>No Image</text></svg>'">
                     <div class="recent-card-name">${r.name}</div>
                 </a>
             `).join('');
