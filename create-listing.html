@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Create a new product listing on Flower Ecosystem marketplace. List your flowers, arrangements, and plants for sale.">
+    <meta name="description" content="Create a new listing on Flower Ecosystem">
     <title>Create Listing | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,805 +12,592 @@
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
-        .form-section { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:2rem; margin-bottom:1.5rem; }
-        .form-section h3 { font-size:1.1rem; margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-color); }
-        .image-preview { display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:0.75rem; }
-        .image-preview .thumb { width:80px; height:80px; border-radius:8px; object-fit:cover; border:1px solid var(--border-color); }
-        .image-preview .thumb-wrap { position:relative; display:inline-block; }
-        .image-preview .thumb-wrap .remove-img { position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:var(--error-color); color:white; border:none; font-size:0.7rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-        .image-preview .thumb-wrap.dragging { opacity:0.4; transform:scale(0.95); }
-        .image-preview .thumb-wrap.drag-over { outline:2px dashed var(--primary-color); outline-offset:2px; border-radius:8px; }
-        .image-preview .thumb-wrap .drag-handle { position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:4px; background:rgba(0,0,0,0.5); color:white; border:none; font-size:0.6rem; cursor:grab; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.15s; }
-        .image-preview .thumb-wrap:hover .drag-handle { opacity:1; }
+        .cl-hero { background:linear-gradient(135deg, #fdf2f6 0%, #fce7f0 50%, #f8d7e8 100%); padding:5rem 0 3rem; text-align:center; }
+        .cl-hero h1 { font-size:clamp(2rem, 4vw, 2.8rem); margin-bottom:0.5rem; }
+        .cl-hero p { color:var(--text-light); font-size:1.05rem; max-width:600px; margin:0 auto; }
+
+        /* Progress */
+        .cl-progress { display:flex; justify-content:center; margin:2rem 0; flex-wrap:wrap; gap:0.5rem; }
+        .cl-step { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 1rem; border-radius:50px; font-size:0.85rem; color:var(--text-light); background:var(--bg-light); }
+        .cl-step.active { background:var(--primary-color); color:white; font-weight:600; }
+        .cl-step.done { background:#10b981; color:white; }
+        .cl-step-num { width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:600; }
+
+        /* Cards */
+        .cl-card { background:white; border:1px solid var(--border-color); border-radius:16px; padding:2rem; margin-bottom:1.5rem; }
+        .cl-card h2 { font-size:1.35rem; margin-bottom:0.5rem; }
+        .cl-card > p { color:var(--text-light); font-size:0.9rem; margin-bottom:1.5rem; }
+
+        /* Grid */
+        .cl-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+        .cl-full { grid-column:1/-1; }
+
+        /* Form Groups */
+        .cl-group { margin-bottom:1rem; }
+        .cl-label { display:block; font-weight:500; font-size:0.88rem; margin-bottom:0.35rem; }
+        .cl-label .req { color:var(--error-color); }
+        .cl-input { width:100%; padding:0.7rem 1rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.9rem; font-family:inherit; transition:border-color 0.2s; }
+        .cl-input:focus { outline:none; border-color:var(--primary-color); box-shadow:0 0 0 3px rgba(216,68,124,0.1); }
+        .cl-hint { font-size:0.78rem; color:var(--text-light); margin-top:0.25rem; }
+
+        /* Listing Type Cards */
+        .type-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem; }
+        .type-card { border:2px solid var(--border-color); border-radius:12px; padding:1.5rem; text-align:center; cursor:pointer; transition:all 0.3s; }
+        .type-card:hover { border-color:var(--primary-color); transform:translateY(-3px); }
+        .type-card.selected { border-color:var(--primary-color); background:var(--primary-light); }
+        .type-card-icon { font-size:2.5rem; margin-bottom:0.5rem; }
+        .type-card-name { font-weight:600; font-size:0.95rem; margin-bottom:0.25rem; }
+        .type-card-desc { font-size:0.8rem; color:var(--text-light); }
+
+        /* Checkboxes */
+        .cl-checks { display:flex; flex-wrap:wrap; gap:0.75rem; }
+        .cl-check { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; cursor:pointer; font-size:0.88rem; transition:all 0.2s; }
+        .cl-check:hover { border-color:var(--primary-color); }
+        .cl-check.selected { border-color:var(--primary-color); background:var(--primary-light); }
+        .cl-check input { accent-color:var(--primary-color); }
+
+        /* File Upload */
+        .cl-upload { border:2px dashed var(--border-color); border-radius:12px; padding:2rem; text-align:center; cursor:pointer; transition:all 0.2s; }
+        .cl-upload:hover { border-color:var(--primary-color); background:var(--primary-light); }
+        .cl-upload-icon { font-size:2rem; color:var(--text-light); margin-bottom:0.5rem; }
+        .cl-upload-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:0.5rem; margin-top:1rem; }
+        .cl-upload-thumb { position:relative; }
+        .cl-upload-thumb img { width:100%; height:80px; object-fit:cover; border-radius:8px; }
+        .cl-upload-remove { position:absolute; top:-5px; right:-5px; width:20px; height:20px; border-radius:50%; background:var(--error-color); color:white; border:none; font-size:0.7rem; cursor:pointer; }
+
+        /* Nav */
+        .cl-nav { display:flex; justify-content:space-between; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border-color); }
+
+        /* Success */
+        .cl-success { text-align:center; padding:3rem; }
+        .cl-success-icon { width:80px; height:80px; border-radius:50%; background:#d4edda; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; font-size:2.5rem; color:#155724; }
+
+        @media (max-width:768px) {
+            .cl-grid { grid-template-columns:1fr; }
+            .type-grid { grid-template-columns:repeat(2, 1fr); }
+            .cl-upload-grid { grid-template-columns:repeat(3, 1fr); }
+        }
     </style>
 </head>
 <body>
 
     <div id="header-container"></div>
 
-    <section class="page-header primary-bg text-white section-padding text-center" style="padding-top:6rem; padding-bottom:3rem;">
-        <div class="container reveal-up">
-            <span class="subtitle" style="color:rgba(255,255,255,0.7)">SELLER TOOLS</span>
-            <h1 style="color:white;">Create New Listing</h1>
-            <p class="section-subtitle text-white">List your flowers, arrangements, or plants for sale on the marketplace.</p>
+    <section class="cl-hero">
+        <div class="container">
+            <h1>Create New Listing</h1>
+            <p>List your flowers, arrangements, or services on Flower Ecosystem</p>
         </div>
     </section>
 
-    <section class="section-padding bg-light">
-        <div class="container" style="max-width:720px;">
-            <form id="listingForm" novalidate>
-                <div class="form-section">
-                    <h3>Product Details</h3>
-                    <div class="form-group">
-                        <label for="productName" class="form-label">Product Name *</label>
-                        <input type="text" id="productName" class="form-input" placeholder="e.g. Premium Rose Bouquet" required>
+    <div class="container" style="max-width:800px;">
+        <div class="cl-progress" id="clProgress"></div>
+
+        <!-- Step 1: What are you listing? -->
+        <div class="cl-section" id="step1">
+            <div class="cl-card">
+                <h2>What are you listing?</h2>
+                <p>Choose the type of listing you want to create.</p>
+                <div class="type-grid" id="listingTypes"></div>
+            </div>
+        </div>
+
+        <!-- Step 2: Basic Info -->
+        <div class="cl-section" id="step2" style="display:none;">
+            <div class="cl-card">
+                <h2>Basic Information</h2>
+                <p>Tell us about your listing.</p>
+                <div class="cl-grid">
+                    <div class="cl-group cl-full">
+                        <label class="cl-label">Title <span class="req">*</span></label>
+                        <input type="text" id="listingTitle" class="cl-input" placeholder="e.g., Premium Red Roses" required>
                     </div>
-                    <div class="form-group" style="margin-top:1rem;">
-                        <label for="productDescription" class="form-label">Description *</label>
-                        <textarea id="productDescription" class="form-input" rows="4" placeholder="Describe your product in detail — flowers used, size, care instructions, etc." required></textarea>
+                    <div class="cl-group cl-full">
+                        <label class="cl-label">Description <span class="req">*</span></label>
+                        <textarea id="listingDesc" class="cl-input" rows="3" placeholder="Describe your product or service..." required></textarea>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Category <span class="req">*</span></label>
+                        <select id="listingCategory" class="cl-input" required>
+                            <option value="">Select category</option>
+                            <option value="roses">Roses</option>
+                            <option value="bouquets">Bouquets</option>
+                            <option value="orchids">Orchids</option>
+                            <option value="tulips">Tulips</option>
+                            <option value="lilies">Lilies</option>
+                            <option value="sunflowers">Sunflowers</option>
+                            <option value="plants">Indoor Plants</option>
+                            <option value="seeds">Seeds</option>
+                            <option value="pots">Pots & Planters</option>
+                            <option value="tools">Garden Tools</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Price <span class="req">*</span></label>
+                        <input type="number" id="listingPrice" class="cl-input" placeholder="GHS" min="0" step="0.01" required>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="form-section">
-                    <h3>Pricing & Inventory</h3>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-                        <div class="form-group">
-                            <label for="productPrice" class="form-label">Price ($) *</label>
-                            <input type="number" id="productPrice" class="form-input" step="0.01" min="0" placeholder="29.99" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="productStock" class="form-label">Stock Quantity *</label>
-                            <input type="number" id="productStock" class="form-input" min="0" placeholder="10" required>
-                        </div>
+        <!-- Step 3: Dynamic Fields (based on listing type) -->
+        <div class="cl-section" id="step3" style="display:none;">
+            <!-- FLOWER fields -->
+            <div class="cl-card" id="flowerFields" style="display:none;">
+                <h2>Flower Details</h2>
+                <div class="cl-grid">
+                    <div class="cl-group">
+                        <label class="cl-label">Flower Variety</label>
+                        <select id="flowerVariety" class="cl-input">
+                            <option value="">Select</option>
+                            <option value="roses">Roses</option>
+                            <option value="tulips">Tulips</option>
+                            <option value="orchids">Orchids</option>
+                            <option value="sunflowers">Sunflowers</option>
+                            <option value="lilies">Lilies</option>
+                            <option value="peonies">Peonies</option>
+                            <option value="carnations">Carnations</option>
+                            <option value="daisies">Daisies</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Color</label>
+                        <select id="flowerColor" class="cl-input">
+                            <option value="">Select</option>
+                            <option value="red">Red</option>
+                            <option value="pink">Pink</option>
+                            <option value="white">White</option>
+                            <option value="yellow">Yellow</option>
+                            <option value="purple">Purple</option>
+                            <option value="orange">Orange</option>
+                            <option value="multi">Multi-color</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Freshness</label>
+                        <select id="flowerFresh" class="cl-input">
+                            <option value="fresh">Fresh Cut</option>
+                            <option value="potted">Potted</option>
+                            <option value="dried">Dried</option>
+                            <option value="artificial">Artificial</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Stem Length</label>
+                        <input type="text" id="stemLength" class="cl-input" placeholder="e.g., 40-50cm">
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Grade / Quality</label>
+                        <select id="flowerGrade" class="cl-input">
+                            <option value="premium">Premium</option>
+                            <option value="standard">Standard</option>
+                            <option value="economy">Economy</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Quantity Available</label>
+                        <input type="number" id="flowerQty" class="cl-input" placeholder="Number of stems" min="0">
                     </div>
                 </div>
-
-                <div class="form-section">
-                    <h3>Classification</h3>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-                        <div class="form-group">
-                            <label for="productCategory" class="form-label">Category *</label>
-                            <select id="productCategory" class="form-select" required>
-                                <option value="">Select a category</option>
-                                <option value="roses">Roses</option>
-                                <option value="bouquets">Bouquets</option>
-                                <option value="orchids">Orchids</option>
-                                <option value="succulents">Succulents</option>
-                                <option value="wildflowers">Wildflowers</option>
-                                <option value="plants">Indoor Plants</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="productCondition" class="form-label">Flower Condition *</label>
-                            <select id="productCondition" class="form-select" required>
-                                <option value="">Select condition</option>
-                                <option value="natural">Natural (Fresh)</option>
-                                <option value="artificial">Artificial (Silk)</option>
-                                <option value="preserved">Preserved</option>
-                                <option value="dried">Dried</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem;">
-                        <div class="form-group">
-                            <label for="productOccasion" class="form-label">Occasion</label>
-                            <select id="productOccasion" class="form-select">
-                                <option value="">Select occasion</option>
-                                <option value="romance">Romance</option>
-                                <option value="wedding">Wedding</option>
-                                <option value="birthday">Birthday</option>
-                                <option value="sympathy">Sympathy</option>
-                                <option value="celebration">Celebration</option>
-                                <option value="everyday">Everyday</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="productColor" class="form-label">Primary Color</label>
-                            <select id="productColor" class="form-select">
-                                <option value="">Select color</option>
-                                <option value="red">Red</option>
-                                <option value="pink">Pink</option>
-                                <option value="white">White</option>
-                                <option value="yellow">Yellow</option>
-                                <option value="purple">Purple</option>
-                                <option value="orange">Orange</option>
-                                <option value="multi">Multi-color</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3><i class="bi bi-flower1" style="color:var(--primary-color);"></i> Flower Characteristics</h3>
-                    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:1rem;">Help buyers understand your flowers better by adding these details.</p>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-                        <div class="form-group">
-                            <label for="productSize" class="form-label">Size / Stem Count</label>
-                            <select id="productSize" class="form-select">
-                                <option value="">Select size</option>
-                                <option value="single">Single Stem</option>
-                                <option value="small">Small (5-10 stems)</option>
-                                <option value="medium">Medium (10-20 stems)</option>
-                                <option value="large">Large (20-30 stems)</option>
-                                <option value="extra-large">Extra Large (30+ stems)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="productFragrance" class="form-label">Fragrance Level</label>
-                            <select id="productFragrance" class="form-select">
-                                <option value="">Select fragrance</option>
-                                <option value="none">No Fragrance</option>
-                                <option value="light">Light Scent</option>
-                                <option value="medium">Medium Scent</option>
-                                <option value="strong">Strong Fragrance</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="productCareLevel" class="form-label">Care Difficulty</label>
-                            <select id="productCareLevel" class="form-select">
-                                <option value="">Select care level</option>
-                                <option value="easy">Easy - Minimal care needed</option>
-                                <option value="moderate">Moderate - Regular watering</option>
-                                <option value="expert">Expert - Special care required</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="productSunlight" class="form-label">Sunlight Needs</label>
-                            <select id="productSunlight" class="form-select">
-                                <option value="">Select sunlight</option>
-                                <option value="full-sun">Full Sun (6+ hours)</option>
-                                <option value="partial-sun">Partial Sun (3-6 hours)</option>
-                                <option value="shade">Shade (Less than 3 hours)</option>
-                                <option value="indoor">Indoor / Low Light</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="productWater" class="form-label">Watering Frequency</label>
-                            <select id="productWater" class="form-select">
-                                <option value="">Select frequency</option>
-                                <option value="daily">Daily</option>
-                                <option value="every-2-3-days">Every 2-3 days</option>
-                                <option value="weekly">Weekly</option>
-                                <option value="bi-weekly">Every 2 weeks</option>
-                                <option value="monthly">Monthly</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="productBloomTime" class="form-label">Bloom Season</label>
-                            <select id="productBloomTime" class="form-select">
-                                <option value="">Select season</option>
-                                <option value="spring">Spring</option>
-                                <option value="summer">Summer</option>
-                                <option value="fall">Fall</option>
-                                <option value="winter">Winter</option>
-                                <option value="year-round">Year-Round</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group" style="margin-top:1rem;">
-                        <label class="form-label">Special Features</label>
-                        <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
-                            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; cursor:pointer;">
-                                <input type="checkbox" id="featLongLasting" class="product-feature" value="long-lasting"> Long-lasting
-                            </label>
-                            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; cursor:pointer;">
-                                <input type="checkbox" id="featPollinator" class="product-feature" value="pollinator-friendly"> Pollinator Friendly
-                            </label>
-                            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; cursor:pointer;">
-                                <input type="checkbox" id="featPetSafe" class="product-feature" value="pet-safe"> Pet Safe
-                            </label>
-                            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; cursor:pointer;">
-                                <input type="checkbox" id="featEdible" class="product-feature" value="edible"> Edible
-                            </label>
-                            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; cursor:pointer;">
-                                <input type="checkbox" id="featMedicinal" class="product-feature" value="medicinal"> Medicinal
-                            </label>
-                            <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; cursor:pointer;">
-                                <input type="checkbox" id="featDrought" class="product-feature" value="drought-tolerant"> Drought Tolerant
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group" style="margin-top:1rem;">
-                        <label for="productOrigin" class="form-label">Origin / Source</label>
-                        <input type="text" id="productOrigin" class="form-input" placeholder="e.g. Local farm, Imported from Netherlands">
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3>Images <span style="font-size:0.8rem;font-weight:400;color:var(--text-light);">(up to 10)</span></h3>
-                    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:0.75rem;">Upload images from your device or add image URLs. At least one image is recommended.</p>
-
-                    <div id="uploadArea" style="border:2px dashed var(--border-color);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:border-color 0.2s;margin-bottom:1rem;">
-                        <i class="bi bi-cloud-arrow-up" style="font-size:2.5rem;color:var(--primary-color);display:block;margin-bottom:0.5rem;"></i>
-                        <p style="font-weight:500;margin-bottom:0.25rem;">Drag & drop images here</p>
-                        <p style="font-size:0.8rem;color:var(--text-light);">or click to browse (max 5MB each, jpg/png/webp/gif)</p>
-                        <input type="file" id="fileInput" multiple accept="image/*" style="display:none;">
-                    </div>
-                    <div id="uploadProgress" style="display:none;margin-bottom:1rem;">
-                        <div style="background:var(--border-color);border-radius:4px;height:6px;overflow:hidden;">
-                            <div id="uploadBar" style="background:var(--primary-color);height:100%;width:0%;transition:width 0.3s;"></div>
-                        </div>
-                        <p id="uploadStatus" style="font-size:0.8rem;color:var(--text-light);margin-top:0.25rem;"></p>
-                    </div>
-
-                    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:0.5rem;margin-top:0.5rem;">Or add image URLs:</p>
-                    <div id="imageInputs">
-                        <div class="form-group" style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;">
-                            <input type="url" class="form-input img-url" placeholder="https://example.com/image1.jpg">
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-outline btn-sm" id="addImageBtn"><i class="bi bi-plus-circle"></i> Add Another Image URL</button>
-                    <div class="image-preview" id="imagePreview"></div>
-                </div>
-
-                <div class="form-section">
-                    <h3>Product Video <span style="font-size:0.8rem;font-weight:400;color:var(--text-light);">(optional, max 30 seconds)</span></h3>
-                    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:0.75rem;">Upload a short video to showcase your product. Supports MP4, WebM, and MOV files up to 50MB.</p>
-
-                    <div id="videoUploadArea" style="border:2px dashed var(--border-color);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:border-color 0.2s;margin-bottom:0.75rem;">
-                        <i class="bi bi-camera-video" style="font-size:2.5rem;color:var(--accent-blue);display:block;margin-bottom:0.5rem;"></i>
-                        <p style="font-weight:500;margin-bottom:0.25rem;">Drag & drop a video here</p>
-                        <p style="font-size:0.8rem;color:var(--text-light);">or click to browse (MP4, WebM, MOV — max 30s, 50MB)</p>
-                        <input type="file" id="videoInput" accept="video/mp4,video/webm,video/quicktime" style="display:none;">
-                    </div>
-                    <div id="videoProgress" style="display:none;margin-bottom:0.75rem;">
-                        <div style="background:var(--border-color);border-radius:4px;height:6px;overflow:hidden;">
-                            <div id="videoBar" style="background:var(--accent-blue);height:100%;width:0%;transition:width 0.3s;"></div>
-                        </div>
-                        <p id="videoStatus" style="font-size:0.8rem;color:var(--text-light);margin-top:0.25rem;"></p>
-                    </div>
-                    <div id="videoPreview" style="display:none;margin-bottom:0.75rem;"></div>
-
-                    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:0.5rem;">Or paste a YouTube / Vimeo URL:</p>
-                    <div class="form-group">
-                        <input type="url" id="productVideo" class="form-input" placeholder="https://www.youtube.com/watch?v=...">
-                    </div>
-                </div>
-
-                <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.5rem;">
-                    <button type="submit" class="btn btn-primary" style="flex:1;padding:1rem 2rem;font-size:1rem;">Publish Listing</button>
-                </div>
-            </form>
-
-            <div class="text-center mt-4">
-                <a href="account.html" style="color:var(--text-light);font-size:0.9rem;"><i class="bi bi-arrow-left"></i> Back to Seller Dashboard</a>
             </div>
 
-            <div id="toast" style="display:none; position:fixed; bottom:2rem; right:2rem; background:var(--accent-green); color:white; padding:1rem 1.5rem; border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,0.15); z-index:9999; font-weight:500;"></div>
+            <!-- ARRANGEMENT fields -->
+            <div class="cl-card" id="arrangementFields" style="display:none;">
+                <h2>Arrangement Details</h2>
+                <div class="cl-grid">
+                    <div class="cl-group">
+                        <label class="cl-label">Arrangement Type</label>
+                        <select id="arrType" class="cl-input">
+                            <option value="bouquet">Bouquet</option>
+                            <option value="basket">Basket</option>
+                            <option value="vase">Vase Arrangement</option>
+                            <option value="box">Gift Box</option>
+                            <option value="wedding">Wedding Arrangement</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Occasion</label>
+                        <select id="arrOccasion" class="cl-input">
+                            <option value="">Select</option>
+                            <option value="birthday">Birthday</option>
+                            <option value="wedding">Wedding</option>
+                            <option value="anniversary">Anniversary</option>
+                            <option value="funeral">Funeral / Sympathy</option>
+                            <option value="romantic">Romantic</option>
+                            <option value="corporate">Corporate</option>
+                            <option value="everyday">Everyday</option>
+                        </select>
+                    </div>
+                    <div class="cl-group cl-full">
+                        <label class="cl-label">Flowers Included</label>
+                        <input type="text" id="arrFlowers" class="cl-input" placeholder="e.g., Roses, Orchids, Lilies">
+                    </div>
+                    <div class="cl-group cl-full">
+                        <label class="cl-label">Wrapping / Container</label>
+                        <input type="text" id="arrWrapping" class="cl-input" placeholder="e.g., Kraft Paper, Glass Vase, Luxury Box">
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Custom Message Card?</label>
+                        <select id="arrMessage" class="cl-input">
+                            <option value="yes">Yes (+GHS 5)</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PLANT fields -->
+            <div class="cl-card" id="plantFields" style="display:none;">
+                <h2>Plant Details</h2>
+                <div class="cl-grid">
+                    <div class="cl-group">
+                        <label class="cl-label">Plant Type</label>
+                        <select id="plantType" class="cl-input">
+                            <option value="indoor">Indoor Plant</option>
+                            <option value="outdoor">Outdoor Plant</option>
+                            <option value="succulent">Succulent</option>
+                            <option value="fern">Fern</option>
+                            <option value="palm">Palm</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Size</label>
+                        <select id="plantSize" class="cl-input">
+                            <option value="small">Small (under 30cm)</option>
+                            <option value="medium">Medium (30-60cm)</option>
+                            <option value="large">Large (60cm+)</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Pot Included?</label>
+                        <select id="plantPot" class="cl-input">
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Care Level</label>
+                        <select id="plantCare" class="cl-input">
+                            <option value="easy">Easy</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="difficult">Difficult</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SERVICE fields -->
+            <div class="cl-card" id="serviceFields" style="display:none;">
+                <h2>Service Details</h2>
+                <div class="cl-grid">
+                    <div class="cl-group">
+                        <label class="cl-label">Service Category</label>
+                        <select id="svcCategory" class="cl-input">
+                            <option value="wedding">Wedding Decoration</option>
+                            <option value="landscaping">Landscaping</option>
+                            <option value="maintenance">Garden Maintenance</option>
+                            <option value="delivery">Flower Delivery</option>
+                            <option value="consultation">Plant Consultation</option>
+                            <option value="interior">Interior Plant Styling</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Pricing Model</label>
+                        <select id="svcPricing" class="cl-input">
+                            <option value="fixed">Fixed Price</option>
+                            <option value="hourly">Hourly Rate</option>
+                            <option value="quote">Custom Quote</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Coverage Areas</label>
+                        <input type="text" id="svcAreas" class="cl-input" placeholder="e.g., Accra, Kumasi, Eastern Region">
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Experience</label>
+                        <select id="svcExp" class="cl-input">
+                            <option value="1-3">1-3 years</option>
+                            <option value="3-5">3-5 years</option>
+                            <option value="5-10">5-10 years</option>
+                            <option value="10+">10+ years</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
         </div>
-    </section>
+
+        <!-- Step 4: Images -->
+        <div class="cl-section" id="step4" style="display:none;">
+            <div class="cl-card">
+                <h2>Images</h2>
+                <p>Upload photos of your product or service. First image is the main photo.</p>
+                <div class="cl-upload" onclick="document.getElementById('imageInput').click()">
+                    <div class="cl-upload-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+                    <p style="font-size:0.9rem;margin:0;">Click or drag to upload images</p>
+                    <p style="font-size:0.78rem;color:var(--text-light);margin:0.25rem 0 0;">JPG, PNG, WebP — Max 5MB each</p>
+                </div>
+                <input type="file" id="imageInput" multiple accept="image/*" style="display:none;" onchange="handleImages(this)">
+                <div class="cl-upload-grid" id="imagePreview"></div>
+            </div>
+        </div>
+
+        <!-- Step 5: Inventory & Availability -->
+        <div class="cl-section" id="step5" style="display:none;">
+            <div class="cl-card">
+                <h2>Inventory & Availability</h2>
+                <div class="cl-grid">
+                    <div class="cl-group">
+                        <label class="cl-label">Stock Quantity <span class="req">*</span></label>
+                        <input type="number" id="stockQty" class="cl-input" placeholder="Number available" min="0" required>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">SKU (Optional)</label>
+                        <input type="text" id="sku" class="cl-input" placeholder="Product code">
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Low Stock Alert</label>
+                        <input type="number" id="lowStock" class="cl-input" value="5" min="0">
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Tags</label>
+                        <input type="text" id="tags" class="cl-input" placeholder="e.g., fresh, luxury, wedding">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 6: Delivery -->
+        <div class="cl-section" id="step6" style="display:none;">
+            <div class="cl-card">
+                <h2>Delivery Options</h2>
+                <div class="cl-grid">
+                    <div class="cl-group cl-full">
+                        <label class="cl-label">Delivery Methods</label>
+                        <div class="cl-checks">
+                            <label class="cl-check"><input type="checkbox" name="delivery" value="self"> Self Delivery</label>
+                            <label class="cl-check"><input type="checkbox" name="delivery" value="platform"> Platform Delivery</label>
+                            <label class="cl-check"><input type="checkbox" name="delivery" value="pickup"> Customer Pickup</label>
+                        </div>
+                    </div>
+                    <div class="cl-group cl-full">
+                        <label class="cl-label">Delivery Regions</label>
+                        <input type="text" id="deliveryRegions" class="cl-input" placeholder="e.g., Accra, Kumasi, Tema">
+                        <span class="cl-hint">Separate with commas</span>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Shipping Fee (GHS)</label>
+                        <input type="number" id="shippingFee" class="cl-input" value="0" min="0" step="0.01">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 7: Review -->
+        <div class="cl-section" id="step7" style="display:none;">
+            <div class="cl-card">
+                <h2>Review & Publish</h2>
+                <p>Please review your listing before publishing.</p>
+                <div id="reviewSummary" style="margin-bottom:1.5rem;"></div>
+                <div class="cl-group">
+                    <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.9rem;">
+                        <input type="checkbox" id="agreeTerms" style="accent-color:var(--primary-color);">
+                        I agree to the <a href="terms.html" style="color:var(--primary-color);">Marketplace Terms</a>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success -->
+        <div class="cl-section" id="stepSuccess" style="display:none;">
+            <div class="cl-card">
+                <div class="cl-success">
+                    <div class="cl-success-icon">✅</div>
+                    <h2>Listing Created!</h2>
+                    <p style="color:var(--text-light);max-width:400px;margin:0.5rem auto 1.5rem;">Your listing is now live on the marketplace. You can edit or manage it from your dashboard.</p>
+                    <div style="display:flex;gap:0.75rem;justify-content:center;">
+                        <a href="seller-dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+                        <a href="marketplace.html" class="btn btn-outline">View Marketplace</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="cl-nav" id="clNav">
+            <button class="btn btn-outline" id="clPrev" onclick="clPrevStep()" style="display:none;">Previous</button>
+            <button class="btn btn-primary" id="clNext" onclick="clNextStep()" style="margin-left:auto;">Next Step</button>
+        </div>
+    </div>
 
     <div id="footer-container"></div>
 
-    <script src="js/shared/api.js?v=4.0"></script>
-    <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.4"></script>
-    <script src="js/shared/ui.js?v=2.0"></script>
-    <script src="js/shared/cart.js?v=3.0"></script>
     <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/shared/cart.js?v=3.0"></script>
     <script>
-        (() => {
-            if (typeof isLoggedIn !== 'undefined' && !isLoggedIn()) {
-                document.getElementById('listingForm').innerHTML = '<div class="empty-state" style="padding:3rem 1rem;"><i class="bi bi-person-lock"></i><h3>Please Sign In</h3><p style="margin-bottom:1.5rem;">You need to be logged in as a seller to create listings.</p><button class="btn btn-primary" onclick="openAuthModal(\'login\')">Sign In</button></div>';
-                return;
+        let clStep = 1;
+        let listingType = '';
+        const totalSteps = 7;
+        const uploadedImages = [];
+
+        const steps = [
+            { num: 1, label: 'Type' },
+            { num: 2, label: 'Info' },
+            { num: 3, label: 'Details' },
+            { num: 4, label: 'Images' },
+            { num: 5, label: 'Inventory' },
+            { num: 6, label: 'Delivery' },
+            { num: 7, label: 'Publish' }
+        ];
+
+        const listingTypes = [
+            { id: 'flower', icon: '🌹', name: 'Fresh Flower', desc: 'Roses, tulips, orchids, etc.' },
+            { id: 'arrangement', icon: '💐', name: 'Floral Arrangement', desc: 'Bouquets, baskets, vases' },
+            { id: 'plant', icon: '🪴', name: 'Plant', desc: 'Indoor & outdoor plants' },
+            { id: 'service', icon: '💼', name: 'Service', desc: 'Decoration, landscaping, delivery' }
+        ];
+
+        function clRenderProgress() {
+            document.getElementById('clProgress').innerHTML = steps.map(s => {
+                let cls = 'cl-step';
+                if (s.num < clStep) cls += ' done';
+                else if (s.num === clStep) cls += ' active';
+                return `<div class="${cls}"><span class="cl-step-num">${s.num < clStep ? '✓' : s.num}</span> ${s.label}</div>`;
+            }).join('');
+        }
+
+        function clShowSection(step) {
+            document.querySelectorAll('.cl-section').forEach(s => s.style.display = 'none');
+            document.getElementById('step' + step).style.display = 'block';
+            document.getElementById('clNav').style.display = 'flex';
+            document.getElementById('clPrev').style.display = step > 1 ? 'block' : 'none';
+            document.getElementById('clNext').textContent = step === totalSteps ? 'Publish Listing' : 'Next Step';
+            clRenderProgress();
+        }
+
+        function clNextStep() {
+            if (clStep === totalSteps) { clPublish(); return; }
+            if (!clValidate(clStep)) return;
+            clStep++;
+            clShowSection(clStep);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function clPrevStep() {
+            if (clStep <= 1) return;
+            clStep--;
+            clShowSection(clStep);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function clValidate(step) {
+            if (step === 1) { if (!listingType) { alert('Please select a listing type.'); return false; } return true; }
+            if (step === 2) {
+                const title = document.getElementById('listingTitle').value.trim();
+                const desc = document.getElementById('listingDesc').value.trim();
+                const price = document.getElementById('listingPrice').value;
+                if (!title || !desc || !price) { alert('Please fill in all required fields.'); return false; }
+                return true;
             }
-            const _user = getCurrentUser();
-            const _role = (_user?.role || '').toLowerCase();
-            if (!['seller', 'florist', 'grower', 'admin'].includes(_role)) {
-                document.getElementById('listingForm').innerHTML = '<div class="empty-state" style="padding:3rem 1rem;"><i class="bi bi-shop-lock"></i><h3>Seller Access Only</h3><p style="margin-bottom:1.5rem;">This page is only available to sellers and florists.</p><a href="account.html" class="btn btn-outline">Go to My Account</a></div>';
-                return;
+            if (step === 5) {
+                const stock = document.getElementById('stockQty').value;
+                if (!stock) { alert('Please enter stock quantity.'); return false; }
+                return true;
             }
-
-            const form = document.getElementById('listingForm');
-            const addImageBtn = document.getElementById('addImageBtn');
-            const imageInputs = document.getElementById('imageInputs');
-            const imagePreview = document.getElementById('imagePreview');
-            const toast = document.getElementById('toast');
-            const uploadArea = document.getElementById('uploadArea');
-            const fileInput = document.getElementById('fileInput');
-            const uploadProgress = document.getElementById('uploadProgress');
-            const uploadBar = document.getElementById('uploadBar');
-            const uploadStatus = document.getElementById('uploadStatus');
-            const videoUploadArea = document.getElementById('videoUploadArea');
-            const videoInput = document.getElementById('videoInput');
-            const videoProgress = document.getElementById('videoProgress');
-            const videoBar = document.getElementById('videoBar');
-            const videoStatus = document.getElementById('videoStatus');
-            const videoPreview = document.getElementById('videoPreview');
-
-            let imageUrls = [];
-            let uploadedFiles = [];
-            let uploadedVideoUrl = null;
-            let editMode = false;
-            let editProductId = null;
-
-            // Check for edit mode
-            const params = new URLSearchParams(window.location.search);
-            const editId = params.get('id');
-            if (editId) {
-                editMode = true;
-                editProductId = editId;
-                document.querySelector('h1').textContent = 'Edit Listing';
-                document.querySelector('.section-subtitle').textContent = 'Update your product listing details.';
-                document.querySelector('[type="submit"]').textContent = 'Save Changes';
-                loadProductForEdit(editId);
+            if (step === 7) {
+                if (!document.getElementById('agreeTerms').checked) { alert('Please agree to the terms.'); return false; }
+                return true;
             }
+            return true;
+        }
 
-            async function loadProductForEdit(id) {
-                try {
-                    const res = await fetch(`/api/products/${id}`);
-                    if (!res.ok) throw new Error('Product not found');
-                    const data = await res.json();
-                    // API may return array (JSON fallback) or single object (DB)
-                    const p = Array.isArray(data) ? data.find(x => String(x.id) === String(id)) : data;
-                    if (!p) throw new Error('Product not found');
-                    document.getElementById('productName').value = p.name || '';
-                    document.getElementById('productDescription').value = p.description || '';
-                    document.getElementById('productPrice').value = p.price || '';
-                    document.getElementById('productStock').value = p.stock_quantity ?? '';
-                    // Map DB category name to select value
-                    const catMap = { Roses: 'roses', Bouquets: 'bouquets', Orchids: 'orchids', Succulents: 'succulents', Wildflowers: 'wildflowers', 'Indoor Plants': 'plants' };
-                    const catSelect = document.getElementById('productCategory');
-                    const catVal = catMap[p.category_name] || p.category || '';
-                    if (catVal) {
-                        const catOpt = Array.from(catSelect.options).find(o => o.value === catVal);
-                        if (catOpt) catOpt.selected = true;
-                    }
-                    // Map flower condition
-                    const condMap = { NATURAL: 'natural', ARTIFICIAL: 'artificial', PRESERVED: 'preserved', DRIED: 'dried' };
-                    const condSelect = document.getElementById('productCondition');
-                    const condVal = condMap[(p.flower_cond || '').toUpperCase()] || p.flower_cond || '';
-                    if (condVal) {
-                        const condOpt = Array.from(condSelect.options).find(o => o.value === condVal);
-                        if (condOpt) condOpt.selected = true;
-                    }
-                    // Load existing images
-                    const existingImages = p.images || (p.image ? [p.image] : []);
-                    if (existingImages.length) {
-                        uploadedFiles = existingImages.filter(u => u.startsWith('/uploads/'));
-                        imageUrls = existingImages.filter(u => !u.startsWith('/uploads/'));
-                        const imageInputs = document.getElementById('imageInputs');
-                        imageInputs.innerHTML = '';
-                        imageUrls.forEach(url => {
-                            const div = document.createElement('div');
-                            div.className = 'form-group';
-                            div.style.cssText = 'display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;';
-                            div.innerHTML = `<input type="url" class="form-input img-url" value="${url}" placeholder="https://example.com/image.jpg"> <button type="button" class="remove-img-input" style="background:var(--error-color);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:0.8rem;flex-shrink:0;">&#10005;</button>`;
-                            imageInputs.appendChild(div);
-                            div.querySelector('.remove-img-input').addEventListener('click', () => { div.remove(); updatePreview(); });
-                        });
-                        if (!imageUrls.length) {
-                            const div = document.createElement('div');
-                            div.className = 'form-group';
-                            div.style.cssText = 'display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;';
-                            div.innerHTML = '<input type="url" class="form-input img-url" placeholder="https://example.com/image1.jpg">';
-                            imageInputs.appendChild(div);
-                        }
-                        updatePreview();
-                    }
-                    // Load existing video
-                    if (p.video_url) {
-                        if (p.video_url.startsWith('/uploads/')) {
-                            uploadedVideoUrl = p.video_url;
-                            videoPreview.style.display = 'block';
-                            videoPreview.innerHTML = `
-                                <div style="position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border-color);margin-bottom:0.5rem;">
-                                    <video src="${uploadedVideoUrl}" controls style="width:100%;max-height:300px;display:block;background:#000;"></video>
-                                    <button type="button" onclick="removeVideo()" style="position:absolute;top:8px;right:8px;background:var(--error-color);color:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;">&#10005;</button>
-                                </div>
-                                <p style="font-size:0.8rem;color:var(--accent-green);"><i class="bi bi-check-circle-fill"></i> Uploaded video</p>
-                            `;
-                        } else {
-                            document.getElementById('productVideo').value = p.video_url;
-                        }
-                    }
-                } catch (e) {
-                    showToast('Could not load product data.');
-                }
-            }
+        function clSelectType(el, type) {
+            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            listingType = type;
+            // Show relevant fields in step 3
+            document.getElementById('flowerFields').style.display = type === 'flower' ? 'block' : 'none';
+            document.getElementById('arrangementFields').style.display = type === 'arrangement' ? 'block' : 'none';
+            document.getElementById('plantFields').style.display = type === 'plant' ? 'block' : 'none';
+            document.getElementById('serviceFields').style.display = type === 'service' ? 'block' : 'none';
+        }
 
-            // File upload handlers
-            uploadArea.addEventListener('click', () => fileInput.click());
-            uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.style.borderColor = 'var(--primary-color)'; });
-            uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = 'var(--border-color)'; });
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.style.borderColor = 'var(--border-color)';
-                handleFiles(e.dataTransfer.files);
-            });
-            fileInput.addEventListener('change', () => handleFiles(fileInput.files));
-
-            // Video upload handlers
-            videoUploadArea.addEventListener('click', () => videoInput.click());
-            videoUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); videoUploadArea.style.borderColor = 'var(--accent-blue)'; });
-            videoUploadArea.addEventListener('dragleave', () => { videoUploadArea.style.borderColor = 'var(--border-color)'; });
-            videoUploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                videoUploadArea.style.borderColor = 'var(--border-color)';
-                handleVideoFile(e.dataTransfer.files[0]);
-            });
-            videoInput.addEventListener('change', () => { if (videoInput.files[0]) handleVideoFile(videoInput.files[0]); });
-
-            async function handleFiles(files) {
-                const validFiles = Array.from(files).filter(f => f.size <= 5 * 1024 * 1024 && f.type.startsWith('image/'));
-                if (!validFiles.length) {
-                    showToast('Please select valid image files under 5MB.');
-                    return;
-                }
-
-                uploadProgress.style.display = 'block';
-                uploadStatus.textContent = `Uploading ${validFiles.length} file(s)...`;
-                uploadBar.style.width = '10%';
-
-                const formData = new FormData();
-                validFiles.forEach(f => formData.append('images', f));
-
-                try {
-                    const token = getToken();
-                    const res = await fetch('/api/upload', {
-                        method: 'POST',
-                        headers: token ? { 'Authorization': 'Bearer ' + token } : {},
-                        body: formData
-                    });
-                    uploadBar.style.width = '80%';
-                    if (!res.ok) throw new Error('Upload failed');
-                    const data = await res.json();
-                    uploadedFiles = uploadedFiles.concat(data.images);
-                    uploadBar.style.width = '100%';
-                    uploadStatus.textContent = `${validFiles.length} image(s) uploaded successfully.`;
-                    setTimeout(() => { uploadProgress.style.display = 'none'; uploadBar.style.width = '0%'; }, 2000);
-                    updatePreview();
-                } catch (err) {
-                    uploadStatus.textContent = 'Upload failed: ' + err.message;
-                    uploadBar.style.width = '0%';
-                    setTimeout(() => { uploadProgress.style.display = 'none'; }, 3000);
-                }
-                fileInput.value = '';
-            }
-
-            async function handleVideoFile(file) {
-                if (!file) return;
-                const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime'];
-                if (!allowedTypes.includes(file.type)) {
-                    showToast('Please select an MP4, WebM, or MOV video file.');
-                    return;
-                }
-                if (file.size > 50 * 1024 * 1024) {
-                    showToast('Video file must be under 50MB.');
-                    return;
-                }
-
-                // Check duration via video element
-                videoProgress.style.display = 'block';
-                videoStatus.textContent = 'Checking video duration...';
-                videoBar.style.width = '10%';
-
-                const videoEl = document.createElement('video');
-                videoEl.preload = 'metadata';
-                videoEl.src = URL.createObjectURL(file);
-
-                await new Promise((resolve) => {
-                    videoEl.onloadedmetadata = () => {
-                        URL.revokeObjectURL(videoEl.src);
-                        resolve();
-                    };
-                    videoEl.onerror = () => {
-                        URL.revokeURL(videoEl.src);
-                        resolve();
-                    };
-                });
-
-                const duration = videoEl.duration;
-                if (!isFinite(duration) || duration > 30) {
-                    videoStatus.textContent = 'Video must be 30 seconds or shorter. Detected: ' + (isFinite(duration) ? Math.round(duration) + 's' : 'unknown');
-                    videoBar.style.width = '0%';
-                    videoBar.style.background = 'var(--error-color)';
-                    setTimeout(() => { videoProgress.style.display = 'none'; videoBar.style.background = 'var(--accent-blue)'; }, 3000);
-                    return;
-                }
-
-                videoStatus.textContent = `Uploading video (${Math.round(duration)}s)...`;
-                videoBar.style.width = '30%';
-
-                const formData = new FormData();
-                formData.append('video', file);
-
-                try {
-                    const token = getToken();
-                    const res = await fetch('/api/upload/video', {
-                        method: 'POST',
-                        headers: token ? { 'Authorization': 'Bearer ' + token } : {},
-                        body: formData
-                    });
-                    videoBar.style.width = '80%';
-                    if (!res.ok) throw new Error('Upload failed');
-                    const data = await res.json();
-                    uploadedVideoUrl = data.url;
-                    videoBar.style.width = '100%';
-                    videoStatus.textContent = 'Video uploaded successfully!';
-                    videoPreview.style.display = 'block';
-                    videoPreview.innerHTML = `
-                        <div style="position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border-color);margin-bottom:0.5rem;">
-                            <video src="${uploadedVideoUrl}" controls style="width:100%;max-height:300px;display:block;background:#000;"></video>
-                            <button type="button" onclick="removeVideo()" style="position:absolute;top:8px;right:8px;background:var(--error-color);color:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;">&#10005;</button>
-                        </div>
-                        <p style="font-size:0.8rem;color:var(--accent-green);"><i class="bi bi-check-circle-fill"></i> ${Math.round(duration)}s video ready</p>
-                    `;
-                    document.getElementById('productVideo').value = '';
-                    setTimeout(() => { videoProgress.style.display = 'none'; videoBar.style.width = '0%'; }, 2000);
-                } catch (err) {
-                    videoStatus.textContent = 'Upload failed: ' + err.message;
-                    videoBar.style.width = '0%';
-                    setTimeout(() => { videoProgress.style.display = 'none'; }, 3000);
-                }
-                videoInput.value = '';
-            }
-
-            window.removeVideo = function() {
-                uploadedVideoUrl = null;
-                videoPreview.style.display = 'none';
-                videoPreview.innerHTML = '';
-            };
-
-            function updatePreview() {
-                const inputs = document.querySelectorAll('.img-url');
-                imageUrls = [];
-                inputs.forEach(inp => {
-                    const val = inp.value.trim();
-                    if (val) imageUrls.push(val);
-                });
-                const allImages = [...uploadedFiles, ...imageUrls];
-                imagePreview.innerHTML = allImages.map((url, i) => `
-                    <div class="thumb-wrap" draggable="true" data-index="${i}" data-source="${uploadedFiles.includes(url) ? 'upload' : 'url'}">
-                        <button class="drag-handle" title="Drag to reorder"><i class="bi bi-grip-vertical"></i></button>
-                        <img class="thumb" src="${url}" alt="" onerror="this.style.display='none'">
-                        ${uploadedFiles.includes(url) ? `<span style="position:absolute;bottom:2px;left:2px;background:var(--accent-green);color:white;font-size:0.6rem;padding:1px 4px;border-radius:3px;">Uploaded</span>` : ''}
-                        <button type="button" class="remove-img" title="Remove image">&#10005;</button>
-                    </div>
-                `).join('');
-                initImageDragDrop();
-                imagePreview.querySelectorAll('.remove-img').forEach((btn, i) => {
-                    btn.addEventListener('click', () => {
-                        if (i < uploadedFiles.length) {
-                            uploadedFiles.splice(i, 1);
-                        } else {
-                            const urlIdx = i - uploadedFiles.length;
-                            const urlInputs = document.querySelectorAll('.img-url');
-                            if (urlInputs[urlIdx]) {
-                                urlInputs[urlIdx].closest('.form-group').remove();
-                            }
-                            imageUrls.splice(urlIdx, 1);
-                        }
-                        updatePreview();
-                    });
-                });
-            }
-
-            let dragSrcIndex = null;
-            let dragSrcSource = null;
-
-            function initImageDragDrop() {
-                const wraps = imagePreview.querySelectorAll('.thumb-wrap');
-                wraps.forEach(wrap => {
-                    wrap.addEventListener('dragstart', (e) => {
-                        dragSrcIndex = parseInt(wrap.dataset.index);
-                        dragSrcSource = wrap.dataset.source;
-                        wrap.classList.add('dragging');
-                        e.dataTransfer.effectAllowed = 'move';
-                        e.dataTransfer.setData('text/plain', '');
-                    });
-
-                    wrap.addEventListener('dragend', () => {
-                        wrap.classList.remove('dragging');
-                        wraps.forEach(w => w.classList.remove('drag-over'));
-                    });
-
-                    wrap.addEventListener('dragover', (e) => {
-                        e.preventDefault();
-                        e.dataTransfer.dropEffect = 'move';
-                        wraps.forEach(w => w.classList.remove('drag-over'));
-                        wrap.classList.add('drag-over');
-                    });
-
-                    wrap.addEventListener('dragenter', (e) => {
-                        e.preventDefault();
-                        wrap.classList.add('drag-over');
-                    });
-
-                    wrap.addEventListener('dragleave', () => {
-                        wrap.classList.remove('drag-over');
-                    });
-
-                    wrap.addEventListener('drop', (e) => {
-                        e.preventDefault();
-                        wrap.classList.remove('drag-over');
-                        const targetIndex = parseInt(wrap.dataset.index);
-                        const targetSource = wrap.dataset.source;
-                        if (dragSrcIndex === null || dragSrcIndex === targetIndex) return;
-
-                        reorderImages(dragSrcIndex, dragSrcSource, targetIndex, targetSource);
-                        dragSrcIndex = null;
-                        dragSrcSource = null;
-                    });
-                });
-            }
-
-            function reorderImages(fromIdx, fromSource, toIdx, toSource) {
-                if (fromSource === 'upload' && toSource === 'upload') {
-                    const item = uploadedFiles.splice(fromIdx, 1)[0];
-                    uploadedFiles.splice(toIdx, 0, item);
-                } else if (fromSource === 'upload' && toSource === 'url') {
-                    const item = uploadedFiles.splice(fromIdx, 1)[0];
-                    const adjustedTo = toIdx - uploadedFiles.length;
-                    imageUrls.splice(adjustedTo, 0, item);
-                    rebuildUrlInputs();
-                } else if (fromSource === 'url' && toSource === 'upload') {
-                    const adjustedFrom = fromIdx - uploadedFiles.length;
-                    const item = imageUrls.splice(adjustedFrom, 1)[0];
-                    uploadedFiles.splice(toIdx, 0, item);
-                    rebuildUrlInputs();
-                } else {
-                    const adjustedFrom = fromIdx - uploadedFiles.length;
-                    const adjustedTo = toIdx - uploadedFiles.length;
-                    const item = imageUrls.splice(adjustedFrom, 1)[0];
-                    imageUrls.splice(adjustedTo, 0, item);
-                    rebuildUrlInputs();
-                }
-                updatePreview();
-            }
-
-            function rebuildUrlInputs() {
-                const container = document.getElementById('imageInputs');
-                container.innerHTML = '';
-                if (imageUrls.length === 0) {
-                    const div = document.createElement('div');
-                    div.className = 'form-group';
-                    div.style.cssText = 'display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;';
-                    div.innerHTML = '<input type="url" class="form-input img-url" placeholder="https://example.com/image1.jpg">';
-                    container.appendChild(div);
-                } else {
-                    imageUrls.forEach(url => {
-                        const div = document.createElement('div');
-                        div.className = 'form-group';
-                        div.style.cssText = 'display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;';
-                        div.innerHTML = `<input type="url" class="form-input img-url" value="${escapeHtml(url)}" placeholder="https://example.com/image.jpg"> <button type="button" class="remove-img-input" style="background:var(--error-color);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:0.8rem;flex-shrink:0;">&#10005;</button>`;
-                        container.appendChild(div);
-                        div.querySelector('.remove-img-input').addEventListener('click', () => { div.remove(); updatePreview(); });
-                    });
-                }
-                container.querySelectorAll('.img-url').forEach(inp => {
-                    inp.addEventListener('input', () => updatePreview());
-                });
-            }
-
-            imageInputs.addEventListener('input', (e) => {
-                if (e.target.classList.contains('img-url')) updatePreview();
-            });
-
-            addImageBtn.addEventListener('click', () => {
-                const div = document.createElement('div');
-                div.className = 'form-group';
-                div.style.cssText = 'display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;';
-                div.innerHTML = '<input type="url" class="form-input img-url" placeholder="https://example.com/image.jpg"> <button type="button" class="remove-img-input" style="background:var(--error-color);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:0.8rem;flex-shrink:0;">✕</button>';
-                imageInputs.appendChild(div);
-                div.querySelector('.remove-img-input').addEventListener('click', () => {
-                    div.remove();
-                    updatePreview();
-                });
-            });
-
-            function showToast(msg) {
-                toast.textContent = msg;
-                toast.style.display = 'block';
-                setTimeout(() => { toast.style.display = 'none'; }, 4000);
-            }
-
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                const name = document.getElementById('productName').value.trim();
-                const desc = document.getElementById('productDescription').value.trim();
-                const price = parseFloat(document.getElementById('productPrice').value);
-                const stock = parseInt(document.getElementById('productStock').value);
-                const category = document.getElementById('productCategory').value;
-                const condition = document.getElementById('productCondition').value;
-                const video = uploadedVideoUrl || document.getElementById('productVideo').value.trim() || null;
-
-                if (!name || !desc || isNaN(price) || isNaN(stock) || !category || !condition) {
-                    showToast('Please fill in all required fields.');
-                    return;
-                }
-
-                updatePreview();
-                const allImages = [...uploadedFiles, ...imageUrls];
-                const images = allImages.length ? allImages : ['https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=600&auto=format&fit=crop'];
-
-                const catMap = { roses: 'Roses', bouquets: 'Bouquets', orchids: 'Orchids', succulents: 'Succulents', wildflowers: 'Wildflowers', plants: 'Indoor Plants' };
-                const condMap = { natural: 'NATURAL', artificial: 'ARTIFICIAL', preserved: 'PRESERVED', dried: 'DRIED' };
-
-                const occasion = document.getElementById('productOccasion').value;
-                const color = document.getElementById('productColor').value;
-                const size = document.getElementById('productSize').value;
-                const fragrance = document.getElementById('productFragrance').value;
-                const careLevel = document.getElementById('productCareLevel').value;
-                const sunlight = document.getElementById('productSunlight').value;
-                const water = document.getElementById('productWater').value;
-                const bloomTime = document.getElementById('productBloomTime').value;
-                const origin = document.getElementById('productOrigin').value.trim();
-                const features = [...document.querySelectorAll('.product-feature:checked')].map(cb => cb.value);
-
-                const body = {
-                    name,
-                    description: desc,
-                    price,
-                    stock_quantity: stock,
-                    category: catMap[category] || category,
-                    flower_cond: condMap[condition] || condition.toUpperCase(),
-                    occasion: occasion || null,
-                    color: color || null,
-                    images,
-                    video_url: video || null,
-                    size: size || null,
-                    fragrance: fragrance || null,
-                    care_level: careLevel || null,
-                    sunlight: sunlight || null,
-                    water_frequency: water || null,
-                    bloom_season: bloomTime || null,
-                    features: features.length ? features : null,
-                    origin: origin || null
+        function handleImages(input) {
+            const preview = document.getElementById('imagePreview');
+            for (const file of input.files) {
+                if (uploadedImages.length >= 8) { alert('Maximum 8 images allowed.'); break; }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedImages.push(e.target.result);
+                    renderImagePreview();
                 };
+                reader.readAsDataURL(file);
+            }
+            input.value = '';
+        }
 
-                const token = getToken();
-                if (!token) {
-                    showToast('Please sign in to create a listing.');
-                    return;
-                }
+        function renderImagePreview() {
+            document.getElementById('imagePreview').innerHTML = uploadedImages.map((img, i) => `
+                <div class="cl-upload-thumb">
+                    <img src="${img}" alt="Upload ${i+1}">
+                    <button class="cl-upload-remove" onclick="removeImage(${i})">×</button>
+                </div>
+            `).join('');
+        }
 
-                const method = editMode ? 'PUT' : 'POST';
-                const url = editMode ? `/api/products/${editProductId}` : '/api/products';
+        function removeImage(idx) {
+            uploadedImages.splice(idx, 1);
+            renderImagePreview();
+        }
 
-                try {
-                    const res = await fetch(url, {
-                        method,
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + token,
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        body: JSON.stringify(body)
-                    });
-                    if (!res.ok) {
-                        const err = await res.json().catch(() => ({}));
-                        showToast(err.error || 'Failed to save listing.');
-                        return;
-                    }
-                    showToast(editMode ? 'Listing updated successfully!' : 'Listing published! Your product is now live on the marketplace.');
-                    if (!editMode) {
-                        form.reset();
-                        imagePreview.innerHTML = '';
-                        document.querySelectorAll('.img-url').forEach(inp => inp.value = '');
-                        imageUrls = [];
-                        uploadedFiles = [];
-                        uploadedVideoUrl = null;
-                        videoPreview.style.display = 'none';
-                        videoPreview.innerHTML = '';
-                    }
-                } catch (err) {
-                    showToast('Network error: ' + err.message);
-                }
-            });
-        })();
-    </script>
-    <script>
-        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
-            toggle.addEventListener('click', function(e) {
-                if (window.innerWidth <= 768) {
-                    e.preventDefault();
-                    this.parentElement.classList.toggle('mobile-open');
-                }
-            });
+        function buildReview() {
+            const typeNames = { flower: '🌹 Fresh Flower', arrangement: '💐 Floral Arrangement', plant: '🪴 Plant', service: '💼 Service' };
+            document.getElementById('reviewSummary').innerHTML = `
+                <div style="background:var(--bg-light);border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Type:</span><strong>${typeNames[listingType] || listingType}</strong></div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Title:</span><strong>${document.getElementById('listingTitle').value}</strong></div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Price:</span><strong>GHS ${Number(document.getElementById('listingPrice').value).toFixed(2)}</strong></div>
+                    <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-light);">Stock:</span><strong>${document.getElementById('stockQty').value} units</strong></div>
+                </div>
+            `;
+        }
+
+        async function clPublish() {
+            const btn = document.getElementById('clNext');
+            btn.disabled = true;
+            btn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.6s linear infinite;"></span> Publishing...';
+            await new Promise(r => setTimeout(r, 1500));
+            document.getElementById('step7').style.display = 'none';
+            document.getElementById('clNav').style.display = 'none';
+            document.getElementById('stepSuccess').style.display = 'block';
+            document.getElementById('clProgress').innerHTML = steps.map(s => `<div class="cl-step done"><span class="cl-step-num">✓</span> ${s.label}</div>`).join('');
+        }
+
+        // Init type cards
+        document.getElementById('listingTypes').innerHTML = listingTypes.map(t => `
+            <div class="type-card" onclick="clSelectType(this, '${t.id}')">
+                <div class="type-card-icon">${t.icon}</div>
+                <div class="type-card-name">${t.name}</div>
+                <div class="type-card-desc">${t.desc}</div>
+            </div>
+        `).join('');
+
+        // Build review on step 6
+        document.getElementById('clNext').addEventListener('click', () => {
+            if (clStep === 6) buildReview();
         });
+
+        // Checkbox styling
+        document.addEventListener('change', (e) => {
+            if (e.target.closest('.cl-check')) {
+                e.target.closest('.cl-check').classList.toggle('selected', e.target.checked);
+            }
+        });
+
+        clRenderProgress();
     </script>
 </body>
 </html>
