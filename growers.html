@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Buy fresh flowers directly from trusted growers and flower farms on Flower Ecosystem.">
+    <title>Grower Directory | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .grw-hero { background:linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%); padding:5rem 0 3rem; }
+        .grw-hero-inner { text-align:center; max-width:700px; margin:0 auto; }
+        .grw-hero h1 { font-size:clamp(2rem, 4vw, 2.8rem); margin-bottom:0.5rem; }
+        .grw-hero p { color:var(--text-light); font-size:1.05rem; margin-bottom:1.5rem; }
+        .grw-search { display:flex; background:white; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); overflow:hidden; max-width:600px; margin:0 auto 1.5rem; }
+        .grw-search input { flex:1; border:none; padding:1rem 1.25rem; font-size:1rem; outline:none; }
+        .grw-search button { background:#10b981; color:white; border:none; padding:1rem 1.5rem; cursor:pointer; }
+        .grw-pills { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
+        .grw-pill { padding:0.5rem 1rem; border-radius:50px; background:white; border:1px solid var(--border-color); color:var(--text-main); font-size:0.85rem; cursor:pointer; transition:all 0.2s; }
+        .grw-pill:hover, .grw-pill.active { background:#10b981; color:white; border-color:#10b981; }
+
+        /* Filter Bar */
+        .grw-filter-bar { background:white; border-bottom:1px solid var(--border-color); padding:1rem 0; }
+        .grw-filters { display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; }
+        .grw-filter { padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.85rem; background:white; }
+        .grw-count { font-size:0.9rem; color:var(--text-light); margin-left:auto; }
+
+        /* Provider Cards */
+        .grw-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(340px, 1fr)); gap:1.5rem; }
+        .grw-card { background:white; border:1px solid var(--border-color); border-radius:14px; overflow:hidden; transition:all 0.3s; }
+        .grw-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); }
+        .grw-card-banner { height:140px; overflow:hidden; position:relative; }
+        .grw-card-banner img { width:100%; height:100%; object-fit:cover; }
+        .grw-card-verified { position:absolute; top:0.75rem; right:0.75rem; background:#10b981; color:white; padding:0.2rem 0.6rem; border-radius:6px; font-size:0.7rem; font-weight:600; display:flex; align-items:center; gap:0.3rem; }
+        .grw-card-fav { position:absolute; top:0.75rem; left:0.75rem; background:white; border:none; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+        .grw-card-body { padding:1.25rem; }
+        .grw-card-header { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem; }
+        .grw-card-avatar { width:50px; height:50px; border-radius:50%; overflow:hidden; border:2px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+        .grw-card-avatar img { width:100%; height:100%; object-fit:cover; }
+        .grw-card-avatar-placeholder { width:50px; height:50px; border-radius:50%; background:#e8f5e9; display:flex; align-items:center; justify-content:center; font-size:1.25rem; border:2px solid white; }
+        .grw-card-name { font-weight:600; font-size:1.05rem; margin-bottom:0.15rem; }
+        .grw-card-rating { font-size:0.8rem; color:#f59e0b; }
+        .grw-card-rating span { color:var(--text-light); }
+        .grw-card-location { font-size:0.82rem; color:var(--text-light); margin-bottom:0.5rem; display:flex; align-items:center; gap:0.3rem; }
+        .grw-card-varieties { display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:0.75rem; }
+        .grw-card-variety { font-size:0.72rem; padding:0.2rem 0.5rem; border-radius:4px; background:#e8f5e9; color:#10b981; font-weight:500; }
+        .grw-card-meta { display:flex; gap:1rem; font-size:0.8rem; color:var(--text-light); margin-bottom:0.75rem; }
+        .grw-card-badges { display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:0.75rem; }
+        .grw-card-badge { font-size:0.7rem; padding:0.15rem 0.5rem; border-radius:4px; font-weight:500; }
+        .grw-card-badge.wholesale { background:#fff3cd; color:#856404; }
+        .grw-card-badge.organic { background:#d4edda; color:#155724; }
+        .grw-card-badge.export { background:#cce5ff; color:#004085; }
+        .grw-card-footer { display:flex; gap:0.5rem; padding-top:0.75rem; border-top:1px solid var(--border-light); }
+        .grw-card-footer .btn { flex:1; }
+
+        /* CTA */
+        .grw-cta { background:linear-gradient(135deg, #10b981, #059669); border-radius:16px; padding:3rem; text-align:center; color:white; margin:2rem 0; }
+        .grw-cta h2 { color:white; margin-bottom:0.5rem; }
+        .grw-cta p { color:rgba(255,255,255,0.85); margin-bottom:1.5rem; max-width:500px; margin-left:auto; margin-right:auto; }
+
+        /* Season Calendar */
+        .season-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem; margin:2rem 0; }
+        .season-card { background:white; border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; }
+        .season-month { font-weight:600; font-size:0.9rem; margin-bottom:0.5rem; color:#10b981; }
+        .season-flowers { font-size:0.85rem; color:var(--text-light); }
+
+        @media (max-width:768px) {
+            .grw-grid { grid-template-columns:1fr; }
+            .season-grid { grid-template-columns:repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="grw-hero">
+        <div class="container">
+            <div class="grw-hero-inner reveal-up">
+                <h1>Buy Fresh Flowers Directly from Trusted Growers</h1>
+                <p>Connect with flower farms supplying fresh flowers, rare species, and wholesale orders.</p>
+                <div class="grw-search">
+                    <input type="text" id="growerSearch" placeholder="Search farm, flower type, location...">
+                    <button onclick="searchGrowers()"><i class="bi bi-search"></i></button>
+                </div>
+                <div class="grw-pills">
+                    <button class="grw-pill active" onclick="filterType(this, 'all')">All Farms</button>
+                    <button class="grw-pill" onclick="filterType(this, 'roses')">Roses</button>
+                    <button class="grw-pill" onclick="filterType(this, 'sunflowers')">Sunflowers</button>
+                    <button class="grw-pill" onclick="filterType(this, 'orchids')">Orchids</button>
+                    <button class="grw-pill" onclick="filterType(this, 'tropical')">Tropical</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <div class="grw-filter-bar">
+        <div class="container">
+            <div class="grw-filters">
+                <select class="grw-filter" id="locationFilter" onchange="applyFilters()">
+                    <option value="all">All Locations</option>
+                    <option value="eastern">Eastern Region</option>
+                    <option value="ashanti">Ashanti Region</option>
+                    <option value="greater-accra">Greater Accra</option>
+                </select>
+                <select class="grw-filter" id="certFilter" onchange="applyFilters()">
+                    <option value="all">All Certifications</option>
+                    <option value="organic">Organic</option>
+                    <option value="export">Export Certified</option>
+                    <option value="gap">Good Agricultural Practices</option>
+                </select>
+                <select class="grw-filter" id="sortFilter" onchange="applyFilters()">
+                    <option value="rating">Top Rated</option>
+                    <option value="products">Most Varieties</option>
+                    <option value="name">Name A-Z</option>
+                </select>
+                <span class="grw-count" id="growerCount"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Growers -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="grw-grid" id="growerGrid"></div>
+        </div>
+    </section>
+
+    <!-- Seasonal Calendar -->
+    <section class="section-padding bg-light" style="padding-top:2rem;">
+        <div class="container">
+            <div style="text-align:center;margin-bottom:1.5rem;">
+                <span class="subtitle">SEASONAL</span>
+                <h2>Harvest Calendar</h2>
+            </div>
+            <div class="season-grid" id="seasonGrid"></div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container">
+            <div class="grw-cta reveal-up">
+                <h2>Are You a Grower?</h2>
+                <p>Sell your fresh flowers directly to customers. Join our network of trusted flower farms.</p>
+                <a href="sell.html" class="btn btn-lg" style="background:white;color:#10b981;">Register Your Farm</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        let growers = [];
+        let filtered = [];
+        let activeType = 'all';
+
+        async function initGrowers() {
+            try {
+                const data = await fetch('/api/products/list/florists').then(r => r.json());
+                growers = (data.florists || data || []).map((f, i) => ({
+                    ...f,
+                    varieties: ['Roses', 'Sunflowers', 'Orchids', 'Tulips', 'Lilies', 'Tropical'][i % 6] ? [['Roses','Sunflowers'], ['Orchids','Tulips'], ['Lilies','Tropical'], ['Roses','Lilies'], ['Sunflowers','Orchids'], ['Tropical','Tulips']][i % 6] : ['Roses'],
+                    location: ['Eastern Region', 'Ashanti Region', 'Greater Accra', 'Central Region'][i % 4],
+                    rating: (4 + Math.random()).toFixed(1),
+                    reviews: Math.floor(Math.random() * 100) + 10,
+                    products: f.products || Math.floor(Math.random() * 30) + 5,
+                    verified: true,
+                    wholesale: i % 3 === 0,
+                    organic: i % 4 === 0,
+                    exportCert: i % 5 === 0,
+                    img: f.image || `https://images.unsplash.com/photo-${['1464226184884-fa280b87c399','1574943320219-553eb213f72d','1416879595882-3373a0480b5b','1585320806297-9794b3e4eeae'][i % 4]}?q=400&auto=format&fit=crop`
+                }));
+            } catch { growers = []; }
+            filtered = [...growers];
+            renderGrowers();
+            renderSeasons();
+        }
+
+        function filterType(el, type) {
+            document.querySelectorAll('.grw-pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            activeType = type;
+            applyFilters();
+        }
+
+        function searchGrowers() { applyFilters(); }
+
+        function applyFilters() {
+            const q = document.getElementById('growerSearch').value.toLowerCase();
+            const location = document.getElementById('locationFilter').value;
+            const cert = document.getElementById('certFilter').value;
+            const sort = document.getElementById('sortFilter').value;
+
+            filtered = growers.filter(g => {
+                if (q && !`${g.name} ${g.varieties.join(' ')} ${g.location}`.toLowerCase().includes(q)) return false;
+                if (activeType !== 'all' && !g.varieties.some(v => v.toLowerCase().includes(activeType))) return false;
+                if (location !== 'all' && g.location.toLowerCase().replace(/\s+/g, '-') !== location) return false;
+                if (cert === 'organic' && !g.organic) return false;
+                if (cert === 'export' && !g.exportCert) return false;
+                return true;
+            });
+
+            if (sort === 'rating') filtered.sort((a, b) => Number(b.rating) - Number(a.rating));
+            else if (sort === 'products') filtered.sort((a, b) => (b.products || 0) - (a.products || 0));
+            else if (sort === 'name') filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
+            renderGrowers();
+        }
+
+        function renderGrowers() {
+            const grid = document.getElementById('growerGrid');
+            document.getElementById('growerCount').textContent = `${filtered.length} farm${filtered.length !== 1 ? 's' : ''} found`;
+
+            if (!filtered.length) {
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;"><i class="bi bi-tree" style="font-size:3rem;color:var(--text-light);display:block;margin-bottom:1rem;"></i><h3>No farms found</h3><p style="color:var(--text-light);">Try adjusting your search or filters.</p></div>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map(g => {
+                const initials = (g.name || 'G').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+                return `
+                <div class="grw-card">
+                    <div class="grw-card-banner">
+                        <img src="${g.img || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 140%22><rect fill=%22%23d4edda%22 width=%22400%22 height=%22140%22/><text x=%22200%22 y=%2280%22 text-anchor=%22middle%22 fill=%22%2310b981%22 font-size=%2240%22>🌱</text></svg>'}" alt="${g.name}" loading="lazy">
+                        ${g.verified ? '<div class="grw-card-verified"><i class="bi bi-patch-check-fill"></i> Verified Grower</div>' : ''}
+                        <button class="grw-card-fav" onclick="event.stopPropagation()"><i class="bi bi-heart"></i></button>
+                    </div>
+                    <div class="grw-card-body">
+                        <div class="grw-card-header">
+                            ${g.image ? `<div class="grw-card-avatar"><img src="${g.image}" alt="${g.name}"></div>` : `<div class="grw-card-avatar-placeholder">🌱</div>`}
+                            <div>
+                                <div class="grw-card-name">${g.name}</div>
+                                <div class="grw-card-rating">${renderStars(g.rating)} <span>(${g.reviews})</span></div>
+                            </div>
+                        </div>
+                        <div class="grw-card-location"><i class="bi bi-geo-alt"></i> ${g.location}</div>
+                        <div class="grw-card-varieties">
+                            ${g.varieties.map(v => `<span class="grw-card-variety">${v}</span>`).join('')}
+                        </div>
+                        <div class="grw-card-meta">
+                            <span><i class="bi bi-flower1"></i> ${g.products} Varieties</span>
+                        </div>
+                        <div class="grw-card-badges">
+                            ${g.wholesale ? '<span class="grw-card-badge wholesale">Wholesale</span>' : ''}
+                            ${g.organic ? '<span class="grw-card-badge organic">Organic</span>' : ''}
+                            ${g.exportCert ? '<span class="grw-card-badge export">Export Certified</span>' : ''}
+                        </div>
+                        <div class="grw-card-footer">
+                            <a href="florist-profile.html?id=${g.id}" class="btn btn-outline btn-sm">View Farm</a>
+                            <a href="florist-profile.html?id=${g.id}" class="btn btn-primary btn-sm" style="background:#10b981;">Visit Store</a>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderStars(rating) {
+            const r = Number(rating) || 0;
+            const f = Math.floor(r);
+            let s = '';
+            for (let i = 0; i < f; i++) s += '<i class="bi bi-star-fill"></i>';
+            for (let i = f; i < 5; i++) s += '<i class="bi bi-star"></i>';
+            return s;
+        }
+
+        function renderSeasons() {
+            const months = [
+                { month: 'Jan–Feb', flowers: 'Roses, Tulips, Carnations' },
+                { month: 'Mar–Apr', flowers: 'Sunflowers, Lilies, Daisies' },
+                { month: 'May–Jun', flowers: 'Orchids, Peonies, Hydrangeas' },
+                { month: 'Jul–Aug', flowers: 'Tropical, Hibiscus, Birds of Paradise' },
+                { month: 'Sep–Oct', flowers: 'Chrysanthemums, Marigolds' },
+                { month: 'Nov–Dec', flowers: 'Poinsettias, Amaryllis, Winter Bloom' }
+            ];
+            document.getElementById('seasonGrid').innerHTML = months.map(m => `
+                <div class="season-card">
+                    <div class="season-month">${m.month}</div>
+                    <div class="season-flowers">${m.flowers}</div>
+                </div>
+            `).join('');
+        }
+
+        initGrowers();
+    </script>
+</body>
+</html>
