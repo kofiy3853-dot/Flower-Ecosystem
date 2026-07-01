@@ -19,6 +19,7 @@ function updateAllBadges() {
     const count = getCartCount();
     document.querySelectorAll('.cart-count').forEach(el => {
         el.textContent = count;
+        el.style.display = count > 0 ? 'flex' : 'none';
         el.style.animation = 'none';
         void el.offsetWidth;
         el.style.animation = 'pulse 0.5s ease';
