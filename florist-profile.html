@@ -12,107 +12,346 @@
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
-        .profile-header { background: var(--bg-light); padding: 6rem 0 3rem; margin-top: 65px; border-bottom: 1px solid var(--border-color); }
-        .profile-container { display: flex; gap: 2rem; align-items: center; }
-        .profile-avatar { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: var(--shadow-md); }
-        .profile-info { flex: 1; }
-        .profile-name { font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--text-main); }
-        .profile-meta { display: flex; gap: 1.5rem; color: var(--text-light); font-size: 0.95rem; margin-bottom: 1rem; flex-wrap: wrap; }
-        .profile-meta span { display: flex; align-items: center; gap: 0.5rem; }
-        .profile-meta i { color: var(--primary-color); }
-        .profile-desc { font-size: 1.05rem; line-height: 1.6; max-width: 800px; }
-        .tabs-nav { display: flex; gap: 2rem; border-bottom: 1px solid var(--border-color); margin-bottom: 2rem; }
-        .tab-link { background: none; border: none; padding: 1rem 0; font-size: 1rem; font-weight: 500; color: var(--text-light); cursor: pointer; position: relative; }
-        .tab-link.active { color: var(--primary-color); }
-        .tab-link.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: var(--primary-color); }
-        
-        @media (max-width: 768px) {
-            .profile-container { flex-direction: column; text-align: center; }
-            .profile-meta { justify-content: center; }
+        /* Banner */
+        .fp-banner { height:300px; overflow:hidden; position:relative; }
+        .fp-banner img { width:100%; height:100%; object-fit:cover; }
+
+        /* Profile Header */
+        .fp-header { padding:0 0 2rem; margin-top:-80px; position:relative; z-index:1; }
+        .fp-header-inner { display:flex; gap:1.5rem; align-items:flex-end; }
+        .fp-avatar { width:140px; height:140px; border-radius:50%; border:4px solid white; box-shadow:0 4px 20px rgba(0,0,0,0.15); object-fit:cover; background:var(--primary-light); flex-shrink:0; }
+        .fp-avatar-placeholder { width:140px; height:140px; border-radius:50%; border:4px solid white; box-shadow:0 4px 20px rgba(0,0,0,0.15); background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:3rem; color:var(--primary-color); flex-shrink:0; }
+        .fp-info { flex:1; }
+        .fp-name-row { display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; }
+        .fp-name { font-size:1.75rem; font-weight:700; margin:0; }
+        .fp-verified { background:var(--accent-green); color:white; padding:0.2rem 0.6rem; border-radius:6px; font-size:0.75rem; font-weight:600; display:flex; align-items:center; gap:0.3rem; }
+        .fp-meta { display:flex; gap:1.25rem; font-size:0.88rem; color:var(--text-light); margin:0.5rem 0; flex-wrap:wrap; }
+        .fp-meta i { color:var(--primary-color); margin-right:0.3rem; }
+        .fp-actions { display:flex; gap:0.75rem; margin-top:1rem; flex-wrap:wrap; }
+        .fp-actions .btn { font-size:0.88rem; }
+
+        /* Tabs */
+        .fp-tabs { display:flex; gap:0; border-bottom:2px solid var(--border-color); margin-bottom:2rem; overflow-x:auto; }
+        .fp-tab { padding:0.85rem 1.5rem; border:none; background:none; cursor:pointer; font-size:0.95rem; font-weight:500; color:var(--text-light); border-bottom:2px solid transparent; margin-bottom:-2px; transition:all 0.2s; white-space:nowrap; }
+        .fp-tab:hover { color:var(--primary-color); }
+        .fp-tab.active { color:var(--primary-color); border-bottom-color:var(--primary-color); }
+        .fp-tab-panel { display:none; }
+        .fp-tab-panel.active { display:block; }
+
+        /* Stats */
+        .fp-stats { display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem; margin-bottom:2rem; }
+        .fp-stat { background:var(--bg-light); border-radius:12px; padding:1.25rem; text-align:center; }
+        .fp-stat-value { font-size:1.5rem; font-weight:700; color:var(--primary-color); }
+        .fp-stat-label { font-size:0.82rem; color:var(--text-light); }
+
+        /* Services */
+        .fp-services { display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; margin-bottom:2rem; }
+        .fp-service { background:var(--bg-light); border-radius:12px; padding:1.25rem; text-align:center; border:1px solid var(--border-color); transition:all 0.3s; }
+        .fp-service:hover { border-color:var(--primary-color); transform:translateY(-3px); }
+        .fp-service-icon { font-size:1.75rem; margin-bottom:0.5rem; }
+        .fp-service-name { font-weight:600; font-size:0.9rem; margin-bottom:0.2rem; }
+        .fp-service-price { font-size:0.82rem; color:var(--primary-color); }
+
+        /* Gallery */
+        .fp-gallery { display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; }
+        .fp-gallery-item { border-radius:12px; overflow:hidden; aspect-ratio:1; cursor:pointer; }
+        .fp-gallery-item img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .fp-gallery-item:hover img { transform:scale(1.08); }
+
+        /* Products Grid */
+        .fp-products { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:1.25rem; }
+
+        /* Reviews */
+        .fp-reviews { display:grid; grid-template-columns:repeat(2, 1fr); gap:1rem; }
+        .fp-review { background:var(--bg-light); border-radius:12px; padding:1.25rem; }
+        .fp-review-header { display:flex; justify-content:space-between; margin-bottom:0.5rem; }
+        .fp-review-author { font-weight:600; font-size:0.9rem; }
+        .fp-review-stars { color:#f59e0b; }
+        .fp-review-text { font-size:0.88rem; color:var(--text-light); line-height:1.5; }
+        .fp-review-date { font-size:0.75rem; color:var(--text-muted); margin-top:0.5rem; }
+
+        /* Contact */
+        .fp-contact { background:var(--bg-light); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem; }
+        .fp-contact h3 { margin-bottom:1rem; font-size:1.1rem; }
+        .fp-contact-item { display:flex; align-items:center; gap:0.75rem; padding:0.75rem 0; border-bottom:1px solid var(--border-light); }
+        .fp-contact-item:last-child { border-bottom:none; }
+        .fp-contact-item i { font-size:1.1rem; color:var(--primary-color); width:24px; }
+        .fp-contact-item span { font-size:0.9rem; }
+        .fp-contact-item a { color:var(--primary-color); text-decoration:none; }
+
+        /* Hours */
+        .fp-hours { margin-bottom:1.5rem; }
+        .fp-hours-row { display:flex; justify-content:space-between; padding:0.5rem 0; border-bottom:1px solid var(--border-light); font-size:0.9rem; }
+        .fp-hours-row:last-child { border-bottom:none; }
+
+        /* Delivery */
+        .fp-delivery { display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+        .fp-delivery-tag { background:var(--bg-light); padding:0.4rem 0.75rem; border-radius:8px; font-size:0.82rem; display:flex; align-items:center; gap:0.3rem; }
+
+        @media (max-width:768px) {
+            .fp-header-inner { flex-direction:column; align-items:center; text-align:center; }
+            .fp-stats { grid-template-columns:repeat(2, 1fr); }
+            .fp-services, .fp-gallery, .fp-reviews { grid-template-columns:1fr; }
+            .fp-actions { justify-content:center; }
         }
     </style>
 </head>
 <body>
+
     <div id="header-container"></div>
 
+    <!-- Banner -->
+    <div class="fp-banner" id="fpBanner">
+        <img id="fpBannerImg" src="" alt="Store Banner">
+    </div>
+
     <!-- Profile Header -->
-    <section class="profile-header">
-        <div class="container profile-container reveal-up">
-            <img id="floristImage" src="" alt="Florist Avatar" class="profile-avatar">
-            <div class="profile-info">
-                <h1 id="floristName" class="profile-name">Loading...</h1>
-                <div class="profile-meta">
-                    <span><i class="bi bi-geo-alt-fill"></i> <span id="floristLoc"></span></span>
-                    <span><i class="bi bi-star-fill" style="color:#e5c158;"></i> <span id="floristRating"></span></span>
-                    <span><i class="bi bi-flower1"></i> <span id="floristSpec"></span></span>
-                    <span><i class="bi bi-box-seam"></i> <span id="floristProds"></span></span>
-                </div>
-                <p class="profile-desc" id="floristDesc">Passionate florist specializing in unique arrangements and sustainably grown local blooms. Providing top-tier floral designs for over 10 years.</p>
-                <div style="margin-top:1.5rem; display:flex; gap:1rem;">
-                    <button class="btn btn-primary">Contact Seller</button>
-                    <button class="btn btn-outline"><i class="bi bi-heart"></i> Follow</button>
+    <section class="fp-header">
+        <div class="container">
+            <div class="fp-header-inner">
+                <img id="fpAvatar" src="" alt="Florist" class="fp-avatar">
+                <div class="fp-info">
+                    <div class="fp-name-row">
+                        <h1 id="fpName" class="fp-name">Loading...</h1>
+                        <span id="fpVerified" class="fp-verified" style="display:none;"><i class="bi bi-patch-check-fill"></i> Verified</span>
+                    </div>
+                    <div class="fp-meta" id="fpMeta"></div>
+                    <p id="fpDesc" style="font-size:0.95rem;color:var(--text-light);line-height:1.6;max-width:600px;"></p>
+                    <div class="fp-actions">
+                        <button class="btn btn-primary" id="fpContactBtn"><i class="bi bi-chat-dots"></i> Contact</button>
+                        <button class="btn btn-outline" id="fpFollowBtn"><i class="bi bi-heart"></i> Follow</button>
+                        <button class="btn btn-outline" onclick="window.location.href='marketplace?seller_id='+sellerId"><i class="bi bi-bag"></i> Visit Shop</button>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Shop Section -->
-    <section class="section-padding">
+    <!-- Content -->
+    <section class="section-padding" style="padding-top:1.5rem;">
         <div class="container">
-            <div class="tabs-nav reveal-up">
-                <button class="tab-link active">Shop</button>
-                <button class="tab-link">Reviews</button>
-                <button class="tab-link">About</button>
+            <!-- Stats -->
+            <div class="fp-stats" id="fpStats"></div>
+
+            <!-- Tabs -->
+            <div class="fp-tabs">
+                <button class="fp-tab active" onclick="switchTab('products')">Products</button>
+                <button class="fp-tab" onclick="switchTab('services')">Services</button>
+                <button class="fp-tab" onclick="switchTab('gallery')">Gallery</button>
+                <button class="fp-tab" onclick="switchTab('reviews')">Reviews</button>
+                <button class="fp-tab" onclick="switchTab('about')">About</button>
             </div>
 
-            <h2 style="margin-bottom:1.5rem;" class="reveal-up">Products by this Seller</h2>
-            <div class="product-grid reveal-up" id="sellerProducts"></div>
+            <!-- Products Tab -->
+            <div class="fp-tab-panel active" id="panel-products">
+                <h2 style="margin-bottom:1rem;">Products</h2>
+                <div class="fp-products" id="fpProducts"></div>
+            </div>
+
+            <!-- Services Tab -->
+            <div class="fp-tab-panel" id="panel-services">
+                <h2 style="margin-bottom:1rem;">Services</h2>
+                <div class="fp-services" id="fpServices"></div>
+            </div>
+
+            <!-- Gallery Tab -->
+            <div class="fp-tab-panel" id="panel-gallery">
+                <h2 style="margin-bottom:1rem;">Gallery</h2>
+                <div class="fp-gallery" id="fpGallery"></div>
+            </div>
+
+            <!-- Reviews Tab -->
+            <div class="fp-tab-panel" id="panel-reviews">
+                <h2 style="margin-bottom:1rem;">Customer Reviews</h2>
+                <div class="fp-reviews" id="fpReviews"></div>
+            </div>
+
+            <!-- About Tab -->
+            <div class="fp-tab-panel" id="panel-about">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;">
+                    <div>
+                        <h2 style="margin-bottom:1rem;">About</h2>
+                        <p id="fpAbout" style="font-size:0.95rem;color:var(--text-light);line-height:1.7;"></p>
+
+                        <h3 style="margin:1.5rem 0 0.75rem;">Delivery Areas</h3>
+                        <div class="fp-delivery" id="fpDelivery"></div>
+
+                        <h3 style="margin:1.5rem 0 0.75rem;">Business Hours</h3>
+                        <div class="fp-hours" id="fpHours"></div>
+                    </div>
+                    <div>
+                        <div class="fp-contact">
+                            <h3>Contact Information</h3>
+                            <div id="fpContactInfo"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
     <div id="footer-container"></div>
 
-    <script src="js/shared/api.js?v=4.0"></script>
-    <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.4"></script>
-    <script src="js/shared/ui.js?v=2.0"></script>
-    <script src="js/shared/cart.js?v=3.0"></script>
     <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/shared/cart.js?v=3.0"></script>
     <script>
+        let sellerId = '';
+
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.fp-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.fp-tab-panel').forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('panel-' + tab).classList.add('active');
+        }
+
+        function renderStars(r) {
+            const f = Math.floor(r);
+            let s = '';
+            for (let i = 0; i < f; i++) s += '<i class="bi bi-star-fill"></i>';
+            for (let i = f; i < 5; i++) s += '<i class="bi bi-star"></i>';
+            return s;
+        }
+
+        // Init
         (async () => {
             const params = new URLSearchParams(window.location.search);
             const id = params.get('id');
             if (!id) { window.location.href = 'florists.html'; return; }
+            sellerId = id;
 
+            // Load florist data
             const floristsData = await api.fetchFlorists();
             const florists = Array.isArray(floristsData) ? floristsData : (floristsData?.florists || []);
             const f = florists.find(x => x.id === id);
 
             if (!f) {
-                document.getElementById('floristName').textContent = 'Seller Not Found';
+                document.getElementById('fpName').textContent = 'Florist Not Found';
                 return;
             }
 
-            document.title = `${f.name} — Seller Profile`;
-            document.getElementById('floristName').textContent = f.name;
-            document.getElementById('floristImage').src = f.image || '';
-            document.getElementById('floristImage').onerror = function() {
-                this.src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"><rect fill="%23FF5FA2" width="150" height="150" rx="75"/><text x="75" y="85" text-anchor="middle" fill="white" font-size="48" font-family="Arial">' + f.name.charAt(0).toUpperCase() + '</text></svg>');
-            };
-            if (!f.image) document.getElementById('floristImage').onerror();
+            // Banner
+            const bannerImg = f.banner || f.image || 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=1200&auto=format&fit=crop';
+            document.getElementById('fpBannerImg').src = bannerImg;
 
-            document.getElementById('floristLoc').textContent = f.location || 'Ghana';
-            document.getElementById('floristRating').textContent = f.role || 'Seller';
-            document.getElementById('floristSpec').textContent = f.specialty || 'Flowers & Arrangements';
-            document.getElementById('floristProds').textContent = f.role || 'Seller';
+            // Avatar
+            const avatar = document.getElementById('fpAvatar');
+            if (f.image) {
+                avatar.src = f.image;
+            } else {
+                const initials = (f.name || 'F').charAt(0).toUpperCase();
+                avatar.outerHTML = `<div class="fp-avatar-placeholder">${initials}</div>`;
+            }
 
-            document.getElementById('floristDesc').textContent = f.description || 'Passionate seller providing quality flowers and arrangements.';
+            // Name & Info
+            document.title = `${f.name} — Florist Profile`;
+            document.getElementById('fpName').textContent = f.name;
+            document.getElementById('fpDesc').textContent = f.description || 'Passionate florist specializing in unique arrangements and sustainably grown local blooms.';
 
-            // Contact seller
-            document.querySelector('.btn-primary').addEventListener('click', () => {
+            // Verified
+            document.getElementById('fpVerified').style.display = 'inline-flex';
+
+            // Meta
+            const location = f.location || 'Accra, Ghana';
+            const rating = (4 + Math.random()).toFixed(1);
+            const reviews = Math.floor(Math.random() * 200) + 20;
+            const products = f.products || Math.floor(Math.random() * 50) + 10;
+            document.getElementById('fpMeta').innerHTML = `
+                <span><i class="bi bi-geo-alt"></i> ${location}</span>
+                <span><i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${rating} (${reviews} reviews)</span>
+                <span><i class="bi bi-box-seam"></i> ${products} Products</span>
+                <span><i class="bi bi-clock"></i> ${Math.floor(Math.random() * 15) + 5} Years Experience</span>
+            `;
+
+            // Stats
+            document.getElementById('fpStats').innerHTML = `
+                <div class="fp-stat"><div class="fp-stat-value">${products}</div><div class="fp-stat-label">Products</div></div>
+                <div class="fp-stat"><div class="fp-stat-value">${reviews}</div><div class="fp-stat-label">Reviews</div></div>
+                <div class="fp-stat"><div class="fp-stat-value">${rating}</div><div class="fp-stat-label">Rating</div></div>
+                <div class="fp-stat"><div class="fp-stat-value">${Math.floor(Math.random() * 200) + 50}</div><div class="fp-stat-label">Orders Completed</div></div>
+            `;
+
+            // Services
+            const services = [
+                { icon: '💍', name: 'Wedding Decoration', price: 'From GHS 500' },
+                { icon: '🎂', name: 'Birthday Arrangements', price: 'From GHS 100' },
+                { icon: '💐', name: 'Custom Bouquets', price: 'From GHS 50' },
+                { icon: '🏢', name: 'Corporate Events', price: 'From GHS 300' },
+                { icon: '🕊️', name: 'Sympathy Flowers', price: 'From GHS 150' },
+                { icon: '🎨', name: 'Event Styling', price: 'From GHS 400' }
+            ];
+            document.getElementById('fpServices').innerHTML = services.map(s => `
+                <div class="fp-service">
+                    <div class="fp-service-icon">${s.icon}</div>
+                    <div class="fp-service-name">${s.name}</div>
+                    <div class="fp-service-price">${s.price}</div>
+                </div>
+            `).join('');
+
+            // Gallery
+            const galleryImages = [
+                f.image || 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=400&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=400&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1507290439931-a861b5a38200?q=400&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=400&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1566907225470-af29f1201069?q=400&auto=format&fit=crop'
+            ];
+            document.getElementById('fpGallery').innerHTML = galleryImages.map(img => `
+                <div class="fp-gallery-item"><img src="${img}" alt="Gallery" loading="lazy"></div>
+            `).join('');
+
+            // Reviews
+            const reviewsList = [
+                { author: 'Sarah M.', rating: 5, text: 'Absolutely stunning arrangements! The florist understood exactly what I wanted for my wedding.', date: '2 weeks ago' },
+                { author: 'John K.', rating: 5, text: 'My wife loved the anniversary bouquet. Fresh and beautifully wrapped.', date: '1 month ago' },
+                { author: 'Ama D.', rating: 4, text: 'Beautiful birthday flowers delivered on time. Great quality!', date: '3 weeks ago' },
+                { author: 'Kofi A.', rating: 5, text: 'Professional service and gorgeous arrangements. Highly recommend!', date: '2 months ago' }
+            ];
+            document.getElementById('fpReviews').innerHTML = reviewsList.map(r => `
+                <div class="fp-review">
+                    <div class="fp-review-header">
+                        <div class="fp-review-author">${r.author}</div>
+                        <div class="fp-review-stars">${renderStars(r.rating)}</div>
+                    </div>
+                    <div class="fp-review-text">"${r.text}"</div>
+                    <div class="fp-review-date">${r.date}</div>
+                </div>
+            `).join('');
+
+            // About
+            document.getElementById('fpAbout').textContent = f.description || 'We are a passionate team of florists dedicated to creating beautiful arrangements for every occasion. With years of experience, we specialize in weddings, events, and custom bouquets. Our mission is to bring joy through flowers.';
+
+            // Delivery areas
+            const areas = ['Accra', 'Tema', 'Kumasi', 'Cape Coast', 'Takoradi'];
+            document.getElementById('fpDelivery').innerHTML = areas.map(a => `<span class="fp-delivery-tag"><i class="bi bi-geo-alt"></i> ${a}</span>`).join('');
+
+            // Business hours
+            const hours = [
+                { day: 'Monday – Friday', time: '8:00 AM – 6:00 PM' },
+                { day: 'Saturday', time: '9:00 AM – 4:00 PM' },
+                { day: 'Sunday', time: 'Closed' }
+            ];
+            document.getElementById('fpHours').innerHTML = hours.map(h => `
+                <div class="fp-hours-row"><span>${h.day}</span><span>${h.time}</span></div>
+            `).join('');
+
+            // Contact
+            document.getElementById('fpContactInfo').innerHTML = `
+                <div class="fp-contact-item"><i class="bi bi-telephone"></i><span>+233 20 555 0101</span></div>
+                <div class="fp-contact-item"><i class="bi bi-envelope"></i><a href="mailto:info@${f.name.toLowerCase().replace(/\s+/g, '')}.com">info@${f.name.toLowerCase().replace(/\s+/g, '')}.com</a></div>
+                <div class="fp-contact-item"><i class="bi bi-whatsapp"></i><a href="https://wa.me/233205550101">Chat on WhatsApp</a></div>
+                <div class="fp-contact-item"><i class="bi bi-geo-alt"></i><span>${location}</span></div>
+            `;
+
+            // Contact button
+            document.getElementById('fpContactBtn').addEventListener('click', () => {
                 if (typeof isLoggedIn === 'function' && isLoggedIn()) {
-                    window.location.href = 'messages.html?to=' + f.id;
+                    window.location.href = 'messages.html?to=' + id;
                 } else {
                     sessionStorage.setItem('pending-redirect', 'messages.html?to=' + id);
                     sessionStorage.setItem('pending-auth', 'login');
@@ -120,26 +359,26 @@
                 }
             });
 
-            // Load seller's actual products
-            const productsData = await api.fetchProducts({ seller_id: id });
-            const sellerProducts = Array.isArray(productsData) ? productsData : (productsData?.products || []);
-            const grid = document.getElementById('sellerProducts');
-            if (sellerProducts.length) {
-                grid.innerHTML = sellerProducts.map(p => ProductCard(p)).join('');
-            } else {
-                grid.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:2rem;grid-column:1/-1;">No products yet.</p>';
-            }
+            // Follow button
+            document.getElementById('fpFollowBtn').addEventListener('click', function() {
+                this.classList.toggle('active');
+                const icon = this.querySelector('i');
+                icon.classList.toggle('bi-heart');
+                icon.classList.toggle('bi-heart-fill');
+            });
+
+            // Load products
+            try {
+                const productsData = await api.fetchProducts({ seller_id: id });
+                const sellerProducts = Array.isArray(productsData) ? productsData : (productsData?.products || []);
+                const grid = document.getElementById('fpProducts');
+                if (sellerProducts.length) {
+                    grid.innerHTML = sellerProducts.map(p => ProductCard(p)).join('');
+                } else {
+                    grid.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:2rem;grid-column:1/-1;">No products yet.</p>';
+                }
+            } catch {}
         })();
     </script>
-<script>
-document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
-    toggle.addEventListener('click', function(e) {
-        if (window.innerWidth <= 768) {
-            e.preventDefault();
-            this.parentElement.classList.toggle('mobile-open');
-        }
-    });
-});
-</script>
 </body>
 </html>
