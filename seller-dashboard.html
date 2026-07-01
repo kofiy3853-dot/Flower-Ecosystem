@@ -380,6 +380,10 @@
                             <!-- Flower Details -->
                             <div class="section-card" style="margin-bottom:1.5rem;">
                                 <h3 style="margin-bottom:1rem;">Flower Details</h3>
+                                <div class="form-group">
+                                    <label>Headline</label>
+                                    <input type="text" id="prodHeadline" placeholder="e.g., Premium Long-Stem Red Roses">
+                                </div>
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label>Flower Type</label>
@@ -412,6 +416,50 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
+                                        <label>Flower Form</label>
+                                        <select id="prodFlowerForm">
+                                            <option value="">Select</option>
+                                            <option>Spray</option><option>Standard</option><option>Miniature</option><option>Climbing</option><option>Shrub</option><option>Tree</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Foliage Type</label>
+                                        <select id="prodFoliage">
+                                            <option value="">Select</option>
+                                            <option>Deciduous</option><option>Evergreen</option><option>Semi-evergreen</option><option>None</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Height</label>
+                                        <input type="text" id="prodHeight" placeholder="e.g., 30-50cm">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Light Requirements</label>
+                                        <select id="prodLight">
+                                            <option value="">Select</option>
+                                            <option>Full Sun</option><option>Partial Shade</option><option>Full Shade</option><option>Indirect Light</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Flowering Time</label>
+                                        <input type="text" id="prodFloweringTime" placeholder="e.g., May - September">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Bloom Time</label>
+                                        <select id="prodBloomTime">
+                                            <option value="">Select</option>
+                                            <option>Early Spring</option><option>Mid Spring</option><option>Late Spring</option>
+                                            <option>Early Summer</option><option>Mid Summer</option><option>Late Summer</option>
+                                            <option>Autumn</option><option>Winter</option><option>All Year</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
                                         <label>Fragrance</label>
                                         <select id="prodFragrance">
                                             <option value="">Select</option>
@@ -437,6 +485,38 @@
                                     </div>
                                 </div>
                                 <div class="form-group"><label>Origin</label><input type="text" id="prodOrigin" placeholder="e.g., Aburi Gardens, Ghana"></div>
+                            </div>
+
+                            <!-- Planting & Care -->
+                            <div class="section-card" style="margin-bottom:1.5rem;">
+                                <h3 style="margin-bottom:1rem;">Planting & Care</h3>
+                                <div class="form-row">
+                                    <div class="form-group"><label>Sunlight</label><input type="text" id="prodSunlight" placeholder="e.g., 6-8 hours direct sun"></div>
+                                    <div class="form-group"><label>Watering</label><input type="text" id="prodWatering" placeholder="e.g., Twice a week"></div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group"><label>Soil Type</label><input type="text" id="prodSoil" placeholder="e.g., Well-draining loamy soil"></div>
+                                    <div class="form-group"><label>Temperature</label><input type="text" id="prodTemperature" placeholder="e.g., 18-24°C"></div>
+                                </div>
+                                <div class="form-group"><label>Fertilizer</label><input type="text" id="prodFertilizer" placeholder="e.g., Balanced NPK monthly"></div>
+                                <div class="form-group"><label>Care Tips</label><textarea id="prodCareTips" rows="3" placeholder="Additional care instructions..."></textarea></div>
+                            </div>
+
+                            <!-- Our Guarantee -->
+                            <div class="section-card" style="margin-bottom:1.5rem;">
+                                <h3 style="margin-bottom:1rem;">Our Guarantee</h3>
+                                <div class="form-group">
+                                    <label>Guarantee</label>
+                                    <select id="prodGuarantee">
+                                        <option value="">Select Guarantee</option>
+                                        <option>Freshness Guarantee (5+ days)</option>
+                                        <option>Satisfaction Guarantee</option>
+                                        <option>No-Questions Return</option>
+                                        <option>Replace if Damaged</option>
+                                        <option>No Guarantee</option>
+                                    </select>
+                                </div>
+                                <div class="form-group"><label>Guarantee Details</label><textarea id="prodGuaranteeDetails" rows="2" placeholder="Describe your guarantee policy..."></textarea></div>
                             </div>
 
                             <!-- Inventory -->

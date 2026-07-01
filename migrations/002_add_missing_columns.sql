@@ -54,6 +54,18 @@ ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS water_frequency VARCHA
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS bloom_season VARCHAR(50);
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS features TEXT[] DEFAULT '{}';
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS origin VARCHAR(255);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS headline VARCHAR(255);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS flower_form VARCHAR(50);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS foliage_type VARCHAR(50);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS height VARCHAR(50);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS flowering_time VARCHAR(100);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS bloom_time VARCHAR(100);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS soil_type VARCHAR(100);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS temperature VARCHAR(100);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS fertilizer VARCHAR(255);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS care_tips TEXT;
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS guarantee VARCHAR(100);
+ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS guarantee_details TEXT;
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS sku VARCHAR(100);
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS low_stock_alert INT DEFAULT 10;
 ALTER TABLE marketplace.products ADD COLUMN IF NOT EXISTS delivery_areas TEXT[] DEFAULT '{}';

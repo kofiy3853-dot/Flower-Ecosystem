@@ -851,7 +851,8 @@ async function saveProduct(status) {
         const url = editingProductId ? `/api/products/${editingProductId}` : '/api/products';
         
         const body = {
-            name, price,
+            name: getVal('prodName'),
+            price: getNum('prodPrice'),
             description: getVal('prodDesc'),
             category: getVal('prodCategory'),
             stock_quantity: parseInt(document.getElementById('prodStock')?.value) || 0,
@@ -878,6 +879,22 @@ async function saveProduct(status) {
             featured: document.getElementById('prodFeatured')?.checked ?? false,
             best_seller: document.getElementById('prodBestSeller')?.checked ?? false,
             new_arrival: document.getElementById('prodNewArrival')?.checked ?? false,
+            // New flower-specific fields
+            headline: getVal('prodHeadline'),
+            flower_form: getVal('prodFlowerForm'),
+            foliage_type: getVal('prodFoliage'),
+            height: getVal('prodHeight'),
+            light: getVal('prodLight'),
+            flowering_time: getVal('prodFloweringTime'),
+            bloom_time: getVal('prodBloomTime'),
+            sunlight: getVal('prodSunlight'),
+            watering: getVal('prodWatering'),
+            soil_type: getVal('prodSoil'),
+            temperature: getVal('prodTemperature'),
+            fertilizer: getVal('prodFertilizer'),
+            care_tips: getVal('prodCareTips'),
+            guarantee: getVal('prodGuarantee'),
+            guarantee_details: getVal('prodGuaranteeDetails'),
             status: status,
             is_active: status === 'published'
         };
