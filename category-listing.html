@@ -129,12 +129,12 @@
         <div class="container">
             <div class="section-header"><h2>Shop by Occasion</h2></div>
             <div class="occasion-grid">
-                <a href="marketplace?occasion=wedding" class="occasion-card"><div class="occasion-icon">💍</div><div class="occasion-name">Wedding</div></a>
-                <a href="marketplace?occasion=birthday" class="occasion-card"><div class="occasion-icon">🎂</div><div class="occasion-name">Birthday</div></a>
-                <a href="marketplace?occasion=anniversary" class="occasion-card"><div class="occasion-icon">❤️</div><div class="occasion-name">Anniversary</div></a>
-                <a href="marketplace?occasion=sympathy" class="occasion-card"><div class="occasion-icon">🕊️</div><div class="occasion-name">Sympathy</div></a>
-                <a href="marketplace?occasion=graduation" class="occasion-card"><div class="occasion-icon">🎓</div><div class="occasion-name">Graduation</div></a>
-                <a href="marketplace?occasion=corporate" class="occasion-card"><div class="occasion-icon">💼</div><div class="occasion-name">Corporate</div></a>
+                <a href="marketplace?occasion=wedding" class="occasion-card"><div class="occasion-icon"><i class="bi bi-ring"></i></div><div class="occasion-name">Wedding</div></a>
+                <a href="marketplace?occasion=birthday" class="occasion-card"><div class="occasion-icon"><i class="bi bi-gift"></i></div><div class="occasion-name">Birthday</div></a>
+                <a href="marketplace?occasion=anniversary" class="occasion-card"><div class="occasion-icon"><i class="bi bi-heart-fill"></i></div><div class="occasion-name">Anniversary</div></a>
+                <a href="marketplace?occasion=sympathy" class="occasion-card"><div class="occasion-icon"><i class="bi bi-flower1"></i></div><div class="occasion-name">Sympathy</div></a>
+                <a href="marketplace?occasion=graduation" class="occasion-card"><div class="occasion-icon"><i class="bi bi-mortarboard-fill"></i></div><div class="occasion-name">Graduation</div></a>
+                <a href="marketplace?occasion=corporate" class="occasion-card"><div class="occasion-icon"><i class="bi bi-building"></i></div><div class="occasion-name">Corporate</div></a>
             </div>
         </div>
     </section>
@@ -205,13 +205,13 @@
         ];
 
         const productTypes = [
-            { name: 'Fresh Flowers', slug: 'fresh', icon: '🌸', count: 0 },
-            { name: 'Bouquets', slug: 'bouquets', icon: '💐', count: 0 },
-            { name: 'Potted Plants', slug: 'potted', icon: '🪴', count: 0 },
-            { name: 'Artificial', slug: 'artificial', icon: '🎨', count: 0 },
-            { name: 'Dried Flowers', slug: 'dried', icon: '🍂', count: 0 },
-            { name: 'Seeds', slug: 'seeds', icon: '🌱', count: 0 },
-            { name: 'Gift Boxes', slug: 'gift-boxes', icon: '🎁', count: 0 }
+            { name: 'Fresh Flowers', slug: 'fresh', icon: 'bi bi-flower1', count: 0 },
+            { name: 'Bouquets', slug: 'bouquets', icon: 'bi bi-bouquet', count: 0 },
+            { name: 'Potted Plants', slug: 'potted', icon: 'bi bi-flower2', count: 0 },
+            { name: 'Artificial', slug: 'artificial', icon: 'bi bi-palette', count: 0 },
+            { name: 'Dried Flowers', slug: 'dried', icon: 'bi bi-leaf', count: 0 },
+            { name: 'Seeds', slug: 'seeds', icon: 'bi bi-seed', count: 0 },
+            { name: 'Gift Boxes', slug: 'gift-boxes', icon: 'bi bi-gift', count: 0 }
         ];
 
         const colors = [
@@ -287,7 +287,7 @@
 
             document.getElementById('productTypesGrid').innerHTML = productTypes.map(t => `
                 <a href="marketplace?type=${t.slug}" class="cat-card">
-                    <div class="cat-card-img">${t.icon}</div>
+                    <div class="cat-card-img"><i class="bi ${t.icon}" style="font-size:1.75rem;color:var(--primary-color);"></i></div>
                     <div class="cat-card-name">${t.name}</div>
                     <div class="cat-card-count">${t.count} Products</div>
                 </a>
