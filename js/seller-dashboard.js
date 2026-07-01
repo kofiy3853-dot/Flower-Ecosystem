@@ -766,6 +766,7 @@ async function editProduct(id) {
             setVal(p.delivery_areas.join(', '), 'prodDeliveryAreas');
         }
         const pickup = document.getElementById('prodPickup'); if (pickup) pickup.checked = p.pickup_available !== false;
+        const featured = document.getElementById('prodFeatured'); if (featured) featured.checked = p.featured === true;
 
         pendingTags = Array.isArray(p.tags) ? [...p.tags] : [];
         renderTags();
@@ -872,6 +873,7 @@ async function saveProduct(status) {
             tags: pendingTags,
             seo_slug: getVal('prodSeoSlug'),
             meta_description: getVal('prodMetaDesc'),
+            featured: document.getElementById('prodFeatured')?.checked ?? false,
             status: status,
             is_active: status === 'published'
         };
@@ -904,6 +906,7 @@ function resetProductForm() {
     const lowStock = document.getElementById('prodLowStock'); if (lowStock) lowStock.value = '10';
     const shipFee = document.getElementById('prodShippingFee'); if (shipFee) shipFee.value = '0';
     const pickup = document.getElementById('prodPickup'); if (pickup) pickup.checked = true;
+    const featured = document.getElementById('prodFeatured'); if (featured) featured.checked = false;
     pendingImages = []; pendingVideo = []; pendingTags = [];
     const previews = document.getElementById('imagePreviews'); if (previews) previews.innerHTML = '';
     const videoPrev = document.getElementById('videoPreview'); if (videoPrev) { videoPrev.style.display = 'none'; videoPrev.src = ''; }

@@ -442,6 +442,16 @@
                                 <div class="form-group"><label>Meta Description</label><textarea id="prodMetaDesc" rows="2" placeholder="Short summary for search engines (max 160 chars)" maxlength="160"></textarea></div>
                             </div>
 
+                            <!-- Featured & Badges -->
+                            <div class="section-card" style="margin-bottom:1.5rem;">
+                                <h3 style="margin-bottom:0.75rem;">Visibility</h3>
+                                <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.9rem;margin-bottom:0.5rem;">
+                                    <input type="checkbox" id="prodFeatured" style="accent-color:var(--primary-color);width:18px;height:18px;">
+                                    <i class="bi bi-star" style="color:var(--accent-gold);"></i> Featured Product
+                                </label>
+                                <p style="font-size:0.75rem;color:var(--text-light);margin:0;">Featured products appear on the homepage.</p>
+                            </div>
+
                             <!-- Action Buttons -->
                             <div style="display:flex;gap:1rem;margin-top:1rem;">
                                 <button class="btn btn-outline" style="flex:1;padding:0.85rem;" onclick="saveProduct('draft')"><i class="bi bi-save"></i> Save Draft</button>
