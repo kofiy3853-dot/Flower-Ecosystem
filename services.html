@@ -224,14 +224,14 @@
     <script src="js/shared/api.js?v=4.0"></script>
     <script>
         const serviceCategories = [
-            { name: 'Wedding Decoration', icon: '💍', desc: 'Bridal bouquets, ceremony and reception decor', count: 0 },
-            { name: 'Birthday Decoration', icon: '🎂', desc: 'Floral decorations and bouquets', count: 0 },
-            { name: 'Corporate Services', icon: '💼', desc: 'Offices, hotels, conferences', count: 0 },
-            { name: 'Landscaping', icon: '🏡', desc: 'Residential and commercial gardens', count: 0 },
-            { name: 'Garden Maintenance', icon: '🌿', desc: 'Regular care and pruning', count: 0 },
-            { name: 'Custom Bouquets', icon: '🎁', desc: 'Personalized floral gifts', count: 0 },
-            { name: 'Sympathy Services', icon: '🕊️', desc: 'Wreaths and memorial arrangements', count: 0 },
-            { name: 'Plant Consultation', icon: '🌱', desc: 'Care advice and plant selection', count: 0 }
+            { name: 'Wedding Decoration', icon: 'bi bi-ring', desc: 'Bridal bouquets, ceremony and reception decor', count: 0 },
+            { name: 'Birthday Decoration', icon: 'bi bi-gift', desc: 'Floral decorations and bouquets', count: 0 },
+            { name: 'Corporate Services', icon: 'bi bi-building', desc: 'Offices, hotels, conferences', count: 0 },
+            { name: 'Landscaping', icon: 'bi bi-tree', desc: 'Residential and commercial gardens', count: 0 },
+            { name: 'Garden Maintenance', icon: 'bi bi-flower2', desc: 'Regular care and pruning', count: 0 },
+            { name: 'Custom Bouquets', icon: 'bi bi-flower1', desc: 'Personalized floral gifts', count: 0 },
+            { name: 'Sympathy Services', icon: 'bi bi-flower3', desc: 'Wreaths and memorial arrangements', count: 0 },
+            { name: 'Plant Consultation', icon: 'bi bi-leaf', desc: 'Care advice and plant selection', count: 0 }
         ];
 
         const providers = [
@@ -263,7 +263,7 @@
         function initServices() {
             document.getElementById('catGrid').innerHTML = serviceCategories.map(c => `
                 <div class="svc-cat-card" onclick="filterByCategory('${c.name}')">
-                    <div class="svc-cat-icon">${c.icon}</div>
+                    <div class="svc-cat-icon"><i class="bi ${c.icon}"></i></div>
                     <div class="svc-cat-name">${c.name}</div>
                     <div class="svc-cat-desc">${c.desc}</div>
                     <div class="svc-cat-count">${c.count} Providers</div>
@@ -299,14 +299,7 @@
                 </div>
             `).join('');
 
-            document.getElementById('reviewsGrid').innerHTML = reviews.map(r => `
-                <div class="review-card">
-                    <div class="review-stars">${renderStars(r.rating)}</div>
-                    <div class="review-text">"${r.text}"</div>
-                    <div class="review-author">— ${r.author}</div>
-                    <div class="review-event">${r.event}</div>
-                </div>
-            `).join('');
+            document.getElementById('reviewsGrid').innerHTML = '<p style="color:var(--text-light);grid-column:1/-1;text-align:center;padding:2rem;">Reviews coming soon.</p>';
 
             document.getElementById('faqList').innerHTML = faqs.map((f, i) => `
                 <div class="faq-item${i === 0 ? ' open' : ''}" onclick="this.classList.toggle('open')">
@@ -326,11 +319,11 @@
 
         function searchServices() {
             const q = document.getElementById('svcSearch').value.trim();
-            if (q) alert(`Searching for: ${q}`);
+            if (q) window.location.href = `marketplace?q=${encodeURIComponent(q)}`;
         }
 
         function filterByCategory(cat) {
-            alert(`Browsing: ${cat}`);
+            window.location.href = `marketplace?category=${encodeURIComponent(cat.toLowerCase().replace(/\s+/g, '-'))}`;
         }
 
         initServices();
