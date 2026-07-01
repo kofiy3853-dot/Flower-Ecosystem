@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Grower Profile | Flower Ecosystem">
+    <title>Grower Profile | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Banner */
+        .gp-banner { height:300px; overflow:hidden; position:relative; }
+        .gp-banner img { width:100%; height:100%; object-fit:cover; }
+
+        /* Profile Header */
+        .gp-header { padding:0 0 2rem; margin-top:-80px; position:relative; z-index:1; }
+        .gp-header-inner { display:flex; gap:1.5rem; align-items:flex-end; }
+        .gp-avatar { width:140px; height:140px; border-radius:50%; border:4px solid white; box-shadow:0 4px 20px rgba(0,0,0,0.15); object-fit:cover; background:#e8f5e9; flex-shrink:0; }
+        .gp-avatar-placeholder { width:140px; height:140px; border-radius:50%; border:4px solid white; box-shadow:0 4px 20px rgba(0,0,0,0.15); background:#e8f5e9; display:flex; align-items:center; justify-content:center; font-size:3rem; flex-shrink:0; }
+        .gp-info { flex:1; }
+        .gp-name-row { display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; }
+        .gp-name { font-size:1.75rem; font-weight:700; margin:0; }
+        .gp-verified { background:#10b981; color:white; padding:0.2rem 0.6rem; border-radius:6px; font-size:0.75rem; font-weight:600; display:flex; align-items:center; gap:0.3rem; }
+        .gp-meta { display:flex; gap:1.25rem; font-size:0.88rem; color:var(--text-light); margin:0.5rem 0; flex-wrap:wrap; }
+        .gp-meta i { color:#10b981; margin-right:0.3rem; }
+        .gp-actions { display:flex; gap:0.75rem; margin-top:1rem; flex-wrap:wrap; }
+        .gp-actions .btn { font-size:0.88rem; }
+        .gp-actions .btn-primary { background:#10b981; }
+
+        /* Tabs */
+        .gp-tabs { display:flex; gap:0; border-bottom:2px solid var(--border-color); margin-bottom:2rem; overflow-x:auto; }
+        .gp-tab { padding:0.85rem 1.5rem; border:none; background:none; cursor:pointer; font-size:0.95rem; font-weight:500; color:var(--text-light); border-bottom:2px solid transparent; margin-bottom:-2px; transition:all 0.2s; white-space:nowrap; }
+        .gp-tab:hover { color:#10b981; }
+        .gp-tab.active { color:#10b981; border-bottom-color:#10b981; }
+        .gp-tab-panel { display:none; }
+        .gp-tab-panel.active { display:block; }
+
+        /* Stats */
+        .gp-stats { display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem; margin-bottom:2rem; }
+        .gp-stat { background:var(--bg-light); border-radius:12px; padding:1.25rem; text-align:center; }
+        .gp-stat-value { font-size:1.5rem; font-weight:700; color:#10b981; }
+        .gp-stat-label { font-size:0.82rem; color:var(--text-light); }
+
+        /* Varieties */
+        .gp-varieties { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:1rem; margin-bottom:2rem; }
+        .gp-variety { background:var(--bg-light); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; text-decoration:none; color:inherit; transition:all 0.3s; }
+        .gp-variety:hover { border-color:#10b981; transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.1); }
+        .gp-variety-icon { font-size:2rem; margin-bottom:0.5rem; }
+        .gp-variety-name { font-weight:600; font-size:0.9rem; margin-bottom:0.2rem; }
+        .gp-variety-count { font-size:0.78rem; color:#10b981; }
+
+        /* Harvest Calendar */
+        .gp-calendar { display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem; margin-bottom:2rem; }
+        .gp-month { background:var(--bg-light); border-radius:10px; padding:1rem; text-align:center; }
+        .gp-month-name { font-weight:600; font-size:0.9rem; color:#10b981; margin-bottom:0.5rem; }
+        .gp-month-flowers { font-size:0.82rem; color:var(--text-light); line-height:1.4; }
+
+        /* Wholesale */
+        .gp-wholesale { background:linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius:14px; padding:2rem; margin-bottom:2rem; }
+        .gp-wholesale h3 { margin-bottom:1rem; color:#10b981; }
+        .gp-wholesale-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; }
+        .gp-wholesale-item { background:white; border-radius:10px; padding:1.25rem; text-align:center; }
+        .gp-wholesale-item h4 { font-size:0.9rem; margin-bottom:0.3rem; }
+        .gp-wholesale-item p { font-size:0.82rem; color:var(--text-light); }
+
+        /* Sustainability */
+        .gp-sustain { display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; margin-bottom:2rem; }
+        .gp-sustain-item { background:var(--bg-light); border-radius:10px; padding:1.25rem; text-align:center; }
+        .gp-sustain-icon { font-size:1.5rem; margin-bottom:0.5rem; }
+        .gp-sustain-name { font-weight:600; font-size:0.9rem; margin-bottom:0.2rem; }
+        .gp-sustain-desc { font-size:0.78rem; color:var(--text-light); }
+
+        /* Gallery */
+        .gp-gallery { display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; }
+        .gp-gallery-item { border-radius:12px; overflow:hidden; aspect-ratio:1; cursor:pointer; }
+        .gp-gallery-item img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .gp-gallery-item:hover img { transform:scale(1.08); }
+
+        /* Certifications */
+        .gp-certs { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:2rem; }
+        .gp-cert { background:#e8f5e9; border:1px solid #a5d6a7; border-radius:10px; padding:1rem 1.5rem; display:flex; align-items:center; gap:0.75rem; }
+        .gp-cert-icon { font-size:1.5rem; }
+        .gp-cert-name { font-weight:600; font-size:0.9rem; }
+
+        /* Products */
+        .gp-products { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:1.25rem; }
+
+        /* Reviews */
+        .gp-reviews { display:grid; grid-template-columns:repeat(2, 1fr); gap:1rem; }
+        .gp-review { background:var(--bg-light); border-radius:12px; padding:1.25rem; }
+        .gp-review-header { display:flex; justify-content:space-between; margin-bottom:0.5rem; }
+        .gp-review-author { font-weight:600; font-size:0.9rem; }
+        .gp-review-stars { color:#f59e0b; }
+        .gp-review-text { font-size:0.88rem; color:var(--text-light); line-height:1.5; }
+
+        /* Contact */
+        .gp-contact { background:var(--bg-light); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem; }
+        .gp-contact h3 { margin-bottom:1rem; font-size:1.1rem; }
+        .gp-contact-item { display:flex; align-items:center; gap:0.75rem; padding:0.75rem 0; border-bottom:1px solid var(--border-light); }
+        .gp-contact-item:last-child { border-bottom:none; }
+        .gp-contact-item i { font-size:1.1rem; color:#10b981; width:24px; }
+        .gp-contact-item span { font-size:0.9rem; }
+
+        /* Hours */
+        .gp-hours-row { display:flex; justify-content:space-between; padding:0.5rem 0; border-bottom:1px solid var(--border-light); font-size:0.9rem; }
+        .gp-hours-row:last-child { border-bottom:none; }
+
+        @media (max-width:768px) {
+            .gp-header-inner { flex-direction:column; align-items:center; text-align:center; }
+            .gp-stats { grid-template-columns:repeat(2, 1fr); }
+            .gp-calendar, .gp-wholesale-grid, .gp-sustain, .gp-gallery, .gp-reviews { grid-template-columns:1fr; }
+            .gp-actions { justify-content:center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    <!-- Banner -->
+    <div class="gp-banner" id="gpBanner">
+        <img id="gpBannerImg" src="" alt="Farm Banner">
+    </div>
+
+    <!-- Profile Header -->
+    <section class="gp-header">
+        <div class="container">
+            <div class="gp-header-inner">
+                <img id="gpAvatar" src="" alt="Grower" class="gp-avatar">
+                <div class="gp-info">
+                    <div class="gp-name-row">
+                        <h1 id="gpName" class="gp-name">Loading...</h1>
+                        <span id="gpVerified" class="gp-verified" style="display:none;"><i class="bi bi-patch-check-fill"></i> Verified Grower</span>
+                    </div>
+                    <div class="gp-meta" id="gpMeta"></div>
+                    <p id="gpDesc" style="font-size:0.95rem;color:var(--text-light);line-height:1.6;max-width:600px;"></p>
+                    <div class="gp-actions">
+                        <button class="btn btn-primary" id="gpContactBtn"><i class="bi bi-chat-dots"></i> Contact</button>
+                        <button class="btn btn-outline" id="gpFollowBtn"><i class="bi bi-heart"></i> Follow</button>
+                        <a href="#" class="btn btn-outline" id="gpShopBtn"><i class="bi bi-bag"></i> Visit Shop</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content -->
+    <section class="section-padding" style="padding-top:1.5rem;">
+        <div class="container">
+            <!-- Stats -->
+            <div class="gp-stats" id="gpStats"></div>
+
+            <!-- Tabs -->
+            <div class="gp-tabs">
+                <button class="gp-tab active" onclick="switchTab('products')">Products</button>
+                <button class="gp-tab" onclick="switchTab('varieties')">Flower Varieties</button>
+                <button class="gp-tab" onclick="switchTab('harvest')">Harvest Calendar</button>
+                <button class="gp-tab" onclick="switchTab('wholesale')">Wholesale</button>
+                <button class="gp-tab" onclick="switchTab('sustainability')">Sustainability</button>
+                <button class="gp-tab" onclick="switchTab('gallery')">Gallery</button>
+                <button class="gp-tab" onclick="switchTab('reviews')">Reviews</button>
+                <button class="gp-tab" onclick="switchTab('about')">About</button>
+            </div>
+
+            <!-- Products Tab -->
+            <div class="gp-tab-panel active" id="panel-products">
+                <h2 style="margin-bottom:1rem;">Farm Products</h2>
+                <div class="gp-products" id="gpProducts"></div>
+            </div>
+
+            <!-- Varieties Tab -->
+            <div class="gp-tab-panel" id="panel-varieties">
+                <h2 style="margin-bottom:1rem;">Flower Varieties</h2>
+                <div class="gp-varieties" id="gpVarieties"></div>
+            </div>
+
+            <!-- Harvest Calendar Tab -->
+            <div class="gp-tab-panel" id="panel-harvest">
+                <h2 style="margin-bottom:1rem;">Harvest Calendar</h2>
+                <p style="color:var(--text-light);margin-bottom:1rem;">Seasonal availability of our flower varieties.</p>
+                <div class="gp-calendar" id="gpCalendar"></div>
+            </div>
+
+            <!-- Wholesale Tab -->
+            <div class="gp-tab-panel" id="panel-wholesale">
+                <div class="gp-wholesale">
+                    <h3>Wholesale Information</h3>
+                    <div class="gp-wholesale-grid">
+                        <div class="gp-wholesale-item">
+                            <h4>Minimum Order</h4>
+                            <p>50 stems per variety</p>
+                        </div>
+                        <div class="gp-wholesale-item">
+                            <h4>Bulk Discounts</h4>
+                            <p>10-20% off orders over 500 stems</p>
+                        </div>
+                        <div class="gp-wholesale-item">
+                            <h4>Export Options</h4>
+                            <p>Available for international orders</p>
+                        </div>
+                    </div>
+                </div>
+                <h3 style="margin:1.5rem 0 1rem;">Delivery Regions</h3>
+                <div class="gp-delivery" id="gpDelivery"></div>
+                <h3 style="margin:1.5rem 0 1rem;">Wholesale Pricing</h3>
+                <div id="gpPricing" style="background:var(--bg-light);border-radius:12px;padding:1.5rem;"></div>
+            </div>
+
+            <!-- Sustainability Tab -->
+            <div class="gp-tab-panel" id="panel-sustainability">
+                <h2 style="margin-bottom:1rem;">Sustainability Practices</h2>
+                <div class="gp-sustain" id="gpSustain"></div>
+                <h3 style="margin:1.5rem 0 1rem;">Certifications</h3>
+                <div class="gp-certs" id="gpCerts"></div>
+            </div>
+
+            <!-- Gallery Tab -->
+            <div class="gp-tab-panel" id="panel-gallery">
+                <h2 style="margin-bottom:1rem;">Farm Gallery</h2>
+                <div class="gp-gallery" id="gpGallery"></div>
+            </div>
+
+            <!-- Reviews Tab -->
+            <div class="gp-tab-panel" id="panel-reviews">
+                <h2 style="margin-bottom:1rem;">Customer Reviews</h2>
+                <div class="gp-reviews" id="gpReviews"></div>
+            </div>
+
+            <!-- About Tab -->
+            <div class="gp-tab-panel" id="panel-about">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;">
+                    <div>
+                        <h2 style="margin-bottom:1rem;">Farm Story</h2>
+                        <p id="gpAbout" style="font-size:0.95rem;color:var(--text-light);line-height:1.7;"></p>
+
+                        <h3 style="margin:1.5rem 0 0.75rem;">Delivery Areas</h3>
+                        <div class="gp-delivery" id="gpDeliveryAbout"></div>
+
+                        <h3 style="margin:1.5rem 0 0.75rem;">Farm Hours</h3>
+                        <div id="gpHours"></div>
+                    </div>
+                    <div>
+                        <div class="gp-contact">
+                            <h3>Contact Information</h3>
+                            <div id="gpContactInfo"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/shared/cart.js?v=3.0"></script>
+    <script>
+        let growerId = '';
+
+        function switchTab(tab) {
+            document.querySelectorAll('.gp-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.gp-tab-panel').forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('panel-' + tab).classList.add('active');
+        }
+
+        function renderStars(r) {
+            const f = Math.floor(r);
+            let s = '';
+            for (let i = 0; i < f; i++) s += '<i class="bi bi-star-fill"></i>';
+            for (let i = f; i < 5; i++) s += '<i class="bi bi-star"></i>';
+            return s;
+        }
+
+        (async () => {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (!id) { window.location.href = 'growers.html'; return; }
+            growerId = id;
+
+            const floristsData = await api.fetchFlorists();
+            const growers = (Array.isArray(floristsData) ? floristsData : (floristsData?.florists || [])).map((f, i) => ({
+                ...f,
+                location: ['Eastern Region', 'Ashanti Region', 'Greater Accra', 'Central Region'][i % 4],
+                rating: (4 + Math.random()).toFixed(1),
+                reviews: Math.floor(Math.random() * 100) + 10,
+                products: f.products || Math.floor(Math.random() * 30) + 5,
+                verified: true,
+                img: f.image || `https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=400&auto=format&fit=crop`
+            }));
+
+            const g = growers.find(x => x.id === id);
+            if (!g) {
+                document.getElementById('gpName').textContent = 'Grower Not Found';
+                return;
+            }
+
+            // Banner
+            document.getElementById('gpBannerImg').src = g.img || 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=1200&auto=format&fit=crop';
+
+            // Avatar
+            const avatar = document.getElementById('gpAvatar');
+            if (g.image) {
+                avatar.src = g.image;
+            } else {
+                avatar.outerHTML = '<div class="gp-avatar-placeholder">🌱</div>';
+            }
+
+            // Name & Info
+            document.title = `${g.name} — Grower Profile`;
+            document.getElementById('gpName').textContent = g.name;
+            document.getElementById('gpDesc').textContent = g.description || 'We are a trusted flower farm growing premium roses, sunflowers, and exotic blooms for florists and wholesalers across Ghana.';
+            document.getElementById('gpVerified').style.display = 'inline-flex';
+
+            // Meta
+            document.getElementById('gpMeta').innerHTML = `
+                <span><i class="bi bi-geo-alt"></i> ${g.location}</span>
+                <span><i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${g.rating} (${g.reviews} reviews)</span>
+                <span><i class="bi bi-flower1"></i> ${g.products} Varieties</span>
+                <span><i class="bi bi-clock"></i> ${Math.floor(Math.random() * 20) + 5} Years Operating</span>
+            `;
+
+            // Stats
+            document.getElementById('gpStats').innerHTML = `
+                <div class="gp-stat"><div class="gp-stat-value">${g.products}</div><div class="gp-stat-label">Varieties</div></div>
+                <div class="gp-stat"><div class="gp-stat-value">${g.reviews}</div><div class="gp-stat-label">Reviews</div></div>
+                <div class="gp-stat"><div class="gp-stat-value">${g.rating}</div><div class="gp-stat-label">Rating</div></div>
+                <div class="gp-stat"><div class="gp-stat-value">${Math.floor(Math.random() * 500) + 100}</div><div class="gp-stat-label">Orders Fulfilled</div></div>
+            `;
+
+            // Varieties
+            const varieties = [
+                { icon: '🌹', name: 'Roses', count: Math.floor(Math.random() * 20) + 5 },
+                { icon: '🌻', name: 'Sunflowers', count: Math.floor(Math.random() * 15) + 3 },
+                { icon: '🌷', name: 'Tulips', count: Math.floor(Math.random() * 10) + 2 },
+                { icon: '🌺', name: 'Orchids', count: Math.floor(Math.random() * 8) + 2 },
+                { icon: '🌸', name: 'Cherry Blossoms', count: Math.floor(Math.random() * 5) + 1 },
+                { icon: '🌼', name: 'Daisies', count: Math.floor(Math.random() * 12) + 3 },
+                { icon: '🪻', name: 'Lavender', count: Math.floor(Math.random() * 8) + 2 },
+                { icon: '🌿', name: 'Foliage', count: Math.floor(Math.random() * 15) + 5 }
+            ];
+            document.getElementById('gpVarieties').innerHTML = varieties.map(v => `
+                <a href="marketplace?category=${v.name.toLowerCase()}" class="gp-variety">
+                    <div class="gp-variety-icon">${v.icon}</div>
+                    <div class="gp-variety-name">${v.name}</div>
+                    <div class="gp-variety-count">${v.count} varieties</div>
+                </a>
+            `).join('');
+
+            // Harvest Calendar
+            const months = [
+                { name: 'Jan–Feb', flowers: 'Roses, Tulips, Carnations' },
+                { name: 'Mar–Apr', flowers: 'Sunflowers, Lilies, Daisies' },
+                { name: 'May–Jun', flowers: 'Orchids, Peonies, Hydrangeas' },
+                { name: 'Jul–Aug', flowers: 'Tropical, Hibiscus, Birds of Paradise' },
+                { name: 'Sep–Oct', flowers: 'Chrysanthemums, Marigolds' },
+                { name: 'Nov–Dec', flowers: 'Poinsettias, Amaryllis, Winter Bloom' }
+            ];
+            document.getElementById('gpCalendar').innerHTML = months.map(m => `
+                <div class="gp-month">
+                    <div class="gp-month-name">${m.name}</div>
+                    <div class="gp-month-flowers">${m.flowers}</div>
+                </div>
+            `).join('');
+
+            // Wholesale Pricing
+            document.getElementById('gpPricing').innerHTML = `
+                <table style="width:100%;border-collapse:collapse;">
+                    <tr style="border-bottom:1px solid var(--border-color);"><th style="text-align:left;padding:0.75rem 0;font-size:0.9rem;">Variety</th><th style="text-align:right;padding:0.75rem 0;font-size:0.9rem;">Stem Price</th><th style="text-align:right;padding:0.75rem 0;font-size:0.9rem;">500+ Stems</th></tr>
+                    <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:0.75rem 0;">Roses</td><td style="text-align:right;">GHS 2.50</td><td style="text-align:right;color:#10b981;">GHS 2.00</td></tr>
+                    <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:0.75rem 0;">Sunflowers</td><td style="text-align:right;">GHS 3.00</td><td style="text-align:right;color:#10b981;">GHS 2.40</td></tr>
+                    <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:0.75rem 0;">Orchids</td><td style="text-align:right;">GHS 5.00</td><td style="text-align:right;color:#10b981;">GHS 4.00</td></tr>
+                    <tr><td style="padding:0.75rem 0;">Lilies</td><td style="text-align:right;">GHS 3.50</td><td style="text-align:right;color:#10b981;">GHS 2.80</td></tr>
+                </table>
+            `;
+
+            // Sustainability
+            const sustain = [
+                { icon: '🌱', name: 'Organic Farming', desc: 'No synthetic pesticides or fertilizers' },
+                { icon: '💧', name: 'Water Conservation', desc: 'Drip irrigation systems reduce waste' },
+                { icon: '♻️', name: 'Eco-Friendly Packaging', desc: 'Biodegradable materials used' },
+                { icon: '🌍', name: 'Carbon Neutral', desc: 'Offsetting our carbon footprint' },
+                { icon: '🐝', name: 'Pollinator Friendly', desc: 'Supporting local bee populations' },
+                { icon: '🌻', name: 'Local Sourcing', desc: 'Supporting local communities' }
+            ];
+            document.getElementById('gpSustain').innerHTML = sustain.map(s => `
+                <div class="gp-sustain-item">
+                    <div class="gp-sustain-icon">${s.icon}</div>
+                    <div class="gp-sustain-name">${s.name}</div>
+                    <div class="gp-sustain-desc">${s.desc}</div>
+                </div>
+            `).join('');
+
+            // Certifications
+            const certs = [
+                { icon: '🏅', name: 'Organic Certified' },
+                { icon: '📦', name: 'Export Certified' },
+                { icon: '✅', name: 'Good Agricultural Practices' }
+            ];
+            document.getElementById('gpCerts').innerHTML = certs.map(c => `
+                <div class="gp-cert">
+                    <div class="gp-cert-icon">${c.icon}</div>
+                    <div class="gp-cert-name">${c.name}</div>
+                </div>
+            `).join('');
+
+            // Gallery
+            const gallery = [
+                g.img || 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=400&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1574943320219-553eb213f72d?q=400&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=400&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?q=400&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=400&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=400&auto=format&fit=crop'
+            ];
+            document.getElementById('gpGallery').innerHTML = gallery.map(img => `
+                <div class="gp-gallery-item"><img src="${img}" alt="Farm" loading="lazy"></div>
+            `).join('');
+
+            // Reviews
+            const reviews = [
+                { author: 'Bloom Garden', rating: 5, text: 'Excellent quality roses. Fresh and delivered on time. Will order again!', date: '1 week ago' },
+                { author: 'Floral Designs Ltd', rating: 5, text: 'Best sunflowers in the region. Consistent quality every order.', date: '2 weeks ago' },
+                { author: 'Event Masters', rating: 4, text: 'Great variety and competitive wholesale prices. Recommended.', date: '1 month ago' }
+            ];
+            document.getElementById('gpReviews').innerHTML = reviews.map(r => `
+                <div class="gp-review">
+                    <div class="gp-review-header">
+                        <div class="gp-review-author">${r.author}</div>
+                        <div class="gp-review-stars">${renderStars(r.rating)}</div>
+                    </div>
+                    <div class="gp-review-text">"${r.text}"</div>
+                </div>
+            `).join('');
+
+            // About
+            document.getElementById('gpAbout').textContent = g.description || 'We are a family-owned flower farm established in 2005, specializing in premium roses and exotic blooms. Our 50-acre farm uses sustainable farming practices and supplies fresh flowers to florists and wholesalers across Ghana.';
+
+            // Delivery
+            const areas = ['Greater Accra', 'Ashanti Region', 'Eastern Region', 'Central Region', 'Western Region'];
+            document.getElementById('gpDelivery').innerHTML = areas.map(a => `<span style="background:#e8f5e9;padding:0.4rem 0.75rem;border-radius:8px;font-size:0.82rem;display:inline-flex;align-items:center;gap:0.3rem;margin:0.25rem;"><i class="bi bi-geo-alt"></i> ${a}</span>`).join('');
+            document.getElementById('gpDeliveryAbout').innerHTML = areas.map(a => `<span style="background:#e8f5e9;padding:0.4rem 0.75rem;border-radius:8px;font-size:0.82rem;display:inline-flex;align-items:center;gap:0.3rem;margin:0.25rem;"><i class="bi bi-geo-alt"></i> ${a}</span>`).join('');
+
+            // Hours
+            const hours = [
+                { day: 'Monday – Friday', time: '6:00 AM – 4:00 PM' },
+                { day: 'Saturday', time: '7:00 AM – 2:00 PM' },
+                { day: 'Sunday', time: 'Closed' }
+            ];
+            document.getElementById('gpHours').innerHTML = hours.map(h => `
+                <div class="gp-hours-row"><span>${h.day}</span><span>${h.time}</span></div>
+            `).join('');
+
+            // Contact
+            document.getElementById('gpContactInfo').innerHTML = `
+                <div class="gp-contact-item"><i class="bi bi-telephone"></i><span>+233 20 555 0201</span></div>
+                <div class="gp-contact-item"><i class="bi bi-envelope"></i><span>info@${g.name.toLowerCase().replace(/\s+/g, '')}farm.com</span></div>
+                <div class="gp-contact-item"><i class="bi bi-whatsapp"></i><a href="https://wa.me/233205550201" style="color:#10b981;text-decoration:none;">Chat on WhatsApp</a></div>
+                <div class="gp-contact-item"><i class="bi bi-geo-alt"></i><span>${g.location}</span></div>
+            `;
+
+            // Contact button
+            document.getElementById('gpContactBtn').addEventListener('click', () => {
+                if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+                    window.location.href = 'messages.html?to=' + id;
+                } else {
+                    sessionStorage.setItem('pending-redirect', 'messages.html?to=' + id);
+                    sessionStorage.setItem('pending-auth', 'login');
+                    if (typeof openAuthModal === 'function') openAuthModal('login');
+                }
+            });
+
+            // Follow
+            document.getElementById('gpFollowBtn').addEventListener('click', function() {
+                this.classList.toggle('active');
+                const icon = this.querySelector('i');
+                icon.classList.toggle('bi-heart');
+                icon.classList.toggle('bi-heart-fill');
+            });
+
+            // Shop
+            document.getElementById('gpShopBtn').href = 'marketplace?seller_id=' + id;
+
+            // Products
+            try {
+                const productsData = await api.fetchProducts({ seller_id: id });
+                const sellerProducts = Array.isArray(productsData) ? productsData : (productsData?.products || []);
+                const grid = document.getElementById('gpProducts');
+                if (sellerProducts.length) {
+                    grid.innerHTML = sellerProducts.map(p => ProductCard(p)).join('');
+                } else {
+                    grid.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:2rem;grid-column:1/-1;">No products yet.</p>';
+                }
+            } catch {}
+        })();
+    </script>
+</body>
+</html>
