@@ -244,6 +244,24 @@
                 </div>
             </div>
             <div class="pd-tab-panel" id="tab-reviews">
+                <div style="background:var(--bg-light);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;">
+                    <h3 style="margin-bottom:1rem;">Write a Review</h3>
+                    <div style="margin-bottom:1rem;">
+                        <label style="font-weight:500;font-size:0.88rem;display:block;margin-bottom:0.35rem;">Your Rating</label>
+                        <div id="reviewStars" style="display:flex;gap:0.25rem;font-size:1.5rem;cursor:pointer;">
+                            <span onclick="setReviewRating(1)" style="color:#ddd;">&#9733;</span>
+                            <span onclick="setReviewRating(2)" style="color:#ddd;">&#9733;</span>
+                            <span onclick="setReviewRating(3)" style="color:#ddd;">&#9733;</span>
+                            <span onclick="setReviewRating(4)" style="color:#ddd;">&#9733;</span>
+                            <span onclick="setReviewRating(5)" style="color:#ddd;">&#9733;</span>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label style="font-weight:500;font-size:0.88rem;display:block;margin-bottom:0.35rem;">Your Review</label>
+                        <textarea id="reviewText" rows="3" style="width:100%;padding:0.75rem;border:1px solid var(--border-color);border-radius:8px;font-family:inherit;font-size:0.9rem;resize:vertical;" placeholder="Share your experience with this product..."></textarea>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="submitReview()">Submit Review</button>
+                </div>
                 <div id="pdReviewList"></div>
             </div>
             <div class="pd-tab-panel" id="tab-shipping">
@@ -408,6 +426,44 @@
                     <div class="rv-text">${escapeHtml(r.text || r.review || '')}</div>
                 </div>
             `).join('');
+        }
+
+        let reviewRating = 0;
+        function setReviewRating(r) {
+            reviewRating = r;
+            const stars = document.querySelectorAll('#reviewStars span');
+            stars.forEach((s, i) => { s.style.color = i < r ? '#f59e0b' : '#ddd'; });
+        }
+
+        async function submitReview() {
+            const text = document.getElementById('reviewText').value.trim();
+            if (!reviewRating) { alert('Please select a rating.'); return; }
+            if (!text) { alert('Please write a review.'); return; }
+            if (!currentProduct) return;
+
+            try {
+                const res = await fetch(`/api/products/${currentProduct.id}/reviews`, {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ rating: reviewRating, review: text })
+                });
+                if (res.ok) {
+                    document.getElementById('reviewText').value = '';
+                    setReviewRating(0);
+                    // Reload product to get updated reviews
+                    const updated = await api.fetchProduct(currentProduct.id);
+                    if (updated) {
+                        currentProduct = updated;
+                        renderReviews(updated.reviewList || updated.reviews || []);
+                    }
+                    alert('Review submitted!');
+                } else {
+                    const err = await res.json().catch(() => ({}));
+                    alert(err.error || 'Failed to submit review');
+                }
+            } catch (e) {
+                alert('Please sign in to submit a review.');
+            }
         }
 
         // Tabs
