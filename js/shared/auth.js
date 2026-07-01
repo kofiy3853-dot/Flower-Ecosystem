@@ -542,6 +542,19 @@ function shouldInitAuth() {
 }
 
 window.getToken = getToken;
+function handleHeaderAccountClick() {
+    const user = getCurrentUser();
+    if (user) {
+        const role = (user.role || '').toLowerCase();
+        if (['admin', 'superadmin'].includes(role)) window.location.href = 'admin.html';
+        else if (['seller', 'florist', 'grower'].includes(role)) window.location.href = 'seller-dashboard.html';
+        else window.location.href = 'buyer-dashboard.html';
+    } else {
+        openAuthModal('login');
+    }
+}
+
+window.handleHeaderAccountClick = handleHeaderAccountClick;
 window.isLoggedIn = isLoggedIn;
 window.getCurrentUser = getCurrentUser;
 window.setLoggedIn = setLoggedIn;
