@@ -438,8 +438,8 @@
                     if (selectedFilters.types.includes('artificial') && !type.includes('artificial')) return false;
                     if (selectedFilters.types.includes('dried') && !type.includes('dried')) return false;
                 }
-                if (selectedFilters.minPrice !== null && p.price < selectedFilters.minPrice) return false;
-                if (selectedFilters.maxPrice !== null && p.price > selectedFilters.maxPrice) return false;
+                if (selectedFilters.minPrice !== null && !isNaN(selectedFilters.minPrice) && p.price < selectedFilters.minPrice) return false;
+                if (selectedFilters.maxPrice !== null && !isNaN(selectedFilters.maxPrice) && p.price > selectedFilters.maxPrice) return false;
                 if (selectedFilters.rating && (p.rating || 0) < selectedFilters.rating) return false;
                 return true;
             });
@@ -517,11 +517,11 @@
             const el = document.getElementById('pagination');
             const totalPages = Math.ceil(filteredProducts.length / perPage);
             if (totalPages <= 1) { el.innerHTML = ''; return; }
-            let html = `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&laquo; Prev</button>`;
+            let html = `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled tabindex="-1"' : ''}>&laquo; Prev</button>`;
             for (let i = 1; i <= totalPages; i++) {
                 html += `<button class="page-btn${i === currentPage ? ' active' : ''}" onclick="goPage(${i})">${i}</button>`;
             }
-            html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next &raquo;</button>`;
+            html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled tabindex="-1"' : ''}>Next &raquo;</button>`;
             el.innerHTML = html;
         }
 
@@ -607,7 +607,6 @@
                         <div class="seller-avatar">${(s.name || '?')[0]}</div>
                         <div class="seller-name">${s.name}</div>
                         <div class="seller-rating">${renderStars(s.rating || 4.5)} (${s.reviews || 0})</div>
-                        <div class="seller-products">${s.products || 0} products</div>
                         <button class="btn btn-primary btn-sm w-100">Visit Store</button>
                     </a>
                 `).join('');
