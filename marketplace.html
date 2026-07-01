@@ -611,8 +611,8 @@
                 if (!sellers.length) { el.innerHTML = '<p style="color:var(--text-light);">No sellers yet.</p>'; return; }
                 el.innerHTML = sellers.map(s => `
                     <a href="florist-profile.html?id=${s.id}" class="seller-card" style="text-decoration:none;color:inherit;">
-                        <div class="seller-avatar">${(s.name || '?')[0]}</div>
-                        <div class="seller-name">${s.name}</div>
+                        <div class="seller-avatar">${s.image ? `<img src="${escapeHtml(s.image)}" alt="${escapeHtml(s.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : (s.name || '?')[0]}</div>
+                        <div class="seller-name">${escapeHtml(s.name)}</div>
                         <div class="seller-rating">${renderStars(s.rating || 4.5)} (${s.reviews || 0})</div>
                         <button class="btn btn-primary btn-sm w-100">Visit Store</button>
                     </a>
