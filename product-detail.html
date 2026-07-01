@@ -129,6 +129,7 @@
             .pd-trust{grid-template-columns:repeat(2,1fr);}
             .pd-mobile-cart{display:flex;}
             .pd-main{padding-bottom:80px;}
+            #pdCareGuide{grid-template-columns:repeat(2,1fr);}
         }
         @media(max-width:480px){
             .pd-title{font-size:1.5rem;}
@@ -223,14 +224,24 @@
             <div class="pd-tabs">
                 <button class="pd-tab active" data-tab="description">Description</button>
                 <button class="pd-tab" data-tab="specs">Specifications</button>
+                <button class="pd-tab" data-tab="care">Care Guide</button>
                 <button class="pd-tab" data-tab="reviews">Reviews (<span id="pdReviewCount">0</span>)</button>
-                <button class="pd-tab" data-tab="shipping">Shipping & Returns</button>
+                <button class="pd-tab" data-tab="shipping">Shipping</button>
+                <button class="pd-tab" data-tab="faq">FAQ</button>
             </div>
             <div class="pd-tab-panel active" id="tab-description">
                 <div id="pdFullDesc" style="font-size:.95rem;color:var(--text-light);line-height:1.8;"></div>
             </div>
             <div class="pd-tab-panel" id="tab-specs">
                 <table class="specs-table" id="pdSpecs"></table>
+            </div>
+            <div class="pd-tab-panel" id="tab-care">
+                <h3 style="margin-bottom:1rem;">Planting & Care Guide</h3>
+                <div id="pdCareGuide" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;"></div>
+                <div id="pdGuarantee" style="margin-top:1.5rem;background:var(--bg-light);border-radius:10px;padding:1.25rem;display:none;">
+                    <h4 style="margin-bottom:0.5rem;"><i class="bi bi-shield-check" style="color:var(--accent-green);"></i> Our Guarantee</h4>
+                    <p id="pdGuaranteeText" style="font-size:0.9rem;color:var(--text-light);"></p>
+                </div>
             </div>
             <div class="pd-tab-panel" id="tab-reviews">
                 <div id="pdReviewList"></div>
@@ -244,6 +255,26 @@
                     <h3 style="font-family:'Playfair Display',serif;margin:1.5rem 0 1rem;">Freshness Guarantee</h3>
                     <p>All flowers come with our 100% freshness guarantee. If your flowers don't last at least 5 days, we'll replace them free of charge.</p>
                 </div>
+            </div>
+            <div class="pd-tab-panel" id="tab-faq">
+                <h3 style="margin-bottom:1rem;">Frequently Asked Questions</h3>
+                <div id="pdFaqList"></div>
+            </div>
+        </div>
+
+        <!-- About the Seller -->
+        <div class="container" style="margin-top:2rem;">
+            <div style="background:var(--bg-light);border-radius:14px;padding:1.5rem;display:flex;gap:1.25rem;align-items:center;border:1px solid var(--border-color);">
+                <div id="pdSellerAvatar" style="width:60px;height:60px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--primary-color);flex-shrink:0;"></div>
+                <div style="flex:1;">
+                    <h3 style="margin:0 0 0.25rem;font-size:1.1rem;">About the Seller</h3>
+                    <p id="pdSellerAbout" style="font-size:0.9rem;color:var(--text-light);margin:0 0 0.5rem;line-height:1.5;"></p>
+                    <div style="display:flex;gap:1rem;font-size:0.85rem;color:var(--text-light);">
+                        <span id="pdSellerRating"></span>
+                        <span id="pdSellerProducts"></span>
+                    </div>
+                </div>
+                <a id="pdSellerLink" href="#" class="btn btn-outline btn-sm">View Profile</a>
             </div>
         </div>
 
@@ -498,6 +529,53 @@
             document.getElementById('pdSpecs').innerHTML = specs.map(s =>
                 `<tr><td>${s.label}</td><td>${s.value}</td></tr>`
             ).join('');
+
+            // Care Guide
+            const careItems = [
+                { icon: '☀️', title: 'Light', value: p.sunlight || p.light || 'Bright indirect light' },
+                { icon: '💧', title: 'Water', value: p.watering || 'Keep soil moist' },
+                { icon: '🌡', title: 'Temperature', value: p.temperature || '18-24°C' },
+                { icon: '🌱', title: 'Soil', value: p.soil_type || 'Well-draining soil' },
+                { icon: '🧪', title: 'Fertilizer', value: p.fertilizer || 'Monthly feed' },
+                { icon: '✂️', title: 'Pruning', value: p.care_tips || 'Remove dead blooms' }
+            ];
+            document.getElementById('pdCareGuide').innerHTML = careItems.map(c => `
+                <div style="background:var(--bg-light);border-radius:10px;padding:1rem;text-align:center;">
+                    <div style="font-size:1.5rem;margin-bottom:0.5rem;">${c.icon}</div>
+                    <div style="font-weight:600;font-size:0.85rem;margin-bottom:0.25rem;">${c.title}</div>
+                    <div style="font-size:0.8rem;color:var(--text-light);">${c.value}</div>
+                </div>
+            `).join('');
+
+            // Guarantee
+            if (p.guarantee) {
+                document.getElementById('pdGuarantee').style.display = 'block';
+                document.getElementById('pdGuaranteeText').textContent = p.guarantee + (p.guarantee_details ? ' — ' + p.guarantee_details : '');
+            }
+
+            // FAQ
+            const faqs = [
+                { q: 'How long do these flowers stay fresh?', a: 'Most flowers last 5-7 days with proper care. We include care instructions with every order.' },
+                { p: 'Do you offer same-day delivery?', a: 'Yes, same-day delivery is available for orders placed before 2 PM in major cities.' },
+                { q: 'Can I customize this arrangement?', a: 'Yes! Contact the seller to discuss customization options.' },
+                { q: 'What is your return policy?', a: 'We accept returns within 7 days. If flowers arrive damaged, we offer a full refund or replacement.' }
+            ];
+            document.getElementById('pdFaqList').innerHTML = faqs.map((f, i) => `
+                <div style="border:1px solid var(--border-color);border-radius:8px;margin-bottom:0.5rem;overflow:hidden;">
+                    <div onclick="this.parentElement.classList.toggle('open')" style="padding:0.75rem 1rem;font-weight:500;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+                        ${f.q || f.p} <i class="bi bi-chevron-down" style="transition:transform 0.2s;"></i>
+                    </div>
+                    <div style="padding:0 1rem 0.75rem;font-size:0.9rem;color:var(--text-light);display:none;">${f.a}</div>
+                </div>
+            `).join('');
+
+            // About Seller
+            const sellerInitial = (sellerName || 'S')[0].toUpperCase();
+            document.getElementById('pdSellerAvatar').textContent = sellerInitial;
+            document.getElementById('pdSellerAbout').textContent = `Trusted seller offering quality flowers and arrangements. Verified member of Flower Ecosystem.`;
+            document.getElementById('pdSellerRating').innerHTML = `<i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${rating.toFixed(1)} rating`;
+            document.getElementById('pdSellerProducts').innerHTML = `<i class="bi bi-box"></i> ${reviewCount + 10}+ products`;
+            document.getElementById('pdSellerLink').href = sellerId ? `florist-profile.html?id=${sellerId}` : 'florists.html';
 
             // Add to cart
             document.getElementById('pdAddBtn').addEventListener('click', async () => {
