@@ -368,8 +368,9 @@ router.post('/:id/reviews', requireAuth, asyncHandler(async (req, res) => {
 router.get('/:id/related', asyncHandler(async (req, res) => {
     return queryWithFallback(
         async () => {
+            // Try same category first
             const r = await pool.query(
-                `SELECT p.id, p.name, p.price, p.image_url, p.badge, p.rating,
+                `SELECT p.id, p.name, p.price, p.image_url, p.badge, p.rating, p.currency,
                         c.name AS category_name,
                         (SELECT image_url FROM marketplace.product_images WHERE product_id = p.id ORDER BY sort_order LIMIT 1) AS image
                  FROM marketplace.products p
@@ -379,6 +380,20 @@ router.get('/:id/related', asyncHandler(async (req, res) => {
                  ORDER BY RANDOM() LIMIT 4`,
                 [req.params.id]
             );
+            // If not enough related products, add random ones
+            if (r.rows.length < 4) {
+                const extra = await pool.query(
+                    `SELECT p.id, p.name, p.price, p.image_url, p.badge, p.rating, p.currency,
+                            c.name AS category_name,
+                            (SELECT image_url FROM marketplace.product_images WHERE product_id = p.id ORDER BY sort_order LIMIT 1) AS image
+                     FROM marketplace.products p
+                     JOIN marketplace.categories c ON c.id = p.category_id
+                     WHERE p.id != $1 AND p.is_active = true
+                     ORDER BY RANDOM() LIMIT ${4 - r.rows.length}`,
+                    [req.params.id]
+                );
+                r.rows = [...r.rows, ...extra.rows];
+            }
             return r.rows;
         },
         'products', res, false,
