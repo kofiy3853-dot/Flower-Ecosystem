@@ -3,23 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Buyer Dashboard - Browse flowers, manage orders, track deliveries, and connect with growers.">
-    <title>Buyer Dashboard | Flower Ecosystem</title>
+    <meta name="description" content="Buyer Dashboard - Manage orders, favorites, and track deliveries.">
+    <title>My Dashboard | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="styles/dashboard.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
-        /* Buyer dashboard accent overrides */
-        .welcome-card { background: linear-gradient(135deg, #0ea5e9, #0369a1) !important; box-shadow: 0 10px 30px rgba(14, 165, 233, 0.2) !important; }
-        .dash-sidebar-profile .avatar { background: linear-gradient(135deg, #0ea5e9, #0369a1) !important; }
-        .dash-nav li a.active { color: #0ea5e9 !important; border-left-color: #0ea5e9 !important; background: linear-gradient(90deg, rgba(14,165,233,0.1), transparent) !important; }
-        .stat-card .icon { background: rgba(14, 165, 233, 0.1) !important; color: #0ea5e9 !important; }
-        .section { animation: fadeIn 0.4s ease; }
+        .dash-nav li a.active { color:var(--primary-color) !important; border-left-color:var(--primary-color) !important; }
+        .stat-card .icon { background:rgba(216,68,124,0.1); color:var(--primary-color); }
+        .section { animation:fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
+        .order-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1rem; margin-bottom:0.75rem; display:flex; gap:1rem; align-items:center; transition:all 0.2s; }
+        .order-card:hover { border-color:var(--primary-color); }
+        .order-img { width:60px; height:60px; border-radius:8px; object-fit:cover; flex-shrink:0; }
+        .order-info { flex:1; }
+        .order-name { font-weight:600; font-size:0.95rem; }
+        .order-meta { font-size:0.8rem; color:var(--text-light); }
+        .order-right { text-align:right; }
+        .order-price { font-weight:700; color:var(--primary-color); font-size:1rem; }
+        .badge { display:inline-block; padding:0.15rem 0.5rem; border-radius:4px; font-size:0.72rem; font-weight:600; }
+        .badge-pending { background:#fff3cd; color:#856404; }
+        .badge-confirmed { background:#cce5ff; color:#004085; }
+        .badge-shipped { background:#d4edda; color:#155724; }
+        .badge-delivered { background:#d1ecf1; color:#0c5460; }
+        .badge-cancelled { background:#f8d7da; color:#721c24; }
+        .fav-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1rem; }
+        .fav-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; overflow:hidden; transition:all 0.3s; }
+        .fav-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.1); }
+        .fav-img { height:140px; overflow:hidden; }
+        .fav-img img { width:100%; height:100%; object-fit:cover; }
+        .fav-body { padding:0.75rem; }
+        .fav-name { font-weight:600; font-size:0.9rem; margin-bottom:0.25rem; }
+        .fav-price { color:var(--primary-color); font-weight:700; }
+        .activity-item { display:flex; gap:0.75rem; padding:0.75rem 0; border-bottom:1px solid var(--border-light); }
+        .activity-icon { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0; }
+        .activity-text { font-size:0.88rem; }
+        .activity-time { font-size:0.75rem; color:var(--text-light); }
     </style>
 </head>
 <body>
@@ -28,23 +51,23 @@
     <div class="dash-layout">
         <nav class="dash-sidebar">
             <div class="dash-sidebar-profile">
-                <div class="avatar" id="buyerSidebarAvatar">B</div>
+                <div class="avatar" id="sidebarAvatar">B</div>
                 <div class="info">
-                    <h4 id="buyerSidebarName">My Account</h4>
+                    <h4 id="sidebarName">My Account</h4>
                     <p>Buyer</p>
                 </div>
             </div>
             <h3>Menu</h3>
             <ul class="dash-nav">
                 <li><a href="#dashboard" class="active" data-section="dashboard"><i class="bi bi-house"></i> Dashboard</a></li>
-                <li><a href="#purchases" data-section="purchases"><i class="bi bi-bag-check"></i> Purchase History</a></li>
-                <li><a href="#watchlist" data-section="watchlist"><i class="bi bi-eye"></i> Watchlist</a></li>
-                <li><a href="#sellers" data-section="sellers"><i class="bi bi-shop"></i> Saved Sellers</a></li>
-                <li><a href="#deliveries" data-section="deliveries"><i class="bi bi-truck"></i> Deliveries</a></li>
-                <li><a href="#marketplace" data-section="marketplace"><i class="bi bi-bag"></i> Browse Marketplace</a></li>
-                <li><a href="#analytics" data-section="analytics"><i class="bi bi-bar-chart"></i> Analytics</a></li>
+                <li><a href="#orders" data-section="orders"><i class="bi bi-receipt"></i> My Orders</a></li>
+                <li><a href="#favorites" data-section="favorites"><i class="bi bi-heart"></i> Favorites</a></li>
+                <li><a href="#messages" data-section="messages"><i class="bi bi-chat-dots"></i> Messages</a></li>
+                <li><a href="#notifications" data-section="notifications"><i class="bi bi-bell"></i> Notifications</a></li>
+                <li><a href="#activity" data-section="activity"><i class="bi bi-clock-history"></i> Activity</a></li>
                 <li><a href="#settings" data-section="settings"><i class="bi bi-gear"></i> Settings</a></li>
-                <li><a href="account.html"><i class="bi bi-person-badge"></i> Account Settings</a></li>
+                <li><a href="#" class="theme-toggle" id="themeToggle"><i class="bi bi-moon-fill" id="themeIcon"></i> <span id="themeText">Dark Mode</span></a></li>
+                <li style="margin-top:1rem;border-top:1px solid var(--border-color);padding-top:0.75rem;"><a href="#" id="buyerLogout" style="color:var(--error-color);"><i class="bi bi-box-arrow-left"></i> Sign Out</a></li>
             </ul>
         </nav>
 
@@ -52,64 +75,72 @@
             <div id="loginPrompt" class="login-prompt" style="display:none;">
                 <i class="bi bi-person-circle" style="font-size:3rem;display:block;margin-bottom:1rem;color:var(--text-light);"></i>
                 <h2>Sign In Required</h2>
-                <p style="color:var(--text-light);">Sign in to access your buyer dashboard.</p>
+                <p style="color:var(--text-light);">Sign in to access your dashboard.</p>
                 <a href="javascript:void(0)" onclick="sessionStorage.setItem('pending-auth','login');if(typeof openAuthModal==='function')openAuthModal('login');else window.location.href='login.html';" class="btn btn-primary">Sign In</a>
             </div>
 
             <div id="dashContent" style="display:none;">
+                <!-- Dashboard -->
                 <div id="section-dashboard" class="section active">
-                    <div class="welcome-card"><h2 id="welcomeTitle">Welcome Back</h2><p>Browse flowers, manage orders, and connect with growers.</p></div>
+                    <div class="welcome-card" style="background:linear-gradient(135deg,var(--primary-color),#be185d);color:white;border-radius:16px;padding:2rem;margin-bottom:1.5rem;">
+                        <h2 id="welcomeTitle" style="color:white;margin-bottom:0.25rem;">Welcome Back</h2>
+                        <p style="opacity:0.85;">Manage your orders, favorites, and account.</p>
+                    </div>
                     <div class="stats-grid" id="statsGrid"></div>
                     <div class="grid-2">
-                        <div class="section-card"><h3>Recent Purchases</h3><div id="recentPurchases"></div></div>
-                        <div class="section-card"><h3>Watchlist Alerts</h3><div id="watchlistAlerts"></div></div>
+                        <div class="section-card"><h3>Recent Orders</h3><div id="recentOrders"></div></div>
+                        <div class="section-card"><h3>Quick Actions</h3>
+                            <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                                <a href="marketplace.html" class="btn btn-primary w-100"><i class="bi bi-bag"></i> Browse Marketplace</a>
+                                <a href="florists.html" class="btn btn-outline w-100"><i class="bi bi-people"></i> Find Florists</a>
+                                <a href="arrangements.html" class="btn btn-outline w-100"><i class="bi bi-flower1"></i> View Arrangements</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div id="section-purchases" class="section">
-                    <div class="dash-header"><h1>??? Purchase History</h1><button class="btn btn-primary btn-sm" onclick="showModal('purchaseModal')"><i class="bi bi-plus"></i> Log Purchase</button></div>
-                    <div class="section-card"><div class="table-wrap" id="purchasesTable"></div></div>
+                <!-- Orders -->
+                <div id="section-orders" class="section">
+                    <h1 style="margin-bottom:1.5rem;">My Orders</h1>
+                    <div id="ordersList"></div>
                 </div>
 
-                <div id="section-watchlist" class="section">
-                    <div class="dash-header"><h1>??? Watchlist</h1><button class="btn btn-primary btn-sm" onclick="showModal('watchlistModal')"><i class="bi bi-plus"></i> Add to Watchlist</button></div>
-                    <div class="section-card"><div id="watchlistGrid"></div></div>
+                <!-- Favorites -->
+                <div id="section-favorites" class="section">
+                    <h1 style="margin-bottom:1.5rem;">Favorites</h1>
+                    <div class="fav-grid" id="favoritesGrid"></div>
                 </div>
 
-                <div id="section-sellers" class="section">
-                    <div class="dash-header"><h1>?? Saved Sellers</h1><button class="btn btn-primary btn-sm" onclick="showModal('sellerModal')"><i class="bi bi-plus"></i> Save Seller</button></div>
-                    <div class="section-card"><div id="sellersGrid"></div></div>
+                <!-- Messages -->
+                <div id="section-messages" class="section">
+                    <h1 style="margin-bottom:1.5rem;">Messages</h1>
+                    <div class="section-card">
+                        <p style="text-align:center;color:var(--text-light);padding:2rem;">
+                            <a href="messages.html" class="btn btn-primary">Open Messages</a>
+                        </p>
+                    </div>
                 </div>
 
-                <div id="section-deliveries" class="section">
-                    <div class="dash-header"><h1>?? Deliveries</h1></div>
-                    <div class="section-card"><div class="table-wrap" id="deliveriesTable"></div></div>
+                <!-- Notifications -->
+                <div id="section-notifications" class="section">
+                    <h1 style="margin-bottom:1.5rem;">Notifications</h1>
+                    <div id="notificationsList"></div>
                 </div>
 
-                <div id="section-marketplace" class="section">
-                    <div class="dash-header"><h1>?? Browse Marketplace</h1></div>
-                    <div class="section-card"><div id="marketplaceGrid"></div></div>
+                <!-- Activity -->
+                <div id="section-activity" class="section">
+                    <h1 style="margin-bottom:1.5rem;">Recent Activity</h1>
+                    <div class="section-card" id="activityList"></div>
                 </div>
 
-                <div id="section-analytics" class="section">
-                    <div class="dash-header"><h1>?? Analytics</h1></div>
-                    <div id="analyticsContent"></div>
-                </div>
-
+                <!-- Settings -->
                 <div id="section-settings" class="section">
-                    <div class="dash-header"><h1>?? Settings</h1></div>
+                    <h1 style="margin-bottom:1.5rem;">Account Settings</h1>
                     <div class="section-card" id="settingsForm"></div>
                 </div>
             </div>
         </main>
     </div>
-
-    <!-- Modals -->
-    <div class="modal-overlay" id="purchaseModal"><div class="modal"><h3>Log Purchase</h3><div class="form-group"><label>Flower Name *</label><input type="text" id="purFlower"></div><div class="form-row"><div class="form-group"><label>Quantity</label><input type="number" id="purQty"></div><div class="form-group"><label>Unit Price</label><input type="number" id="purPrice" step="0.01"></div></div><div class="form-row"><div class="form-group"><label>Total Price</label><input type="number" id="purTotal" step="0.01"></div><div class="form-group"><label>Seller Name</label><input type="text" id="purSeller"></div></div><div class="form-group"><label>Rating (1-5)</label><select id="purRating"><option value="">Select</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div><div class="form-group"><label>Review</label><textarea id="purReview" rows="2"></textarea></div><div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;"><button class="btn btn-outline btn-sm" onclick="hideModal('purchaseModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="savePurchase()">Save</button></div></div></div>
-
-    <div class="modal-overlay" id="watchlistModal"><div class="modal"><h3>Add to Watchlist</h3><div class="form-group"><label>Flower Name *</label><input type="text" id="wlFlower"></div><div class="form-row"><div class="form-group"><label>Target Price</label><input type="number" id="wlPrice" step="0.01"></div><div class="form-group"><label>Max Quantity</label><input type="number" id="wlQty"></div></div><div class="form-group"><label>Notes</label><textarea id="wlNotes" rows="2"></textarea></div><div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;"><button class="btn btn-outline btn-sm" onclick="hideModal('watchlistModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="saveWatchlist()">Add</button></div></div></div>
-
-    <div class="modal-overlay" id="sellerModal"><div class="modal"><h3>Save Seller</h3><div class="form-group"><label>Seller Name *</label><input type="text" id="svSeller"></div><div class="form-group"><label>Seller ID (optional)</label><input type="text" id="svSellerId"></div><div class="form-group"><label>Notes</label><textarea id="svNotes" rows="2"></textarea></div><div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;"><button class="btn btn-outline btn-sm" onclick="hideModal('sellerModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="saveSeller()">Save</button></div></div></div>
 
     <div id="footer-container"></div>
 
@@ -120,7 +151,193 @@
     <script src="js/shared/cart.js?v=3.0"></script>
     <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
-    <script src="js/buyer-dashboard.js"></script>
-    <script>document.addEventListener('DOMContentLoaded', () => initBuyerDashboard());</script>
+    <script>
+        let currentSection = 'dashboard';
+
+        function initDashboard() {
+            if (!localStorage.getItem('flower-token')) {
+                document.getElementById('loginPrompt').style.display = 'block';
+                return;
+            }
+            document.getElementById('dashContent').style.display = 'block';
+
+            // Navigation
+            document.querySelectorAll('.dash-nav a[data-section]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = link.dataset.section;
+                    document.querySelectorAll('.dash-nav a').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                    document.getElementById('section-' + section).classList.add('active');
+                    currentSection = section;
+                    loadSection(section);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+
+            // Logout
+            document.getElementById('buyerLogout')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof logout === 'function') logout();
+                window.location.href = '/index.html';
+            });
+
+            // Load user info
+            const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+            if (user) {
+                document.getElementById('sidebarName').textContent = user.name || user.email || 'My Account';
+                document.getElementById('sidebarAvatar').textContent = (user.name || 'U')[0].toUpperCase();
+                document.getElementById('welcomeTitle').textContent = `Welcome Back, ${user.name || 'there'}`;
+            }
+
+            loadSection('dashboard');
+        }
+
+        function loadSection(section) {
+            switch (section) {
+                case 'dashboard': loadOverview(); break;
+                case 'orders': loadOrders(); break;
+                case 'favorites': loadFavorites(); break;
+                case 'messages': break;
+                case 'notifications': loadNotifications(); break;
+                case 'activity': loadActivity(); break;
+                case 'settings': loadSettings(); break;
+            }
+        }
+
+        async function loadOverview() {
+            // Stats
+            let orders = [];
+            try { orders = await fetch('/api/orders', { headers: authHeaders() }).then(r => r.json()); } catch {}
+            const orderList = Array.isArray(orders) ? orders : (orders.orders || []);
+
+            const totalSpent = orderList.reduce((s, o) => s + Number(o.total_amount || 0), 0);
+            const pending = orderList.filter(o => o.status === 'PENDING' || o.status === 'CONFIRMED').length;
+            const delivered = orderList.filter(o => o.status === 'DELIVERED').length;
+
+            document.getElementById('statsGrid').innerHTML = `
+                <div class="stat-card"><div class="icon"><i class="bi bi-receipt"></i></div><div class="num">${orderList.length}</div><div class="label">Total Orders</div></div>
+                <div class="stat-card"><div class="icon"><i class="bi bi-currency-dollar"></i></div><div class="num">GHS ${totalSpent.toFixed(2)}</div><div class="label">Total Spent</div></div>
+                <div class="stat-card"><div class="icon"><i class="bi bi-hourglass-split"></i></div><div class="num">${pending}</div><div class="label">In Progress</div></div>
+                <div class="stat-card"><div class="icon"><i class="bi bi-check-circle"></i></div><div class="num">${delivered}</div><div class="label">Delivered</div></div>
+            `;
+
+            // Recent orders
+            const recent = orderList.slice(0, 5);
+            document.getElementById('recentOrders').innerHTML = recent.length ? recent.map(o => `
+                <div class="order-card">
+                    <div class="order-info">
+                        <div class="order-name">Order #${(o.id || '').slice(0, 8)}</div>
+                        <div class="order-meta">${o.created_at ? new Date(o.created_at).toLocaleDateString() : ''}</div>
+                    </div>
+                    <div class="order-right">
+                        <div class="order-price">GHS ${Number(o.total_amount || 0).toFixed(2)}</div>
+                        <span class="badge badge-${(o.status || '').toLowerCase()}">${o.status || 'Pending'}</span>
+                    </div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No orders yet. <a href="marketplace.html">Start shopping!</a></p>';
+        }
+
+        async function loadOrders() {
+            let orders = [];
+            try { orders = await fetch('/api/orders', { headers: authHeaders() }).then(r => r.json()); } catch {}
+            const orderList = Array.isArray(orders) ? orders : (orders.orders || []);
+
+            document.getElementById('ordersList').innerHTML = orderList.length ? orderList.map(o => `
+                <div class="order-card">
+                    <div class="order-info">
+                        <div class="order-name">Order #${(o.id || '').slice(0, 8)}</div>
+                        <div class="order-meta">${o.created_at ? new Date(o.created_at).toLocaleDateString() : ''} ${o.items ? '· ' + o.items + ' item(s)' : ''}</div>
+                    </div>
+                    <div class="order-right">
+                        <div class="order-price">GHS ${Number(o.total_amount || 0).toFixed(2)}</div>
+                        <span class="badge badge-${(o.status || '').toLowerCase()}">${o.status || 'Pending'}</span>
+                    </div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:3rem;">No orders yet. <a href="marketplace.html">Browse products</a></p>';
+        }
+
+        async function loadFavorites() {
+            let favorites = [];
+            try { favorites = await fetch('/api/buyer/favorites', { headers: authHeaders() }).then(r => r.json()); } catch {}
+            const favList = Array.isArray(favorites) ? favorites : (favorites.favorites || []);
+
+            document.getElementById('favoritesGrid').innerHTML = favList.length ? favList.map(f => `
+                <div class="fav-card" onclick="window.location.href='product-detail.html?id=${f.id}'">
+                    <div class="fav-img"><img src="${f.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 140%22><rect fill=%22%23fce7f0%22 width=%22200%22 height=%22140%22/><text x=%22100%22 y=%2280%22 text-anchor=%22middle%22 fill=%22%23d8447c%22 font-size=%2232%22>✿</text></svg>'}" alt="${f.name}"></div>
+                    <div class="fav-body">
+                        <div class="fav-name">${f.name || 'Product'}</div>
+                        <div class="fav-price">GHS ${Number(f.price || 0).toFixed(2)}</div>
+                    </div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:3rem;grid-column:1/-1;">No favorites yet. <a href="marketplace.html">Browse products</a></p>';
+        }
+
+        async function loadNotifications() {
+            let notifs = [];
+            try { notifs = await fetch('/api/notifications', { headers: authHeaders() }).then(r => r.json()); } catch {}
+
+            document.getElementById('notificationsList').innerHTML = notifs.length ? notifs.map(n => `
+                <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;margin-bottom:0.5rem;display:flex;gap:0.75rem;align-items:flex-start;${n.is_read ? '' : 'border-left:3px solid var(--primary-color);'}">
+                    <div style="width:36px;height:36px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="bi bi-${n.type === 'order' ? 'bag-check' : n.type === 'message' ? 'chat-dots' : 'bell'}" style="color:var(--primary-color);"></i>
+                    </div>
+                    <div style="flex:1;">
+                        <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(n.title)}</div>
+                        <div style="font-size:0.82rem;color:var(--text-light);">${escapeHtml(n.message || '')}</div>
+                        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem;">${n.created_at ? timeAgo(n.created_at) : ''}</div>
+                    </div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:3rem;">No notifications</p>';
+        }
+
+        async function loadActivity() {
+            let orders = [];
+            try { orders = await fetch('/api/orders', { headers: authHeaders() }).then(r => r.json()); } catch {}
+            const orderList = Array.isArray(orders) ? orders : (orders.orders || []);
+
+            const activities = orderList.slice(0, 10).map(o => ({
+                icon: 'bi-bag-check',
+                iconBg: 'rgba(216,68,124,0.1)',
+                iconColor: 'var(--primary-color)',
+                text: `Order #${(o.id || '').slice(0, 8)} — ${o.status || 'Pending'}`,
+                time: o.created_at ? timeAgo(o.created_at) : ''
+            }));
+
+            document.getElementById('activityList').innerHTML = activities.length ? activities.map(a => `
+                <div class="activity-item">
+                    <div class="activity-icon" style="background:${a.iconBg};color:${a.iconColor};"><i class="bi ${a.icon}"></i></div>
+                    <div>
+                        <div class="activity-text">${a.text}</div>
+                        <div class="activity-time">${a.time}</div>
+                    </div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:3rem;">No activity yet</p>';
+        }
+
+        function loadSettings() {
+            const user = typeof getCurrentUser === 'function' ? getCurrentUser() : {};
+            document.getElementById('settingsForm').innerHTML = `
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                    <div class="form-group"><label>Full Name</label><input type="text" class="form-input" value="${escapeHtml(user.name || '')}"></div>
+                    <div class="form-group"><label>Email</label><input type="email" class="form-input" value="${escapeHtml(user.email || '')}" disabled></div>
+                    <div class="form-group"><label>Phone</label><input type="tel" class="form-input" placeholder="+233 XX XXX XXXX"></div>
+                    <div class="form-group"><label>Location</label><input type="text" class="form-input" placeholder="City, Country"></div>
+                </div>
+                <div class="form-group"><label>Default Delivery Address</label><textarea class="form-input" rows="2" placeholder="Enter your delivery address"></textarea></div>
+                <button class="btn btn-primary" style="margin-top:1rem;">Save Settings</button>
+            `;
+        }
+
+        // Logout
+        document.getElementById('buyerLogout')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (typeof logout === 'function') logout();
+            window.location.href = '/index.html';
+        });
+
+        initDashboard();
+    </script>
 </body>
 </html>
