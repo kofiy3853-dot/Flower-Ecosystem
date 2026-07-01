@@ -118,25 +118,25 @@
                     </div>
                     <div class="cl-group">
                         <label class="cl-label">Category <span class="req">*</span></label>
-                        <select id="listingCategory" class="cl-input" required>
-                            <option value="">Select category</option>
-                            <option value="roses">Roses</option>
-                            <option value="bouquets">Bouquets</option>
-                            <option value="orchids">Orchids</option>
-                            <option value="tulips">Tulips</option>
-                            <option value="lilies">Lilies</option>
-                            <option value="sunflowers">Sunflowers</option>
-                            <option value="peonies">Peonies</option>
-                            <option value="carnations">Carnations</option>
-                            <option value="daisies">Daisies</option>
-                            <option value="lavender">Lavender</option>
-                            <option value="hydrangeas">Hydrangeas</option>
-                            <option value="chrysanthemums">Chrysanthemums</option>
-                            <option value="plants">Indoor Plants</option>
-                            <option value="seeds">Seeds</option>
-                            <option value="pots">Pots & Planters</option>
-                            <option value="tools">Garden Tools</option>
-                        </select>
+                        <input type="text" id="listingCategory" class="cl-input" list="categoryList" placeholder="Search category..." autocomplete="off" required>
+                        <datalist id="categoryList">
+                            <option value="Roses">
+                            <option value="Bouquets">
+                            <option value="Orchids">
+                            <option value="Tulips">
+                            <option value="Lilies">
+                            <option value="Sunflowers">
+                            <option value="Peonies">
+                            <option value="Carnations">
+                            <option value="Daisies">
+                            <option value="Lavender">
+                            <option value="Hydrangeas">
+                            <option value="Chrysanthemums">
+                            <option value="Indoor Plants">
+                            <option value="Seeds">
+                            <option value="Pots & Planters">
+                            <option value="Garden Tools">
+                        </datalist>
                     </div>
                     <div class="cl-group">
                         <label class="cl-label">Price <span class="req">*</span></label>
