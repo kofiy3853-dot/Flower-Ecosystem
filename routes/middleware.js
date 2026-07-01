@@ -10,24 +10,34 @@ const useCloudinary = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINAR
 
 let cloudinary;
 let CloudinaryStorage;
-if (useCloudinary) {
-    try {
-        cloudinary = require('cloudinary').v2;
-        CloudinaryStorage = require('multer-storage-cloudinary').CloudinaryStorage;
-        cloudinary.config({
-            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            api_secret: process.env.CLOUDINARY_API_SECRET
-        });
-        console.log('Cloudinary configured successfully');
-    } catch (err) {
-        console.warn('Cloudinary packages not installed, falling back to local storage:', err.message);
+let cloudinaryConfigured = false;
+
+function initCloudinary() {
+    if (cloudinaryConfigured) return;
+    if (useCloudinary) {
+        try {
+            cloudinary = require('cloudinary').v2;
+            CloudinaryStorage = require('multer-storage-cloudinary').CloudinaryStorage;
+            cloudinary.config({
+                cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+                api_key: process.env.CLOUDINARY_API_KEY,
+                api_secret: process.env.CLOUDINARY_API_SECRET
+            });
+            cloudinaryConfigured = true;
+            console.log('Cloudinary configured successfully');
+        } catch (err) {
+            console.warn('Cloudinary packages not installed, falling back to local storage:', err.message);
+        }
+    } else {
+        console.log('Cloudinary not configured, using local disk storage');
     }
 }
 
+initCloudinary();
+
 function getFileUrl(file) {
     if (!file) return null;
-    if (useCloudinary && cloudinary) {
+    if (cloudinaryConfigured && cloudinary) {
         return file.path; // Cloudinary URL
     } else {
         return `/uploads/${file.filename}`;
@@ -102,7 +112,7 @@ async function blacklistUserTokens(userId) {
 
 // Configure storage based on Cloudinary availability
 let storage;
-if (useCloudinary && cloudinary && CloudinaryStorage) {
+if (cloudinaryConfigured && cloudinary && CloudinaryStorage) {
     storage = new CloudinaryStorage({
         cloudinary,
         params: {
