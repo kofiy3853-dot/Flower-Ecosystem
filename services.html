@@ -323,7 +323,7 @@
         }
 
         function filterByCategory(cat) {
-            window.location.href = `marketplace?category=${encodeURIComponent(cat.toLowerCase().replace(/\s+/g, '-'))}`;
+            window.location.href = `marketplace?q=${encodeURIComponent(cat)}`;
         }
 
         initServices();
