@@ -117,8 +117,10 @@ function initUI() {
         }
 
         // Search Button
-        const searchBtn = e.target.closest('.search-btn');
+        const searchBtn = e.target.closest('.search-btn, #globalSearchBtn');
         if (searchBtn) {
+            e.preventDefault();
+            e.stopPropagation();
             const searchInput = document.getElementById('globalSearchInput') || document.querySelector('.search-input');
             if (searchInput) {
                 const query = searchInput.value.trim();
