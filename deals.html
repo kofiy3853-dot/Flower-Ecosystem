@@ -117,7 +117,7 @@
     <!-- Hero -->
     <section class="deal-hero">
         <div class="container" style="text-align:center;">
-            <h1>Bloom More, Spend Less 🌸</h1>
+            <h1>Bloom More, Spend Less</h1>
             <p>Discover exclusive discounts, flash sales, bundle offers, and seasonal promotions from trusted florists and growers.</p>
             <div class="deal-search">
                 <input type="search" id="dealSearch" placeholder="Search deals...">
@@ -149,14 +149,14 @@
                 <h2>Deal Categories</h2>
             </div>
             <div class="deal-cats">
-                <div class="deal-cat" onclick="filterDeals('flash')"><div class="deal-cat-icon">🔥</div><div class="deal-cat-name">Flash Sales</div></div>
-                <div class="deal-cat" onclick="filterDeals('bundle')"><div class="deal-cat-icon">🎁</div><div class="deal-cat-name">Bundle Offers</div></div>
-                <div class="deal-cat" onclick="filterDeals('bouquet')"><div class="deal-cat-icon">🌹</div><div class="deal-cat-name">Bouquet Deals</div></div>
-                <div class="deal-cat" onclick="filterDeals('plant')"><div class="deal-cat-icon">🌿</div><div class="deal-cat-name">Plant Deals</div></div>
-                <div class="deal-cat" onclick="filterDeals('seasonal')"><div class="deal-cat-icon">🌸</div><div class="deal-cat-name">Seasonal Offers</div></div>
-                <div class="deal-cat" onclick="filterDeals('value')"><div class="deal-cat-icon">⭐</div><div class="deal-cat-name">Best Value</div></div>
-                <div class="deal-cat" onclick="filterDeals('new')"><div class="deal-cat-icon">🆕</div><div class="deal-cat-name">New Discounts</div></div>
-                <div class="deal-cat" onclick="filterDeals('clearance')"><div class="deal-cat-icon">🛒</div><div class="deal-cat-name">Clearance</div></div>
+                <div class="deal-cat" onclick="filterDeals('flash')"><div class="deal-cat-icon"><i class="bi bi-lightning-fill"></i></div><div class="deal-cat-name">Flash Sales</div></div>
+                <div class="deal-cat" onclick="filterDeals('bundle')"><div class="deal-cat-icon"><i class="bi bi-gift"></i></div><div class="deal-cat-name">Bundle Offers</div></div>
+                <div class="deal-cat" onclick="filterDeals('bouquet')"><div class="deal-cat-icon"><i class="bi bi-flower1"></i></div><div class="deal-cat-name">Bouquet Deals</div></div>
+                <div class="deal-cat" onclick="filterDeals('plant')"><div class="deal-cat-icon"><i class="bi bi-flower2"></i></div><div class="deal-cat-name">Plant Deals</div></div>
+                <div class="deal-cat" onclick="filterDeals('seasonal')"><div class="deal-cat-icon"><i class="bi bi-sun"></i></div><div class="deal-cat-name">Seasonal Offers</div></div>
+                <div class="deal-cat" onclick="filterDeals('value')"><div class="deal-cat-icon"><i class="bi bi-star-fill"></i></div><div class="deal-cat-name">Best Value</div></div>
+                <div class="deal-cat" onclick="filterDeals('new')"><div class="deal-cat-icon"><i class="bi bi-plus-circle"></i></div><div class="deal-cat-name">New Discounts</div></div>
+                <div class="deal-cat" onclick="filterDeals('clearance')"><div class="deal-cat-icon"><i class="bi bi-bag-x"></i></div><div class="deal-cat-name">Clearance</div></div>
             </div>
         </div>
     </section>
@@ -211,9 +211,9 @@
                 <h2 style="color:white;">Member Exclusive Deals</h2>
                 <p style="opacity:0.85;">Special discounts for registered members</p>
                 <div class="member-grid">
-                    <div class="member-card"><div class="member-icon">🎉</div><div class="member-title">10% Off First Order</div><div class="member-desc">Welcome discount for new members</div></div>
-                    <div class="member-card"><div class="member-icon">🚚</div><div class="member-title">Free Delivery</div><div class="member-desc">On orders above GHS 300</div></div>
-                    <div class="member-card"><div class="member-icon">💎</div><div class="member-title">Loyalty Rewards</div><div class="member-desc">Earn points with every purchase</div></div>
+                    <div class="member-card"><div class="member-icon"><i class="bi bi-percent"></i></div><div class="member-title">10% Off First Order</div><div class="member-desc">Welcome discount for new members</div></div>
+                    <div class="member-card"><div class="member-icon"><i class="bi bi-truck"></i></div><div class="member-title">Free Delivery</div><div class="member-desc">On orders above GHS 300</div></div>
+                    <div class="member-card"><div class="member-icon"><i class="bi bi-gem"></i></div><div class="member-title">Loyalty Rewards</div><div class="member-desc">Earn points with every purchase</div></div>
                 </div>
             </div>
         </div>
@@ -286,18 +286,18 @@
         function renderDeals(products) {
             const grid = document.getElementById('dealsGrid');
             grid.innerHTML = products.slice(0, 8).map(p => {
-                const img = p.image || (p.images && p.images[0]) || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200"><rect fill="%23fce7f0" width="300" height="200"/><text x="150" y="110" text-anchor="middle" fill="%23d8447c" font-size="40">✿</text></svg>';
+                const img = p.image || (p.images && p.images[0]) || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200"><rect fill="%23fce7f0" width="300" height="200"/><text x="150" y="110" text-anchor="middle" fill="%23d8447c" font-size="20">No Image</text></svg>';
                 const oldPrice = p.price / (1 - p.discount / 100);
                 const savings = oldPrice - p.price;
                 return `
                 <div class="p-card" onclick="window.location.href='product-detail.html?id=${p.id}'">
                     <div class="p-card-img">
-                        <img src="${img}" alt="${p.name}" loading="lazy">
+                        <img src="${img}" alt="${escapeHtml(p.name)}" loading="lazy">
                         <div class="deal-badge${p.flash ? ' flash' : ''}">-${p.discount}%</div>
                     </div>
                     <div class="p-card-body">
-                        <div class="p-card-seller">${p.seller || 'Seller'}</div>
-                        <div class="p-card-name">${p.name}</div>
+                        <div class="p-card-seller">${escapeHtml(p.seller || 'Seller')}</div>
+                        <div class="p-card-name">${escapeHtml(p.name)}</div>
                         <div class="p-card-rating">${renderStars(p.rating || 0)}</div>
                         <div class="deal-price">
                             <span class="deal-price-now">${p.currency || 'GHS'} ${p.price.toFixed(2)}</span>
@@ -312,9 +312,9 @@
 
         function renderBundles() {
             const bundles = [
-                { name: 'Romantic Gift Bundle', items: ['🌹 Rose Bouquet', '🧸 Teddy Bear', '🍫 Chocolate', '💌 Greeting Card'], save: 80, price: 250, color: '#e74c3c' },
-                { name: 'Wedding Starter Bundle', items: ['💐 Bridal Bouquet', '🌺 Table Flowers', '🌸 Buttonholes'], save: 250, price: 800, color: '#8b5cf6' },
-                { name: 'Indoor Plant Bundle', items: ['🪴 Snake Plant', '🌿 Peace Lily', '🏺 Decorative Pot'], save: 60, price: 180, color: '#10b981' }
+                { name: 'Romantic Gift Bundle', items: ['Romantic Bouquet', 'Teddy Bear', 'Chocolate Box', 'Greeting Card'], save: 80, price: 250, color: '#e74c3c', icons: ['bi-flower1', 'bi-emoji-smile', 'bi-cup-straw', 'bi-envelope-heart'] },
+                { name: 'Wedding Starter Bundle', items: ['Bridal Bouquet', 'Table Flowers', 'Buttonholes'], save: 250, price: 800, color: '#8b5cf6', icons: ['bi-flower2', 'bi-flower1', 'bi-flower3'] },
+                { name: 'Indoor Plant Bundle', items: ['Snake Plant', 'Peace Lily', 'Decorative Pot'], save: 60, price: 180, color: '#10b981', icons: ['bi-flower2', 'bi-flower1', 'bi-cup'] }
             ];
             document.getElementById('bundleGrid').innerHTML = bundles.map(b => `
                 <div class="bundle-card">
@@ -323,7 +323,7 @@
                         <p>GHS ${b.price}</p>
                     </div>
                     <div class="bundle-body">
-                        ${b.items.map(item => `<div class="bundle-item"><span class="bundle-item-icon">${item.split(' ')[0]}</span><span>${item.split(' ').slice(1).join(' ')}</span></div>`).join('')}
+                        ${b.items.map((item, i) => `<div class="bundle-item"><span class="bundle-item-icon"><i class="bi ${b.icons[i]}"></i></span><span>${item}</span></div>`).join('')}
                         <div class="bundle-savings">You Save GHS ${b.save}</div>
                         <button class="btn btn-primary w-100" style="margin-top:0.75rem;" onclick="addToCart('bundle-${b.name.replace(/\s+/g, '-').toLowerCase()}', '${b.name}', ${b.price})">Add Bundle to Cart</button>
                     </div>
@@ -390,9 +390,13 @@
 
         function addToCart(id, name, price) {
             let cart = JSON.parse(localStorage.getItem('flower-cart') || '[]');
-            cart.push({ id, name, price, qty: 1 });
+            const existing = cart.find(i => i.id === id);
+            if (existing) existing.qty = (existing.qty || 1) + 1;
+            else cart.push({ id, name, price, qty: 1 });
             localStorage.setItem('flower-cart', JSON.stringify(cart));
-            alert('Added to cart!');
+            if (typeof updateAllBadges === 'function') updateAllBadges();
+            if (typeof Toast !== 'undefined') Toast.success('Added to cart!');
+            else alert('Added to cart!');
         }
 
         function searchDeals() {
@@ -401,7 +405,7 @@
         }
 
         function filterDeals(type) {
-            alert(`Browsing ${type} deals`);
+            window.location.href = `marketplace?q=${encodeURIComponent(type)}`;
         }
 
         loadDeals();
