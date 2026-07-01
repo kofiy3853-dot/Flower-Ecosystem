@@ -63,11 +63,14 @@
             <ul class="dash-nav">
                 <li><a href="#dashboard" class="active" data-section="dashboard"><i class="bi bi-house"></i> Dashboard</a></li>
                 <li><a href="#products" data-section="products"><i class="bi bi-box"></i> Products</a></li>
+                <li><a href="#services" data-section="services"><i class="bi bi-gear"></i> Services</a></li>
                 <li><a href="#orders" data-section="orders"><i class="bi bi-receipt"></i> Orders</a></li>
+                <li><a href="#customers" data-section="customers"><i class="bi bi-people"></i> Customers</a></li>
                 <li><a href="#reviews" data-section="reviews"><i class="bi bi-star"></i> Reviews</a></li>
                 <li><a href="#notifications" data-section="notifications"><i class="bi bi-bell"></i> Notifications <span id="notifBadge" style="display:none;background:var(--error-color);color:white;font-size:0.65rem;padding:0.1rem 0.4rem;border-radius:10px;margin-left:0.35rem;"></span></a></li>
                 <li><a href="#messages" data-section="messages"><i class="bi bi-chat-dots"></i> Messages</a></li>
                 <li><a href="#analytics" data-section="analytics"><i class="bi bi-bar-chart"></i> Analytics</a></li>
+                <li><a href="#store" data-section="store"><i class="bi bi-shop"></i> Store Profile</a></li>
                 <li><a href="#settings" data-section="settings"><i class="bi bi-gear"></i> Settings</a></li>
                 <li><a href="#" class="theme-toggle" id="themeToggle"><i class="bi bi-moon-fill" id="themeIcon"></i> <span id="themeText">Dark Mode</span></a></li>
                 <li style="margin-top:1rem;border-top:1px solid var(--border-color);padding-top:0.75rem;"><a href="#" id="sellerLogout" style="color:var(--error-color);"><i class="bi bi-box-arrow-left"></i> Sign Out</a></li>
@@ -203,6 +206,24 @@
                     <div class="section-card" id="messagesSection"></div>
                 </div>
 
+                <div id="section-services" class="section">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+                        <h1 style="margin:0;">Services</h1>
+                        <a href="create-listing.html?type=service" class="btn btn-primary btn-sm"><i class="bi bi-plus"></i> Add Service</a>
+                    </div>
+                    <div class="section-card" id="servicesSection">
+                        <div class="empty-state"><i class="bi bi-gear" style="font-size:2rem;"></i><p>No services listed yet</p><p style="font-size:0.85rem;color:var(--text-light);">Add services like wedding decoration, landscaping, or delivery.</p></div>
+                    </div>
+                </div>
+
+                <div id="section-customers" class="section">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+                        <h1 style="margin:0;">Customers</h1>
+                        <input type="text" placeholder="Search customers..." style="padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;">
+                    </div>
+                    <div class="section-card" id="customersSection"></div>
+                </div>
+
                 <div id="section-analytics" class="section">
                     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
                         <div>
@@ -211,6 +232,34 @@
                         </div>
                     </div>
                     <div id="analyticsContent"></div>
+                </div>
+
+                <div id="section-store" class="section">
+                    <div class="dash-header"><h1>Store Profile</h1></div>
+                    <div class="section-card" id="storeProfile">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+                            <div>
+                                <h3 style="margin-bottom:1rem;">Business Information</h3>
+                                <div class="form-group"><label>Store Name</label><input type="text" id="storeName" class="form-input" placeholder="My Flower Shop"></div>
+                                <div class="form-group"><label>Tagline</label><input type="text" id="storeTagline" class="form-input" placeholder="Fresh flowers for every occasion"></div>
+                                <div class="form-group"><label>Description</label><textarea id="storeDesc" class="form-input" rows="3" placeholder="Tell customers about your business..."></textarea></div>
+                                <div class="form-group"><label>Location</label><input type="text" id="storeLocation" class="form-input" placeholder="Accra, Ghana"></div>
+                                <div class="form-group"><label>Phone</label><input type="tel" id="storePhone" class="form-input" placeholder="+233 XX XXX XXXX"></div>
+                                <div class="form-group"><label>Email</label><input type="email" id="storeEmail" class="form-input" placeholder="contact@mystore.com"></div>
+                                <div class="form-group"><label>Website</label><input type="url" id="storeWebsite" class="form-input" placeholder="https://mystore.com"></div>
+                            </div>
+                            <div>
+                                <h3 style="margin-bottom:1rem;">Store Branding</h3>
+                                <div class="form-group"><label>Store Logo</label><div class="upload-zone" onclick="document.getElementById('storeLogo').click()" style="border:2px dashed var(--border-color);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;"><i class="bi bi-cloud-arrow-up" style="font-size:1.5rem;color:var(--text-light);"></i><p style="font-size:0.85rem;margin:0.25rem 0 0;color:var(--text-light);">Click to upload logo</p></div><input type="file" id="storeLogo" accept="image/*" style="display:none;"></div>
+                                <div class="form-group"><label>Cover Banner</label><div class="upload-zone" onclick="document.getElementById('storeBanner').click()" style="border:2px dashed var(--border-color);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;"><i class="bi bi-image" style="font-size:1.5rem;color:var(--text-light);"></i><p style="font-size:0.85rem;margin:0.25rem 0 0;color:var(--text-light);">Click to upload banner</p></div><input type="file" id="storeBanner" accept="image/*" style="display:none;"></div>
+                                <h3 style="margin:1.5rem 0 1rem;">Social Media</h3>
+                                <div class="form-group"><label>Instagram</label><input type="text" class="form-input" placeholder="@username"></div>
+                                <div class="form-group"><label>Facebook</label><input type="text" class="form-input" placeholder="facebook.com/page"></div>
+                                <div class="form-group"><label>WhatsApp</label><input type="tel" class="form-input" placeholder="+233 XX XXX XXXX"></div>
+                            </div>
+                        </div>
+                        <div style="margin-top:1.5rem;"><button class="btn btn-primary">Save Profile</button></div>
+                    </div>
                 </div>
 
                 <div id="section-settings" class="section">
