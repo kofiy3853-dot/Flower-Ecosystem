@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Curated flower collections for every occasion and season.">
+    <title>Collection | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .col-hero { position:relative; height:450px; overflow:hidden; }
+        .col-hero img { width:100%; height:100%; object-fit:cover; }
+        .col-hero-overlay { position:absolute; inset:0; background:linear-gradient(to right, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 60%, transparent 100%); display:flex; flex-direction:column; justify-content:center; padding:3rem; }
+        .col-hero h1 { color:white; font-size:clamp(2rem, 4vw, 3rem); margin-bottom:0.5rem; }
+        .col-hero p { color:rgba(255,255,255,0.85); font-size:1.1rem; max-width:500px; margin-bottom:1.5rem; line-height:1.6; }
+        .col-hero-btns { display:flex; gap:0.75rem; margin-bottom:1.5rem; }
+        .col-hero-stats { display:flex; gap:1.5rem; flex-wrap:wrap; }
+        .col-hero-stat { color:white; }
+        .col-hero-stat strong { font-size:1.1rem; }
+        .col-hero-stat span { font-size:0.85rem; opacity:0.8; }
+
+        /* Breadcrumb */
+        .crumb { padding:1rem 0; font-size:0.85rem; color:var(--text-light); }
+        .crumb a { color:var(--primary-color); text-decoration:none; }
+
+        /* Story */
+        .col-story { max-width:700px; margin:0 auto 2rem; text-align:center; }
+        .col-story p { color:var(--text-light); font-size:1.05rem; line-height:1.8; }
+
+        /* Filter Bar */
+        .col-filters { display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:2rem; padding:1rem; background:var(--bg-light); border-radius:12px; }
+        .col-filter { padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.85rem; background:white; }
+        .col-sort { padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.85rem; background:white; margin-left:auto; }
+
+        /* Product Grid */
+        .col-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:1.25rem; margin-bottom:2rem; }
+
+        /* Highlights */
+        .col-highlights { display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem; margin:2rem 0; }
+        .col-highlight { display:flex; align-items:center; gap:0.75rem; padding:1rem; background:var(--bg-light); border-radius:10px; }
+        .col-highlight i { font-size:1.25rem; color:var(--primary-color); }
+        .col-highlight span { font-size:0.88rem; font-weight:500; }
+
+        /* Florists */
+        .florists-scroll { display:flex; gap:1.25rem; overflow-x:auto; padding:1rem 0; }
+        .florist-card { min-width:200px; background:white; border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; flex-shrink:0; text-decoration:none; color:inherit; }
+        .florist-avatar { width:60px; height:60px; border-radius:50%; margin:0 auto 0.75rem; background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:var(--primary-color); }
+
+        /* Gallery */
+        .gallery-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1rem; }
+        .gallery-item { border-radius:12px; overflow:hidden; aspect-ratio:1; }
+        .gallery-item img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .gallery-item:hover img { transform:scale(1.08); }
+
+        /* Reviews */
+        .reviews-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; }
+        .review-card { background:white; border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; }
+        .review-stars { color:#f59e0b; margin-bottom:0.5rem; }
+        .review-text { font-size:0.88rem; color:var(--text-light); line-height:1.5; margin-bottom:0.5rem; }
+        .review-author { font-weight:600; font-size:0.85rem; }
+
+        /* Related */
+        .related-scroll { display:flex; gap:1rem; overflow-x:auto; padding:1rem 0; }
+        .related-card { min-width:180px; background:white; border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; flex-shrink:0; text-decoration:none; color:inherit; transition:all 0.3s; }
+        .related-card:hover { border-color:var(--primary-color); transform:translateY(-3px); }
+
+        /* Newsletter */
+        .newsletter-box { background:linear-gradient(135deg, var(--primary-light), #fce7f0); border-radius:16px; padding:3rem; text-align:center; margin-top:2rem; }
+        .newsletter-box h2 { margin-bottom:0.5rem; }
+        .newsletter-box p { color:var(--text-light); margin-bottom:1.5rem; }
+        .newsletter-form { display:flex; gap:0.5rem; max-width:400px; margin:0 auto; }
+        .newsletter-form input { flex:1; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.9rem; }
+
+        /* Countdown */
+        .countdown { display:flex; gap:0.5rem; justify-content:center; margin:1rem 0; }
+        .countdown-item { background:var(--primary-color); color:white; padding:0.5rem 0.75rem; border-radius:8px; text-align:center; min-width:60px; }
+        .countdown-num { font-size:1.25rem; font-weight:700; }
+        .countdown-label { font-size:0.7rem; opacity:0.8; }
+
+        @media (max-width:768px) {
+            .col-hero { height:300px; }
+            .col-hero-overlay { padding:1.5rem; }
+            .col-highlights { grid-template-columns:repeat(2, 1fr); }
+            .reviews-grid { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header-container"></div>
+
+    <!-- Breadcrumb -->
+    <div class="crumb">
+        <div class="container">
+            <a href="index.html">Home</a> <span style="margin:0 0.5rem;">›</span>
+            <a href="category-listing.html">Collections</a> <span style="margin:0 0.5rem;">›</span>
+            <span id="crumbName" style="color:var(--text-main);font-weight:500;">Collection</span>
+        </div>
+    </div>
+
+    <!-- Hero -->
+    <div class="col-hero" id="colHero">
+        <img id="heroImg" src="" alt="">
+        <div class="col-hero-overlay">
+            <h1 id="heroTitle">Loading...</h1>
+            <p id="heroDesc"></p>
+            <div class="col-hero-btns">
+                <a href="#products" class="btn btn-primary">Shop Collection</a>
+                <a href="florists.html" class="btn btn-outline" style="background:rgba(255,255,255,0.2);color:white;border-color:rgba(255,255,255,0.4);">Find Florists</a>
+            </div>
+            <div class="col-hero-stats" id="heroStats"></div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- Story -->
+        <div class="col-story" id="colStory"></div>
+
+        <!-- Countdown -->
+        <div id="countdownSection" style="display:none;text-align:center;margin-bottom:2rem;">
+            <h3 style="margin-bottom:0.5rem;" id="countdownTitle">Collection Ends In</h3>
+            <div class="countdown" id="countdown"></div>
+        </div>
+
+        <!-- Filters -->
+        <div class="col-filters" id="colFilters">
+            <select class="col-filter" id="colorFilter"><option value="all">Any Color</option><option value="red">Red</option><option value="pink">Pink</option><option value="white">White</option><option value="yellow">Yellow</option><option value="purple">Purple</option></select>
+            <select class="col-filter" id="priceFilter"><option value="all">Any Price</option><option value="0-100">Under GHS 100</option><option value="100-200">GHS 100–200</option><option value="200+">GHS 200+</option></select>
+            <select class="col-filter" id="typeFilter"><option value="all">All Types</option><option value="fresh">Fresh</option><option value="potted">Potted</option><option value="dried">Dried</option></select>
+            <select class="col-sort" id="sortSelect" onchange="applyFilters()">
+                <option value="popular">Popular</option>
+                <option value="newest">Newest</option>
+                <option value="price-asc">Price: Low–High</option>
+                <option value="price-desc">Price: High–Low</option>
+                <option value="rating">Best Rated</option>
+            </select>
+        </div>
+
+        <!-- Products -->
+        <div id="products">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <h2>Collection Products</h2>
+                <span id="productCount" style="color:var(--text-light);font-size:0.9rem;"></span>
+            </div>
+            <div class="col-grid" id="productGrid"></div>
+        </div>
+
+        <!-- Highlights -->
+        <div class="col-highlights" id="colHighlights"></div>
+
+        <!-- Florists -->
+        <div style="margin:2rem 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <h2>Featured Florists</h2><a href="florists.html" style="color:var(--primary-color);font-size:0.9rem;">View All</a>
+            </div>
+            <div class="florists-scroll" id="floristsScroll"></div>
+        </div>
+
+        <!-- Gallery -->
+        <div style="margin:2rem 0;">
+            <h2 style="margin-bottom:1rem;">Inspiration Gallery</h2>
+            <div class="gallery-grid" id="galleryGrid"></div>
+        </div>
+
+        <!-- Reviews -->
+        <div style="margin:2rem 0;">
+            <h2 style="margin-bottom:1rem;">Customer Reviews</h2>
+            <div class="reviews-grid" id="reviewsGrid"></div>
+        </div>
+
+        <!-- Related Collections -->
+        <div style="margin:2rem 0;">
+            <h2 style="margin-bottom:1rem;">Related Collections</h2>
+            <div class="related-scroll" id="relatedScroll"></div>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="newsletter-box">
+            <h2>Stay Updated</h2>
+            <p>Get notified about new collections, seasonal launches, and exclusive offers.</p>
+            <div class="newsletter-form">
+                <input type="email" placeholder="Enter your email">
+                <button class="btn btn-primary">Subscribe</button>
+            </div>
+        </div>
+    </div>
+
+    <div style="height:3rem;"></div>
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/shared/cart.js?v=3.0"></script>
+    <script>
+        // ─── Collection Data ────────────────────────────────────────────
+        const collections = {
+            luxury: { name: 'Luxury Collection', icon: '💎', img: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=1200&auto=format&fit=crop', desc: 'Handpicked premium bouquets and arrangements for unforgettable celebrations.', story: 'The Luxury Collection features carefully selected bouquets and arrangements created for weddings, anniversaries, and unforgettable celebrations. Each piece is crafted by Ghana\'s finest florists using the freshest, most exquisite blooms.', highlights: ['Premium Quality', 'Freshly Picked', 'Handcrafted', 'Verified Florists', 'Same-Day Delivery', 'Gift Wrapping', 'Personal Note', 'Quality Guarantee'], badges: ['💎 Luxury', '⭐ Staff Pick', '🏆 Best Seller'], related: ['wedding', 'romantic', 'best-sellers', 'imported'] },
+            wedding: { name: 'Wedding Collection', icon: '💍', img: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=1200&auto=format&fit=crop', desc: 'Elegant bridal bouquets, centerpieces, and wedding florals.', story: 'Our Wedding Collection brings together the most beautiful bridal bouquets, table centerpieces, and ceremony florals. Designed to make your special day truly magical.', highlights: ['Bridal Bouquets', 'Centerpieces', 'Ceremony Flowers', 'Boutonnieres', 'Corsages', 'Aisle Decor'], badges: ['💍 Wedding', '✨ Popular'], related: ['luxury', 'romantic', 'best-sellers'] },
+            romantic: { name: 'Romantic Collection', icon: '❤️', img: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=1200&auto=format&fit=crop', desc: 'Beautiful arrangements for anniversaries, Valentine\'s Day, and romantic gestures.', story: 'Express your love with our Romantic Collection. From classic red roses to elegant mixed bouquets, these arrangements speak the language of love.', highlights: ['Red Roses', 'Mixed Bouquets', 'Heart-Shaped', 'Gift Boxes', 'Chocolates Add-On', 'Same-Day Delivery'], badges: ['❤️ Romantic', '🎯 Trending'], related: ['luxury', 'wedding', 'gifts'] },
+            'best-sellers': { name: 'Best Sellers', icon: '🏆', img: 'https://images.unsplash.com/photo-1507290439931-a861b5a38200?q=1200&auto=format&fit=crop', desc: 'Our most popular flowers and arrangements loved by customers.', story: 'These are the flowers our customers can\'t stop buying. Proven favorites that never disappoint.', highlights: ['Customer Favorites', 'Top Rated', 'Fast Delivery', 'Great Value', 'Verified Reviews', 'In Stock'], badges: ['🏆 Best Seller', '🔥 Trending'], related: ['luxury', 'new-arrivals', 'romantic'] },
+            'new-arrivals': { name: 'New Arrivals', icon: '✨', img: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=1200&auto=format&fit=crop', desc: 'The latest additions to our marketplace.', story: 'Be the first to discover our newest flowers and arrangements. Updated weekly with the freshest selections.', highlights: ['Just Added', 'Fresh Selections', 'Early Bird Deals', 'Limited Stock', 'Updated Weekly', 'First to Order'], badges: ['✨ New', '🆕 Fresh'], related: ['best-sellers', 'luxury', 'seasonal'] },
+            seasonal: { name: 'Seasonal Collection', icon: '🌸', img: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=1200&auto=format&fit=crop', desc: 'Flowers currently in bloom and perfect for the season.', story: 'Our Seasonal Collection features flowers that are at their peak right now. Enjoy the freshest blooms of the season.', highlights: ['In Season', 'Peak Freshness', 'Best Prices', 'Limited Time', 'Locally Sourced', 'Eco-Friendly'], badges: ['🌸 Seasonal', '🌿 Fresh'], related: ['best-sellers', 'new-arrivals', 'gifts'] },
+            gifts: { name: 'Gift Collection', icon: '🎁', img: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=1200&auto=format&fit=crop', desc: 'Flowers paired with chocolates, teddy bears, and greeting cards.', story: 'Make gift-giving effortless. Our Gift Collection bundles beautiful flowers with chocolates, teddy bears, balloons, and personalized cards.', highlights: ['Gift Bundles', 'Chocolates', 'Teddy Bears', 'Greeting Cards', 'Gift Wrapping', 'Same-Day Delivery'], badges: ['🎁 Gift', '💝 Popular'], related: ['romantic', 'birthday', 'luxury'] },
+            imported: { name: 'Imported Collection', icon: '🌍', img: 'https://images.unsplash.com/photo-1566907225470-af29f1201069?q=1200&auto=format&fit=crop', desc: 'Rare and exotic flowers from around the world.', story: 'Discover rare and exotic flowers imported from the finest growers worldwide. Unique varieties you won\'t find anywhere else.', highlights: ['Rare Varieties', 'International', 'Expert Selection', 'Limited Edition', 'Certificate of Origin', 'Premium Packaging'], badges: ['🌍 Imported', '💎 Rare'], related: ['luxury', 'best-sellers', 'seasonal'] }
+        };
+
+        let allProducts = [];
+        let filtered = [];
+
+        async function initCollection() {
+            const params = new URLSearchParams(window.location.search);
+            const slug = params.get('id') || params.get('collection') || 'luxury';
+            const col = collections[slug] || collections.luxury;
+
+            document.title = `${col.name} | Flower Ecosystem`;
+            document.getElementById('crumbName').textContent = col.name;
+            document.getElementById('heroImg').src = col.img;
+            document.getElementById('heroTitle').textContent = `${col.icon} ${col.name}`;
+            document.getElementById('heroDesc').textContent = col.desc;
+            document.getElementById('colStory').innerHTML = `<p>${col.story}</p>`;
+
+            document.getElementById('colHighlights').innerHTML = col.highlights.map(h =>
+                `<div class="col-highlight"><i class="bi bi-check-circle-fill"></i><span>${h}</span></div>`
+            ).join('');
+
+            document.getElementById('relatedScroll').innerHTML = col.related.map(r => {
+                const c = collections[r] || { name: r, icon: '🌸' };
+                return `<a href="collection.html?id=${r}" class="related-card"><div style="font-size:2rem;margin-bottom:0.5rem;">${c.icon}</div><div style="font-weight:500;font-size:0.9rem;">${c.name}</div></a>`;
+            }).join('');
+
+            // Load products
+            try {
+                const data = await fetch('/api/products?limit=50').then(r => r.json());
+                allProducts = data.products || data || [];
+            } catch { allProducts = []; }
+
+            // Filter products based on collection
+            if (slug === 'best-sellers') allProducts = allProducts.filter(p => p.bestSeller);
+            else if (slug === 'new-arrivals') allProducts = allProducts.filter(p => p.newArrival);
+            else if (slug === 'featured') allProducts = allProducts.filter(p => p.featured);
+
+            filtered = [...allProducts];
+
+            document.getElementById('heroStats').innerHTML = `
+                <div class="col-hero-stat"><strong>${allProducts.length}</strong> <span>Products</span></div>
+                <div class="col-hero-stat"><strong>${new Set(allProducts.map(p => p.seller)).size}</strong> <span>Florists</span></div>
+                <div class="col-hero-stat"><strong><i class="bi bi-truck"></i></strong> <span>Same-Day Delivery</span></div>
+            `;
+
+            renderProducts();
+            loadFlorists();
+            loadGallery();
+            loadReviews();
+        }
+
+        function applyFilters() {
+            const color = document.getElementById('colorFilter').value;
+            const price = document.getElementById('priceFilter').value;
+            const type = document.getElementById('typeFilter').value;
+            const sort = document.getElementById('sortSelect').value;
+
+            filtered = allProducts.filter(p => {
+                if (color !== 'all' && p.color !== color) return false;
+                if (price !== 'all') {
+                    if (price === '0-100' && p.price >= 100) return false;
+                    if (price === '100-200' && (p.price < 100 || p.price >= 200)) return false;
+                    if (price === '200+' && p.price < 200) return false;
+                }
+                if (type !== 'all') {
+                    if (type === 'fresh' && !p.fresh) return false;
+                    if (type === 'potted' && !(p.flower_cond || '').includes('potted')) return false;
+                    if (type === 'dried' && !(p.flower_cond || '').includes('dried')) return false;
+                }
+                return true;
+            });
+
+            if (sort === 'price-asc') filtered.sort((a, b) => a.price - b.price);
+            else if (sort === 'price-desc') filtered.sort((a, b) => b.price - a.price);
+            else if (sort === 'rating') filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            else if (sort === 'newest') filtered.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+            else filtered.sort((a, b) => (b.reviews || 0) - (a.reviews || 0));
+
+            renderProducts();
+        }
+
+        document.getElementById('colorFilter').addEventListener('change', applyFilters);
+        document.getElementById('priceFilter').addEventListener('change', applyFilters);
+        document.getElementById('typeFilter').addEventListener('change', applyFilters);
+
+        function renderProducts() {
+            document.getElementById('productCount').textContent = `${filtered.length} products`;
+            const grid = document.getElementById('productGrid');
+            if (!filtered.length) {
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;"><h3>No products found</h3><p style="color:var(--text-light);">Try adjusting your filters.</p></div>';
+                return;
+            }
+            grid.innerHTML = filtered.map(p => {
+                const img = p.image || (p.images && p.images[0]) || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200"><rect fill="%23fce7f0" width="300" height="200"/><text x="150" y="110" text-anchor="middle" fill="%23d8447c" font-size="40">✿</text></svg>';
+                return `
+                <div class="p-card" onclick="window.location.href='product-detail.html?id=${p.id}'">
+                    <div class="p-card-img">
+                        <img src="${img}" alt="${p.name}" loading="lazy">
+                        ${p.badge ? `<div class="p-card-badge">${p.badge}</div>` : ''}
+                        <button class="p-card-wishlist"><i class="bi bi-heart"></i></button>
+                    </div>
+                    <div class="p-card-body">
+                        <div class="p-card-seller">${p.seller || 'Seller'}</div>
+                        <div class="p-card-name">${p.name}</div>
+                        <div class="p-card-rating">${renderStars(p.rating || 0)} (${p.reviews || 0})</div>
+                        <div class="p-card-price">${p.currency || 'GHS'} ${Number(p.price).toFixed(2)}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderStars(r) {
+            const f = Math.floor(r);
+            let s = '';
+            for (let i = 0; i < f; i++) s += '<i class="bi bi-star-fill"></i>';
+            for (let i = f; i < 5; i++) s += '<i class="bi bi-star"></i>';
+            return s;
+        }
+
+        async function loadFlorists() {
+            try {
+                const data = await fetch('/api/products/list/florists').then(r => r.json());
+                const sellers = data.florists || data || [];
+                document.getElementById('floristsScroll').innerHTML = sellers.map(s => `
+                    <a href="florist-profile.html?id=${s.id}" class="florist-card">
+                        <div class="florist-avatar">${(s.name || '?')[0]}</div>
+                        <div style="font-weight:600;font-size:0.9rem;margin-bottom:0.25rem;">${s.name}</div>
+                        <div style="font-size:0.8rem;color:#f59e0b;">${renderStars(4.5)} (4.5)</div>
+                        <div style="font-size:0.75rem;color:var(--text-light);margin:0.25rem 0 0.5rem;">${s.products || 0} products</div>
+                        <button class="btn btn-primary btn-sm w-100">Visit Shop</button>
+                    </a>
+                `).join('');
+            } catch {}
+        }
+
+        function loadGallery() {
+            const images = [
+                'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=400&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=400&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1507290439931-a861b5a38200?q=400&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=400&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1566907225470-af29f1201069?q=400&auto=format&fit=crop'
+            ];
+            document.getElementById('galleryGrid').innerHTML = images.map(img => `
+                <div class="gallery-item"><img src="${img}" alt="Inspiration" loading="lazy"></div>
+            `).join('');
+        }
+
+        function loadReviews() {
+            const reviews = [
+                { rating: 5, text: 'Absolutely stunning collection! Every arrangement was perfect.', author: 'Sarah M.' },
+                { rating: 5, text: 'The quality is outstanding. Will definitely order again.', author: 'John K.' },
+                { rating: 4, text: 'Beautiful flowers, fast delivery. Highly recommend!', author: 'Ama D.' }
+            ];
+            document.getElementById('reviewsGrid').innerHTML = reviews.map(r => `
+                <div class="review-card">
+                    <div class="review-stars">${renderStars(r.rating)}</div>
+                    <div class="review-text">"${r.text}"</div>
+                    <div class="review-author">— ${r.author}</div>
+                </div>
+            `).join('');
+        }
+
+        initCollection();
+    </script>
+</body>
+</html>
