@@ -266,7 +266,7 @@
             if (!featured.length) featured.push(flowerTypes[0], flowerTypes[1], flowerTypes[2]);
 
             document.getElementById('featuredGrid').innerHTML = featured.map(f => `
-                <a href="marketplace?category=${f.slug}" class="featured-card">
+                <a href="category-detail.html?cat=${f.slug}" class="featured-card">
                     <img src="${f.img}" alt="${f.name}" loading="lazy">
                     <div class="featured-overlay">
                         <h3>${f.name}</h3>
@@ -277,7 +277,7 @@
             `).join('');
 
             document.getElementById('flowerTypesGrid').innerHTML = flowerTypes.map(f => `
-                <a href="marketplace?category=${f.slug}" class="cat-card">
+                <a href="category-detail.html?cat=${f.slug}" class="cat-card">
                     ${f.count > 2 ? '<div class="cat-card-badge">Popular</div>' : ''}
                     <div class="cat-card-img"><img src="${f.img}" alt="${f.name}" loading="lazy"></div>
                     <div class="cat-card-name">${f.name}</div>
@@ -324,7 +324,7 @@
             document.getElementById('allCategories').innerHTML = Object.entries(grouped).map(([letter, cats]) => `
                 <div class="az-section">
                     <div class="az-letter">${letter}</div>
-                    <div class="az-list">${cats.map(c => `<a href="marketplace?category=${c.slug}" class="az-item">${c.name}</a>`).join('')}</div>
+                    <div class="az-list">${cats.map(c => `<a href="category-detail.html?cat=${c.slug}" class="az-item">${c.name}</a>`).join('')}</div>
                 </div>
             `).join('');
         }
