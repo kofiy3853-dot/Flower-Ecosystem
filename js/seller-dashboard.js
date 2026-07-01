@@ -767,6 +767,8 @@ async function editProduct(id) {
         }
         const pickup = document.getElementById('prodPickup'); if (pickup) pickup.checked = p.pickup_available !== false;
         const featured = document.getElementById('prodFeatured'); if (featured) featured.checked = p.featured === true;
+        const bestSeller = document.getElementById('prodBestSeller'); if (bestSeller) bestSeller.checked = p.bestSeller === true;
+        const newArrival = document.getElementById('prodNewArrival'); if (newArrival) newArrival.checked = p.newArrival === true;
 
         pendingTags = Array.isArray(p.tags) ? [...p.tags] : [];
         renderTags();
@@ -874,6 +876,8 @@ async function saveProduct(status) {
             seo_slug: getVal('prodSeoSlug'),
             meta_description: getVal('prodMetaDesc'),
             featured: document.getElementById('prodFeatured')?.checked ?? false,
+            best_seller: document.getElementById('prodBestSeller')?.checked ?? false,
+            new_arrival: document.getElementById('prodNewArrival')?.checked ?? false,
             status: status,
             is_active: status === 'published'
         };
@@ -907,6 +911,8 @@ function resetProductForm() {
     const shipFee = document.getElementById('prodShippingFee'); if (shipFee) shipFee.value = '0';
     const pickup = document.getElementById('prodPickup'); if (pickup) pickup.checked = true;
     const featured = document.getElementById('prodFeatured'); if (featured) featured.checked = false;
+    const bestSeller = document.getElementById('prodBestSeller'); if (bestSeller) bestSeller.checked = false;
+    const newArrival = document.getElementById('prodNewArrival'); if (newArrival) newArrival.checked = false;
     pendingImages = []; pendingVideo = []; pendingTags = [];
     const previews = document.getElementById('imagePreviews'); if (previews) previews.innerHTML = '';
     const videoPrev = document.getElementById('videoPreview'); if (videoPrev) { videoPrev.style.display = 'none'; videoPrev.src = ''; }
