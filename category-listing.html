@@ -319,12 +319,24 @@
         }
 
         function filterCategories() {
-            const q = document.getElementById('catSearch').value.toLowerCase();
-            document.querySelectorAll('.cat-card, .featured-card, .occasion-card, .color-card').forEach(card => {
+            const q = document.getElementById('catSearch').value.toLowerCase().trim();
+            document.querySelectorAll('.cat-card, .featured-card, .occasion-card, .color-card, .season-card, .price-card, .az-item').forEach(card => {
                 const text = card.textContent.toLowerCase();
                 card.style.display = text.includes(q) ? '' : 'none';
             });
+            // Show/hide section headers based on whether their grid has visible children
+            document.querySelectorAll('.section-header').forEach(header => {
+                const grid = header.parentElement.querySelector('.cat-grid, .featured-grid, .occasion-grid, .color-grid, .season-grid, .price-grid, #allCategories');
+                if (grid) {
+                    const hasVisible = grid.querySelector('[style=""], [style="display:;"], :not([style*="none"])');
+                    const visibleCount = grid.querySelectorAll(':scope > *').length - grid.querySelectorAll('[style*="display: none"], [style*="display:none"]').length;
+                    header.style.display = visibleCount > 0 ? '' : 'none';
+                }
+            });
         }
+
+        document.querySelector('.cat-search button')?.addEventListener('click', filterCategories);
+        document.getElementById('catSearch')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') filterCategories(); });
 
         initCategories();
     </script>
