@@ -425,6 +425,12 @@
                 if (selectedFilters.categories.length && !selectedFilters.categories.includes(p.category)) return false;
                 if (selectedFilters.occasions.length && !selectedFilters.occasions.includes(p.occasion)) return false;
                 if (selectedFilters.colors.length && !selectedFilters.colors.includes(p.color)) return false;
+                if (selectedFilters.delivery.length) {
+                    const del = (p.delivery || '').toLowerCase();
+                    if (selectedFilters.delivery.includes('sameday') && !del.includes('same-day') && !del.includes('sameday')) return false;
+                    if (selectedFilters.delivery.includes('free') && !del.includes('free')) return false;
+                    if (selectedFilters.delivery.includes('pickup') && !del.includes('pickup')) return false;
+                }
                 if (selectedFilters.types.length) {
                     const type = (p.flower_cond || '').toLowerCase();
                     if (selectedFilters.types.includes('fresh') && !['fresh cut', 'natural'].includes(type)) return false;
@@ -474,17 +480,17 @@
                     return `
                     <div class="shop-card" onclick="viewProduct('${p.id}')">
                         <div class="shop-card-img">
-                            <img src="${img}" alt="${p.name}" loading="lazy">
-                            ${p.badge ? `<div class="shop-card-badge">${p.badge}</div>` : ''}
+                            <img src="${img}" alt="${escapeHtml(p.name)}" loading="lazy">
+                            ${p.badge ? `<div class="shop-card-badge">${escapeHtml(p.badge)}</div>` : ''}
                             <button class="shop-card-wishlist" onclick="event.stopPropagation()"><i class="bi bi-heart"></i></button>
                             <div class="shop-card-actions">
                                 <button class="btn-quick-view" onclick="event.stopPropagation();viewProduct('${p.id}')"><i class="bi bi-eye"></i> View</button>
-                                <button class="btn-add-cart" onclick="event.stopPropagation();addToCart('${p.id}','${p.name.replace(/'/g,"\\'")}',${p.price},'${img}')"><i class="bi bi-cart-plus"></i> Add</button>
+                                <button class="btn-add-cart" onclick="event.stopPropagation();addToCart('${p.id}','${escapeHtml(p.name).replace(/'/g,"\\'")}',${p.price},'${img}')"><i class="bi bi-cart-plus"></i> Add</button>
                             </div>
                         </div>
                         <div class="shop-card-body">
-                            <div class="shop-card-seller">${p.seller || 'Seller'}</div>
-                            <div class="shop-card-name">${p.name}</div>
+                            <div class="shop-card-seller">${escapeHtml(p.seller || 'Seller')}</div>
+                            <div class="shop-card-name">${escapeHtml(p.name)}</div>
                             <div class="shop-card-rating">${renderStars(p.rating || 0)} <span>(${p.reviews || 0})</span></div>
                             <div style="display:flex;justify-content:space-between;align-items:center;">
                                 <div class="shop-card-price">${p.currency || 'GHS'} ${Number(p.price).toFixed(2)}</div>
