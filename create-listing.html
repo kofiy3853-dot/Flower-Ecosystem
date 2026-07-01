@@ -142,6 +142,28 @@
                         <label class="cl-label">Price <span class="req">*</span></label>
                         <input type="number" id="listingPrice" class="cl-input" placeholder="GHS" min="0" step="0.01" required>
                     </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Location</label>
+                        <select id="listingLocation" class="cl-input">
+                            <option value="">Select location</option>
+                            <option value="Greater Accra">Greater Accra</option>
+                            <option value="Ashanti">Ashanti</option>
+                            <option value="Western">Western</option>
+                            <option value="Central">Central</option>
+                            <option value="Eastern">Eastern</option>
+                            <option value="Northern">Northern</option>
+                            <option value="Volta">Volta</option>
+                            <option value="Upper East">Upper East</option>
+                            <option value="Upper West">Upper West</option>
+                            <option value="Brong-Ahafo">Brong-Ahafo</option>
+                            <option value="Western North">Western North</option>
+                            <option value="Ahafo">Ahafo</option>
+                            <option value="Bono East">Bono East</option>
+                            <option value="Oti">Oti</option>
+                            <option value="Savannah">Savannah</option>
+                            <option value="North East">North East</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
@@ -567,11 +589,13 @@
 
         function buildReview() {
             const typeNames = { flower: '🌹 Fresh Flower', arrangement: '💐 Floral Arrangement', plant: '🪴 Plant', service: '💼 Service' };
+            const location = document.getElementById('listingLocation').value;
             document.getElementById('reviewSummary').innerHTML = `
                 <div style="background:var(--bg-light);border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
                     <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Type:</span><strong>${typeNames[listingType] || listingType}</strong></div>
                     <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Title:</span><strong>${document.getElementById('listingTitle').value}</strong></div>
                     <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Price:</span><strong>GHS ${Number(document.getElementById('listingPrice').value).toFixed(2)}</strong></div>
+                    ${location ? `<div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Location:</span><strong>${location}</strong></div>` : ''}
                     <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-light);">Stock:</span><strong>${document.getElementById('stockQty').value} units</strong></div>
                 </div>
             `;
