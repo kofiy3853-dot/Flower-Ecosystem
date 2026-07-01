@@ -39,7 +39,7 @@ app.use(require('helmet')({
 app.use(compression({ threshold: 1024 }));
 
 app.use(require('cors')({
-    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : 'http://localhost:3000',
+    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:3000', 'https://flower-ecosystem.onrender.com'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
