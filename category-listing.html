@@ -116,16 +116,8 @@
         </div>
     </section>
 
-    <!-- ===== FLOWER TYPES ===== -->
-    <section class="section-padding bg-light" style="padding-top:2rem;padding-bottom:2rem;">
-        <div class="container">
-            <div class="section-header"><h2>Flower Types</h2><a href="#all">Browse All</a></div>
-            <div class="cat-grid" id="flowerTypesGrid"></div>
-        </div>
-    </section>
-
     <!-- ===== SHOP BY OCCASION ===== -->
-    <section class="section-padding" style="padding-top:2rem;padding-bottom:2rem;">
+    <section class="section-padding bg-light" style="padding-top:2rem;padding-bottom:2rem;">
         <div class="container">
             <div class="section-header"><h2>Shop by Occasion</h2></div>
             <div class="occasion-grid">
@@ -139,19 +131,27 @@
         </div>
     </section>
 
-    <!-- ===== PRODUCT TYPES ===== -->
-    <section class="section-padding bg-light" style="padding-top:2rem;padding-bottom:2rem;">
+    <!-- ===== BROWSE BY TYPE ===== -->
+    <section class="section-padding" style="padding-top:2rem;padding-bottom:2rem;">
         <div class="container">
-            <div class="section-header"><h2>Product Types</h2></div>
-            <div class="cat-grid" id="productTypesGrid"></div>
+            <div class="section-header"><h2>Browse by Type</h2></div>
+            <div class="cat-grid" id="browseByTypeGrid"></div>
         </div>
     </section>
 
     <!-- ===== SHOP BY COLOR ===== -->
-    <section class="section-padding" style="padding-top:2rem;padding-bottom:2rem;">
+    <section class="section-padding bg-light" style="padding-top:2rem;padding-bottom:2rem;">
         <div class="container">
             <div class="section-header"><h2>Shop by Color</h2></div>
             <div class="color-grid" id="colorGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===== SHOP BY PRICE ===== -->
+    <section class="section-padding" style="padding-top:2rem;padding-bottom:2rem;">
+        <div class="container">
+            <div class="section-header"><h2>Shop by Price</h2></div>
+            <div class="price-grid" id="priceGrid"></div>
         </div>
     </section>
 
@@ -163,18 +163,10 @@
         </div>
     </section>
 
-    <!-- ===== PRICE COLLECTIONS ===== -->
-    <section class="section-padding" style="padding-top:2rem;padding-bottom:2rem;">
-        <div class="container">
-            <div class="section-header"><h2>Price Collections</h2></div>
-            <div class="price-grid" id="priceGrid"></div>
-        </div>
-    </section>
-
     <!-- ===== ALL CATEGORIES A-Z ===== -->
-    <section class="section-padding bg-light" id="all" style="padding-top:2rem;padding-bottom:2rem;">
+    <section class="section-padding" id="all" style="padding-top:2rem;padding-bottom:2rem;">
         <div class="container">
-            <div class="section-header"><h2>Browse All Categories</h2></div>
+            <div class="section-header"><h2>All Categories A-Z</h2></div>
             <div id="allCategories"></div>
         </div>
     </section>
@@ -276,18 +268,15 @@
                 </a>
             `).join('');
 
-            document.getElementById('flowerTypesGrid').innerHTML = flowerTypes.map(f => `
-                <a href="category-detail.html?cat=${f.slug}" class="cat-card">
-                    ${f.count > 2 ? '<div class="cat-card-badge">Popular</div>' : ''}
-                    <div class="cat-card-img"><img src="${f.img}" alt="${f.name}" loading="lazy"></div>
-                    <div class="cat-card-name">${f.name}</div>
-                    <div class="cat-card-count">${f.count} Products</div>
-                </a>
-            `).join('');
-
-            document.getElementById('productTypesGrid').innerHTML = productTypes.map(t => `
-                <a href="marketplace?type=${t.slug}" class="cat-card">
-                    <div class="cat-card-img"><i class="bi ${t.icon}" style="font-size:1.75rem;color:var(--primary-color);"></i></div>
+            // Merge flower types + product types into one grid
+            const allTypes = [
+                ...flowerTypes.map(f => ({ name: f.name, slug: f.slug, link: `category-detail.html?cat=${f.slug}`, img: f.img, icon: null, count: f.count })),
+                ...productTypes.map(t => ({ name: t.name, slug: t.slug, link: `marketplace?type=${t.slug}`, img: null, icon: t.icon, count: t.count }))
+            ];
+            document.getElementById('browseByTypeGrid').innerHTML = allTypes.map(t => `
+                <a href="${t.link}" class="cat-card">
+                    ${t.count > 2 ? '<div class="cat-card-badge">Popular</div>' : ''}
+                    <div class="cat-card-img">${t.img ? `<img src="${t.img}" alt="${t.name}" loading="lazy">` : `<i class="bi ${t.icon}" style="font-size:1.75rem;color:var(--primary-color);"></i>`}</div>
                     <div class="cat-card-name">${t.name}</div>
                     <div class="cat-card-count">${t.count} Products</div>
                 </a>
