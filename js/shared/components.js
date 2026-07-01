@@ -39,6 +39,27 @@ function ProductCard(product) {
     `;
 }
 
+// Wishlist toggle — works on any page that loads components.js
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.wishlist-btn');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const icon = btn.querySelector('i');
+    if (icon) {
+        icon.classList.toggle('bi-heart');
+        icon.classList.toggle('bi-heart-fill');
+    }
+    const id = btn.dataset.id;
+    if (id) {
+        let saved; try { saved = JSON.parse(localStorage.getItem('gallerySaved') || '[]'); } catch { saved = []; }
+        const idx = saved.indexOf(id);
+        if (idx >= 0) saved.splice(idx, 1);
+        else saved.push(id);
+        localStorage.setItem('gallerySaved', JSON.stringify(saved));
+    }
+});
+
 /**
  * Loads a component HTML file and injects it into a specified element
  * @param {string} url - Path to the component HTML file
