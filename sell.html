@@ -3,348 +3,652 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Start selling flowers on Flower Ecosystem. Reach thousands of buyers with our easy seller tools.">
-    <title>Sell Flowers — Start Your Floral Business | Flower Ecosystem</title>
+    <meta name="description" content="Become a seller on Flower Ecosystem. Register your florist shop, flower farm, or service business.">
+    <title>Become a Seller | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .sell-hero { background:linear-gradient(135deg, #fdf2f6 0%, #fce7f0 50%, #f8d7e8 100%); padding:5rem 0 3rem; text-align:center; }
+        .sell-hero h1 { font-size:clamp(2rem, 4vw, 2.8rem); margin-bottom:0.5rem; }
+        .sell-hero p { color:var(--text-light); font-size:1.05rem; max-width:600px; margin:0 auto; }
+
+        /* Progress */
+        .sell-progress { display:flex; justify-content:center; margin:2rem 0; flex-wrap:wrap; gap:0.5rem; }
+        .sell-step { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 1rem; border-radius:50px; font-size:0.85rem; color:var(--text-light); background:var(--bg-light); }
+        .sell-step.active { background:var(--primary-color); color:white; font-weight:600; }
+        .sell-step.completed { background:#10b981; color:white; }
+        .sell-step-num { width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:600; }
+        .sell-step.active .sell-step-num { background:rgba(255,255,255,0.3); }
+
+        /* Form Card */
+        .sell-card { background:white; border:1px solid var(--border-color); border-radius:16px; padding:2rem; margin-bottom:1.5rem; }
+        .sell-card h2 { font-size:1.35rem; margin-bottom:0.5rem; }
+        .sell-card p { color:var(--text-light); font-size:0.9rem; margin-bottom:1.5rem; }
+
+        /* Form Grid */
+        .sell-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+        .sell-full { grid-column:1/-1; }
+
+        /* Form Groups */
+        .sell-group { margin-bottom:1rem; }
+        .sell-label { display:block; font-weight:500; font-size:0.88rem; margin-bottom:0.35rem; }
+        .sell-label .required { color:var(--error-color); }
+        .sell-input { width:100%; padding:0.7rem 1rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.9rem; font-family:inherit; transition:border-color 0.2s; }
+        .sell-input:focus { outline:none; border-color:var(--primary-color); box-shadow:0 0 0 3px rgba(216,68,124,0.1); }
+        .sell-input.error { border-color:var(--error-color); }
+        .sell-hint { font-size:0.78rem; color:var(--text-light); margin-top:0.25rem; }
+        .sell-error { font-size:0.78rem; color:var(--error-color); margin-top:0.25rem; display:none; }
+
+        /* Business Type Cards */
+        .type-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem; }
+        .type-card { border:2px solid var(--border-color); border-radius:12px; padding:1.5rem; text-align:center; cursor:pointer; transition:all 0.3s; }
+        .type-card:hover { border-color:var(--primary-color); transform:translateY(-3px); }
+        .type-card.selected { border-color:var(--primary-color); background:var(--primary-light); }
+        .type-card-icon { font-size:2.5rem; margin-bottom:0.5rem; }
+        .type-card-name { font-weight:600; font-size:0.95rem; margin-bottom:0.25rem; }
+        .type-card-desc { font-size:0.8rem; color:var(--text-light); }
+
+        /* Checkbox Group */
+        .sell-checks { display:flex; flex-wrap:wrap; gap:0.75rem; }
+        .sell-check { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; cursor:pointer; font-size:0.88rem; transition:all 0.2s; }
+        .sell-check:hover { border-color:var(--primary-color); }
+        .sell-check.selected { border-color:var(--primary-color); background:var(--primary-light); }
+        .sell-check input { accent-color:var(--primary-color); }
+
+        /* File Upload */
+        .sell-upload { border:2px dashed var(--border-color); border-radius:12px; padding:2rem; text-align:center; cursor:pointer; transition:all 0.2s; }
+        .sell-upload:hover { border-color:var(--primary-color); background:var(--primary-light); }
+        .sell-upload-icon { font-size:2rem; color:var(--text-light); margin-bottom:0.5rem; }
+
+        /* Navigation */
+        .sell-nav { display:flex; justify-content:space-between; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border-color); }
+
+        /* Success */
+        .sell-success { text-align:center; padding:3rem; }
+        .sell-success-icon { width:80px; height:80px; border-radius:50%; background:#d4edda; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; font-size:2.5rem; color:#155724; }
+
+        @media (max-width:768px) {
+            .sell-grid { grid-template-columns:1fr; }
+            .type-grid { grid-template-columns:repeat(2, 1fr); }
+            .sell-progress { gap:0.25rem; }
+            .sell-step { font-size:0.75rem; padding:0.4rem 0.75rem; }
+        }
+    </style>
 </head>
 <body>
 
     <div id="header-container"></div>
 
-    <section class="page-header primary-bg text-white section-padding" style="padding-top:6rem; padding-bottom:4rem;">
+    <!-- Hero -->
+    <section class="sell-hero">
         <div class="container">
-            <div class="reveal-up" style="max-width:620px;">
-                <span class="subtitle" style="color:rgba(255,255,255,0.7)">START YOUR BUSINESS</span>
-                <h1 style="color:white;">Start Selling Flowers Today</h1>
-                <p style="color:rgba(255,255,255,0.85); font-size:1.1rem; margin-bottom:2rem;">List your products, set your prices, and start earning. Our platform gives you everything you need to run a successful floral business online.</p>
-                <a href="#signup" class="btn" style="background:white; color:var(--primary-color); font-weight:600; padding:0.9rem 2rem; font-size:1rem; margin-right:1rem;">Get Started Free ?</a>
-                <a href="#benefits" class="btn btn-outline-dark" style="border-color:white; color:white;">See Benefits</a>
-            </div>
+            <h1>Become a Seller</h1>
+            <p>Join thousands of florists, growers, and flower sellers on Flower Ecosystem. Start selling in minutes.</p>
         </div>
     </section>
 
-    <section id="features" class="section-padding">
-        <div class="container">
-            <div class="text-center reveal-up">
-                <span class="subtitle">SELLER TOOLS</span>
-                <h2>Everything You Need to Sell</h2>
-                <p class="section-subtitle">Powerful tools designed to help you start, grow, and manage your floral business</p>
-            </div>
-            <div class="explore-grid reveal-up" style="margin-top:2rem;">
-                <div class="explore-card">
-                    <div class="explore-icon">??</div>
-                    <h3>Seller Registration</h3>
-                    <p class="card-desc">Sign up in minutes with a simple onboarding process. No paperwork, no delays.</p>
-                    <ul class="card-features"><li>? Quick sign-up</li><li>? Identity verification</li><li>? Instant activation</li></ul>
-                </div>
-                <div class="explore-card">
-                    <div class="explore-icon">??</div>
-                    <h3>Create Store</h3>
-                    <p class="card-desc">Set up your branded storefront with your logo, banner, and custom URL.</p>
-                    <ul class="card-features"><li>? Custom branding</li><li>? Shop bio & policies</li><li>? Social links</li></ul>
-                </div>
-                <div class="explore-card">
-                    <div class="explore-icon">??</div>
-                    <h3>Product Management</h3>
-                    <p class="card-desc">Easily add, edit, and organize your products with bulk upload tools.</p>
-                    <ul class="card-features"><li>? Bulk listing</li><li>? Categories & tags</li><li>? Image gallery</li></ul>
-                </div>
-                <div class="explore-card">
-                    <div class="explore-icon">??</div>
-                    <h3>Inventory Tracking</h3>
-                    <p class="card-desc">Keep real-time track of your stock levels and get low-stock alerts.</p>
-                    <ul class="card-features"><li>? Stock counts</li><li>? Low-stock alerts</li><li>? Restock reports</li></ul>
-                </div>
-                <div class="explore-card">
-                    <div class="explore-icon">??</div>
-                    <h3>Sales Analytics</h3>
-                    <p class="card-desc">Understand your performance with visual reports and revenue insights.</p>
-                    <ul class="card-features"><li>? Revenue dashboard</li><li>? Top products</li><li>? Customer trends</li></ul>
-                </div>
-                <div class="explore-card">
-                    <div class="explore-icon">??</div>
-                    <h3>Order Management</h3>
-                    <p class="card-desc">View, fulfill, and track all your orders from one central dashboard.</p>
-                    <ul class="card-features"><li>? Order dashboard</li><li>? Fulfillment tools</li><li>? Shipping labels</li></ul>
+    <!-- Progress -->
+    <div class="container">
+        <div class="sell-progress" id="sellProgress"></div>
+    </div>
+
+    <!-- Form -->
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container" style="max-width:800px;">
+
+            <!-- Step 1: Account -->
+            <div class="sell-step-content" id="step1">
+                <div class="sell-card">
+                    <h2>Account Information</h2>
+                    <p>Let's start with your basic account details.</p>
+                    <div class="sell-grid">
+                        <div class="sell-group">
+                            <label class="sell-label">Full Name <span class="required">*</span></label>
+                            <input type="text" id="fullName" class="sell-input" placeholder="John Doe" required>
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Email Address <span class="required">*</span></label>
+                            <input type="email" id="email" class="sell-input" placeholder="you@email.com" required>
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Phone Number <span class="required">*</span></label>
+                            <input type="tel" id="phone" class="sell-input" placeholder="+233 XX XXX XXXX" required>
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Password <span class="required">*</span></label>
+                            <input type="password" id="password" class="sell-input" placeholder="Min. 8 characters" required minlength="8">
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Confirm Password <span class="required">*</span></label>
+                            <input type="password" id="confirmPassword" class="sell-input" placeholder="Re-enter password" required>
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Referral Code</label>
+                            <input type="text" id="referral" class="sell-input" placeholder="Optional">
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <section id="benefits" class="section-padding bg-light">
-        <div class="container">
-            <div class="text-center reveal-up">
-                <span class="subtitle">SELLER BENEFITS</span>
-                <h2>Why Sell on Flower Ecosystem</h2>
-                <p class="section-subtitle">Join thousands of sellers already growing their business</p>
-            </div>
-            <div class="explore-grid reveal-up" style="margin-top:2rem; grid-template-columns: repeat(3, 1fr);">
-                <div class="explore-card text-center" style="padding:2.5rem 1.5rem;">
-                    <div style="font-size:3rem; margin-bottom:1rem;">??</div>
-                    <h3>Reach Customers</h3>
-                    <p class="card-desc">Get instant access to thousands of active buyers searching for fresh flowers, plants, and arrangements every day.</p>
-                    <ul class="card-features" style="margin-top:1rem;">
-                        <li>? 89K community members</li>
-                        <li>? Targeted promotions</li>
-                        <li>? Repeat buyer tools</li>
-                    </ul>
-                </div>
-                <div class="explore-card text-center" style="padding:2.5rem 1.5rem;">
-                    <div style="font-size:3rem; margin-bottom:1rem;">??</div>
-                    <h3>Increase Visibility</h3>
-                    <p class="card-desc">Featured listings, category spotlights, and marketing tools help your products stand out from the crowd.</p>
-                    <ul class="card-features" style="margin-top:1rem;">
-                        <li>? Featured product spots</li>
-                        <li>? SEO-optimized listings</li>
-                        <li>? Social media promotion</li>
-                    </ul>
-                </div>
-                <div class="explore-card text-center" style="padding:2.5rem 1.5rem;">
-                    <div style="font-size:3rem; margin-bottom:1rem;">??</div>
-                    <h3>Manage Orders</h3>
-                    <p class="card-desc">Stay on top of every sale with a simple order dashboard, automated notifications, and easy fulfillment workflows.</p>
-                    <ul class="card-features" style="margin-top:1rem;">
-                        <li>? Centralized dashboard</li>
-                        <li>? Auto-notifications</li>
-                        <li>? One-click fulfillment</li>
-                    </ul>
+            <!-- Step 2: Business Type -->
+            <div class="sell-step-content" id="step2" style="display:none;">
+                <div class="sell-card">
+                    <h2>Choose Business Type</h2>
+                    <p>Select what best describes your business. You can add more types later.</p>
+                    <div class="type-grid">
+                        <div class="type-card" onclick="selectType(this, 'florist')">
+                            <div class="type-card-icon">🌸</div>
+                            <div class="type-card-name">Florist</div>
+                            <div class="type-card-desc">Bouquets, arrangements, event decoration</div>
+                        </div>
+                        <div class="type-card" onclick="selectType(this, 'grower')">
+                            <div class="type-card-icon">🌱</div>
+                            <div class="type-card-name">Grower</div>
+                            <div class="type-card-desc">Flower farms, wholesale, cultivation</div>
+                        </div>
+                        <div class="type-card" onclick="selectType(this, 'seller')">
+                            <div class="type-card-icon">🛍️</div>
+                            <div class="type-card-name">Flower Seller</div>
+                            <div class="type-card-desc">Retail & wholesale flower sales</div>
+                        </div>
+                        <div class="type-card" onclick="selectType(this, 'service')">
+                            <div class="type-card-icon">💼</div>
+                            <div class="type-card-name">Service Provider</div>
+                            <div class="type-card-desc">Landscaping, delivery, consultation</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <section id="signup" class="section-padding">
-        <div class="container" style="max-width:560px;">
-            <div class="text-center reveal-up">
-                <span class="subtitle">GET STARTED</span>
-                <h2>Create Your Seller Account</h2>
-                <p class="section-subtitle">Free for 30 days. No credit card required.</p>
+            <!-- Step 3: Business Details -->
+            <div class="sell-step-content" id="step3" style="display:none;">
+                <div class="sell-card">
+                    <h2>Business Details</h2>
+                    <p>Tell us about your business.</p>
+                    <div class="sell-grid">
+                        <div class="sell-group sell-full">
+                            <label class="sell-label">Business Name <span class="required">*</span></label>
+                            <input type="text" id="businessName" class="sell-input" placeholder="Bloom Garden Florist" required>
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Region / City <span class="required">*</span></label>
+                            <input type="text" id="region" class="sell-input" placeholder="Accra, Greater Accra" required>
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Business Phone <span class="required">*</span></label>
+                            <input type="tel" id="bizPhone" class="sell-input" placeholder="+233 XX XXX XXXX" required>
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Business Email</label>
+                            <input type="email" id="bizEmail" class="sell-input" placeholder="info@business.com">
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Website</label>
+                            <input type="url" id="website" class="sell-input" placeholder="https://yourbusiness.com">
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Years in Business</label>
+                            <select id="yearsInBusiness" class="sell-input">
+                                <option value="">Select</option>
+                                <option value="0-1">Less than 1 year</option>
+                                <option value="1-3">1–3 years</option>
+                                <option value="3-5">3–5 years</option>
+                                <option value="5-10">5–10 years</option>
+                                <option value="10+">10+ years</option>
+                            </select>
+                        </div>
+                        <div class="sell-group sell-full">
+                            <label class="sell-label">Business Description <span class="required">*</span></label>
+                            <textarea id="description" class="sell-input" rows="3" placeholder="Tell customers about your business..." required></textarea>
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Business Logo</label>
+                            <div class="sell-upload" onclick="document.getElementById('logo').click()">
+                                <div class="sell-upload-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+                                <p style="font-size:0.85rem;margin:0;">Click to upload logo</p>
+                            </div>
+                            <input type="file" id="logo" accept="image/*" style="display:none;" onchange="previewFile(this, 'logoPreview')">
+                            <div id="logoPreview" style="margin-top:0.5rem;"></div>
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Cover Banner</label>
+                            <div class="sell-upload" onclick="document.getElementById('banner').click()">
+                                <div class="sell-upload-icon"><i class="bi bi-image"></i></div>
+                                <p style="font-size:0.85rem;margin:0;">Click to upload banner</p>
+                            </div>
+                            <input type="file" id="banner" accept="image/*" style="display:none;" onchange="previewFile(this, 'bannerPreview')">
+                            <div id="bannerPreview" style="margin-top:0.5rem;"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <form class="reveal-up" id="sellerSignupForm" style="background:var(--bg-white); padding:2.5rem; border-radius:12px; box-shadow:var(--shadow-md); margin-top:1rem;" novalidate enctype="multipart/form-data">
-                <!-- Profile Picture -->
-                <div style="text-align:center; margin-bottom:1.5rem;">
-                    <div id="avatarPreview" style="width:100px; height:100px; border-radius:50%; background:var(--bg-light); border:3px dashed var(--border-color); display:flex; align-items:center; justify-content:center; margin:0 auto 0.75rem; cursor:pointer; overflow:hidden; transition:border-color 0.2s;" onclick="document.getElementById('sellerAvatar').click()">
-                        <i class="bi bi-camera" style="font-size:1.5rem; color:var(--text-light);"></i>
-                    </div>
-                    <input type="file" id="sellerAvatar" accept="image/*" style="display:none;" onchange="previewAvatar(this)">
-                    <label style="font-size:0.85rem; color:var(--primary-color); cursor:pointer; font-weight:500;">Upload Profile Picture</label>
-                </div>
 
-                <!-- Personal Info -->
-                <h3 style="font-family:'Playfair Display',serif; font-size:1.1rem; margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border-color);">Personal Information</h3>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
-                    <div>
-                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">First Name *</label>
-                        <input type="text" id="sellerFirstName" placeholder="First name" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
+            <!-- Step 4: Verification -->
+            <div class="sell-step-content" id="step4" style="display:none;">
+                <div class="sell-card">
+                    <h2>Verification</h2>
+                    <p>Help us verify your business to build trust with customers.</p>
+                    <div class="sell-grid">
+                        <div class="sell-group sell-full">
+                            <label class="sell-label">Government-issued ID <span class="required">*</span></label>
+                            <div class="sell-upload" onclick="document.getElementById('govId').click()">
+                                <div class="sell-upload-icon"><i class="bi bi-person-badge"></i></div>
+                                <p style="font-size:0.85rem;margin:0;">Upload ID (passport, driver's license, or national ID)</p>
+                            </div>
+                            <input type="file" id="govId" accept="image/*" style="display:none;" onchange="previewFile(this, 'idPreview')">
+                            <div id="idPreview" style="margin-top:0.5rem;"></div>
+                        </div>
+                        <div class="sell-group sell-full">
+                            <label class="sell-label">Business Registration (optional)</label>
+                            <div class="sell-upload" onclick="document.getElementById('bizReg').click()">
+                                <div class="sell-upload-icon"><i class="bi bi-file-earmark-text"></i></div>
+                                <p style="font-size:0.85rem;margin:0;">Upload business registration certificate</p>
+                            </div>
+                            <input type="file" id="bizReg" accept="image/*,application/pdf" style="display:none;" onchange="previewFile(this, 'regPreview')">
+                            <div id="regPreview" style="margin-top:0.5rem;"></div>
+                        </div>
                     </div>
-                    <div>
-                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Last Name *</label>
-                        <input type="text" id="sellerLastName" placeholder="Last name" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
-                    </div>
                 </div>
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Email Address *</label>
-                    <input type="email" id="sellerEmail" placeholder="you@example.com" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
-                </div>
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Password *</label>
-                    <input type="password" id="sellerPassword" placeholder="Min. 8 characters" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required minlength="8">
-                </div>
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Phone Number *</label>
-                    <input type="tel" id="sellerPhone" placeholder="+233 XX XXX XXXX" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
-                </div>
+            </div>
 
-                <!-- Location -->
-                <h3 style="font-family:'Playfair Display',serif; font-size:1.1rem; margin:1.5rem 0 1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border-color);">Location</h3>
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Address / Area *</label>
-                    <input type="text" id="sellerLocation" placeholder="e.g. East Legon, Accra" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
-                    <div>
-                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">City *</label>
-                        <input type="text" id="sellerCity" placeholder="e.g. Accra" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
+            <!-- Step 5: Dynamic Sections -->
+            <div class="sell-step-content" id="step5" style="display:none;">
+                <!-- Florist Section -->
+                <div class="sell-card" id="floristSection" style="display:none;">
+                    <h2>🌸 Florist Details</h2>
+                    <p>Tell us about your floristry services.</p>
+                    <div class="sell-group">
+                        <label class="sell-label">Specialties</label>
+                        <div class="sell-checks">
+                            <label class="sell-check"><input type="checkbox" name="specialty" value="wedding"> Wedding Flowers</label>
+                            <label class="sell-check"><input type="checkbox" name="specialty" value="birthday"> Birthday Flowers</label>
+                            <label class="sell-check"><input type="checkbox" name="specialty" value="funeral"> Funeral Flowers</label>
+                            <label class="sell-check"><input type="checkbox" name="specialty" value="corporate"> Corporate Events</label>
+                            <label class="sell-check"><input type="checkbox" name="specialty" value="luxury"> Luxury Bouquets</label>
+                            <label class="sell-check"><input type="checkbox" name="specialty" value="gifts"> Floral Gifts</label>
+                        </div>
                     </div>
-                    <div>
-                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">State / Region</label>
-                        <input type="text" id="sellerState" placeholder="e.g. Greater Accra" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
-                    </div>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
-                    <div>
-                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Country *</label>
-                        <select id="sellerCountry" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
-                            <option value="">Select country</option>
-                            <option value="Ghana" selected>Ghana</option>
-                            <option value="Nigeria">Nigeria</option>
-                            <option value="Kenya">Kenya</option>
-                            <option value="South Africa">South Africa</option>
-                            <option value="Tanzania">Tanzania</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Zip / Postal Code</label>
-                        <input type="text" id="sellerZip" placeholder="e.g. 00233" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
+                    <div class="sell-group">
+                        <label class="sell-label">Services Offered</label>
+                        <div class="sell-checks">
+                            <label class="sell-check"><input type="checkbox" name="service" value="bouquet"> Bouquet Design</label>
+                            <label class="sell-check"><input type="checkbox" name="service" value="decoration"> Event Decoration</label>
+                            <label class="sell-check"><input type="checkbox" name="service" value="delivery"> Flower Delivery</label>
+                            <label class="sell-check"><input type="checkbox" name="service" value="consultation"> Floral Consultation</label>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Business Info -->
-                <h3 style="font-family:'Playfair Display',serif; font-size:1.1rem; margin:1.5rem 0 1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border-color);">Business Information</h3>
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Business / Shop Name *</label>
-                    <input type="text" id="sellerShopName" placeholder="Your shop name" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
-                </div>
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">What do you sell? *</label>
-                    <select id="sellerType" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);" required>
-                        <option value="">Select type</option>
-                        <option>Cut flowers & bouquets</option>
-                        <option>Indoor plants & succulents</option>
-                        <option>Dried & artificial flowers</option>
-                        <option>Seeds & bulbs</option>
-                        <option>Floristry supplies</option>
-                        <option>Wedding & event flowers</option>
-                        <option>Gift arrangements</option>
-                    </select>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
-                    <div>
-                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Business Phone</label>
-                        <input type="tel" id="sellerBusinessPhone" placeholder="+233 XX XXX XXXX" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
+                <!-- Grower Section -->
+                <div class="sell-card" id="growerSection" style="display:none;">
+                    <h2>🌱 Grower Details</h2>
+                    <p>Tell us about your farm.</p>
+                    <div class="sell-grid">
+                        <div class="sell-group">
+                            <label class="sell-label">Farm Name</label>
+                            <input type="text" id="farmName" class="sell-input" placeholder="Green Valley Farm">
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Farm Size</label>
+                            <select id="farmSize" class="sell-input">
+                                <option value="">Select</option>
+                                <option value="small">Small (under 1 acre)</option>
+                                <option value="medium">Medium (1–5 acres)</option>
+                                <option value="large">Large (5–20 acres)</option>
+                                <option value="xlarge">Very Large (20+ acres)</option>
+                            </select>
+                        </div>
                     </div>
-                    <div>
-                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Business Email</label>
-                        <input type="email" id="sellerBusinessEmail" placeholder="shop@example.com" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
+                    <div class="sell-group">
+                        <label class="sell-label">Flower Varieties Grown</label>
+                        <div class="sell-checks">
+                            <label class="sell-check"><input type="checkbox" name="variety" value="roses"> 🌹 Roses</label>
+                            <label class="sell-check"><input type="checkbox" name="variety" value="sunflowers"> 🌻 Sunflowers</label>
+                            <label class="sell-check"><input type="checkbox" name="variety" value="orchids"> 🌺 Orchids</label>
+                            <label class="sell-check"><input type="checkbox" name="variety" value="tulips"> 🌷 Tulips</label>
+                            <label class="sell-check"><input type="checkbox" name="variety" value="lilies"> 🌸 Lilies</label>
+                            <label class="sell-check"><input type="checkbox" name="variety" value="tropical"> 🌴 Tropical</label>
+                        </div>
                     </div>
-                </div>
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">Website</label>
-                    <input type="url" id="sellerWebsite" placeholder="https://yourshop.com" style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
-                </div>
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;">About Your Shop</label>
-                    <textarea id="sellerDescription" rows="3" placeholder="Tell customers about your flowers, specialties, and what makes you unique..." style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main); resize:vertical;"></textarea>
-                </div>
-
-                <!-- Social Links -->
-                <h3 style="font-family:'Playfair Display',serif; font-size:1.1rem; margin:1.5rem 0 1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border-color);">Social Media (Optional)</h3>
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-bottom:2rem;">
-                    <div>
-                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;"><i class="bi bi-instagram" style="margin-right:0.25rem;"></i> Instagram</label>
-                        <input type="url" id="sellerInstagram" placeholder="https://instagram.com/..." style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
+                    <div class="sell-group">
+                        <label class="sell-label">Production Type</label>
+                        <div class="sell-checks">
+                            <label class="sell-check"><input type="checkbox" name="production" value="retail"> Retail</label>
+                            <label class="sell-check"><input type="checkbox" name="production" value="wholesale"> Wholesale</label>
+                            <label class="sell-check"><input type="checkbox" name="production" value="export"> Export</label>
+                        </div>
                     </div>
-                    <div>
-                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;"><i class="bi bi-facebook" style="margin-right:0.25rem;"></i> Facebook</label>
-                        <input type="url" id="sellerFacebook" placeholder="https://facebook.com/..." style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
-                    </div>
-                    <div>
-                        <label style="display:block; font-weight:500; margin-bottom:0.35rem; font-size:0.85rem;"><i class="bi bi-twitter-x" style="margin-right:0.25rem;"></i> Twitter / X</label>
-                        <input type="url" id="sellerTwitter" placeholder="https://x.com/..." style="width:100%; padding:0.65rem 0.85rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.9rem; background:var(--bg-main);">
+                    <div class="sell-group">
+                        <label class="sell-label">Farming Practices</label>
+                        <div class="sell-checks">
+                            <label class="sell-check"><input type="checkbox" name="practice" value="organic"> 🌱 Organic</label>
+                            <label class="sell-check"><input type="checkbox" name="practice" value="sustainable"> ♻️ Sustainable</label>
+                            <label class="sell-check"><input type="checkbox" name="practice" value="conventional"> 🏭 Conventional</label>
+                        </div>
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100" id="sellerSignupBtn" style="width:100%; padding:0.9rem; font-size:1rem;">Create Seller Account</button>
-                <p style="text-align:center; font-size:0.85rem; color:var(--text-light); margin-top:1rem;">By signing up, you agree to our <a href="#" style="color:var(--primary-color);">Terms of Service</a> and <a href="#" style="color:var(--primary-color);">Privacy Policy</a>.</p>
-                <p id="signupMessage" class="form-message hidden" style="text-align:center; margin-top:1rem; color:var(--accent-green); font-weight:500;"></p>
-            </form>
+                <!-- Seller Section -->
+                <div class="sell-card" id="sellerSection" style="display:none;">
+                    <h2>🛍️ Seller Details</h2>
+                    <p>Tell us about your flower selling business.</p>
+                    <div class="sell-group">
+                        <label class="sell-label">Product Categories</label>
+                        <div class="sell-checks">
+                            <label class="sell-check"><input type="checkbox" name="category" value="bouquets"> 💐 Bouquets</label>
+                            <label class="sell-check"><input type="checkbox" name="category" value="plants"> 🪴 Plants</label>
+                            <label class="sell-check"><input type="checkbox" name="category" value="seeds"> 🌱 Seeds</label>
+                            <label class="sell-check"><input type="checkbox" name="category" value="accessories"> 🎀 Accessories</label>
+                            <label class="sell-check"><input type="checkbox" name="category" value="pots"> 🏺 Pots</label>
+                            <label class="sell-check"><input type="checkbox" name="category" value="tools"> 🧰 Garden Tools</label>
+                        </div>
+                    </div>
+                    <div class="sell-group">
+                        <label class="sell-label">Store Type</label>
+                        <div class="sell-checks">
+                            <label class="sell-check"><input type="radio" name="storeType" value="retail"> Retail</label>
+                            <label class="sell-check"><input type="radio" name="storeType" value="wholesale"> Wholesale</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Provider Section -->
+                <div class="sell-card" id="serviceSection" style="display:none;">
+                    <h2>💼 Service Provider Details</h2>
+                    <p>Tell us about your services.</p>
+                    <div class="sell-group">
+                        <label class="sell-label">Service Categories</label>
+                        <div class="sell-checks">
+                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="wedding"> 💍 Wedding Decoration</label>
+                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="landscaping"> 🏡 Landscaping</label>
+                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="maintenance"> 🌿 Garden Maintenance</label>
+                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="delivery"> 🚚 Flower Delivery</label>
+                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="consultation"> 🌱 Plant Consultation</label>
+                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="interior"> 🏢 Interior Plant Styling</label>
+                        </div>
+                    </div>
+                    <div class="sell-group">
+                        <label class="sell-label">Pricing Model</label>
+                        <div class="sell-checks">
+                            <label class="sell-check"><input type="radio" name="pricing" value="fixed"> Fixed Price</label>
+                            <label class="sell-check"><input type="radio" name="pricing" value="hourly"> Hourly Rate</label>
+                            <label class="sell-check"><input type="radio" name="pricing" value="quote"> Custom Quote</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: Delivery & Payment -->
+            <div class="sell-step-content" id="step6" style="display:none;">
+                <div class="sell-card">
+                    <h2>Delivery & Payment</h2>
+                    <p>Set up how you'll deliver and get paid.</p>
+                    <div class="sell-grid">
+                        <div class="sell-group sell-full">
+                            <label class="sell-label">Delivery Options</label>
+                            <div class="sell-checks">
+                                <label class="sell-check"><input type="checkbox" name="delivery" value="self"> 🚚 Self Delivery</label>
+                                <label class="sell-check"><input type="checkbox" name="delivery" value="platform"> 📦 Platform Delivery</label>
+                                <label class="sell-check"><input type="checkbox" name="delivery" value="pickup"> 🏪 Pickup Available</label>
+                            </div>
+                        </div>
+                        <div class="sell-group sell-full">
+                            <label class="sell-label">Delivery Regions</label>
+                            <input type="text" id="deliveryRegions" class="sell-input" placeholder="e.g., Accra, Kumasi, Tema">
+                            <span class="sell-hint">Separate regions with commas</span>
+                        </div>
+                        <div class="sell-group sell-full">
+                            <label class="sell-label">Payment Method <span class="required">*</span></label>
+                            <div class="sell-checks">
+                                <label class="sell-check"><input type="radio" name="payment" value="mobile"> 📱 Mobile Money</label>
+                                <label class="sell-check"><input type="radio" name="payment" value="bank"> 🏦 Bank Account</label>
+                                <label class="sell-check"><input type="radio" name="payment" value="both"> Both</label>
+                            </div>
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Mobile Money Number</label>
+                            <input type="tel" id="momoNumber" class="sell-input" placeholder="+233 XX XXX XXXX">
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Bank Name</label>
+                            <input type="text" id="bankName" class="sell-input" placeholder="e.g., Ecobank">
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Account Number</label>
+                            <input type="text" id="accountNumber" class="sell-input" placeholder="Account number">
+                        </div>
+                        <div class="sell-group">
+                            <label class="sell-label">Account Name</label>
+                            <input type="text" id="accountName" class="sell-input" placeholder="Account holder name">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 7: Review -->
+            <div class="sell-step-content" id="step7" style="display:none;">
+                <div class="sell-card">
+                    <h2>Review & Submit</h2>
+                    <p>Please review your information before submitting.</p>
+                    <div id="reviewSummary" style="margin-bottom:1.5rem;"></div>
+                    <div class="sell-group">
+                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.9rem;">
+                            <input type="checkbox" id="agreeTerms" style="accent-color:var(--primary-color);">
+                            I agree to the <a href="terms.html" style="color:var(--primary-color);">Terms of Service</a> and <a href="privacy.html" style="color:var(--primary-color);">Privacy Policy</a>
+                        </label>
+                    </div>
+                    <div class="sell-group">
+                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.9rem;">
+                            <input type="checkbox" id="agreePolicy" style="accent-color:var(--primary-color);">
+                            I agree to the <a href="terms.html" style="color:var(--primary-color);">Marketplace Policy</a>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success -->
+            <div class="sell-step-content" id="stepSuccess" style="display:none;">
+                <div class="sell-card">
+                    <div class="sell-success">
+                        <div class="sell-success-icon">✅</div>
+                        <h2>Application Submitted!</h2>
+                        <p style="color:var(--text-light);max-width:400px;margin:0.5rem auto 1.5rem;">We'll review your application and get back to you within 24-48 hours. You can check your status in your dashboard.</p>
+                        <a href="index.html" class="btn btn-primary">Back to Home</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="sell-nav" id="sellNav">
+                <button class="btn btn-outline" id="prevBtn" onclick="prevStep()" style="display:none;">Previous</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextStep()" style="margin-left:auto;">Next Step</button>
+            </div>
+
         </div>
     </section>
 
     <div id="footer-container"></div>
 
-    <script src="js/shared/api.js?v=4.0"></script>
-    <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.4"></script>
-    <script src="js/shared/ui.js?v=2.0"></script>
-    <script src="js/shared/cart.js?v=3.0"></script>
     <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
     <script>
-        function previewAvatar(input) {
-            const preview = document.getElementById('avatarPreview');
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-                    preview.style.border = '3px solid var(--primary-color)';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
+        let currentStep = 1;
+        let selectedType = '';
+        const totalSteps = 7;
+
+        const steps = [
+            { num: 1, label: 'Account' },
+            { num: 2, label: 'Business Type' },
+            { num: 3, label: 'Details' },
+            { num: 4, label: 'Verification' },
+            { num: 5, label: 'Services' },
+            { num: 6, label: 'Delivery' },
+            { num: 7, label: 'Review' }
+        ];
+
+        function renderProgress() {
+            document.getElementById('sellProgress').innerHTML = steps.map(s => {
+                let cls = 'sell-step';
+                if (s.num < currentStep) cls += ' completed';
+                else if (s.num === currentStep) cls += ' active';
+                return `<div class="${cls}"><span class="sell-step-num">${s.num < currentStep ? '✓' : s.num}</span> ${s.label}</div>`;
+            }).join('');
         }
 
-        document.getElementById('sellerSignupForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('sellerSignupBtn');
-            const msg = document.getElementById('signupMessage');
-            btn.disabled = true;
-            btn.textContent = 'Creating account...';
+        function showStep(step) {
+            document.querySelectorAll('.sell-step-content').forEach(el => el.style.display = 'none');
+            document.getElementById('step' + step).style.display = 'block';
+            document.getElementById('sellNav').style.display = 'flex';
+            document.getElementById('prevBtn').style.display = step > 1 ? 'block' : 'none';
+            document.getElementById('nextBtn').textContent = step === totalSteps ? 'Submit Application' : 'Next Step';
+            renderProgress();
+        }
 
-            const formData = new FormData();
-            formData.append('name', document.getElementById('sellerFirstName').value + ' ' + document.getElementById('sellerLastName').value);
-            formData.append('email', document.getElementById('sellerEmail').value);
-            formData.append('password', document.getElementById('sellerPassword').value);
-            formData.append('role', 'seller');
-            formData.append('phone', document.getElementById('sellerPhone').value);
-            formData.append('location', document.getElementById('sellerLocation').value);
-            formData.append('city', document.getElementById('sellerCity').value);
-            formData.append('state', document.getElementById('sellerState').value);
-            formData.append('country', document.getElementById('sellerCountry').value);
-            formData.append('zip_code', document.getElementById('sellerZip').value);
-            formData.append('business_name', document.getElementById('sellerShopName').value);
-            formData.append('business_type', document.getElementById('sellerType').value);
-            formData.append('business_phone', document.getElementById('sellerBusinessPhone').value);
-            formData.append('business_email', document.getElementById('sellerBusinessEmail').value);
-            formData.append('website', document.getElementById('sellerWebsite').value);
-            formData.append('description', document.getElementById('sellerDescription').value);
-            formData.append('social_instagram', document.getElementById('sellerInstagram').value);
-            formData.append('social_facebook', document.getElementById('sellerFacebook').value);
-            formData.append('social_twitter', document.getElementById('sellerTwitter').value);
-
-            const avatarInput = document.getElementById('sellerAvatar');
-            if (avatarInput.files[0]) {
-                formData.append('avatar', avatarInput.files[0]);
+        function nextStep() {
+            if (currentStep === totalSteps) {
+                submitApplication();
+                return;
             }
+            if (!validateStep(currentStep)) return;
+            if (currentStep === 5) showDynamicSections();
+            if (currentStep === 6) buildReviewSummary();
+            currentStep++;
+            showStep(currentStep);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
-            try {
-                const res = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Registration failed');
+        function prevStep() {
+            if (currentStep <= 1) return;
+            currentStep--;
+            showStep(currentStep);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
-                localStorage.setItem('flower-token', data.token);
-                localStorage.setItem('flower-user', JSON.stringify(data.user));
-
-                msg.innerHTML = '&#x2705; Welcome aboard! Your seller account has been created. Check your email to verify.';
-                msg.style.color = '#27ae60';
-                msg.classList.remove('hidden');
-                btn.textContent = 'Account Created!';
-            } catch (err) {
-                msg.innerHTML = '&#x274C; ' + err.message;
-                msg.style.color = '#e74c3c';
-                msg.classList.remove('hidden');
-                btn.disabled = false;
-                btn.textContent = 'Create Seller Account';
-            }
-        });
-    </script>
-    <script>
-        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
-            toggle.addEventListener('click', function(e) {
-                if (window.innerWidth <= 768) {
-                    e.preventDefault();
-                    this.parentElement.classList.toggle('mobile-open');
+        function validateStep(step) {
+            if (step === 1) {
+                const name = document.getElementById('fullName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const password = document.getElementById('password').value;
+                const confirm = document.getElementById('confirmPassword').value;
+                if (!name || !email || !phone || !password) {
+                    alert('Please fill in all required fields.');
+                    return false;
                 }
-            });
+                if (password !== confirm) {
+                    alert('Passwords do not match.');
+                    return false;
+                }
+                if (password.length < 8) {
+                    alert('Password must be at least 8 characters.');
+                    return false;
+                }
+                return true;
+            }
+            if (step === 2) {
+                if (!selectedType) {
+                    alert('Please select a business type.');
+                    return false;
+                }
+                return true;
+            }
+            if (step === 3) {
+                const bizName = document.getElementById('businessName').value.trim();
+                const region = document.getElementById('region').value.trim();
+                const bizPhone = document.getElementById('bizPhone').value.trim();
+                const desc = document.getElementById('description').value.trim();
+                if (!bizName || !region || !bizPhone || !desc) {
+                    alert('Please fill in all required business details.');
+                    return false;
+                }
+                return true;
+            }
+            if (step === 6) {
+                const payment = document.querySelector('input[name="payment"]:checked');
+                if (!payment) {
+                    alert('Please select a payment method.');
+                    return false;
+                }
+                return true;
+            }
+            if (step === 7) {
+                if (!document.getElementById('agreeTerms').checked || !document.getElementById('agreePolicy').checked) {
+                    alert('Please agree to the terms and policy.');
+                    return false;
+                }
+                return true;
+            }
+            return true;
+        }
+
+        function selectType(el, type) {
+            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedType = type;
+        }
+
+        function showDynamicSections() {
+            document.getElementById('floristSection').style.display = selectedType === 'florist' ? 'block' : 'none';
+            document.getElementById('growerSection').style.display = selectedType === 'grower' ? 'block' : 'none';
+            document.getElementById('sellerSection').style.display = selectedType === 'seller' ? 'block' : 'none';
+            document.getElementById('serviceSection').style.display = selectedType === 'service' ? 'block' : 'none';
+        }
+
+        function buildReviewSummary() {
+            const typeLabels = { florist: '🌸 Florist', grower: '🌱 Grower', seller: '🛍️ Flower Seller', service: '💼 Service Provider' };
+            document.getElementById('reviewSummary').innerHTML = `
+                <div style="background:var(--bg-light);border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Name:</span><strong>${document.getElementById('fullName').value}</strong></div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Email:</span><strong>${document.getElementById('email').value}</strong></div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Phone:</span><strong>${document.getElementById('phone').value}</strong></div>
+                </div>
+                <div style="background:var(--bg-light);border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Business Type:</span><strong>${typeLabels[selectedType] || selectedType}</strong></div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Business Name:</span><strong>${document.getElementById('businessName').value}</strong></div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Location:</span><strong>${document.getElementById('region').value}</strong></div>
+                </div>
+            `;
+        }
+
+        function previewFile(input, previewId) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById(previewId).innerHTML = `<img src="${e.target.result}" style="max-width:200px;max-height:100px;border-radius:8px;object-fit:cover;">`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function submitApplication() {
+            const btn = document.getElementById('nextBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.6s linear infinite;"></span> Submitting...';
+
+            // Simulate submission
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            document.getElementById('step7').style.display = 'none';
+            document.getElementById('sellNav').style.display = 'none';
+            document.getElementById('stepSuccess').style.display = 'block';
+            document.getElementById('sellProgress').innerHTML = steps.map(s => `<div class="sell-step completed"><span class="sell-step-num">✓</span> ${s.label}</div>`).join('');
+        }
+
+        // Checkbox styling
+        document.addEventListener('change', (e) => {
+            if (e.target.closest('.sell-check')) {
+                e.target.closest('.sell-check').classList.toggle('selected', e.target.checked);
+            }
         });
+
+        renderProgress();
     </script>
 </body>
 </html>
