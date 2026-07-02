@@ -330,7 +330,7 @@
                     <div class="lesson-item ${lesson.id === l.id ? 'active-lesson' : ''}" data-lesson-id="${lesson.id}">
                         <div class="lesson-num">${i + 1}</div>
                         <div class="lesson-info">
-                            <div class="lesson-title">${lesson.title}</div>
+                            <div class="lesson-title">${escapeHtml(lesson.title)}</div>
                             <div class="lesson-dur"><i class="bi bi-clock"></i> ${lesson.duration ? lesson.duration + ' min' : 'Lesson ' + (i + 1)}</div>
                         </div>
                         <div class="lesson-status ${i < idx ? 'completed' : ''}"><i class="bi ${i < idx ? 'bi-check-circle-fill' : 'bi-circle'}"></i></div>
@@ -339,8 +339,8 @@
 
                 player.src = lesson.video_url || 'https://www.youtube.com/embed/dQw4w9WgXcQ';
                 contentEl.innerHTML = `
-                    <h3>${lesson.title}</h3>
-                    <p>${lesson.content || 'No content available for this lesson.'}</p>`;
+                    <h3>${escapeHtml(lesson.title)}</h3>
+                    <p>${escapeHtml(lesson.content || 'No content available for this lesson.')}</p>`;
             }
 
             if (courseLessons.length) {
@@ -446,21 +446,21 @@
                     <div class="product-card">
                         <div class="product-img-wrap">
                             <a href="course-detail.html?id=${c.id}">
-                                <img loading="lazy" src="${c.thumbnail}" alt="${c.title}" class="product-img" style="aspect-ratio:16/9;">
+                                <img loading="lazy" src="${escapeHtml(c.thumbnail || c.thumbnail_url || '')}" alt="${escapeHtml(c.title)}" class="product-img" style="aspect-ratio:16/9;">
                             </a>
-                            <span class="product-badge">${c.level}</span>
+                            <span class="product-badge">${escapeHtml(c.level || '')}</span>
                         </div>
                         <div class="product-info">
                             <a href="course-detail.html?id=${c.id}" style="text-decoration:none;color:inherit;">
-                                <h3 class="product-name">${c.title}</h3>
+                                <h3 class="product-name">${escapeHtml(c.title)}</h3>
                             </a>
-                            <p class="product-seller">${c.instructor}</p>
+                            <p class="product-seller">${escapeHtml(c.instructor || '')}</p>
                             <div class="product-rating" style="margin:0.25rem 0;">
-                                ${'<i class="bi bi-star-fill" style="color:#f1c40f;font-size:0.8rem;"></i>'.repeat(Math.floor(c.rating))}
-                                <span style="font-size:0.8rem;color:var(--text-light);">(${c.students} students)</span>
+                                ${'<i class="bi bi-star-fill" style="color:#f1c40f;font-size:0.8rem;"></i>'.repeat(Math.floor(Number(c.rating) || 0))}
+                                <span style="font-size:0.8rem;color:var(--text-light);">(${c.students_count || c.students || 0} students)</span>
                             </div>
                             <div class="product-footer">
-                                <span class="product-price">${c.price ? '$' + c.price.toFixed(2) : 'Free'}</span>
+                                <span class="product-price">${c.price ? '$' + Number(c.price).toFixed(2) : 'Free'}</span>
                                 <a href="course-detail.html?id=${c.id}" class="btn btn-primary btn-sm">View Course</a>
                             </div>
                         </div>
