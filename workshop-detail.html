@@ -182,6 +182,7 @@
                 overview: 'This intensive workshop covers everything from flower selection to final presentation for wedding events. You\'ll learn industry-standard techniques used by top florists, practice hands-on arrangements, and receive personalized feedback from an experienced master florist.',
                 date: 'Saturday, July 18', time: '9:00 AM – 1:00 PM', duration: '4 Hours',
                 instructor: 'Sarah Mensah', instructorTitle: 'Master Florist', instructorImg: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=200&auto=format&fit=crop',
+                instructorBio: 'Award-winning florist with 15 years of experience in luxury wedding arrangements and event design. Featured in numerous international floral publications.', instructorCourses: 18, instructorStudents: 4200, instructorExperience: 15,
                 location: 'Online (Zoom)', type: 'online',
                 price: 'GHS 150', seats: 45, seatsLeft: 12, rating: 4.9,
                 outcomes: ['Create professional bridal bouquets', 'Design floral centerpieces for receptions', 'Select the right flowers for each wedding element', 'Price wedding floral services accurately', 'Package and present bouquets professionally'],
@@ -212,6 +213,7 @@
                 overview: 'This beginner-friendly workshop covers the essential skills every florist needs. Learn to choose flowers, create balanced arrangements, and present them beautifully.',
                 date: 'Saturday, July 25', time: '10:00 AM – 12:00 PM', duration: '2 Hours',
                 instructor: 'Efua Osei', instructorTitle: 'Event Decoration Expert', instructorImg: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?q=200&auto=format&fit=crop',
+                instructorBio: 'Specializes in transforming venues with stunning floral installations for weddings and corporate events. Passionate about teaching beginners.', instructorCourses: 10, instructorStudents: 2400, instructorExperience: 14,
                 location: 'Online (Zoom)', type: 'online',
                 price: 'Free', seats: 60, seatsLeft: 28, rating: 4.7,
                 outcomes: ['Understand color theory for floral design', 'Create a basic hand-tied bouquet', 'Master wrapping and presentation', 'Choose flowers by season and budget'],
@@ -238,6 +240,7 @@
                 overview: 'Whether you have a backyard or a small farm, this workshop teaches you to grow flowers sustainably. Learn from an experienced farmer who runs a successful organic flower farm.',
                 date: 'Saturday, August 1', time: '8:00 AM – 12:00 PM', duration: '4 Hours',
                 instructor: 'Kwame Asante', instructorTitle: 'Flower Farm Expert', instructorImg: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=200&auto=format&fit=crop',
+                instructorBio: 'Agricultural specialist focused on sustainable flower farming and greenhouse management. Runs a successful organic flower farm in Kumasi.', instructorCourses: 12, instructorStudents: 2800, instructorExperience: 20,
                 location: 'Flower Ecosystem Farm, Kumasi', type: 'physical',
                 price: 'GHS 200', seats: 20, seatsLeft: 8, rating: 4.8,
                 outcomes: ['Prepare soil for flower cultivation', 'Select and propagate flower varieties', 'Manage pests organically', 'Harvest flowers at peak freshness', 'Plan a seasonal planting schedule'],
@@ -310,10 +313,16 @@
 
             document.getElementById('wsInstructor').innerHTML = `
                 <img src="${escapeHtml(ws.instructorImg)}" alt="${escapeHtml(ws.instructor)}">
-                <div>
+                <div style="flex:1;">
                     <h4>${escapeHtml(ws.instructor)}</h4>
                     <div class="title">${escapeHtml(ws.instructorTitle)}</div>
-                    <div style="color:#f59e0b;font-size:0.85rem;margin-bottom:0.5rem;"><i class="bi bi-star-fill"></i> ${ws.rating}</div>
+                    <div style="color:#f59e0b;font-size:0.85rem;margin-bottom:0.5rem;"><i class="bi bi-star-fill"></i> ${ws.rating} <span style="color:var(--text-light);">Rating</span></div>
+                    <div style="display:flex;gap:1.25rem;font-size:0.85rem;color:var(--text-light);margin-bottom:0.75rem;">
+                        <span><i class="bi bi-book"></i> ${ws.instructorCourses || 12} Courses</span>
+                        <span><i class="bi bi-people"></i> ${(ws.instructorStudents || 3200).toLocaleString()} Students</span>
+                        <span><i class="bi bi-clock"></i> ${ws.instructorExperience || 12} Years</span>
+                    </div>
+                    <p style="font-size:0.9rem;color:var(--text-light);line-height:1.6;margin-bottom:0.75rem;">${escapeHtml(ws.instructorBio || 'Experienced professional sharing knowledge and expertise with learners.')}</p>
                     <a href="florists.html" class="btn btn-outline btn-sm">View Profile</a>
                 </div>
             `;
