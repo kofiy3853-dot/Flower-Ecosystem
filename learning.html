@@ -69,6 +69,19 @@
         </div>
     </section>
 
+    <!-- ===== COURSE CATEGORIES ===== -->
+    <section class="section-padding" style="padding-top:1rem;">
+        <div class="container">
+            <div class="flex-between reveal-up">
+                <div>
+                    <span class="subtitle">BROWSE BY CATEGORY</span>
+                    <h2>Course Categories</h2>
+                </div>
+            </div>
+            <div id="courseCatsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.25rem;margin-top:1.5rem;"></div>
+        </div>
+    </section>
+
     <!-- ===== FEATURED COURSES ===== -->
     <section id="featured-courses" class="section-padding">
         <div class="container">
@@ -223,6 +236,28 @@
     <script src="js/shared/ui.js?v=2.0"></script>
     <script src="js/learning.js"></script>
     <script>
+        // ─── Course Categories ────────────────────────────────────────
+        const courseCategories = [
+            { name: 'Floral Design', icon: 'bi bi-flower1', color: '#e74c3c', slug: 'floral-design' },
+            { name: 'Flower Farming', icon: 'bi bi-tree', color: '#27ae60', slug: 'flower-farming' },
+            { name: 'Plant Care', icon: 'bi bi-flower2', color: '#10b981', slug: 'plant-care' },
+            { name: 'Business', icon: 'bi bi-shop', color: '#8b5cf6', slug: 'business' },
+            { name: 'Event Decoration', icon: 'bi bi-calendar-event', color: '#f59e0b', slug: 'event-decoration' },
+            { name: 'Gardening', icon: 'bi bi-leaf', color: '#3b82f6', slug: 'gardening' },
+            { name: 'Photography', icon: 'bi bi-camera', color: '#ec4899', slug: 'photography' },
+            { name: 'Sustainability', icon: 'bi bi-globe', color: '#14b8a6', slug: 'sustainability' }
+        ];
+        document.getElementById('courseCatsGrid').innerHTML = courseCategories.map(c => `
+            <a href="marketplace?category=${c.slug}" style="text-decoration:none;color:inherit;">
+                <div class="explore-card" style="padding:1.5rem;text-align:center;border-left:4px solid ${c.color};">
+                    <div style="width:56px;height:56px;border-radius:50%;background:${c.color}15;display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem;">
+                        <i class="bi ${c.icon}" style="font-size:1.5rem;color:${c.color};"></i>
+                    </div>
+                    <div style="font-weight:600;font-size:0.95rem;">${c.name}</div>
+                </div>
+            </a>
+        `).join('');
+
         // ─── Top Instructors ──────────────────────────────────────────
         async function loadInstructors() {
             const el = document.getElementById('instructorsGrid');
