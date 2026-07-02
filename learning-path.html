@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional learning path - Flower Ecosystem Learning Center">
+    <title>Learning Path - Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .lp-hero{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:5rem 0 3rem;color:white;}
+        .lp-hero-grid{display:grid;grid-template-columns:1fr 340px;gap:2.5rem;align-items:start;}
+        .lp-hero h1{font-family:'Playfair Display',serif;font-size:2.2rem;margin-bottom:0.75rem;}
+        .lp-hero p{opacity:0.85;line-height:1.7;max-width:600px;}
+        .lp-meta{display:flex;flex-wrap:wrap;gap:1.5rem;margin:1.25rem 0;font-size:0.9rem;}
+        .lp-meta span{display:flex;align-items:center;gap:0.35rem;}
+        .lp-sidebar{background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.15);position:sticky;top:5.5rem;color:var(--text-main);}
+        .lp-sidebar-body{padding:1.5rem;}
+        .lp-sidebar .price{font-size:1.75rem;font-weight:700;color:var(--primary-color);}
+        .lp-sidebar .btn-enroll{width:100%;padding:0.85rem;font-size:1rem;margin-bottom:0.75rem;}
+        .lp-sidebar .includes{list-style:none;padding:0;margin:0;font-size:0.85rem;}
+        .lp-sidebar .includes li{padding:0.35rem 0;display:flex;align-items:center;gap:0.5rem;color:var(--text-light);}
+        .lp-sidebar .includes li i{color:var(--primary-color);width:16px;}
+        .lp-layout{display:grid;grid-template-columns:1fr 340px;gap:2.5rem;padding:2rem 0;}
+        .lp-section{margin-bottom:2.5rem;}
+        .lp-section h2{font-size:1.35rem;margin-bottom:1rem;}
+        .outcome-list{list-style:none;padding:0;}
+        .outcome-list li{padding:0.5rem 0;display:flex;align-items:flex-start;gap:0.75rem;font-size:0.95rem;}
+        .outcome-list li i{color:#10b981;margin-top:0.15rem;}
+        .roadmap{position:relative;padding-left:2rem;}
+        .roadmap::before{content:'';position:absolute;left:15px;top:0;bottom:0;width:3px;background:var(--border-color);border-radius:3px;}
+        .roadmap-item{position:relative;margin-bottom:1.5rem;padding-left:2rem;}
+        .roadmap-item::before{content:'';position:absolute;left:-2rem;top:0.25rem;width:32px;height:32px;border-radius:50%;background:var(--primary-color);border:3px solid white;box-shadow:0 0 0 3px var(--primary-light);z-index:1;}
+        .roadmap-item.completed::before{background:#10b981;box-shadow:0 0 0 3px #d1fae5;}
+        .roadmap-item.locked::before{background:var(--border-color);box-shadow:0 0 0 3px var(--bg-light);}
+        .roadmap-card{background:white;border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;transition:all 0.2s;}
+        .roadmap-card:hover{border-color:var(--primary-color);box-shadow:0 4px 12px rgba(0,0,0,0.08);}
+        .roadmap-card h4{font-size:1rem;margin-bottom:0.25rem;}
+        .roadmap-card .meta{font-size:0.8rem;color:var(--text-light);display:flex;gap:1rem;margin-bottom:0.5rem;}
+        .roadmap-card .level{display:inline-block;padding:0.15rem 0.5rem;border-radius:50px;font-size:0.7rem;font-weight:600;}
+        .level-beginner{background:#d1fae5;color:#065f46;}
+        .level-intermediate{background:#fef3c7;color:#92400e;}
+        .level-advanced{background:#fee2e2;color:#991b1b;}
+        .skills-grid{display:flex;flex-wrap:wrap;gap:0.5rem;}
+        .skill-chip{padding:0.4rem 0.9rem;border-radius:50px;font-size:0.82rem;font-weight:500;background:var(--primary-light);color:var(--primary-color);}
+        .tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+        .tools-card{background:var(--bg-light);border-radius:10px;padding:1.25rem;}
+        .tools-card h4{font-size:0.95rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem;}
+        .tools-card ul{list-style:none;padding:0;margin:0;}
+        .tools-card li{padding:0.3rem 0;font-size:0.88rem;color:var(--text-light);}
+        .tools-card li::before{content:'-';margin-right:0.5rem;color:var(--primary-color);}
+        .instructor-card{background:white;border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;text-align:center;}
+        .instructor-card img{width:72px;height:72px;border-radius:50%;object-fit:cover;margin:0 auto 0.75rem;}
+        .instructor-card h4{font-size:1rem;margin-bottom:0.25rem;}
+        .instructor-card .title{font-size:0.85rem;color:var(--primary-color);margin-bottom:0.5rem;}
+        .certificate-box{background:linear-gradient(135deg,var(--primary-light),#fce7f0);border-radius:14px;padding:2rem;text-align:center;border:2px dashed var(--primary-color);}
+        .certificate-box i{font-size:3rem;color:var(--primary-color);margin-bottom:1rem;display:block;}
+        @media(max-width:900px){.lp-hero-grid,.lp-layout{grid-template-columns:1fr;}.lp-sidebar{position:static;}.tools-grid{grid-template-columns:1fr;}}
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="lp-hero">
+        <div class="container">
+            <div class="lp-hero-grid">
+                <div>
+                    <div style="font-size:0.85rem;opacity:0.7;margin-bottom:1rem;"><a href="learning.html" style="color:white;text-decoration:underline;">Learning Paths</a> <span style="margin:0 0.5rem;">›</span> <span id="lpBreadcrumb">Path</span></div>
+                    <h1 id="lpTitle">Loading...</h1>
+                    <p id="lpDesc"></p>
+                    <div class="lp-meta" id="lpMeta"></div>
+                    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1rem;">
+                        <button class="btn btn-primary" onclick="enrollPath()"><i class="bi bi-play-fill"></i> Start Learning</button>
+                        <button class="btn btn-outline" style="background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.3);" onclick="document.getElementById('roadmap').scrollIntoView({behavior:'smooth'})">Preview Curriculum</button>
+                        <button class="btn btn-outline" style="background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.3);" id="saveBtn" onclick="toggleSave()"><i class="bi bi-heart"></i> Save Path</button>
+                    </div>
+                </div>
+                <div class="lp-sidebar">
+                    <img id="lpSidebarImg" src="" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;">
+                    <div class="lp-sidebar-body">
+                        <div class="price" id="lpPrice">Free</div>
+                        <button class="btn btn-primary btn-enroll" onclick="enrollPath()">Start Learning</button>
+                        <ul class="includes">
+                            <li><i class="bi bi-book"></i> <span id="lpCourseCount">0</span> Courses</li>
+                            <li><i class="bi bi-clock"></i> <span id="lpHours">0</span> Hours</li>
+                            <li><i class="bi bi-award"></i> Certificate Included</li>
+                            <li><i class="bi bi-infinity"></i> Lifetime Access</li>
+                            <li><i class="bi bi-phone"></i> Mobile Friendly</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="lp-layout">
+            <div>
+                <!-- Overview -->
+                <div class="lp-section" id="overviewSection">
+                    <h2>Path Overview</h2>
+                    <p id="lpOverview" style="color:var(--text-light);line-height:1.8;"></p>
+                </div>
+
+                <!-- Outcomes -->
+                <div class="lp-section" id="outcomesSection">
+                    <h2>What You'll Learn</h2>
+                    <ul class="outcome-list" id="lpOutcomes"></ul>
+                </div>
+
+                <!-- Roadmap -->
+                <div class="lp-section" id="roadmapSection">
+                    <h2>Course Roadmap</h2>
+                    <div class="roadmap" id="roadmap"></div>
+                </div>
+
+                <!-- Skills -->
+                <div class="lp-section" id="skillsSection">
+                    <h2>Skills You'll Gain</h2>
+                    <div class="skills-grid" id="lpSkills"></div>
+                </div>
+
+                <!-- Tools -->
+                <div class="lp-section" id="toolsSection">
+                    <h2>Tools & Materials</h2>
+                    <div class="tools-grid">
+                        <div class="tools-card">
+                            <h4><i class="bi bi-tools"></i> Tools</h4>
+                            <ul id="lpTools"></ul>
+                        </div>
+                        <div class="tools-card">
+                            <h4><i class="bi bi-box"></i> Materials</h4>
+                            <ul id="lpMaterials"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Instructors -->
+                <div class="lp-section" id="instructorsSection">
+                    <h2>Meet Your Instructors</h2>
+                    <div id="lpInstructors" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.25rem;"></div>
+                </div>
+
+                <!-- Certificate -->
+                <div class="lp-section">
+                    <div class="certificate-box">
+                        <i class="bi bi-award"></i>
+                        <h3 style="margin-bottom:0.5rem;">Earn a Professional Certificate</h3>
+                        <p style="color:var(--text-light);max-width:500px;margin:0 auto 1.5rem;">Complete all courses and pass the final assessment to earn your certificate. Share it on LinkedIn and verify it online.</p>
+                        <button class="btn btn-primary">Learn About Certification</button>
+                    </div>
+                </div>
+
+                <!-- Reviews -->
+                <div class="lp-section">
+                    <h2>Student Reviews</h2>
+                    <div id="lpReviews"></div>
+                </div>
+            </div>
+
+            <!-- Sticky sidebar spacer for mobile -->
+            <div></div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        const learningPaths = {
+            'beginner-florist': {
+                title: 'Beginner Florist',
+                desc: 'Start your floristry journey from scratch. Learn flower identification, basic care, simple arrangements, and wrapping techniques.',
+                overview: 'This learning path is designed for absolute beginners who want to explore the world of floristry. You\'ll start by learning to identify common flower species, understand their care requirements, and gradually progress to creating your first bouquets. By the end, you\'ll have the confidence and skills to create beautiful arrangements for friends, family, or start a small business.',
+                image: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=800&auto=format&fit=crop',
+                courses: 4, hours: 16, students: 2850, rating: 4.8, level: 'Beginner', price: 'Free',
+                outcomes: ['Identify 20+ common flower species', 'Understand basic flower care and handling', 'Create simple hand-tied bouquets', 'Master wrapping and presentation techniques', 'Price basic floral products', 'Start a small floral side business'],
+                skills: ['Flower Identification', 'Basic Arrangements', 'Wrapping', 'Color Matching', 'Flower Care', 'Customer Service'],
+                tools: ['Floral scissors', 'Floral tape', 'Ribbon', 'Wrapping paper', 'Buckets'],
+                materials: ['Fresh flowers', 'Greenery', 'Filler flowers', 'Stems', 'Leaves'],
+                reviews: [
+                    { name: 'Ama K.', rating: 5, text: 'Perfect starting point! I knew nothing about flowers and now I can make beautiful bouquets.', role: 'Home Gardener' },
+                    { name: 'Kofi M.', rating: 5, text: 'Clear instructions and beautiful projects. Loved every lesson.', role: 'Career Changer' }
+                ]
+            },
+            'professional-florist': {
+                title: 'Professional Florist',
+                desc: 'Master advanced floral design, wedding arrangements, luxury bouquets, and professional event styling.',
+                overview: 'Take your skills to the professional level. This path covers advanced techniques used by top florists, including wedding floral design, luxury arrangements, large-scale event decoration, and client management. You\'ll learn to work with premium flowers, create stunning centerpieces, and deliver flawless installations.',
+                image: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=800&auto=format&fit=crop',
+                courses: 6, hours: 32, students: 4850, rating: 4.9, level: 'Intermediate', price: 'GHS 450',
+                outcomes: ['Design luxury floral arrangements', 'Plan and execute wedding florals', 'Create large-scale event installations', 'Master advanced color theory', 'Manage client consultations', 'Build a professional portfolio'],
+                skills: ['Luxury Arrangements', 'Wedding Design', 'Event Styling', 'Color Theory', 'Client Management', 'Portfolio Building', 'Advanced Techniques', 'Large Installations'],
+                tools: ['Professional shears', 'Floral wire', 'Hot glue gun', 'Floral foam', 'Armature frames', 'Floral spray'],
+                materials: ['Premium roses', 'Orchids', 'Peonies', 'Luxury greenery', 'Specialty ribbons'],
+                reviews: [
+                    { name: 'Sarah M.', rating: 5, text: 'Transformed my skills. I now run a successful wedding floral business.', role: 'Wedding Florist' },
+                    { name: 'Efua B.', rating: 5, text: 'The wedding section alone is worth the price. Incredibly detailed.', role: 'Event Planner' }
+                ]
+            },
+            'flower-farmer': {
+                title: 'Professional Flower Farmer',
+                desc: 'Learn soil preparation, cultivation, pest control, harvesting, and wholesale selling of cut flowers.',
+                overview: 'Become a professional flower farmer. This comprehensive path covers everything from soil science and seed selection to greenhouse management, pest control, harvesting techniques, and selling to wholesale markets. You\'ll learn sustainable farming practices and how to run a profitable flower farm.',
+                image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=800&auto=format&fit=crop',
+                courses: 8, hours: 48, students: 1920, rating: 4.7, level: 'Intermediate', price: 'GHS 650',
+                outcomes: ['Prepare soil for optimal flower growth', 'Select and propagate flower varieties', 'Manage greenhouse environments', 'Control pests organically', 'Harvest flowers at peak freshness', 'Sell to wholesale and retail markets'],
+                skills: ['Soil Preparation', 'Seed Selection', 'Greenhouse Management', 'Pest Control', 'Harvesting', 'Wholesale Selling', 'Sustainable Farming', 'Business Planning'],
+                tools: ['Garden fork', 'Pruning shears', 'Soil pH meter', 'Greenhouse thermometer', 'Drip irrigation'],
+                materials: ['Seeds', 'Seedlings', 'Organic fertilizer', 'Mulch', 'Pest control solutions'],
+                reviews: [
+                    { name: 'Nana A.', rating: 5, text: 'Started my own flower farm after completing this path. Best investment ever.', role: 'Flower Farmer' },
+                    { name: 'Akua D.', rating: 4, text: 'Comprehensive and practical. The pest control module was especially useful.', role: 'Agriculturalist' }
+                ]
+            },
+            'flower-business': {
+                title: 'Flower Business Owner',
+                desc: 'Learn to start, brand, manage, and grow a successful flower shop or floral service business.',
+                overview: 'Turn your passion for flowers into a thriving business. This path covers business planning, branding, pricing strategies, inventory management, marketing, customer service, and financial management. You\'ll learn from successful florists who share real-world insights and proven strategies.',
+                image: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=800&auto=format&fit=crop',
+                courses: 7, hours: 36, students: 3200, rating: 4.8, level: 'Intermediate', price: 'GHS 550',
+                outcomes: ['Create a business plan for a flower shop', 'Build a memorable brand identity', 'Price products for maximum profit', 'Manage inventory and reduce waste', 'Market your business effectively', 'Deliver exceptional customer service'],
+                skills: ['Business Planning', 'Branding', 'Pricing', 'Inventory Management', 'Marketing', 'Customer Service', 'Financial Management'],
+                tools: ['Point of sale system', 'Inventory software', 'Social media tools', 'Accounting software', 'CRM system'],
+                materials: ['Business plan template', 'Brand guidelines template', 'Pricing calculator', 'Marketing calendar'],
+                reviews: [
+                    { name: 'Kwame S.', rating: 5, text: 'Opened my flower shop 3 months after finishing this path. Revenue is growing every month.', role: 'Shop Owner' },
+                    { name: 'Esi O.', rating: 5, text: 'The pricing module alone saved me thousands. Highly recommended.', role: 'Entrepreneur' }
+                ]
+            },
+            'event-decorator': {
+                title: 'Wedding & Event Decorator',
+                desc: 'Master floral decoration for weddings, corporate events, birthdays, and special celebrations.',
+                overview: 'Specialize in event decoration with this focused learning path. You\'ll learn to design and execute stunning floral displays for weddings, corporate functions, birthday parties, and other celebrations. Covers venue assessment, client consultations, setup logistics, and on-site management.',
+                image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=800&auto=format&fit=crop',
+                courses: 5, hours: 24, students: 2100, rating: 4.9, level: 'Advanced', price: 'GHS 400',
+                outcomes: ['Design wedding floral themes', 'Create corporate event displays', 'Manage large-scale installations', 'Handle on-site setup and teardown', 'Price event packages', 'Build vendor relationships'],
+                skills: ['Wedding Design', 'Corporate Events', 'Venue Styling', 'Client Consultation', 'Setup Logistics', 'Budget Management'],
+                tools: ['Floral foam blocks', 'Structural frames', 'Lighting equipment', 'Transportation cases', 'Tool kit'],
+                materials: ['Premium flowers', 'Greenery', 'Decorative elements', 'Ribbons', 'Candles'],
+                reviews: [
+                    { name: 'Ama D.', rating: 5, text: 'Now I exclusively do wedding floral design. This path gave me the confidence to charge premium prices.', role: 'Wedding Florist' },
+                    { name: 'Kofi A.', rating: 5, text: 'The client consultation module is gold. Changed how I approach every event.', role: 'Event Decorator' }
+                ]
+            }
+        };
+
+        async function initPath() {
+            const params = new URLSearchParams(window.location.search);
+            const slug = params.get('id') || params.get('path') || 'professional-florist';
+            const path = learningPaths[slug] || learningPaths['professional-florist'];
+
+            document.title = `${path.title} - Flower Ecosystem`;
+            document.getElementById('lpBreadcrumb').textContent = path.title;
+            document.getElementById('lpTitle').textContent = path.title;
+            document.getElementById('lpDesc').textContent = path.desc;
+            document.getElementById('lpSidebarImg').src = path.image;
+            document.getElementById('lpSidebarImg').alt = path.title;
+            document.getElementById('lpPrice').textContent = path.price;
+            document.getElementById('lpCourseCount').textContent = path.courses;
+            document.getElementById('lpHours').textContent = path.hours;
+            document.getElementById('lpOverview').textContent = path.overview;
+
+            document.getElementById('lpMeta').innerHTML = `
+                <span><i class="bi bi-book"></i> ${path.courses} Courses</span>
+                <span><i class="bi bi-clock"></i> ${path.hours} Hours</span>
+                <span><i class="bi bi-award"></i> Certificate</span>
+                <span><i class="bi bi-people"></i> ${path.students.toLocaleString()} Students</span>
+                <span><i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${path.rating}</span>
+                <span><i class="bi bi-bar-chart"></i> ${path.level}</span>
+            `;
+
+            document.getElementById('lpOutcomes').innerHTML = path.outcomes.map(o =>
+                `<li><i class="bi bi-check-circle-fill"></i> ${o}</li>`
+            ).join('');
+
+            document.getElementById('lpSkills').innerHTML = path.skills.map(s =>
+                `<span class="skill-chip">${s}</span>`
+            ).join('');
+
+            document.getElementById('lpTools').innerHTML = path.tools.map(t => `<li>${t}</li>`).join('');
+            document.getElementById('lpMaterials').innerHTML = path.materials.map(m => `<li>${m}</li>`).join('');
+
+            // Build roadmap from course data
+            const courseNames = path.skills.slice(0, path.courses).map((s, i) => ({
+                title: s,
+                duration: Math.round(path.hours / path.courses) + 'h',
+                level: i < 2 ? 'Beginner' : i < 4 ? 'Intermediate' : 'Advanced'
+            }));
+
+            document.getElementById('roadmap').innerHTML = courseNames.map((c, i) => `
+                <div class="roadmap-item${i < 2 ? ' completed' : i > 3 ? ' locked' : ''}">
+                    <div class="roadmap-card">
+                        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:0.5rem;">
+                            <span class="level level-${c.level.toLowerCase()}">${c.level}</span>
+                            <span style="font-size:0.8rem;color:var(--text-light);">${c.duration}</span>
+                        </div>
+                        <h4>${c.title}</h4>
+                        <p style="font-size:0.85rem;color:var(--text-light);">Level ${i + 1} of ${path.courses}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            // Load instructors
+            try {
+                const data = await fetch('/api/products/list/florists').then(r => r.json());
+                const sellers = (data.florists || data || []).slice(0, 3);
+                document.getElementById('lpInstructors').innerHTML = sellers.map(s => `
+                    <div class="instructor-card">
+                        <div style="width:72px;height:72px;border-radius:50%;margin:0 auto 0.75rem;overflow:hidden;background:var(--primary-light);">
+                            ${s.image ? `<img src="${escapeHtml(s.image)}" alt="${escapeHtml(s.name)}" style="width:100%;height:100%;object-fit:cover;">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--primary-color);">${(s.name || '?')[0]}</div>`}
+                        </div>
+                        <h4>${escapeHtml(s.name)}</h4>
+                        <div class="title">${escapeHtml(s.role || 'Master Florist')}</div>
+                        <div style="font-size:0.85rem;color:#f59e0b;"><i class="bi bi-star-fill"></i> 4.${Math.floor(Math.random() * 5) + 5}</div>
+                        <a href="florist-profile.html?id=${escapeHtml(s.id)}" class="btn btn-outline btn-sm" style="margin-top:0.75rem;">View Profile</a>
+                    </div>
+                `).join('');
+            } catch {}
+
+            // Reviews
+            document.getElementById('lpReviews').innerHTML = path.reviews.map(r => `
+                <div style="background:white;border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;margin-bottom:0.75rem;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;">
+                        <div>
+                            <strong>${escapeHtml(r.name)}</strong>
+                            <span style="font-size:0.8rem;color:var(--text-light);margin-left:0.5rem;">${escapeHtml(r.role)}</span>
+                        </div>
+                        <div style="color:#f59e0b;font-size:0.85rem;">${'<i class="bi bi-star-fill"></i>'.repeat(r.rating)}</div>
+                    </div>
+                    <p style="font-size:0.9rem;color:var(--text-light);line-height:1.6;">${escapeHtml(r.text)}</p>
+                </div>
+            `).join('');
+
+            // Check saved state
+            let saved = JSON.parse(localStorage.getItem('lp-saved') || '[]');
+            if (saved.includes(slug)) {
+                document.getElementById('saveBtn').innerHTML = '<i class="bi bi-heart-fill"></i> Saved';
+            }
+        }
+
+        function toggleSave() {
+            const params = new URLSearchParams(window.location.search);
+            const slug = params.get('id') || params.get('path') || 'professional-florist';
+            let saved = JSON.parse(localStorage.getItem('lp-saved') || '[]');
+            const idx = saved.indexOf(slug);
+            if (idx >= 0) {
+                saved.splice(idx, 1);
+                document.getElementById('saveBtn').innerHTML = '<i class="bi bi-heart"></i> Save Path';
+            } else {
+                saved.push(slug);
+                document.getElementById('saveBtn').innerHTML = '<i class="bi bi-heart-fill"></i> Saved';
+            }
+            localStorage.setItem('lp-saved', JSON.stringify(saved));
+        }
+
+        function enrollPath() {
+            if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+                window.location.href = 'my-learning.html';
+            } else {
+                sessionStorage.setItem('pending-redirect', 'my-learning.html');
+                if (typeof openAuthModal === 'function') openAuthModal('login');
+            }
+        }
+
+        initPath();
+    </script>
+</body>
+</html>

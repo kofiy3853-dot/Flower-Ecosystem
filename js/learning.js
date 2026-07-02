@@ -2,12 +2,12 @@
 // Learning Center page — courses, articles, videos, quizzes, search, filter
 
 const LEARNING_CATEGORIES = [
-    { name: 'Beginner Floristry', icon: '🌱', desc: 'Start your floristry journey with the basics', color: '#5a7a60' },
-    { name: 'Flower Care', icon: '💧', desc: 'Keep your blooms fresh and healthy', color: '#4a90d9' },
-    { name: 'Arrangement Techniques', icon: '✂️', desc: 'Master the art of floral design', color: '#ac3250' },
-    { name: 'Business Skills', icon: '💼', desc: 'Build and grow your floral business', color: '#d4af37' },
-    { name: 'Wedding Floristry', icon: '💍', desc: 'Design stunning wedding flowers', color: '#e8998d' },
-    { name: 'Event Decorations', icon: '🎉', desc: 'Transform spaces with floral decor', color: '#8c6ba8' }
+    { name: 'Beginner Floristry', icon: 'bi bi-seed', desc: 'Start your floristry journey with the basics', color: '#5a7a60', slug: 'beginner-florist' },
+    { name: 'Flower Care', icon: 'bi bi-droplet', desc: 'Keep your blooms fresh and healthy', color: '#4a90d9', slug: 'flower-farmer' },
+    { name: 'Arrangement Techniques', icon: 'bi bi-flower1', desc: 'Master the art of floral design', color: '#ac3250', slug: 'professional-florist' },
+    { name: 'Business Skills', icon: 'bi bi-shop', desc: 'Build and grow your floral business', color: '#d4af37', slug: 'flower-business' },
+    { name: 'Wedding Floristry', icon: 'bi bi-ring', desc: 'Design stunning wedding flowers', color: '#e8998d', slug: 'event-decorator' },
+    { name: 'Event Decorations', icon: 'bi bi-calendar-event', desc: 'Transform spaces with floral decor', color: '#8c6ba8', slug: 'event-decorator' }
 ];
 
 (async () => {
@@ -59,9 +59,9 @@ const LEARNING_CATEGORIES = [
     const catGrid = document.getElementById('categoryGrid');
     if (catGrid) {
         catGrid.innerHTML = LEARNING_CATEGORIES.map(c => `
-            <a href="#content" class="category-card" data-category="${escapeHtml(c.name)}" style="text-decoration:none;cursor:pointer;">
-                <div class="category-img" style="background:${c.color}15;display:flex;align-items:center;justify-content:center;height:100px;font-size:2.5rem;">
-                    ${c.icon}
+            <a href="learning-path.html?id=${c.slug}" class="category-card" style="text-decoration:none;cursor:pointer;">
+                <div class="category-img" style="background:${c.color}15;display:flex;align-items:center;justify-content:center;height:100px;">
+                    <i class="bi ${c.icon}" style="font-size:2.5rem;color:${c.color};"></i>
                 </div>
                 <div class="category-overlay" style="background:linear-gradient(to top,rgba(0,0,0,0.7),transparent);">
                     <h3>${escapeHtml(c.name)}</h3>

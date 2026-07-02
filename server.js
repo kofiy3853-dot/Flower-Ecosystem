@@ -160,6 +160,7 @@ app.get('/forgot-password', (_, res) => res.sendFile(path.join(__dirname, 'forgo
 app.get('/contact', (_, res) => res.sendFile(path.join(__dirname, 'contact.html')));
 app.get('/account', (_, res) => res.sendFile(path.join(__dirname, 'account.html')));
 app.get('/following', (_, res) => res.sendFile(path.join(__dirname, 'following.html')));
+app.get('/learning-path', (_, res) => res.sendFile(path.join(__dirname, 'learning-path.html')));
 app.get('/terms', (_, res) => res.sendFile(path.join(__dirname, 'terms.html')));
 app.get('/privacy', (_, res) => res.sendFile(path.join(__dirname, 'privacy.html')));
 
