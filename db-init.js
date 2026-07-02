@@ -13,9 +13,15 @@ const pool = new Pool({
 });
 
 async function run() {
+    let client;
     try {
-        const client = await pool.connect();
-        try {
+        client = await pool.connect();
+    } catch (err) {
+        console.warn('Could not connect to database:', err.message);
+        await pool.end();
+        return;
+    }
+    try {
         // Run schema.sql (may fail on existing databases, that's OK)
         const schemaPath = path.join(__dirname, 'sql', 'schema.sql');
         if (fs.existsSync(schemaPath)) {
@@ -114,7 +120,7 @@ async function run() {
     } catch (err) {
         console.error('DB init error:', err.message);
     } finally {
-        if (client) client.release();
+        client.release();
         await pool.end();
     }
 }
