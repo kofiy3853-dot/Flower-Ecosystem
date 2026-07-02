@@ -44,6 +44,19 @@ async function run() {
             }
         }
 
+        // Run messaging schema
+        const msgSchemaPath = path.join(__dirname, 'sql', 'notifications-messaging.sql');
+        if (fs.existsSync(msgSchemaPath)) {
+            const msgSchema = fs.readFileSync(msgSchemaPath, 'utf8');
+            console.log('Running notifications-messaging.sql...');
+            try {
+                await client.query(msgSchema);
+                console.log('Messaging schema applied.');
+            } catch (e) {
+                console.log('Messaging schema partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
         console.log('Database initialized successfully.');
     } catch (err) {
         console.error('DB init error:', err.message);
