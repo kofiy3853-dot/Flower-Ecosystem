@@ -57,6 +57,19 @@ async function run() {
             }
         }
 
+        // Run buyer dashboard schema (profiles, favorites, etc.)
+        const buyerSchemaPath = path.join(__dirname, 'sql', 'buyer-dashboard.sql');
+        if (fs.existsSync(buyerSchemaPath)) {
+            const buyerSchema = fs.readFileSync(buyerSchemaPath, 'utf8');
+            console.log('Running buyer-dashboard.sql...');
+            try {
+                await client.query(buyerSchema);
+                console.log('Buyer dashboard schema applied.');
+            } catch (e) {
+                console.log('Buyer dashboard schema partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
         // Run learning extra tables (workshops, live classes, assignments)
         const learningExtraPath = path.join(__dirname, 'sql', 'learning-extra-tables.sql');
         if (fs.existsSync(learningExtraPath)) {
