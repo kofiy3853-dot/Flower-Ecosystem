@@ -1,0 +1,62 @@
+[
+    {
+        "id": "c1b2c3d4-0001-0000-0000-000000000001",
+        "title": "Beginner Florist",
+        "slug": "beginner-florist",
+        "description": "Start your floristry journey from scratch. Learn flower identification, basic care, simple arrangements, and wrapping techniques.",
+        "level": "Beginner",
+        "duration_hours": 16,
+        "course_count": 4,
+        "student_count": 2850,
+        "rating": 4.8,
+        "price": "Free"
+    },
+    {
+        "id": "c1b2c3d4-0002-0000-0000-000000000002",
+        "title": "Professional Florist",
+        "slug": "professional-florist",
+        "description": "Master advanced floral design, wedding arrangements, luxury bouquets, and professional event styling.",
+        "level": "Intermediate",
+        "duration_hours": 32,
+        "course_count": 6,
+        "student_count": 4850,
+        "rating": 4.9,
+        "price": "GHS 450"
+    },
+    {
+        "id": "c1b2c3d4-0003-0000-0000-000000000003",
+        "title": "Professional Flower Farmer",
+        "slug": "flower-farmer",
+        "description": "Learn soil preparation, cultivation, pest control, harvesting, and wholesale selling of cut flowers.",
+        "level": "Intermediate",
+        "duration_hours": 48,
+        "course_count": 8,
+        "student_count": 1920,
+        "rating": 4.7,
+        "price": "GHS 650"
+    },
+    {
+        "id": "c1b2c3d4-0004-0000-0000-000000000004",
+        "title": "Flower Business Owner",
+        "slug": "flower-business",
+        "description": "Learn to start, brand, manage, and grow a successful flower shop or floral service business.",
+        "level": "Intermediate",
+        "duration_hours": 36,
+        "course_count": 7,
+        "student_count": 3200,
+        "rating": 4.8,
+        "price": "GHS 550"
+    },
+    {
+        "id": "c1b2c3d4-0005-0000-0000-000000000005",
+        "title": "Wedding & Event Decorator",
+        "slug": "event-decorator",
+        "description": "Master floral decoration for weddings, corporate events, birthdays, and special celebrations.",
+        "level": "Advanced",
+        "duration_hours": 24,
+        "course_count": 5,
+        "student_count": 2100,
+        "rating": 4.9,
+        "price": "GHS 400"
+    }
+]

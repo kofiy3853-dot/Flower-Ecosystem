@@ -490,17 +490,18 @@ router.get('/learning-paths', asyncHandler(async (_, res) => {
 router.get('/learning-paths/:id', asyncHandler(async (req, res) => {
     return queryWithFallback(
         async () => {
-            const r = await pool.query('SELECT * FROM learning.learning_paths WHERE id = $1', [req.params.id]);
+            const r = await pool.query('SELECT * FROM learning.learning_paths WHERE id = $1 OR slug = $1', [req.params.id]);
             if (!r.rows.length) return null;
             const courses = await pool.query(
                 `SELECT c.*, lp.sort_order FROM learning.learning_path_courses lp
                  JOIN learning.courses c ON c.id = lp.course_id
                  WHERE lp.path_id = $1 ORDER BY lp.sort_order`,
-                [req.params.id]
+                [r.rows[0].id]
             );
             return { ...r.rows[0], courses: courses.rows };
         },
-        'learning-paths', res
+        'learning-paths', res, false,
+        (data) => data.find(p => p.id === req.params.id || p.slug === req.params.id) || null
     );
 }));
 
