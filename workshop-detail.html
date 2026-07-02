@@ -285,7 +285,15 @@
         async function initWorkshop() {
             const params = new URLSearchParams(window.location.search);
             const slug = params.get('id') || params.get('workshop') || 'wedding-masterclass';
-            const ws = workshops[slug] || workshops['wedding-masterclass'];
+
+            // Try API first, fall back to hardcoded data
+            let ws = workshops[slug] || workshops['wedding-masterclass'];
+            try {
+                const apiData = await api.fetchWorkshop(slug);
+                if (apiData && apiData.title) {
+                    ws = { ...ws, ...apiData };
+                }
+            } catch (e) {}
 
             document.title = `${ws.title} - Flower Ecosystem`;
             document.getElementById('wsBreadcrumb').textContent = ws.title;

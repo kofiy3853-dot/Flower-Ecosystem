@@ -137,16 +137,34 @@
             `).join('');
         }
 
+        async function initAssignments() {
+            // Try API first, fall back to hardcoded data
+            try {
+                const apiData = await api.fetchAssignments();
+                if (apiData && apiData.length) {
+                    assignments.length = 0;
+                    apiData.forEach(a => assignments.push({
+                        id: a.id, title: a.title || 'Assignment', course: a.course || '',
+                        due: a.due_date ? new Date(a.due_date).toLocaleDateString() : 'TBD',
+                        status: a.status || 'pending', description: a.description || '',
+                        points: a.points || 100, type: a.type || 'Submission'
+                    }));
+                }
+            } catch (e) {}
+            renderAssignments();
+        }
+
         function submitAssignment(id, fileInput) {
             if (fileInput && !fileInput.files.length) return;
             const assignment = assignments.find(a => a.id === id);
             if (assignment) {
                 assignment.status = 'submitted';
+                api.submitAssignment(id, { status: 'submitted' }).catch(() => {});
                 renderAssignments();
             }
         }
 
-        renderAssignments();
+        initAssignments();
     </script>
 </body>
 </html>

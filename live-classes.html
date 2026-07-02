@@ -147,7 +147,22 @@
             { q: 'Do I need any special software?', a: 'No special software needed. Classes run in your web browser. A stable internet connection is recommended.' }
         ];
 
-        function initLiveClasses() {
+        async function initLiveClasses() {
+            // Try API first, fall back to hardcoded data
+            try {
+                const apiData = await api.fetchLiveClasses();
+                if (apiData && apiData.length) {
+                    liveClasses.length = 0;
+                    apiData.forEach(c => liveClasses.push({
+                        id: c.id, title: c.title, instructor: c.instructor || 'Instructor',
+                        instructorImg: c.instructor_img || '', day: c.day || '', time: c.time || '',
+                        duration: c.duration || '', level: c.level || 'Beginner',
+                        seats: c.seats || 100, enrolled: c.enrolled || 0, status: c.status || 'upcoming',
+                        img: c.image || '', description: c.description || ''
+                    }));
+                }
+            } catch (e) {}
+
             // Live Now (demo: show first class as live)
             const liveNow = liveClasses[0];
             document.getElementById('liveNowSection').style.display = 'block';

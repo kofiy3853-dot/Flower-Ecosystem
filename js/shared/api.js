@@ -178,7 +178,13 @@ const api = {
     fetchKnowledgeCategories() { return apiFetch('/api/knowledge/categories', 'flower-knowledge-categories'); },
     fetchSellerAnalytics() { return apiFetchWithBody('/api/seller/analytics', 'GET'); },
     fetchSellerOrders() { return apiFetchWithBody('/api/seller/orders', 'GET'); },
-    fetchSellerProducts() { return apiFetchWithBody('/api/seller/products', 'GET'); }
+    fetchSellerProducts() { return apiFetchWithBody('/api/seller/products', 'GET'); },
+    fetchWorkshops() { return apiFetch('/api/workshops', 'workshops'); },
+    fetchWorkshop(id) { return apiFetch('/api/workshops/' + encodeURIComponent(id), 'workshops'); },
+    fetchLiveClasses() { return apiFetch('/api/live-classes', 'live-classes'); },
+    fetchLiveClass(id) { return apiFetch('/api/live-classes/' + encodeURIComponent(id), 'live-classes'); },
+    fetchAssignments() { return apiFetch('/api/assignments', 'assignments'); },
+    submitAssignment(id, data) { return apiFetchWithBody('/api/assignments/' + id + '/submit', 'POST', data); }
 };
 
 window.api = api;

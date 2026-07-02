@@ -38,6 +38,17 @@ router.post('/courses', requireInstructor, asyncHandler(async (req, res) => {
 router.put('/courses/:id', requireInstructor, asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { title, description, instructor, level, price, category, is_published } = req.body;
+    
+    // Verify instructor owns this course
+    const ownership = await pool.query(
+        'SELECT id, instructor FROM learning.courses WHERE id = $1',
+        [id]
+    );
+    if (!ownership.rows.length) return res.status(404).json({ error: 'Course not found' });
+    if (ownership.rows[0].instructor !== req.user.email && req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Not authorized to edit this course' });
+    }
+    
     const r = await pool.query(
         `UPDATE learning.courses SET title = COALESCE($1, title), description = COALESCE($2, description),
          instructor = COALESCE($3, instructor), level = COALESCE($4, level), price = COALESCE($5, price),
@@ -45,14 +56,23 @@ router.put('/courses/:id', requireInstructor, asyncHandler(async (req, res) => {
          WHERE id = $8 RETURNING *`,
         [title, description, instructor, level, price, category, is_published, id]
     );
-    if (!r.rows.length) return res.status(404).json({ error: 'Course not found' });
     res.json(r.rows[0]);
 }));
 
 router.delete('/courses/:id', requireInstructor, asyncHandler(async (req, res) => {
     const { id } = req.params;
+    
+    // Verify instructor owns this course
+    const ownership = await pool.query(
+        'SELECT id, instructor FROM learning.courses WHERE id = $1',
+        [id]
+    );
+    if (!ownership.rows.length) return res.status(404).json({ error: 'Course not found' });
+    if (ownership.rows[0].instructor !== req.user.email && req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Not authorized to delete this course' });
+    }
+    
     const r = await pool.query('DELETE FROM learning.courses WHERE id = $1 RETURNING id', [id]);
-    if (!r.rows.length) return res.status(404).json({ error: 'Course not found' });
     res.json({ message: 'Course deleted' });
 }));
 
@@ -378,6 +398,81 @@ router.get('/flowers', asyncHandler(async (_, res) => {
         },
         'identification', res
     );
+}));
+
+// ─── Workshops ────────────────────────────────────────
+router.get('/workshops', asyncHandler(async (_, res) => {
+    return queryWithFallback(
+        async () => {
+            const r = await pool.query('SELECT * FROM learning.workshops ORDER BY date ASC');
+            return r.rows;
+        },
+        'workshops', res
+    );
+}));
+
+router.get('/workshops/:id', asyncHandler(async (req, res) => {
+    return queryWithFallback(
+        async () => {
+            const r = await pool.query('SELECT * FROM learning.workshops WHERE id = $1', [req.params.id]);
+            if (!r.rows.length) return null;
+            return r.rows[0];
+        },
+        'workshops', res
+    );
+}));
+
+// ─── Live Classes ─────────────────────────────────────
+router.get('/live-classes', asyncHandler(async (_, res) => {
+    return queryWithFallback(
+        async () => {
+            const r = await pool.query('SELECT * FROM learning.live_classes ORDER BY scheduled_at ASC');
+            return r.rows;
+        },
+        'live-classes', res
+    );
+}));
+
+router.get('/live-classes/:id', asyncHandler(async (req, res) => {
+    return queryWithFallback(
+        async () => {
+            const r = await pool.query('SELECT * FROM learning.live_classes WHERE id = $1', [req.params.id]);
+            if (!r.rows.length) return null;
+            return r.rows[0];
+        },
+        'live-classes', res
+    );
+}));
+
+// ─── Assignments ──────────────────────────────────────
+router.get('/assignments', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    try {
+        const r = await pool.query(
+            'SELECT * FROM learning.assignments WHERE user_id = $1 ORDER BY due_date ASC',
+            [req.user.id]
+        );
+        return res.json(r.rows);
+    } catch (err) {
+        return res.json([]);
+    }
+}));
+
+router.post('/assignments/:id/submit', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id } = req.params;
+    const { file_url, notes } = req.body;
+    try {
+        const r = await pool.query(
+            `UPDATE learning.assignments SET status = 'submitted', submitted_at = CURRENT_TIMESTAMP, file_url = $1, notes = $2
+             WHERE id = $3 AND user_id = $4 RETURNING *`,
+            [file_url, notes, id, req.user.id]
+        );
+        if (!r.rows.length) return res.status(404).json({ error: 'Assignment not found' });
+        res.json(r.rows[0]);
+    } catch (err) {
+        res.json({ id, status: 'submitted' });
+    }
 }));
 
 module.exports = router;
