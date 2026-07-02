@@ -221,30 +221,30 @@
                 return `
                 <div class="dir-card">
                     <div class="dir-card-banner">
-                        <img src="${f.img || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 140%22><rect fill=%22%23fce7f0%22 width=%22400%22 height=%22140%22/><text x=%22200%22 y=%2280%22 text-anchor=%22middle%22 fill=%22%23d8447c%22 font-size=%2240%22>🌸</text></svg>'}" alt="${f.name}" loading="lazy">
+                        <img src="${escapeHtml(f.img || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 140%22><rect fill=%22%23fce7f0%22 width=%22400%22 height=%22140%22/><text x=%22200%22 y=%2280%22 text-anchor=%22middle%22 fill=%22%23d8447c%22 font-size=%2218%22>No Image</text></svg>')}" alt="${escapeHtml(f.name)}" loading="lazy">
                         ${f.verified ? '<div class="dir-card-verified"><i class="bi bi-patch-check-fill"></i> Verified</div>' : ''}
                         <button class="dir-card-fav" onclick="event.stopPropagation()"><i class="bi bi-heart"></i></button>
                     </div>
                     <div class="dir-card-body">
                         <div class="dir-card-header">
-                            ${f.image ? `<div class="dir-card-avatar"><img src="${f.image}" alt="${f.name}"></div>` : `<div class="dir-card-avatar-placeholder">${initials}</div>`}
+                            ${f.image ? `<div class="dir-card-avatar"><img src="${escapeHtml(f.image)}" alt="${escapeHtml(f.name)}"></div>` : `<div class="dir-card-avatar-placeholder">${initials}</div>`}
                             <div>
-                                <div class="dir-card-name">${f.name}</div>
+                                <div class="dir-card-name">${escapeHtml(f.name)}</div>
                                 <div class="dir-card-rating">${renderStars(f.rating)} <span>(${f.reviews})</span></div>
                             </div>
                         </div>
-                        <div class="dir-card-specialty">${f.specialty}</div>
+                        <div class="dir-card-specialty">${escapeHtml(f.specialty)}</div>
                         <div class="dir-card-meta">
-                            <span><i class="bi bi-geo-alt"></i> ${f.location}</span>
+                            <span><i class="bi bi-geo-alt"></i> ${escapeHtml(f.location)}</span>
                             <span><i class="bi bi-briefcase"></i> ${f.products} Products</span>
                             <span><i class="bi bi-clock"></i> ${f.experience} Years</span>
                         </div>
                         <div class="dir-card-tags">
-                            ${f.tags.map(t => `<span class="dir-card-tag${t === 'Same-Day Delivery' ? ' highlight' : ''}">${t}</span>`).join('')}
+                            ${f.tags.map(t => `<span class="dir-card-tag${t === 'Same-Day Delivery' ? ' highlight' : ''}">${escapeHtml(t)}</span>`).join('')}
                         </div>
                         <div class="dir-card-footer">
-                            <a href="florist-profile.html?id=${f.id}" class="btn btn-outline btn-sm">View Profile</a>
-                            <a href="florist-profile.html?id=${f.id}" class="btn btn-primary btn-sm">Visit Store</a>
+                            <a href="florist-profile.html?id=${escapeHtml(f.id)}" class="btn btn-outline btn-sm">View Profile</a>
+                            <a href="florist-profile.html?id=${escapeHtml(f.id)}" class="btn btn-primary btn-sm">Visit Store</a>
                         </div>
                     </div>
                 </div>`;
