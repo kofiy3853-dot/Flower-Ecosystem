@@ -161,7 +161,8 @@ router.get('/quizzes/:id', asyncHandler(async (req, res) => {
             if (!r.rows.length) return null;
             return r.rows[0];
         },
-        'quizzes', res
+        'quizzes', res, false,
+        (data) => data.find(q => q.id === req.params.id) || null
     );
 }));
 
