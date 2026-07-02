@@ -162,6 +162,12 @@
                     <h2>Frequently Asked Questions</h2>
                     <div id="wsFaq"></div>
                 </div>
+
+                <!-- Testimonials -->
+                <div class="ws-section">
+                    <h2>What Students Say</h2>
+                    <div id="wsTestimonials"></div>
+                </div>
             </div>
             <div></div>
         </div>
@@ -205,6 +211,11 @@
                 reviews: [
                     { name: 'Ama K.', rating: 5, text: 'Sarah explained everything so clearly. I made my first professional bouquet!', course: 'Wedding Masterclass' },
                     { name: 'Kofi M.', rating: 5, text: 'Best workshop I\'ve attended. The hands-on practice was invaluable.', course: 'Wedding Masterclass' }
+                ],
+                testimonials: [
+                    { name: 'Esi O.', role: 'Wedding Planner', text: 'After this workshop, I confidently offer floral design as part of my wedding planning packages. My clients love the results.', avatar: 'E' },
+                    { name: 'Kwame A.', role: 'Florist Shop Owner', text: 'Sarah\'s teaching style is incredible. I learned techniques that immediately improved my shop\'s arrangements.', avatar: 'K' },
+                    { name: 'Ama D.', role: 'Event Decorator', text: 'The wedding masterclass gave me the confidence to charge premium prices. My portfolio has transformed completely.', avatar: 'A' }
                 ]
             },
             'bouquet-fundamentals': {
@@ -232,6 +243,10 @@
                 ],
                 reviews: [
                     { name: 'Esi O.', rating: 5, text: 'Perfect starting point. I now make bouquets for my friends!', course: 'Bouquet Fundamentals' }
+                ],
+                testimonials: [
+                    { name: 'Nana B.', role: 'Home Gardener', text: 'I never thought I could make something this beautiful. The step-by-step approach made it so easy.', avatar: 'N' },
+                    { name: 'Akua S.', role: 'Student', text: 'Efua is an amazing teacher. Patient, clear, and inspiring. I\'m already signed up for her next workshop.', avatar: 'A' }
                 ]
             },
             'flower-farming': {
@@ -259,6 +274,10 @@
                 ],
                 reviews: [
                     { name: 'Nana A.', rating: 5, text: 'Incredible hands-on experience. I started my own flower farm after this.', course: 'Flower Farming' }
+                ],
+                testimonials: [
+                    { name: 'Kofi F.', role: 'Aspiring Farmer', text: 'Kwame knows everything about flower farming. The farm visit was eye-opening and practical.', avatar: 'K' },
+                    { name: 'Efua M.', role: 'Agricultural Student', text: 'Best practical learning experience I\'ve had. The organic pest control techniques really work.', avatar: 'E' }
                 ]
             }
         };
@@ -352,6 +371,21 @@
                     <div class="faq-a">${escapeHtml(f.a)}</div>
                 </div>
             `).join('');
+
+            // Testimonials
+            const testimonials = ws.testimonials || [];
+            document.getElementById('wsTestimonials').innerHTML = testimonials.length ? testimonials.map(t => `
+                <div style="background:var(--bg-light);border-radius:12px;padding:1.5rem;margin-bottom:0.75rem;">
+                    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;">
+                        <div style="width:44px;height:44px;border-radius:50%;background:var(--primary-color);color:white;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:1.1rem;">${escapeHtml(t.avatar)}</div>
+                        <div>
+                            <div style="font-weight:600;font-size:0.95rem;">${escapeHtml(t.name)}</div>
+                            <div style="font-size:0.82rem;color:var(--primary-color);">${escapeHtml(t.role)}</div>
+                        </div>
+                    </div>
+                    <p style="font-size:0.9rem;color:var(--text-light);line-height:1.6;font-style:italic;">"${escapeHtml(t.text)}"</p>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);">No testimonials yet.</p>';
 
             // Countdown
             startCountdown();
