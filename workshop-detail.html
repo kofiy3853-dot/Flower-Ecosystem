@@ -286,14 +286,13 @@
             const params = new URLSearchParams(window.location.search);
             const slug = params.get('id') || params.get('workshop') || 'wedding-masterclass';
 
-            // Try API first, fall back to hardcoded data
-            let ws = workshops[slug] || workshops['wedding-masterclass'];
+            // Try API first — only use hardcoded data if API returns nothing
+            let ws = null;
             try {
                 const apiData = await api.fetchWorkshop(slug);
-                if (apiData && apiData.title) {
-                    ws = { ...ws, ...apiData };
-                }
+                if (apiData && apiData.title) ws = apiData;
             } catch (e) {}
+            if (!ws) ws = workshops[slug] || workshops['wedding-masterclass'];
 
             document.title = `${ws.title} - Flower Ecosystem`;
             document.getElementById('wsBreadcrumb').textContent = ws.title;

@@ -172,19 +172,24 @@ INSERT INTO learning.learning_paths (id, title, description, slug, level, durati
 ON CONFLICT (id) DO NOTHING;
 
 -- Seed Learning Path Courses
-INSERT INTO learning.learning_path_courses (path_id, course_id, sort_order)
-SELECT 'c1b2c3d4-0001-0000-0000-000000000001', id, 1 FROM learning.courses WHERE title ILIKE '%introduction%' OR title ILIKE '%basics%' LIMIT 4
+INSERT INTO learning.learning_path_courses (path_id, course_id, sort_order) VALUES
+('c1b2c3d4-0001-0000-0000-000000000001', 'c24f45f7-daf7-44ee-9743-de1070133b2a', 1),
+('c1b2c3d4-0001-0000-0000-000000000001', 'ba27993f-16fc-4ba1-9f7a-7a1ce2a2c1ec', 2),
+('c1b2c3d4-0001-0000-0000-000000000001', 'a83601e0-9f1e-42b5-954c-24d7525f5291', 3)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO learning.learning_path_courses (path_id, course_id, sort_order)
-SELECT 'c1b2c3d4-0002-0000-0000-000000000002', id, 1 FROM learning.courses WHERE title ILIKE '%wedding%' OR title ILIKE '%arrangement%' OR title ILIKE '%design%' LIMIT 6
+INSERT INTO learning.learning_path_courses (path_id, course_id, sort_order) VALUES
+('c1b2c3d4-0002-0000-0000-000000000002', 'c24f45f7-daf7-44ee-9743-de1070133b2a', 1),
+('c1b2c3d4-0002-0000-0000-000000000002', 'd4d98995-ad22-436d-9be6-b45a363cd667', 2),
+('c1b2c3d4-0002-0000-0000-000000000002', 'a83601e0-9f1e-42b5-954c-24d7525f5291', 3),
+('c1b2c3d4-0002-0000-0000-000000000002', 'ba27993f-16fc-4ba1-9f7a-7a1ce2a2c1ec', 4)
 ON CONFLICT DO NOTHING;
 
 -- Seed Quizzes
 INSERT INTO learning.quizzes (id, course_id, title, description, time_minutes, difficulty, pass_score) VALUES
-('d1b2c3d4-0001-0000-0000-000000000001', (SELECT id FROM learning.courses WHERE title ILIKE '%arrangement%' LIMIT 1), 'Arrangement Fundamentals Quiz', 'Test your knowledge of basic floral arrangement techniques.', 15, 'Beginner', 70),
-('d1b2c3d4-0002-0000-0000-000000000002', (SELECT id FROM learning.courses WHERE title ILIKE '%identification%' OR title ILIKE '%natural%' LIMIT 1), 'Flower Identification Test', 'Test your ability to identify different flower types.', 15, 'Beginner', 70),
-('d1b2c3d4-0003-0000-0000-000000000003', (SELECT id FROM learning.courses WHERE title ILIKE '%wedding%' LIMIT 1), 'Wedding Floristry Exam', 'Comprehensive exam covering wedding floral design concepts.', 30, 'Advanced', 80)
+('d1b2c3d4-0001-0000-0000-000000000001', 'c24f45f7-daf7-44ee-9743-de1070133b2a', 'Arrangement Fundamentals Quiz', 'Test your knowledge of basic floral arrangement techniques.', 15, 'Beginner', 70),
+('d1b2c3d4-0002-0000-0000-000000000002', 'a83601e0-9f1e-42b5-954c-24d7525f5291', 'Flower Identification Test', 'Test your ability to identify different flower types.', 15, 'Beginner', 70),
+('d1b2c3d4-0003-0000-0000-000000000003', 'd4d98995-ad22-436d-9be6-b45a363cd667', 'Wedding Floristry Exam', 'Comprehensive exam covering wedding floral design concepts.', 30, 'Advanced', 80)
 ON CONFLICT (id) DO NOTHING;
 
 -- Seed Quiz Questions
