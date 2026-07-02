@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn from expert florists, growers, and industry professionals on Flower Ecosystem.">
+    <title>Instructors | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .inst-hero{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:5rem 0 3rem;color:white;text-align:center;}
+        .inst-hero h1{font-size:clamp(2rem,4vw,2.8rem);margin-bottom:0.5rem;}
+        .inst-hero p{opacity:0.85;font-size:1.05rem;max-width:600px;margin:0 auto 1.5rem;}
+        .inst-search{display:flex;background:white;border-radius:12px;overflow:hidden;max-width:500px;margin:0 auto 1.5rem;}
+        .inst-search input{flex:1;border:none;padding:1rem 1.25rem;font-size:1rem;outline:none;}
+        .inst-search button{background:var(--primary-color);color:white;border:none;padding:1rem 1.5rem;cursor:pointer;}
+        .inst-stats{display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;margin-top:1.5rem;}
+        .inst-stat{text-align:center;}
+        .inst-stat strong{font-size:1.5rem;display:block;}
+        .inst-stat span{font-size:0.85rem;opacity:0.8;}
+        .inst-pills{display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;}
+        .inst-pill{padding:0.5rem 1rem;border-radius:50px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;font-size:0.85rem;cursor:pointer;transition:all 0.2s;}
+        .inst-pill:hover,.inst-pill.active{background:var(--primary-color);border-color:var(--primary-color);}
+        .inst-filter-bar{background:white;border-bottom:1px solid var(--border-color);padding:1rem 0;}
+        .inst-filters{display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;}
+        .inst-filter{padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;background:white;}
+        .inst-count{font-size:0.9rem;color:var(--text-light);margin-left:auto;}
+        .inst-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;}
+        .inst-card{background:white;border:1px solid var(--border-color);border-radius:14px;overflow:hidden;transition:all 0.3s;}
+        .inst-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.1);}
+        .inst-card-banner{height:100px;background:linear-gradient(135deg,var(--primary-light),#fce7f0);position:relative;}
+        .inst-card-badge{position:absolute;top:0.75rem;right:0.75rem;background:var(--accent-green);color:white;padding:0.2rem 0.6rem;border-radius:6px;font-size:0.7rem;font-weight:600;display:flex;align-items:center;gap:0.3rem;}
+        .inst-card-body{padding:1.25rem;text-align:center;}
+        .inst-card-avatar{width:80px;height:80px;border-radius:50%;border:4px solid white;margin:-50px auto 0.75rem;overflow:hidden;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--primary-color);box-shadow:0 2px 10px rgba(0,0,0,0.1);position:relative;z-index:1;}
+        .inst-card-avatar img{width:100%;height:100%;object-fit:cover;}
+        .inst-card-name{font-weight:600;font-size:1.1rem;margin-bottom:0.25rem;}
+        .inst-card-title{font-size:0.85rem;color:var(--primary-color);margin-bottom:0.5rem;}
+        .inst-card-rating{font-size:0.85rem;color:#f59e0b;margin-bottom:0.5rem;}
+        .inst-card-meta{display:flex;justify-content:center;gap:1.25rem;font-size:0.8rem;color:var(--text-light);margin-bottom:0.75rem;}
+        .inst-card-bio{font-size:0.85rem;color:var(--text-light);line-height:1.5;margin-bottom:0.75rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+        .inst-card-skills{display:flex;flex-wrap:wrap;gap:0.35rem;justify-content:center;margin-bottom:0.75rem;}
+        .inst-skill{font-size:0.72rem;padding:0.2rem 0.5rem;border-radius:4px;background:var(--primary-light);color:var(--primary-color);}
+        .inst-card-footer{display:flex;gap:0.5rem;padding-top:0.75rem;border-top:1px solid var(--border-light);}
+        .inst-card-footer .btn{flex:1;}
+        .inst-cta{background:linear-gradient(135deg,var(--primary-color),#be185d);border-radius:16px;padding:3rem;text-align:center;color:white;margin:2rem 0;}
+        .inst-cta h2{color:white;margin-bottom:0.5rem;}
+        .inst-cta p{color:rgba(255,255,255,0.85);margin-bottom:1.5rem;max-width:500px;margin-left:auto;margin-right:auto;}
+        @media(max-width:768px){.inst-grid{grid-template-columns:1fr;}.inst-stats{gap:1.5rem;}}
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="inst-hero">
+        <div class="container">
+            <h1>Learn from Industry Experts</h1>
+            <p>Connect with certified florists, growers, and professionals who bring real-world experience to every lesson.</p>
+            <div class="inst-search">
+                <input type="text" id="instSearch" placeholder="Search instructors, skills, or courses...">
+                <button onclick="applyFilters()"><i class="bi bi-search"></i></button>
+            </div>
+            <div class="inst-pills">
+                <button class="inst-pill active" onclick="filterExpertise(this,'all')">All Instructors</button>
+                <button class="inst-pill" onclick="filterExpertise(this,'floral-design')">Floral Design</button>
+                <button class="inst-pill" onclick="filterExpertise(this,'flower-farming')">Flower Farming</button>
+                <button class="inst-pill" onclick="filterExpertise(this,'plant-care')">Plant Care</button>
+                <button class="inst-pill" onclick="filterExpertise(this,'business')">Business</button>
+                <button class="inst-pill" onclick="filterExpertise(this,'event-decoration')">Event Decoration</button>
+                <button class="inst-pill" onclick="filterExpertise(this,'photography')">Photography</button>
+            </div>
+            <div class="inst-stats">
+                <div class="inst-stat"><strong id="statInstructors">0</strong><span>Instructors</span></div>
+                <div class="inst-stat"><strong>320+</strong><span>Courses</span></div>
+                <div class="inst-stat"><strong>12,500+</strong><span>Students</span></div>
+                <div class="inst-stat"><strong>4.9</strong><span>Avg Rating</span></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="inst-filter-bar">
+        <div class="container">
+            <div class="inst-filters">
+                <select class="inst-filter" id="ratingFilter" onchange="applyFilters()">
+                    <option value="all">Any Rating</option>
+                    <option value="4.5">4.5+ Stars</option>
+                    <option value="4">4+ Stars</option>
+                </select>
+                <select class="inst-filter" id="sortFilter" onchange="applyFilters()">
+                    <option value="popular">Most Popular</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="students">Most Students</option>
+                    <option value="courses">Most Courses</option>
+                </select>
+                <span class="inst-count" id="instCount"></span>
+            </div>
+        </div>
+    </div>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="inst-grid" id="instGrid"></div>
+        </div>
+    </section>
+
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container">
+            <div class="inst-cta reveal-up">
+                <h2>Share Your Expertise</h2>
+                <p>Join our team of instructors and teach thousands of learners about floristry, farming, and floral business.</p>
+                <a href="sell.html" class="btn btn-lg" style="background:white;color:var(--primary-color);">Become an Instructor</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        let allInstructors = [];
+        let filtered = [];
+        let activeExpertise = 'all';
+
+        const expertiseMap = {
+            'floral-design': ['Wedding Specialist', 'Luxury Florist', 'Bouquet Expert', 'Floral Designer'],
+            'flower-farming': ['Flower Farmer', 'Greenhouse Expert', 'Horticulturist'],
+            'plant-care': ['Plant Specialist', 'Indoor Plant Expert', 'Botanist'],
+            'business': ['Business Coach', 'Flower Shop Owner', 'Marketing Expert'],
+            'event-decoration': ['Event Decorator', 'Wedding Planner', 'Corporate Events'],
+            'photography': ['Floral Photographer', 'Content Creator', 'Visual Artist']
+        };
+
+        const instructorsData = [
+            { name: 'Sarah Mensah', title: 'Master Florist', bio: 'Award-winning florist with 15 years of experience in luxury wedding arrangements and event design.', expertise: 'floral-design', courses: 18, students: 4200, experience: 15, rating: 4.9, skills: ['Wedding Design', 'Luxury Bouquets', 'Color Theory', 'Event Styling'], verified: true, img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=200&auto=format&fit=crop' },
+            { name: 'Kwame Asante', title: 'Flower Farm Expert', bio: 'Agricultural specialist focused on sustainable flower farming and greenhouse management in tropical climates.', expertise: 'flower-farming', courses: 12, students: 2800, experience: 20, rating: 4.8, skills: ['Soil Science', 'Greenhouse', 'Pest Control', 'Harvesting'], verified: true, img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=200&auto=format&fit=crop' },
+            { name: 'Ama Darko', title: 'Plant Care Specialist', bio: 'Passionate about indoor gardening and helping people create green spaces in their homes and offices.', expertise: 'plant-care', courses: 8, students: 3100, experience: 10, rating: 4.7, skills: ['Indoor Plants', 'Propagation', 'Plant Health', 'Terrariums'], verified: true, img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=200&auto=format&fit=crop' },
+            { name: 'Kofi Mensah', title: 'Business Coach', bio: 'Former flower shop owner turned business consultant. Helps florists build profitable businesses.', expertise: 'business', courses: 6, students: 1900, experience: 12, rating: 4.9, skills: ['Business Planning', 'Pricing', 'Marketing', 'Finance'], verified: true, img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=200&auto=format&fit=crop' },
+            { name: 'Efua Osei', title: 'Event Decoration Expert', bio: 'Specializes in transforming venues with stunning floral installations for weddings and corporate events.', expertise: 'event-decoration', courses: 10, students: 2400, experience: 14, rating: 4.8, skills: ['Wedding Decor', 'Corporate Events', 'Venue Styling', 'Installations'], verified: true, img: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?q=200&auto=format&fit=crop' },
+            { name: 'Nana Agyeman', title: 'Floral Photographer', bio: 'Professional photographer specializing in floral product photography and social media content creation.', expertise: 'photography', courses: 5, students: 1500, experience: 8, rating: 4.6, skills: ['Product Photography', 'Social Media', 'Lighting', 'Branding'], verified: true, img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=200&auto=format&fit=crop' },
+            { name: 'Akua Boateng', title: 'Sustainable Florist', bio: 'Pioneering eco-friendly floristry practices and teaching sustainable approaches to floral design.', expertise: 'floral-design', courses: 7, students: 1800, experience: 9, rating: 4.7, skills: ['Eco-Friendly', 'Organic', 'Sustainable Design', 'Local Sourcing'], verified: true, img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=200&auto=format&fit=crop' },
+            { name: 'Yaw Frimpong', title: 'Landscape Designer', bio: 'Creates beautiful outdoor spaces combining floral design with landscape architecture principles.', expertise: 'plant-care', courses: 9, students: 2100, experience: 16, rating: 4.8, skills: ['Landscape Design', 'Garden Planning', 'Outdoor Plants', 'Hardscaping'], verified: true, img: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=200&auto=format&fit=crop' }
+        ];
+
+        async function initInstructors() {
+            // Use built-in data + any from API
+            let apiInstructors = [];
+            try {
+                const data = await fetch('/api/products/list/florists').then(r => r.json());
+                apiInstructors = (data.florists || data || []).map(f => ({
+                    name: f.name,
+                    title: f.role || 'Instructor',
+                    bio: 'Expert florist sharing knowledge and experience with learners.',
+                    expertise: 'floral-design',
+                    courses: Math.floor(Math.random() * 10) + 3,
+                    students: Math.floor(Math.random() * 3000) + 500,
+                    experience: Math.floor(Math.random() * 15) + 5,
+                    rating: (4.5 + Math.random() * 0.5).toFixed(1),
+                    skills: ['Floral Design', 'Bouquets', 'Event Styling'],
+                    verified: true,
+                    id: f.id,
+                    img: f.image
+                }));
+            } catch {}
+
+            allInstructors = [...instructorsData, ...apiInstructors];
+            document.getElementById('statInstructors').textContent = allInstructors.length;
+            filtered = [...allInstructors];
+            renderInstructors();
+        }
+
+        function filterExpertise(el, exp) {
+            document.querySelectorAll('.inst-pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            activeExpertise = exp;
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const q = document.getElementById('instSearch').value.toLowerCase();
+            const minRating = document.getElementById('ratingFilter').value;
+            const sort = document.getElementById('sortFilter').value;
+
+            filtered = allInstructors.filter(f => {
+                if (q && !`${f.name} ${f.title} ${f.bio} ${(f.skills || []).join(' ')}`.toLowerCase().includes(q)) return false;
+                if (activeExpertise !== 'all' && f.expertise !== activeExpertise) return false;
+                if (minRating !== 'all' && Number(f.rating) < Number(minRating)) return false;
+                return true;
+            });
+
+            if (sort === 'rating') filtered.sort((a, b) => Number(b.rating) - Number(a.rating));
+            else if (sort === 'students') filtered.sort((a, b) => b.students - a.students);
+            else if (sort === 'courses') filtered.sort((a, b) => b.courses - a.courses);
+            else filtered.sort((a, b) => b.students - a.students);
+
+            renderInstructors();
+        }
+
+        function renderInstructors() {
+            const grid = document.getElementById('instGrid');
+            const count = document.getElementById('instCount');
+            count.textContent = `${filtered.length} instructor${filtered.length !== 1 ? 's' : ''}`;
+
+            if (!filtered.length) {
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;"><i class="bi bi-people" style="font-size:3rem;color:var(--text-light);display:block;margin-bottom:1rem;"></i><h3>No instructors found</h3><p style="color:var(--text-light);">Try adjusting your search or filters.</p></div>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map(f => {
+                const initials = (f.name || 'I').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+                const profileLink = f.id ? `florist-profile.html?id=${escapeHtml(f.id)}` : '#';
+                return `
+                <div class="inst-card">
+                    <div class="inst-card-banner">
+                        ${f.verified ? '<div class="inst-card-badge"><i class="bi bi-patch-check-fill"></i> Verified</div>' : ''}
+                    </div>
+                    <div class="inst-card-body">
+                        <div class="inst-card-avatar">
+                            ${f.img ? `<img src="${escapeHtml(f.img)}" alt="${escapeHtml(f.name)}">` : initials}
+                        </div>
+                        <div class="inst-card-name">${escapeHtml(f.name)}</div>
+                        <div class="inst-card-title">${escapeHtml(f.title)}</div>
+                        <div class="inst-card-rating"><i class="bi bi-star-fill"></i> ${f.rating} <span style="color:var(--text-light);">Rating</span></div>
+                        <div class="inst-card-meta">
+                            <span><i class="bi bi-book"></i> ${f.courses} Courses</span>
+                            <span><i class="bi bi-people"></i> ${f.students.toLocaleString()} Students</span>
+                            <span><i class="bi bi-clock"></i> ${f.experience} Years</span>
+                        </div>
+                        <div class="inst-card-bio">${escapeHtml(f.bio)}</div>
+                        <div class="inst-card-skills">
+                            ${(f.skills || []).map(s => `<span class="inst-skill">${escapeHtml(s)}</span>`).join('')}
+                        </div>
+                        <div class="inst-card-footer">
+                            <a href="${profileLink}" class="btn btn-outline btn-sm">View Profile</a>
+                            <a href="learning.html" class="btn btn-primary btn-sm">View Courses</a>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        initInstructors();
+    </script>
+</body>
+</html>
