@@ -1,0 +1,32 @@
+[
+    {
+        "id": "a1",
+        "title": "Create a Hand-Tied Bouquet",
+        "course": "Professional Floral Design",
+        "due_date": "2026-07-20",
+        "status": "pending",
+        "description": "Design and photograph a hand-tied bouquet using at least 3 different flower types.",
+        "points": 100,
+        "type": "Photo Submission"
+    },
+    {
+        "id": "a2",
+        "title": "Flower Identification Report",
+        "course": "Introduction to Flowers",
+        "due_date": "2026-07-25",
+        "status": "pending",
+        "description": "Identify and document 15 different flower species from your local area.",
+        "points": 80,
+        "type": "Written Report"
+    },
+    {
+        "id": "a3",
+        "title": "Wedding Centerpiece Design",
+        "course": "Wedding Floristry Masterclass",
+        "due_date": "2026-07-18",
+        "status": "submitted",
+        "description": "Create a wedding centerpiece design sketch with flower selection and color palette.",
+        "points": 120,
+        "type": "Design Submission"
+    }
+]

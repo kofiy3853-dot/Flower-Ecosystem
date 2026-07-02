@@ -1,0 +1,50 @@
+[
+    {
+        "id": "ws1",
+        "title": "Advanced Wedding Floral Design Masterclass",
+        "instructor": "Sarah Mensah",
+        "instructor_title": "Master Florist",
+        "date": "Saturday, July 18",
+        "time": "9:00 AM – 1:00 PM",
+        "duration": "4 Hours",
+        "location": "Online (Zoom)",
+        "type": "online",
+        "price": "GHS 150",
+        "seats": 45,
+        "seats_left": 12,
+        "rating": 4.9,
+        "description": "Learn professional wedding floral design techniques through live demonstration and guided practice."
+    },
+    {
+        "id": "ws2",
+        "title": "Bouquet Design Fundamentals",
+        "instructor": "Efua Osei",
+        "instructor_title": "Event Decoration Expert",
+        "date": "Saturday, July 25",
+        "time": "10:00 AM – 12:00 PM",
+        "duration": "2 Hours",
+        "location": "Online (Zoom)",
+        "type": "online",
+        "price": "Free",
+        "seats": 60,
+        "seats_left": 28,
+        "rating": 4.7,
+        "description": "Master the basics of bouquet design from color theory to wrapping techniques."
+    },
+    {
+        "id": "ws3",
+        "title": "Sustainable Flower Farming Workshop",
+        "instructor": "Kwame Asante",
+        "instructor_title": "Flower Farm Expert",
+        "date": "Saturday, August 1",
+        "time": "8:00 AM – 12:00 PM",
+        "duration": "4 Hours",
+        "location": "Flower Ecosystem Farm, Kumasi",
+        "type": "physical",
+        "price": "GHS 200",
+        "seats": 20,
+        "seats_left": 8,
+        "rating": 4.8,
+        "description": "Learn organic farming techniques for growing cut flowers."
+    }
+]

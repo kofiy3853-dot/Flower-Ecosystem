@@ -1,0 +1,47 @@
+[
+    {
+        "id": "lc1",
+        "title": "Floral Design Fundamentals",
+        "instructor": "Sarah Mensah",
+        "instructor_img": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=200&auto=format&fit=crop",
+        "day": "Monday",
+        "time": "6:00 PM",
+        "duration": "2 Hours",
+        "level": "Beginner",
+        "seats": 120,
+        "enrolled": 85,
+        "status": "upcoming",
+        "image": "https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=400&auto=format&fit=crop",
+        "description": "Learn the fundamentals of floral design including color theory, flower selection, and basic arrangement techniques."
+    },
+    {
+        "id": "lc2",
+        "title": "Wedding Floristry Masterclass",
+        "instructor": "Efua Osei",
+        "instructor_img": "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?q=200&auto=format&fit=crop",
+        "day": "Tuesday",
+        "time": "7:00 PM",
+        "duration": "2.5 Hours",
+        "level": "Intermediate",
+        "seats": 80,
+        "enrolled": 72,
+        "status": "upcoming",
+        "image": "https://images.unsplash.com/photo-1519741497674-611481863552?q=400&auto=format&fit=crop",
+        "description": "Master wedding floral design from bridal bouquets to venue decoration with hands-on practice."
+    },
+    {
+        "id": "lc3",
+        "title": "Indoor Plant Care",
+        "instructor": "Ama Darko",
+        "instructor_img": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=200&auto=format&fit=crop",
+        "day": "Wednesday",
+        "time": "5:00 PM",
+        "duration": "1.5 Hours",
+        "level": "Beginner",
+        "seats": 100,
+        "enrolled": 45,
+        "status": "upcoming",
+        "image": "https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=400&auto=format&fit=crop",
+        "description": "Everything you need to know about keeping your indoor plants healthy and thriving."
+    }
+]
