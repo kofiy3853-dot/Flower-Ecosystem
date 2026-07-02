@@ -131,8 +131,11 @@
                     <div class="course-tabs" id="courseTabs">
                         <button class="course-tab active" data-tab="lessons"><i class="bi bi-play-circle"></i> Lessons</button>
                         <button class="course-tab" data-tab="about"><i class="bi bi-info-circle"></i> About</button>
+                        <button class="course-tab" data-tab="instructor"><i class="bi bi-person"></i> Instructor</button>
+                        <button class="course-tab" data-tab="reviews"><i class="bi bi-star"></i> Reviews</button>
                         <button class="course-tab" data-tab="quiz"><i class="bi bi-question-circle"></i> Quiz</button>
                         <button class="course-tab" data-tab="resources"><i class="bi bi-download"></i> Resources</button>
+                        <button class="course-tab" data-tab="faq"><i class="bi bi-chat-dots"></i> FAQ</button>
                     </div>
 
                     <div id="tab-lessons" class="tab-panel">
@@ -148,6 +151,23 @@
                         <p id="courseDescription" style="line-height:1.7; color:var(--text-light);"></p>
                         <h4 style="margin-top:1.5rem; font-family:'Playfair Display',serif;">What You'll Learn</h4>
                         <ul id="learnList" style="line-height:2;"></ul>
+                        <h4 style="margin-top:1.5rem; font-family:'Playfair Display',serif;">Skills You'll Gain</h4>
+                        <div id="skillsList" style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem;"></div>
+                    </div>
+
+                    <div id="tab-instructor" class="tab-panel" style="display:none;">
+                        <h3 style="font-family:'Playfair Display',serif;">Your Instructor</h3>
+                        <div id="instructorSection" style="background:var(--bg-light);border-radius:12px;padding:1.5rem;margin-top:1rem;"></div>
+                    </div>
+
+                    <div id="tab-reviews" class="tab-panel" style="display:none;">
+                        <h3 style="font-family:'Playfair Display',serif;">Student Reviews</h3>
+                        <div id="courseReviews"></div>
+                    </div>
+
+                    <div id="tab-faq" class="tab-panel" style="display:none;">
+                        <h3 style="font-family:'Playfair Display',serif;">Frequently Asked Questions</h3>
+                        <div id="courseFaq" style="margin-top:1rem;"></div>
                     </div>
 
                     <div id="tab-quiz" class="tab-panel" style="display:none;">
@@ -241,6 +261,63 @@
             };
             const items = learnItems[courseId] || ['Master core floristry skills', 'Build professional arrangements', 'Grow your floral business'];
             document.getElementById('learnList').innerHTML = items.map(i => `<li><i class="bi bi-check-circle" style="color:var(--primary-color);margin-right:0.5rem;"></i>${i}</li>`).join('');
+
+            // Skills
+            const skillSets = {
+                'c1': ['Flower Selection', 'Bouquet Design', 'Color Theory', 'Centerpieces', 'Tools'],
+                'c2': ['Flower Identification', 'Quality Assessment', 'Preservation', 'Dried Flowers'],
+                'c3': ['Wedding Design', 'Bridal Bouquets', 'Venue Styling', 'Pricing', 'Logistics'],
+                'c4': ['Flower Care', 'Preservation', 'Drying', 'Resin Art', 'Storage'],
+                'c5': ['Business Planning', 'Pricing', 'Marketing', 'Online Sales', 'Scaling'],
+                'c6': ['Rose Cultivation', 'Soil Prep', 'Pruning', 'Pest Control', 'Seasonal Care']
+            };
+            const skills = skillSets[courseId] || ['Floral Design', 'Flower Care', 'Business Skills'];
+            document.getElementById('skillsList').innerHTML = skills.map(s =>
+                `<span style="padding:0.4rem 0.9rem;border-radius:50px;font-size:0.82rem;font-weight:500;background:var(--primary-light);color:var(--primary-color);">${s}</span>`
+            ).join('');
+
+            // Instructor
+            document.getElementById('instructorSection').innerHTML = `
+                <div style="display:flex;gap:1.25rem;align-items:center;">
+                    <img src="${course.instructorImg || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=100&auto=format&fit=crop'}" alt="${course.instructor}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+                    <div>
+                        <h4 style="margin-bottom:0.25rem;">${course.instructor}</h4>
+                        <div style="font-size:0.85rem;color:var(--primary-color);margin-bottom:0.5rem;">${course.instructorTitle || 'Expert Instructor'}</div>
+                        <div style="color:#f59e0b;font-size:0.85rem;margin-bottom:0.5rem;"><i class="bi bi-star-fill"></i> ${course.rating} <span style="color:var(--text-light);">Rating</span></div>
+                        <p style="font-size:0.9rem;color:var(--text-light);line-height:1.6;">${course.instructorBio || 'Experienced professional sharing knowledge and expertise with learners.'}</p>
+                    </div>
+                </div>
+            `;
+
+            // Reviews
+            const reviews = course.reviewsList || [
+                { name: 'Student A', rating: 5, text: 'Excellent course! Learned so much about floral design.' },
+                { name: 'Student B', rating: 4, text: 'Very practical and well-structured. Highly recommend.' },
+                { name: 'Student C', rating: 5, text: 'The instructor explains everything clearly. Great value.' }
+            ];
+            document.getElementById('courseReviews').innerHTML = reviews.map(r => `
+                <div style="background:var(--bg-light);border-radius:12px;padding:1.25rem;margin-bottom:0.75rem;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;">
+                        <strong>${escapeHtml(r.name)}</strong>
+                        <div style="color:#f59e0b;font-size:0.85rem;">${'<i class="bi bi-star-fill"></i>'.repeat(r.rating)}</div>
+                    </div>
+                    <p style="font-size:0.9rem;color:var(--text-light);line-height:1.6;">${escapeHtml(r.text)}</p>
+                </div>
+            `).join('');
+
+            // FAQ
+            const faqs = course.faqs || [
+                { q: 'How long do I have access to this course?', a: 'You get full lifetime access. Complete it at your own pace.' },
+                { q: 'Is there a certificate?', a: 'Yes, you receive a digital certificate upon completion.' },
+                { q: 'Can I get a refund?', a: 'Yes, we offer a 30-day money-back guarantee.' },
+                { q: 'What are the prerequisites?', a: 'No prior experience needed for beginner courses.' }
+            ];
+            document.getElementById('courseFaq').innerHTML = faqs.map((f, i) => `
+                <div class="faq-item${i === 0 ? ' open' : ''}" onclick="this.classList.toggle('open')" style="background:white;border:1px solid var(--border-color);border-radius:10px;margin-bottom:0.75rem;">
+                    <div class="faq-q" style="padding:1rem 1.25rem;font-weight:500;cursor:pointer;display:flex;justify-content:space-between;">${escapeHtml(f.q)} <i class="bi bi-chevron-down"></i></div>
+                    <div class="faq-a" style="padding:0 1.25rem 1rem;font-size:0.9rem;color:var(--text-light);line-height:1.6;display:${i === 0 ? 'block' : 'none'};">${escapeHtml(f.a)}</div>
+                </div>
+            `).join('');
 
             // Lessons
             const listEl = document.getElementById('lessonList');
