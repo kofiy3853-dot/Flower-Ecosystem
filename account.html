@@ -70,6 +70,7 @@
                         <a href="#" data-section="security"><i class="bi bi-shield-lock"></i> Security</a>
                         <a href="my-garden.html"><i class="bi bi-tree"></i> My Garden</a>
                         <a href="flower-knowledge-hub.html?favorites=1"><i class="bi bi-heart"></i> Favorites</a>
+                        <a href="following.html"><i class="bi bi-people"></i> Following</a>
                         <a href="seller-dashboard.html"><i class="bi bi-shop"></i> Seller Dashboard</a>
                     </nav>
 
@@ -118,7 +119,7 @@
                         <div id="section-security" class="acc-section" style="display:none;">
                             <form id="accPasswordForm" onsubmit="return changePassword(event)">
                                 <div class="acc-card">
-                                    <h2>?? Change Password</h2>
+                                    <h2><i class="bi bi-shield-lock"></i> Change Password</h2>
                                     <p>Update your account password</p>
                                     <div class="form-group">
                                         <label for="accCurrentPw">Current Password</label>
@@ -137,7 +138,7 @@
                             </form>
 
                             <div class="acc-card">
-                                <h2>??? Danger Zone</h2>
+                                <h2><i class="bi bi-exclamation-triangle"></i> Danger Zone</h2>
                                 <p>Irreversible actions. Proceed with caution.</p>
                                 <button class="btn btn-outline" style="color:var(--error-color);border-color:var(--error-color);" onclick="if(confirm('Are you sure? This cannot be undone.')) deleteAccount()"><i class="bi bi-trash"></i> Delete Account</button>
                             </div>
