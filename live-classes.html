@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Join live floral design classes with expert instructors on Flower Ecosystem.">
+    <title>Live Classes | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .live-hero{background:linear-gradient(135deg,#0f3460 0%,#16213e 50%,#1a1a2e 100%);padding:5rem 0 3rem;color:white;text-align:center;}
+        .live-hero h1{font-size:clamp(2rem,4vw,2.8rem);margin-bottom:0.5rem;}
+        .live-hero p{opacity:0.85;font-size:1.05rem;max-width:600px;margin:0 auto 1.5rem;}
+        .live-search{display:flex;background:white;border-radius:12px;overflow:hidden;max-width:500px;margin:0 auto 1.5rem;}
+        .live-search input{flex:1;border:none;padding:1rem 1.25rem;font-size:1rem;outline:none;}
+        .live-search button{background:var(--primary-color);color:white;border:none;padding:1rem 1.5rem;cursor:pointer;}
+        .live-stats{display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;margin-top:1.5rem;}
+        .live-stat{text-align:center;}
+        .live-stat strong{font-size:1.5rem;display:block;}
+        .live-stat span{font-size:0.85rem;opacity:0.8;}
+        .live-now-card{background:linear-gradient(135deg,#e74c3c,#c0392b);color:white;border-radius:14px;padding:1.5rem;display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem;animation:pulse-live 2s infinite;}
+        @keyframes pulse-live{0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,0.4);}50%{box-shadow:0 0 0 8px rgba(231,76,60,0);}}
+        .live-dot{width:12px;height:12px;border-radius:50%;background:white;animation:blink 1s infinite;}
+        @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+        .class-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;}
+        .class-card{background:white;border:1px solid var(--border-color);border-radius:14px;overflow:hidden;transition:all 0.3s;}
+        .class-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.1);}
+        .class-card-banner{height:160px;overflow:hidden;position:relative;}
+        .class-card-banner img{width:100%;height:100%;object-fit:cover;}
+        .class-card-badge{position:absolute;top:0.75rem;left:0.75rem;padding:0.2rem 0.6rem;border-radius:6px;font-size:0.7rem;font-weight:600;color:white;}
+        .badge-live{background:#e74c3c;animation:pulse-live 2s infinite;}
+        .badge-upcoming{background:#3b82f6;}
+        .badge-recording{background:#6b7280;}
+        .class-card-body{padding:1.25rem;}
+        .class-card-title{font-weight:600;font-size:1.05rem;margin-bottom:0.5rem;}
+        .class-card-instructor{font-size:0.85rem;color:var(--primary-color);margin-bottom:0.5rem;}
+        .class-card-meta{display:flex;flex-wrap:wrap;gap:0.75rem;font-size:0.8rem;color:var(--text-light);margin-bottom:0.75rem;}
+        .class-card-meta span{display:flex;align-items:center;gap:0.25rem;}
+        .class-card-footer{display:flex;gap:0.5rem;padding-top:0.75rem;border-top:1px solid var(--border-light);}
+        .class-card-footer .btn{flex:1;}
+        .schedule-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0.75rem;}
+        .schedule-day{background:white;border:1px solid var(--border-color);border-radius:10px;padding:1rem;min-height:120px;}
+        .schedule-day h4{font-size:0.85rem;color:var(--primary-color);margin-bottom:0.5rem;}
+        .schedule-item{background:var(--bg-light);border-radius:6px;padding:0.5rem;margin-bottom:0.5rem;font-size:0.78rem;}
+        .schedule-item .time{font-weight:600;color:var(--primary-color);}
+        .recording-card{display:flex;gap:1rem;background:white;border:1px solid var(--border-color);border-radius:10px;padding:1rem;margin-bottom:0.75rem;align-items:center;}
+        .recording-thumb{width:120px;height:80px;border-radius:8px;overflow:hidden;flex-shrink:0;}
+        .recording-thumb img{width:100%;height:100%;object-fit:cover;}
+        .recording-info{flex:1;}
+        .recording-info h4{font-size:0.95rem;margin-bottom:0.25rem;}
+        .recording-info p{font-size:0.8rem;color:var(--text-light);}
+        @media(max-width:768px){.schedule-grid{grid-template-columns:1fr 1fr;}.live-now-card{flex-direction:column;text-align:center;}}
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="live-hero">
+        <div class="container">
+            <h1>Join Live Classes with Expert Instructors</h1>
+            <p>Attend scheduled sessions, ask questions in real time, and learn alongside fellow students in an interactive virtual classroom.</p>
+            <div class="live-search">
+                <input type="text" id="liveSearch" placeholder="Search live classes...">
+                <button onclick="applyFilters()"><i class="bi bi-search"></i></button>
+            </div>
+            <div class="live-stats">
+                <div class="live-stat"><strong>85</strong><span>Active Instructors</span></div>
+                <div class="live-stat"><strong>45</strong><span>Classes This Week</span></div>
+                <div class="live-stat"><strong>3,200+</strong><span>Students</span></div>
+                <div class="live-stat"><strong>98%</strong><span>Attendance Rate</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Now -->
+    <section class="section-padding" id="liveNowSection" style="display:none;">
+        <div class="container">
+            <h2 style="margin-bottom:1rem;"><i class="bi bi-broadcast" style="color:#e74c3c;"></i> Live Now</h2>
+            <div id="liveNowContainer"></div>
+        </div>
+    </section>
+
+    <!-- Upcoming Classes -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <h2 style="margin-bottom:1.5rem;">Upcoming Classes</h2>
+            <div class="class-grid" id="upcomingGrid"></div>
+        </div>
+    </section>
+
+    <!-- Weekly Schedule -->
+    <section class="section-padding">
+        <div class="container">
+            <h2 style="margin-bottom:1.5rem;">Weekly Schedule</h2>
+            <div class="schedule-grid" id="scheduleGrid"></div>
+        </div>
+    </section>
+
+    <!-- Past Recordings -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <h2 style="margin-bottom:1.5rem;">Past Recordings</h2>
+            <div id="recordingsList"></div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section-padding">
+        <div class="container" style="max-width:700px;">
+            <h2 style="margin-bottom:1.5rem;">Frequently Asked Questions</h2>
+            <div id="liveFaq"></div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        const liveClasses = [
+            { id: 'lc1', title: 'Floral Design Fundamentals', instructor: 'Sarah Mensah', instructorImg: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=200&auto=format&fit=crop', day: 'Monday', time: '6:00 PM', duration: '2 Hours', level: 'Beginner', seats: 120, enrolled: 85, status: 'upcoming', img: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=400&auto=format&fit=crop', description: 'Learn the fundamentals of floral design including color theory, flower selection, and basic arrangement techniques.' },
+            { id: 'lc2', title: 'Wedding Floristry Masterclass', instructor: 'Efua Osei', instructorImg: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?q=200&auto=format&fit=crop', day: 'Tuesday', time: '7:00 PM', duration: '2.5 Hours', level: 'Intermediate', seats: 80, enrolled: 72, status: 'upcoming', img: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=400&auto=format&fit=crop', description: 'Master wedding floral design from bridal bouquets to venue decoration with hands-on practice.' },
+            { id: 'lc3', title: 'Indoor Plant Care', instructor: 'Ama Darko', instructorImg: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=200&auto=format&fit=crop', day: 'Wednesday', time: '5:00 PM', duration: '1.5 Hours', level: 'Beginner', seats: 100, enrolled: 45, status: 'upcoming', img: 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=400&auto=format&fit=crop', description: 'Everything you need to know about keeping your indoor plants healthy and thriving.' },
+            { id: 'lc4', title: 'Flower Farming Basics', instructor: 'Kwame Asante', instructorImg: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=200&auto=format&fit=crop', day: 'Thursday', time: '6:00 PM', duration: '2 Hours', level: 'Beginner', seats: 60, enrolled: 38, status: 'upcoming', img: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=400&auto=format&fit=crop', description: 'Introduction to flower farming including soil prep, planting, and basic care.' },
+            { id: 'lc5', title: 'Advanced Color Theory', instructor: 'Sarah Mensah', instructorImg: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=200&auto=format&fit=crop', day: 'Friday', time: '6:00 PM', duration: '2 Hours', level: 'Advanced', seats: 50, enrolled: 48, status: 'upcoming', img: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop', description: 'Deep dive into color theory for professional floral arrangements and event design.' },
+            { id: 'lc6', title: 'Floral Photography Workshop', instructor: 'Nana Agyeman', instructorImg: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=200&auto=format&fit=crop', day: 'Saturday', time: '10:00 AM', duration: '3 Hours', level: 'Intermediate', seats: 40, enrolled: 22, status: 'upcoming', img: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop', description: 'Learn to photograph flowers and arrangements for social media and marketing.' }
+        ];
+
+        const recordings = [
+            { title: 'Bouquet Design Workshop', instructor: 'Sarah Mensah', date: 'July 8, 2026', duration: '2h 15m', img: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=200&auto=format&fit=crop' },
+            { title: 'Summer Flower Care', instructor: 'Ama Darko', date: 'July 5, 2026', duration: '1h 30m', img: 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=200&auto=format&fit=crop' },
+            { title: 'Wedding Planning Session', instructor: 'Efua Osei', date: 'July 3, 2026', duration: '2h 45m', img: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=200&auto=format&fit=crop' }
+        ];
+
+        const faqs = [
+            { q: 'How do I join a live class?', a: 'Click "Join Now" on any upcoming class. You\'ll be directed to the class room where you can see the instructor\'s video, slides, and chat with other students.' },
+            { q: 'Can I ask questions during the class?', a: 'Yes! Use the chat or raise hand feature to ask questions. The instructor will address them during Q&A breaks.' },
+            { q: 'Will classes be recorded?', a: 'Most classes are recorded and available to registered students within 24 hours. Check each class for recording availability.' },
+            { q: 'What if I miss a class?', a: 'You can watch the recording if available. Your attendance will be marked as absent, but you can still learn from the recording.' },
+            { q: 'Do I need any special software?', a: 'No special software needed. Classes run in your web browser. A stable internet connection is recommended.' }
+        ];
+
+        function initLiveClasses() {
+            // Live Now (demo: show first class as live)
+            const liveNow = liveClasses[0];
+            document.getElementById('liveNowSection').style.display = 'block';
+            document.getElementById('liveNowContainer').innerHTML = `
+                <div class="live-now-card">
+                    <div style="display:flex;align-items:center;gap:0.75rem;">
+                        <div class="live-dot"></div>
+                        <span style="font-weight:700;font-size:1.1rem;">LIVE NOW</span>
+                    </div>
+                    <div style="flex:1;">
+                        <div style="font-weight:600;font-size:1.1rem;">${escapeHtml(liveNow.title)}</div>
+                        <div style="opacity:0.9;font-size:0.9rem;">${escapeHtml(liveNow.instructor)} · Started 10 minutes ago · ${liveNow.enrolled} Participants</div>
+                    </div>
+                    <button class="btn btn-lg" style="background:white;color:#e74c3c;font-weight:600;">Join Now</button>
+                </div>
+            `;
+
+            // Upcoming
+            document.getElementById('upcomingGrid').innerHTML = liveClasses.map(c => `
+                <div class="class-card">
+                    <div class="class-card-banner">
+                        <img src="${escapeHtml(c.img)}" alt="${escapeHtml(c.title)}" loading="lazy">
+                        <div class="class-card-badge badge-upcoming"><i class="bi bi-calendar-event"></i> ${escapeHtml(c.day)}</div>
+                    </div>
+                    <div class="class-card-body">
+                        <div class="class-card-title">${escapeHtml(c.title)}</div>
+                        <div class="class-card-instructor"><img src="${escapeHtml(c.instructorImg)}" alt="" style="width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:0.35rem;"> ${escapeHtml(c.instructor)}</div>
+                        <div class="class-card-meta">
+                            <span><i class="bi bi-clock"></i> ${c.time}</span>
+                            <span><i class="bi bi-hourglass-split"></i> ${c.duration}</span>
+                            <span><i class="bi bi-bar-chart"></i> ${c.level}</span>
+                            <span><i class="bi bi-people"></i> ${c.enrolled}/${c.seats}</span>
+                        </div>
+                        <p style="font-size:0.85rem;color:var(--text-light);line-height:1.5;margin-bottom:0.75rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(c.description)}</p>
+                        <div class="class-card-footer">
+                            <a href="workshop-detail.html?id=${c.id}" class="btn btn-outline btn-sm">View Details</a>
+                            <button class="btn btn-primary btn-sm" onclick="registerClass('${c.id}')">Register</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Schedule
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            document.getElementById('scheduleGrid').innerHTML = days.map(day => {
+                const dayClasses = liveClasses.filter(c => c.day === day);
+                return `
+                <div class="schedule-day">
+                    <h4>${day}</h4>
+                    ${dayClasses.length ? dayClasses.map(c => `
+                        <div class="schedule-item">
+                            <div class="time">${c.time}</div>
+                            <div>${escapeHtml(c.title)}</div>
+                        </div>
+                    `).join('') : '<p style="font-size:0.78rem;color:var(--text-light);">No classes</p>'}
+                </div>`;
+            }).join('');
+
+            // Recordings
+            document.getElementById('recordingsList').innerHTML = recordings.map(r => `
+                <div class="recording-card">
+                    <div class="recording-thumb">
+                        <img src="${escapeHtml(r.img)}" alt="${escapeHtml(r.title)}" loading="lazy">
+                    </div>
+                    <div class="recording-info">
+                        <h4>${escapeHtml(r.title)}</h4>
+                        <p>${escapeHtml(r.instructor)} · ${r.date} · ${r.duration}</p>
+                    </div>
+                    <button class="btn btn-outline btn-sm"><i class="bi bi-play-circle"></i> Watch</button>
+                </div>
+            `).join('');
+
+            // FAQ
+            document.getElementById('liveFaq').innerHTML = faqs.map((f, i) => `
+                <div class="faq-item${i === 0 ? ' open' : ''}" onclick="this.classList.toggle('open')" style="background:white;border:1px solid var(--border-color);border-radius:10px;margin-bottom:0.75rem;">
+                    <div class="faq-q" style="padding:1rem 1.25rem;font-weight:500;cursor:pointer;display:flex;justify-content:space-between;">${escapeHtml(f.q)} <i class="bi bi-chevron-down"></i></div>
+                    <div class="faq-a" style="padding:0 1.25rem 1rem;font-size:0.9rem;color:var(--text-light);line-height:1.6;display:${i === 0 ? 'block' : 'none'};">${escapeHtml(f.a)}</div>
+                </div>
+            `).join('');
+        }
+
+        function registerClass(id) {
+            if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+                alert('Registration confirmed! You\'ll receive a reminder before the class.');
+            } else {
+                sessionStorage.setItem('pending-redirect', 'live-classes.html');
+                if (typeof openAuthModal === 'function') openAuthModal('login');
+            }
+        }
+
+        function applyFilters() {
+            const q = document.getElementById('liveSearch').value.toLowerCase();
+            document.querySelectorAll('.class-card').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(q) ? '' : 'none';
+            });
+        }
+
+        initLiveClasses();
+    </script>
+</body>
+</html>
