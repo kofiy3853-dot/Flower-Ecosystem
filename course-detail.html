@@ -234,19 +234,20 @@
             document.title = `${course.title} - Flower Ecosystem`;
             document.getElementById('breadcrumbCourse').textContent = course.title;
             document.getElementById('courseTitle').textContent = course.title;
-            document.getElementById('courseRating').textContent = course.rating;
-            document.getElementById('courseReviews').textContent = course.reviews || 0;
-            document.getElementById('courseStudents').textContent = course.students;
-            document.getElementById('courseDuration').textContent = Math.floor(course.duration / 60) + 'h ' + (course.duration % 60) + 'm';
-            document.getElementById('courseLevel').textContent = course.level;
-            document.getElementById('courseCert').textContent = course.hasCertificate ? 'Certificate' : 'No Certificate';
-            document.getElementById('courseInstructor').textContent = course.instructor;
-            document.getElementById('courseDescription').textContent = course.description;
-            document.getElementById('sidebarThumb').src = course.thumbnail;
+            document.getElementById('courseRating').textContent = course.rating || '0';
+            document.getElementById('courseReviews').textContent = course.reviews || course.students_count || 0;
+            document.getElementById('courseStudents').textContent = course.students_count || course.students || 0;
+            const dur = course.duration_minutes || course.duration || 0;
+            document.getElementById('courseDuration').textContent = Math.floor(dur / 60) + 'h ' + (dur % 60) + 'm';
+            document.getElementById('courseLevel').textContent = course.level || 'Beginner';
+            document.getElementById('courseCert').textContent = course.hasCertificate !== false ? 'Certificate' : 'No Certificate';
+            document.getElementById('courseInstructor').textContent = course.instructor || 'Instructor';
+            document.getElementById('courseDescription').textContent = course.description || '';
+            document.getElementById('sidebarThumb').src = course.thumbnail_url || course.thumbnail || '';
             document.getElementById('lessonCount').textContent = courseLessons.length;
 
-            if (course.price && course.price > 0) {
-                document.getElementById('coursePrice').innerHTML = `$${course.price.toFixed(2)}`;
+            if (course.price && Number(course.price) > 0) {
+                document.getElementById('coursePrice').innerHTML = `$${Number(course.price).toFixed(2)}`;
             } else {
                 document.getElementById('coursePrice').innerHTML = 'Free';
             }
