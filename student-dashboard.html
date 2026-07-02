@@ -3,252 +3,398 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Student Dashboard - Track your learning progress on Flower Ecosystem">
+    <meta name="description" content="Student Dashboard - Track your learning progress on Flower Ecosystem.">
     <title>Student Dashboard | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="styles/main.css?v=3.0">
-    <link rel="stylesheet" href="styles/student-dashboard.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .sd-welcome{background:linear-gradient(135deg,var(--primary-color),#be185d);border-radius:16px;padding:2rem;color:white;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+        .sd-welcome h2{color:white;margin-bottom:0.25rem;}
+        .sd-welcome p{opacity:0.85;}
+        .sd-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+        .sd-stat{background:white;border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;text-align:center;}
+        .sd-stat .icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 0.5rem;font-size:1.25rem;}
+        .sd-stat .num{font-size:1.5rem;font-weight:700;color:var(--text-main);}
+        .sd-stat .label{font-size:0.8rem;color:var(--text-light);}
+        .sd-section{margin-bottom:1.5rem;}
+        .sd-section h3{font-size:1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;}
+        .sd-progress-card{background:white;border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;margin-bottom:0.75rem;display:flex;gap:1rem;align-items:center;transition:all 0.2s;}
+        .sd-progress-card:hover{border-color:var(--primary-color);}
+        .sd-progress-img{width:80px;height:60px;border-radius:8px;overflow:hidden;flex-shrink:0;}
+        .sd-progress-img img{width:100%;height:100%;object-fit:cover;}
+        .sd-progress-info{flex:1;}
+        .sd-progress-info h4{font-size:0.95rem;margin-bottom:0.25rem;}
+        .sd-progress-info p{font-size:0.8rem;color:var(--text-light);}
+        .sd-progress-bar{background:var(--border-color);border-radius:6px;height:6px;overflow:hidden;margin-top:0.5rem;}
+        .sd-progress-fill{height:100%;background:var(--primary-color);border-radius:6px;}
+        .sd-badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.75rem;}
+        .sd-badge{text-align:center;background:white;border:1px solid var(--border-color);border-radius:12px;padding:1rem;}
+        .sd-badge .icon{font-size:2rem;margin-bottom:0.5rem;}
+        .sd-badge .name{font-size:0.82rem;font-weight:600;}
+        .sd-badge .desc{font-size:0.72rem;color:var(--text-light);}
+        .sd-activity-item{display:flex;gap:0.75rem;padding:0.75rem 0;border-bottom:1px solid var(--border-light);}
+        .sd-activity-item:last-child{border-bottom:none;}
+        .sd-activity-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;}
+        .sd-activity-text{font-size:0.88rem;}
+        .sd-activity-time{font-size:0.75rem;color:var(--text-light);}
+        .sd-calendar{background:white;border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;}
+        .sd-calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
+        .sd-calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0.25rem;text-align:center;font-size:0.82rem;}
+        .sd-calendar-day{padding:0.5rem;border-radius:6px;cursor:pointer;}
+        .sd-calendar-day:hover{background:var(--primary-light);}
+        .sd-calendar-day.has-event{background:var(--primary-color);color:white;font-weight:600;}
+        .sd-calendar-day.today{border:2px solid var(--primary-color);font-weight:700;}
+        .sd-calendar-day.header{font-weight:600;color:var(--text-light);padding:0.25rem;}
+        @media(max-width:900px){.sd-stats{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:600px){.sd-stats{grid-template-columns:1fr;}.sd-welcome{flex-direction:column;text-align:center;}}
+    </style>
 </head>
 <body>
     <div id="header-container"></div>
 
-    <div class="stu-layout">
-        <aside class="stu-sidebar" id="stuSidebar">
-            <div class="stu-sidebar-header">
-                <div class="stu-avatar" id="stuAvatar">A</div>
-                <div class="stu-sidebar-user">
-                    <div class="stu-sidebar-name" id="stuName">Ama Mensah</div>
-                    <div class="stu-sidebar-role">Student</div>
+    <div class="dash-layout">
+        <nav class="dash-sidebar">
+            <div class="dash-sidebar-profile">
+                <div class="avatar" id="sdAvatar">S</div>
+                <div class="info">
+                    <h4 id="sdName">Student</h4>
+                    <p>Intermediate Florist</p>
                 </div>
             </div>
-            <nav class="stu-nav">
-                <a class="stu-nav-item active" data-section="overview"><i class="bi bi-grid-1x2"></i><span>Dashboard</span></a>
-                <a class="stu-nav-item" data-section="my-courses"><i class="bi bi-book"></i><span>My Courses</span></a>
-                <a class="stu-nav-item" data-section="browse"><i class="bi bi-shop"></i><span>Browse Courses</span></a>
-                <a class="stu-nav-item" data-section="assignments"><i class="bi bi-journal-text"></i><span>Assignments</span></a>
-                <a class="stu-nav-item" data-section="quizzes"><i class="bi bi-question-circle"></i><span>Quizzes</span></a>
-                <a class="stu-nav-item" data-section="discussions"><i class="bi bi-chat-dots"></i><span>Discussions</span></a>
-                <a class="stu-nav-item" data-section="certificates"><i class="bi bi-award"></i><span>Certificates</span></a>
-                <a class="stu-nav-item" data-section="calendar"><i class="bi bi-calendar3"></i><span>Calendar</span></a>
-                <a class="stu-nav-item" data-section="progress"><i class="bi bi-graph-up"></i><span>My Progress</span></a>
-                <a class="stu-nav-item" data-section="settings"><i class="bi bi-gear"></i><span>Settings</span></a>
-            </nav>
-            <div class="stu-sidebar-footer">
-                <a href="learning.html" class="stu-nav-item"><i class="bi bi-arrow-left"></i><span>Back to Learning</span></a>
+            <h3>Menu</h3>
+            <ul class="dash-nav">
+                <li><a href="#dashboard" class="active" data-section="dashboard"><i class="bi bi-house"></i> Dashboard</a></li>
+                <li><a href="#courses" data-section="courses"><i class="bi bi-book"></i> My Courses</a></li>
+                <li><a href="#paths" data-section="paths"><i class="bi bi-signpost"></i> Learning Paths</a></li>
+                <li><a href="#live" data-section="live"><i class="bi bi-broadcast"></i> Live Classes</a></li>
+                <li><a href="#workshops" data-section="workshops"><i class="bi bi-tools"></i> Workshops</a></li>
+                <li><a href="#quizzes" data-section="quizzes"><i class="bi bi-question-circle"></i> Quizzes</a></li>
+                <li><a href="#certificates" data-section="certificates"><i class="bi bi-award"></i> Certificates</a></li>
+                <li><a href="#wishlist" data-section="wishlist"><i class="bi bi-heart"></i> Wishlist</a></li>
+                <li><a href="#activity" data-section="activity"><i class="bi bi-clock-history"></i> Activity</a></li>
+                <li><a href="#settings" data-section="settings"><i class="bi bi-gear"></i> Settings</a></li>
+                <li style="margin-top:1rem;border-top:1px solid var(--border-color);padding-top:0.75rem;"><a href="#" id="sdLogout" style="color:var(--error-color);"><i class="bi bi-box-arrow-left"></i> Sign Out</a></li>
+            </ul>
+        </nav>
+
+        <main class="dash-main">
+            <div id="loginPrompt" style="display:none;text-align:center;padding:4rem 2rem;">
+                <i class="bi bi-person-circle" style="font-size:3rem;color:var(--text-light);display:block;margin-bottom:1rem;"></i>
+                <h2>Sign In Required</h2>
+                <p style="color:var(--text-light);">Sign in to access your learning dashboard.</p>
+                <a href="javascript:void(0)" onclick="sessionStorage.setItem('pending-auth','login');if(typeof openAuthModal==='function')openAuthModal('login');" class="btn btn-primary" style="margin-top:1rem;">Sign In</a>
             </div>
-        </aside>
 
-        <main class="stu-main">
-            <header class="stu-header">
-                <button class="stu-hamburger" id="stuHamburger"><i class="bi bi-list"></i></button>
-                <div class="stu-header-search">
-                    <i class="bi bi-search"></i>
-                    <input type="search" placeholder="Search courses, lessons..." id="stuSearch">
-                </div>
-                <div class="stu-header-actions">
-                    <button class="stu-header-btn" id="stuNotifBtn"><i class="bi bi-bell"></i><span class="stu-badge">3</span></button>
-                    <div class="stu-header-profile">
-                        <div class="stu-avatar stu-avatar-sm">A</div>
-                        <span>Ama Mensah</span>
-                        <i class="bi bi-chevron-down"></i>
-                    </div>
-                </div>
-            </header>
-
-            <div class="stu-content">
-                <!-- Overview Section -->
-                <section class="stu-section active" id="sec-overview">
-                    <div class="stu-welcome">
+            <div id="dashContent" style="display:none;">
+                <!-- Dashboard -->
+                <div id="section-dashboard" class="section active">
+                    <div class="sd-welcome">
                         <div>
-                            <h1>Welcome Back, <span id="stuWelcomeName">Ama</span> <span style="font-size:1.5rem;">&#x1F338;</span></h1>
-                            <p>Continue your learning journey. You're making great progress!</p>
+                            <h2 id="sdWelcome">Good Morning</h2>
+                            <p>Continue your floral learning journey.</p>
                         </div>
-                        <a href="learning.html" class="stu-btn stu-btn-primary"><i class="bi bi-shop"></i> Browse Courses</a>
-                    </div>
-
-                    <div class="stu-stats-grid">
-                        <div class="stu-stat-card">
-                            <div class="stu-stat-icon" style="background:rgba(212,175,55,0.1);color:#d4af37;"><i class="bi bi-book"></i></div>
-                            <div class="stu-stat-info"><div class="stu-stat-value">4</div><div class="stu-stat-label">Enrolled Courses</div></div>
-                        </div>
-                        <div class="stu-stat-card">
-                            <div class="stu-stat-icon" style="background:rgba(39,174,96,0.1);color:#27ae60;"><i class="bi bi-check-circle"></i></div>
-                            <div class="stu-stat-info"><div class="stu-stat-value">1</div><div class="stu-stat-label">Completed</div></div>
-                        </div>
-                        <div class="stu-stat-card">
-                            <div class="stu-stat-icon" style="background:rgba(74,144,217,0.1);color:#4a90d9;"><i class="bi bi-clock-history"></i></div>
-                            <div class="stu-stat-info"><div class="stu-stat-value">28h</div><div class="stu-stat-label">Time Spent</div></div>
-                        </div>
-                        <div class="stu-stat-card">
-                            <div class="stu-stat-icon" style="background:rgba(172,50,80,0.1);color:#ac3250;"><i class="bi bi-award"></i></div>
-                            <div class="stu-stat-info"><div class="stu-stat-value">2</div><div class="stu-stat-label">Certificates</div></div>
+                        <div style="text-align:right;">
+                            <div style="font-size:0.85rem;opacity:0.8;">Current Level</div>
+                            <div style="font-size:1.1rem;font-weight:600;"><i class="bi bi-flower1"></i> Intermediate Florist</div>
                         </div>
                     </div>
 
-                    <div class="stu-grid-2col">
-                        <div class="stu-card">
-                            <div class="stu-card-header"><h3>Continue Learning</h3><a href="#my-courses" class="stu-link" onclick="switchSection('my-courses')">View All</a></div>
-                            <div id="continueLearning"></div>
-                        </div>
-                        <div class="stu-card">
-                            <div class="stu-card-header"><h3>Upcoming Deadlines</h3></div>
-                            <div id="upcomingDeadlines"></div>
-                        </div>
+                    <div class="sd-stats">
+                        <div class="sd-stat"><div class="icon" style="background:rgba(16,185,129,0.1);color:#10b981;"><i class="bi bi-book"></i></div><div class="num">12</div><div class="label">Courses Enrolled</div></div>
+                        <div class="sd-stat"><div class="icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;"><i class="bi bi-check-circle"></i></div><div class="num">8</div><div class="label">Completed</div></div>
+                        <div class="sd-stat"><div class="icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;"><i class="bi bi-clock"></i></div><div class="num">96h</div><div class="label">Learning Hours</div></div>
+                        <div class="sd-stat"><div class="icon" style="background:rgba(216,68,124,0.1);color:var(--primary-color);"><i class="bi bi-award"></i></div><div class="num">5</div><div class="label">Certificates</div></div>
                     </div>
 
-                    <div class="stu-grid-2col">
-                        <div class="stu-card">
-                            <div class="stu-card-header"><h3>Learning Activity</h3></div>
-                            <div class="stu-activity-chart">
-                                <canvas id="activityCanvas" height="180"></canvas>
-                            </div>
-                        </div>
-                        <div class="stu-card">
-                            <div class="stu-card-header"><h3>Recent Achievements</h3></div>
-                            <div id="achievements"></div>
-                        </div>
+                    <div class="sd-section">
+                        <h3><i class="bi bi-play-circle" style="color:var(--primary-color);"></i> Continue Learning</h3>
+                        <div id="continueLearning"></div>
                     </div>
 
-                    <div class="stu-card">
-                        <div class="stu-card-header"><h3>Recommended For You</h3><a href="learning.html" class="stu-link">Browse All</a></div>
-                        <div class="stu-recommend-grid" id="recommendedGrid"></div>
-                    </div>
-                </section>
-
-                <!-- My Courses Section -->
-                <section class="stu-section" id="sec-my-courses">
-                    <div class="stu-section-header">
-                        <h2>My Courses</h2>
-                        <div class="stu-filter-group">
-                            <select id="myCourseFilter" class="stu-select">
-                                <option value="all">All Courses</option>
-                                <option value="in-progress">In Progress</option>
-                                <option value="completed">Completed</option>
-                            </select>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+                        <div class="sd-section">
+                            <h3><i class="bi bi-broadcast" style="color:#e74c3c;"></i> Upcoming Live Classes</h3>
+                            <div id="upcomingLive"></div>
+                        </div>
+                        <div class="sd-section">
+                            <h3><i class="bi bi-tools" style="color:#8b5cf6;"></i> Upcoming Workshops</h3>
+                            <div id="upcomingWorkshops"></div>
                         </div>
                     </div>
-                    <div class="stu-courses-grid" id="myCoursesGrid"></div>
-                </section>
 
-                <!-- Browse Courses Section -->
-                <section class="stu-section" id="sec-browse">
-                    <div class="stu-section-header">
-                        <h2>Browse Courses</h2>
-                        <div class="stu-filter-group">
-                            <select id="browseCatFilter" class="stu-select"><option value="all">All Categories</option></select>
-                            <select id="browseLevelFilter" class="stu-select"><option value="all">All Levels</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
+                    <div class="sd-section">
+                        <h3><i class="bi bi-award" style="color:#f59e0b;"></i> Achievements</h3>
+                        <div class="sd-badge-grid" id="achievementsGrid"></div>
+                    </div>
+
+                    <div class="sd-section">
+                        <h3><i class="bi bi-clock-history" style="color:var(--primary-color);"></i> Recent Activity</h3>
+                        <div class="sd-progress-card" id="recentActivity"></div>
+                    </div>
+                </div>
+
+                <!-- My Courses -->
+                <div id="section-courses" class="section" style="display:none;">
+                    <h1 style="margin-bottom:1.5rem;">My Courses</h1>
+                    <div id="myCoursesList"></div>
+                </div>
+
+                <!-- Learning Paths -->
+                <div id="section-paths" class="section" style="display:none;">
+                    <h1 style="margin-bottom:1.5rem;">Learning Paths</h1>
+                    <div id="myPathsList"></div>
+                </div>
+
+                <!-- Live Classes -->
+                <div id="section-live" class="section" style="display:none;">
+                    <h1 style="margin-bottom:1.5rem;">Live Classes</h1>
+                    <a href="live-classes.html" class="btn btn-primary" style="margin-bottom:1.5rem;">Browse All Classes</a>
+                    <div id="myLiveList"></div>
+                </div>
+
+                <!-- Workshops -->
+                <div id="section-workshops" class="section" style="display:none;">
+                    <h1 style="margin-bottom:1.5rem;">Workshops</h1>
+                    <a href="learning.html" class="btn btn-primary" style="margin-bottom:1.5rem;">Browse Workshops</a>
+                    <div id="myWorkshopsList"></div>
+                </div>
+
+                <!-- Quizzes -->
+                <div id="section-quizzes" class="section" style="display:none;">
+                    <h1 style="margin-bottom:1.5rem;">My Quizzes</h1>
+                    <div id="myQuizzesList"></div>
+                </div>
+
+                <!-- Certificates -->
+                <div id="section-certificates" class="section" style="display:none;">
+                    <h1 style="margin-bottom:1.5rem;">Certificates</h1>
+                    <div id="myCertificatesList"></div>
+                </div>
+
+                <!-- Wishlist -->
+                <div id="section-wishlist" class="section" style="display:none;">
+                    <h1 style="margin-bottom:1.5rem;">Wishlist</h1>
+                    <div id="myWishlistList"></div>
+                </div>
+
+                <!-- Activity -->
+                <div id="section-activity" class="section" style="display:none;">
+                    <h1 style="margin-bottom:1.5rem;">Activity</h1>
+                    <div id="myActivityList"></div>
+                </div>
+
+                <!-- Settings -->
+                <div id="section-settings" class="section" style="display:none;">
+                    <h1 style="margin-bottom:1.5rem;">Settings</h1>
+                    <div style="background:white;border:1px solid var(--border-color);border-radius:12px;padding:1.5rem;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                            <div class="form-group"><label style="font-weight:500;font-size:0.85rem;display:block;margin-bottom:0.35rem;">Full Name</label><input type="text" id="sdNameInput" class="form-input" style="width:100%;padding:0.65rem;border:1px solid var(--border-color);border-radius:8px;"></div>
+                            <div class="form-group"><label style="font-weight:500;font-size:0.85rem;display:block;margin-bottom:0.35rem;">Email</label><input type="email" id="sdEmailInput" class="form-input" style="width:100%;padding:0.65rem;border:1px solid var(--border-color);border-radius:8px;" disabled></div>
                         </div>
+                        <button class="btn btn-primary" style="margin-top:1rem;">Save Changes</button>
                     </div>
-                    <div class="stu-courses-grid" id="browseGrid"></div>
-                </section>
-
-                <!-- Assignments Section -->
-                <section class="stu-section" id="sec-assignments">
-                    <div class="stu-section-header"><h2>Assignments</h2></div>
-                    <div class="stu-assign-tabs">
-                        <button class="stu-tab active" data-atab="pending">Pending</button>
-                        <button class="stu-tab" data-atab="submitted">Submitted</button>
-                        <button class="stu-tab" data-atab="graded">Graded</button>
-                    </div>
-                    <div id="assignmentsList"></div>
-                </section>
-
-                <!-- Quizzes Section -->
-                <section class="stu-section" id="sec-quizzes">
-                    <div class="stu-section-header"><h2>Quizzes</h2></div>
-                    <div id="quizzesList"></div>
-                </section>
-
-                <!-- Discussions Section -->
-                <section class="stu-section" id="sec-discussions">
-                    <div class="stu-section-header">
-                        <h2>Discussions</h2>
-                        <button class="stu-btn stu-btn-primary" onclick="openModal('new-discussion')"><i class="bi bi-plus-lg"></i> New Post</button>
-                    </div>
-                    <div id="discussionsList"></div>
-                </section>
-
-                <!-- Certificates Section -->
-                <section class="stu-section" id="sec-certificates">
-                    <div class="stu-section-header"><h2>My Certificates</h2></div>
-                    <div class="stu-certs-grid" id="certsGrid"></div>
-                </section>
-
-                <!-- Calendar Section -->
-                <section class="stu-section" id="sec-calendar">
-                    <div class="stu-section-header"><h2>Calendar</h2></div>
-                    <div class="stu-card">
-                        <div class="stu-calendar-header">
-                            <button class="stu-btn stu-btn-sm" id="stuCalPrev"><i class="bi bi-chevron-left"></i></button>
-                            <h3 id="stuCalMonth"></h3>
-                            <button class="stu-btn stu-btn-sm" id="stuCalNext"><i class="bi bi-chevron-right"></i></button>
-                        </div>
-                        <div class="stu-calendar-grid" id="stuCalendarGrid"></div>
-                    </div>
-                    <div class="stu-card" style="margin-top:1rem;">
-                        <div class="stu-card-header"><h3>Upcoming This Week</h3></div>
-                        <div id="weekEvents"></div>
-                    </div>
-                </section>
-
-                <!-- Progress Section -->
-                <section class="stu-section" id="sec-progress">
-                    <div class="stu-section-header"><h2>My Progress</h2></div>
-                    <div class="stu-stats-grid stu-stats-3" id="progressStats"></div>
-                    <div class="stu-card"><div class="stu-card-header"><h3>Skills Overview</h3></div><canvas id="skillsCanvas" height="220"></canvas></div>
-                    <div class="stu-card" style="margin-top:1rem;"><div class="stu-card-header"><h3>Learning Streak</h3></div><div id="streakInfo"></div></div>
-                </section>
-
-                <!-- Settings Section -->
-                <section class="stu-section" id="sec-settings">
-                    <div class="stu-section-header"><h2>Settings</h2></div>
-                    <div class="stu-card">
-                        <div class="stu-settings-form">
-                            <div class="stu-form-group"><label>Full Name</label><input type="text" id="stuSetName" value="Ama Mensah"></div>
-                            <div class="stu-form-group"><label>Email</label><input type="email" id="stuSetEmail" value="ama@student.com"></div>
-                            <div class="stu-form-group"><label>Bio</label><textarea id="stuSetBio" rows="3">Passionate about floral design and looking to start my own bouquet business.</textarea></div>
-                            <div class="stu-form-group"><label>Interests</label><input type="text" id="stuSetInterests" value="Floral Design, Wedding Flowers, Business"></div>
-                            <div class="stu-form-group"><label>Email Notifications</label>
-                                <label class="stu-toggle"><input type="checkbox" checked><span class="stu-toggle-slider"></span> Course updates</label>
-                                <label class="stu-toggle"><input type="checkbox" checked><span class="stu-toggle-slider"></span> Assignment reminders</label>
-                                <label class="stu-toggle"><input type="checkbox"><span class="stu-toggle-slider"></span> Marketing emails</label>
-                            </div>
-                            <button class="stu-btn stu-btn-primary" onclick="saveStuSettings()">Save Changes</button>
-                        </div>
-                    </div>
-                </section>
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- Modal -->
-    <div class="stu-modal-overlay" id="stuModalOverlay">
-        <div class="stu-modal" id="stuModalBox">
-            <div class="stu-modal-header">
-                <h3 id="stuModalTitle">Modal</h3>
-                <button class="stu-modal-close" onclick="closeStuModal()"><i class="bi bi-x-lg"></i></button>
-            </div>
-            <div class="stu-modal-body" id="stuModalBody"></div>
-        </div>
-    </div>
-
-    <!-- Notifications Panel -->
-    <div class="stu-notif-panel" id="stuNotifPanel">
-        <div class="stu-notif-header"><h4>Notifications</h4></div>
-        <div class="stu-notif-list" id="stuNotifList"></div>
-    </div>
-
     <div id="footer-container"></div>
 
-    <script src="js/shared/components.js?v=3.1"></script>
-    <script src="js/shared/auth.js?v=3.4"></script>
-    <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
     <script src="js/shared/ui.js?v=2.0"></script>
-    <script src="js/student-dashboard.js"></script>
+    <script src="js/shared/cart.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+    <script>
+        const savedCourses = JSON.parse(localStorage.getItem('lp-saved') || '[]');
+
+        function initDashboard() {
+            if (!localStorage.getItem('flower-token')) {
+                document.getElementById('loginPrompt').style.display = 'block';
+                return;
+            }
+            document.getElementById('dashContent').style.display = 'block';
+
+            // Navigation
+            document.querySelectorAll('.dash-nav a[data-section]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelectorAll('.dash-nav a').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+                    document.getElementById('section-' + link.dataset.section).style.display = 'block';
+                });
+            });
+
+            document.getElementById('sdLogout')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof logout === 'function') logout();
+                window.location.href = '/index.html';
+            });
+
+            const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+            if (user) {
+                document.getElementById('sdName').textContent = user.name || 'Student';
+                document.getElementById('sdAvatar').textContent = (user.name || 'S')[0].toUpperCase();
+                document.getElementById('sdWelcome').textContent = `Good Morning, ${user.name || 'Student'}`;
+                document.getElementById('sdNameInput').value = user.name || '';
+                document.getElementById('sdEmailInput').value = user.email || '';
+            }
+
+            loadDashboard();
+        }
+
+        async function loadDashboard() {
+            // Continue Learning
+            const courses = [
+                { name: 'Professional Floral Design', progress: 80, lesson: 'Lesson 16 of 20', img: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=200&auto=format&fit=crop' },
+                { name: 'Flower Farming Basics', progress: 45, lesson: 'Lesson 9 of 20', img: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=200&auto=format&fit=crop' }
+            ];
+            document.getElementById('continueLearning').innerHTML = courses.map(c => `
+                <div class="sd-progress-card">
+                    <div class="sd-progress-img"><img src="${c.img}" alt="${c.name}"></div>
+                    <div class="sd-progress-info">
+                        <h4>${c.name}</h4>
+                        <p>${c.lesson}</p>
+                        <div class="sd-progress-bar"><div class="sd-progress-fill" style="width:${c.progress}%;"></div></div>
+                        <div style="display:flex;justify-content:space-between;margin-top:0.25rem;"><span style="font-size:0.75rem;color:var(--text-light);">${c.progress}% complete</span><a href="course-detail.html" style="font-size:0.8rem;color:var(--primary-color);text-decoration:none;font-weight:500;">Continue →</a></div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Upcoming Live
+            document.getElementById('upcomingLive').innerHTML = `
+                <div class="sd-progress-card">
+                    <div class="sd-progress-info">
+                        <h4>Advanced Bouquet Design</h4>
+                        <p>Tomorrow, 6:00 PM · Sarah Mensah</p>
+                        <a href="live-classes.html" class="btn btn-primary btn-sm" style="margin-top:0.5rem;">Join Class</a>
+                    </div>
+                </div>
+            `;
+
+            // Upcoming Workshops
+            document.getElementById('upcomingWorkshops').innerHTML = `
+                <div class="sd-progress-card">
+                    <div class="sd-progress-info">
+                        <h4>Wedding Floral Masterclass</h4>
+                        <p>Saturday, 10:00 AM · Registered</p>
+                        <a href="workshop-detail.html" class="btn btn-outline btn-sm" style="margin-top:0.5rem;">View Details</a>
+                    </div>
+                </div>
+            `;
+
+            // Achievements
+            const badges = [
+                { icon: '🌱', name: 'Beginner', desc: 'Started learning' },
+                { icon: '📚', name: 'Bookworm', desc: '5 courses done' },
+                { icon: '🔥', name: 'Streak', desc: '7-day streak' },
+                { icon: '🎯', name: 'Quiz Master', desc: '90%+ score' }
+            ];
+            document.getElementById('achievementsGrid').innerHTML = badges.map(b => `
+                <div class="sd-badge">
+                    <div class="icon">${b.icon}</div>
+                    <div class="name">${b.name}</div>
+                    <div class="desc">${b.desc}</div>
+                </div>
+            `).join('');
+
+            // Recent Activity
+            document.getElementById('recentActivity').innerHTML = `
+                <div style="flex:1;">
+                    <div style="font-weight:600;font-size:0.95rem;">Completed "Introduction to Roses"</div>
+                    <div style="font-size:0.8rem;color:var(--text-light);">2 hours ago · Certificate earned</div>
+                </div>
+                <a href="course-detail.html" class="btn btn-outline btn-sm">View</a>
+            `;
+
+            // My Courses
+            document.getElementById('myCoursesList').innerHTML = courses.map(c => `
+                <div class="sd-progress-card">
+                    <div class="sd-progress-img"><img src="${c.img}" alt="${c.name}"></div>
+                    <div class="sd-progress-info">
+                        <h4>${c.name}</h4>
+                        <p>${c.lesson}</p>
+                        <div class="sd-progress-bar"><div class="sd-progress-fill" style="width:${c.progress}%;"></div></div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Learning Paths
+            document.getElementById('myPathsList').innerHTML = `
+                <div class="sd-progress-card">
+                    <div class="sd-progress-info">
+                        <h4>Professional Florist</h4>
+                        <p>7 of 10 courses completed</p>
+                        <div class="sd-progress-bar"><div class="sd-progress-fill" style="width:70%;"></div></div>
+                    </div>
+                </div>
+            `;
+
+            // Quizzes
+            document.getElementById('myQuizzesList').innerHTML = `
+                <div class="sd-progress-card">
+                    <div class="sd-progress-info">
+                        <h4>Flower Identification Quiz</h4>
+                        <p>20 Questions · 15 Minutes · Score: 88%</p>
+                        <a href="flower-quiz.html" class="btn btn-primary btn-sm" style="margin-top:0.5rem;">Retake Quiz</a>
+                    </div>
+                </div>
+            `;
+
+            // Certificates
+            document.getElementById('myCertificatesList').innerHTML = `
+                <div class="sd-progress-card">
+                    <div class="sd-progress-info">
+                        <h4>Professional Floral Design</h4>
+                        <p>Issued July 2026</p>
+                    </div>
+                    <button class="btn btn-outline btn-sm"><i class="bi bi-download"></i> Download</button>
+                </div>
+            `;
+
+            // Wishlist
+            const wishlist = JSON.parse(localStorage.getItem('gallerySaved') || '[]');
+            document.getElementById('myWishlistList').innerHTML = wishlist.length ? '<p style="color:var(--text-light);">You have ' + wishlist.length + ' saved items. <a href="favorites.html">View all</a></p>' : '<p style="color:var(--text-light);">No items in wishlist yet.</p>';
+
+            // Activity
+            const activities = [
+                { icon: 'bi-check-circle', bg: 'rgba(16,185,129,0.1)', color: '#10b981', text: 'Completed "Introduction to Roses"', time: '2 hours ago' },
+                { icon: 'bi-award', bg: 'rgba(245,158,11,0.1)', color: '#f59e0b', text: 'Earned certificate for "Flower Care Basics"', time: '1 day ago' },
+                { icon: 'bi-broadcast', bg: 'rgba(231,76,60,0.1)', color: '#e74c3c', text: 'Attended "Bouquet Design Workshop"', time: '3 days ago' }
+            ];
+            document.getElementById('myActivityList').innerHTML = activities.map(a => `
+                <div class="sd-activity-item">
+                    <div class="sd-activity-icon" style="background:${a.bg};color:${a.color};"><i class="bi ${a.icon}"></i></div>
+                    <div style="flex:1;"><div class="sd-activity-text">${a.text}</div><div class="sd-activity-time">${a.time}</div></div>
+                </div>
+            `).join('');
+
+            // Live Classes
+            document.getElementById('myLiveList').innerHTML = `
+                <div class="sd-progress-card">
+                    <div class="sd-progress-info"><h4>Advanced Bouquet Design</h4><p>Tomorrow, 6:00 PM · Sarah Mensah</p></div>
+                    <a href="live-classes.html" class="btn btn-primary btn-sm">Join</a>
+                </div>
+            `;
+
+            // Workshops
+            document.getElementById('myWorkshopsList').innerHTML = `
+                <div class="sd-progress-card">
+                    <div class="sd-progress-info"><h4>Wedding Floral Masterclass</h4><p>Saturday, 10:00 AM · Registered</p></div>
+                    <a href="workshop-detail.html" class="btn btn-outline btn-sm">Details</a>
+                </div>
+            `;
+        }
+
+        initDashboard();
+    </script>
 </body>
 </html>
