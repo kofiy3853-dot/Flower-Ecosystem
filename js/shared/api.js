@@ -184,7 +184,19 @@ const api = {
     fetchLiveClasses() { return apiFetch('/api/live-classes', 'live-classes'); },
     fetchLiveClass(id) { return apiFetch('/api/live-classes/' + encodeURIComponent(id), 'live-classes'); },
     fetchAssignments() { return apiFetch('/api/assignments', 'assignments'); },
-    submitAssignment(id, data) { return apiFetchWithBody('/api/assignments/' + id + '/submit', 'POST', data); }
+    submitAssignment(id, data) { return apiFetchWithBody('/api/assignments/' + id + '/submit', 'POST', data); },
+    gradeAssignment(id, data) { return apiFetchWithBody('/api/assignments/' + id + '/grade', 'PUT', data); },
+    fetchLearningPaths() { return apiFetch('/api/learning-paths', 'learning-paths'); },
+    fetchLearningPath(id) { return apiFetch('/api/learning-paths/' + encodeURIComponent(id), 'learning-paths'); },
+    registerWorkshop(id) { return apiFetchWithBody('/api/workshops/' + id + '/register', 'POST'); },
+    registerLiveClass(id) { return apiFetchWithBody('/api/live-classes/' + id + '/register', 'POST'); },
+    attendLiveClass(id) { return apiFetchWithBody('/api/live-classes/' + id + '/attend', 'POST'); },
+    fetchCertificates() { return apiFetch('/api/certificates', 'certificates'); },
+    verifyCertificate(id) { return apiFetch('/api/certificates/' + id + '/verify', 'certificates'); },
+    fetchDiscussions() { return apiFetch('/api/discussions', 'discussions'); },
+    createDiscussion(data) { return apiFetchWithBody('/api/discussions', 'POST', data); },
+    fetchResources() { return apiFetch('/api/resources', 'resources'); },
+    fetchProgressOverview() { return apiFetch('/api/progress/overview', 'progress'); }
 };
 
 window.api = api;
