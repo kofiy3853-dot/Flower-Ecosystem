@@ -256,7 +256,27 @@
         async function initPath() {
             const params = new URLSearchParams(window.location.search);
             const slug = params.get('id') || params.get('path') || 'professional-florist';
-            const path = learningPaths[slug] || learningPaths['professional-florist'];
+            let path = learningPaths[slug] || learningPaths['professional-florist'];
+
+            // Try API first, fall back to hardcoded data
+            try {
+                const apiData = await api.fetchLearningPath(slug);
+                if (apiData && apiData.title) {
+                    path = {
+                        ...path,
+                        title: apiData.title,
+                        desc: apiData.description || path.desc,
+                        overview: apiData.description || path.overview,
+                        image: apiData.image || path.image,
+                        courses: apiData.course_count || apiData.courses || path.courses,
+                        hours: apiData.duration_hours || apiData.hours || path.hours,
+                        students: apiData.student_count || apiData.students || path.students,
+                        rating: Number(apiData.rating) || path.rating,
+                        level: apiData.level || path.level,
+                        price: apiData.price || path.price
+                    };
+                }
+            } catch (e) {}
 
             document.title = `${path.title} - Flower Ecosystem`;
             document.getElementById('lpBreadcrumb').textContent = path.title;
