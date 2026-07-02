@@ -40,7 +40,7 @@ function ProductCard(product) {
 }
 
 // Wishlist toggle — works on any page that loads components.js
-document.addEventListener('click', (e) => {
+document.addEventListener('click', async (e) => {
     const btn = e.target.closest('.wishlist-btn');
     if (!btn) return;
     e.preventDefault();
@@ -54,9 +54,18 @@ document.addEventListener('click', (e) => {
     if (id) {
         let saved; try { saved = JSON.parse(localStorage.getItem('gallerySaved') || '[]'); } catch { saved = []; }
         const idx = saved.indexOf(id);
-        if (idx >= 0) saved.splice(idx, 1);
+        const isRemoving = idx >= 0;
+        if (isRemoving) saved.splice(idx, 1);
         else saved.push(id);
         localStorage.setItem('gallerySaved', JSON.stringify(saved));
+
+        // Sync to server if logged in
+        if (typeof isLoggedIn === 'function' && isLoggedIn() && typeof api !== 'undefined') {
+            try {
+                if (isRemoving) await api.removeFavorite(id);
+                else await api.addFavorite(id);
+            } catch (_) {}
+        }
     }
 });
 

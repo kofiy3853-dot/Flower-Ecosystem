@@ -16,8 +16,50 @@
         return JSON.parse(localStorage.getItem('gallerySaved') || '[]');
     }
 
-    function render() {
-        const savedIds = getSavedIds();
+    function isLoggedIn() {
+        try { return !!localStorage.getItem('flower-token'); } catch { return false; }
+    }
+
+    async function fetchServerFavorites() {
+        if (!isLoggedIn()) return [];
+        try { return await api.fetchFavorites(); } catch { return []; }
+    }
+
+    async function toggleFavorite(productId) {
+        if (isLoggedIn()) {
+            const saved = getSavedIds();
+            if (saved.includes(productId)) {
+                await api.removeFavorite(productId).catch(() => {});
+                localStorage.setItem('gallerySaved', JSON.stringify(saved.filter(id => id !== productId)));
+            } else {
+                await api.addFavorite(productId).catch(() => {});
+                saved.push(productId);
+                localStorage.setItem('gallerySaved', JSON.stringify(saved));
+            }
+        } else {
+            const saved = getSavedIds();
+            const idx = saved.indexOf(productId);
+            if (idx >= 0) saved.splice(idx, 1);
+            else saved.push(productId);
+            localStorage.setItem('gallerySaved', JSON.stringify(saved));
+        }
+    }
+
+    async function render() {
+        let savedIds = getSavedIds();
+
+        // Sync from server if logged in
+        if (isLoggedIn()) {
+            try {
+                const serverFavs = await fetchServerFavorites();
+                if (serverFavs.length) {
+                    const serverIds = serverFavs.map(f => f.product_id);
+                    savedIds = [...new Set([...savedIds, ...serverIds])];
+                    localStorage.setItem('gallerySaved', JSON.stringify(savedIds));
+                }
+            } catch {}
+        }
+
         const favorites = allProducts.filter(p => savedIds.includes(p.id));
 
         if (countEl) countEl.textContent = `${favorites.length} item${favorites.length !== 1 ? 's' : ''}`;
@@ -63,13 +105,12 @@
     }
 
     // Remove from wishlist
-    grid.addEventListener('click', e => {
+    grid.addEventListener('click', async (e) => {
         const removeBtn = e.target.closest('.wl-remove-btn');
         if (removeBtn) {
             e.preventDefault();
             const id = removeBtn.dataset.id;
-            const arr = getSavedIds().filter(i => i !== id);
-            localStorage.setItem('gallerySaved', JSON.stringify(arr));
+            await toggleFavorite(id);
             const card = removeBtn.closest('.product-card');
             if (card) {
                 card.style.transition = 'opacity 0.3s, transform 0.3s';
@@ -82,8 +123,14 @@
 
     // Clear all
     if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
+        clearBtn.addEventListener('click', async () => {
             if (!confirm('Remove all items from your wishlist?')) return;
+            const saved = getSavedIds();
+            if (isLoggedIn()) {
+                for (const id of saved) {
+                    await api.removeFavorite(id).catch(() => {});
+                }
+            }
             localStorage.setItem('gallerySaved', '[]');
             render();
         });

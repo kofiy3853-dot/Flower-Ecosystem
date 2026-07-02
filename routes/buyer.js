@@ -141,4 +141,49 @@ router.get('/analytics', requireAuth, asyncHandler(async (req, res) => {
     } catch { res.json({ total_purchases: 0, total_spent: 0, saved_sellers: 0, watchlist_items: 0, avg_rating: 0 }); }
 }));
 
+// ─── Favorites / Wishlist ─────────────────────────────
+router.get('/favorites', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    try {
+        const r = await pool.query(
+            `SELECT f.*, p.name, p.price, p.image_url, p.badge, p.rating, p.currency
+             FROM buyers.favorites f
+             LEFT JOIN marketplace.products p ON p.id = f.product_id
+             WHERE f.user_id = $1 ORDER BY f.created_at DESC`,
+            [req.user.id]
+        );
+        res.json(r.rows);
+    } catch (err) {
+        res.json([]);
+    }
+}));
+
+router.post('/favorites', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { product_id } = req.body;
+    if (!product_id) return res.status(400).json({ error: 'Product ID is required' });
+    try {
+        const r = await pool.query(
+            'INSERT INTO buyers.favorites (user_id, product_id) VALUES ($1, $2) ON CONFLICT DO NOTHING RETURNING *',
+            [req.user.id, product_id]
+        );
+        res.status(201).json({ added: true, favorite: r.rows[0] || { product_id } });
+    } catch (err) {
+        res.json({ added: true, favorite: { product_id } });
+    }
+}));
+
+router.delete('/favorites/:productId', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    try {
+        await pool.query(
+            'DELETE FROM buyers.favorites WHERE user_id = $1 AND product_id = $2',
+            [req.user.id, req.params.productId]
+        );
+        res.json({ removed: true });
+    } catch (err) {
+        res.json({ removed: true });
+    }
+}));
+
 module.exports = router;

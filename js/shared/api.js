@@ -196,7 +196,10 @@ const api = {
     fetchDiscussions() { return apiFetch('/api/discussions', 'discussions'); },
     createDiscussion(data) { return apiFetchWithBody('/api/discussions', 'POST', data); },
     fetchResources() { return apiFetch('/api/resources', 'resources'); },
-    fetchProgressOverview() { return apiFetch('/api/progress/overview', 'progress'); }
+    fetchProgressOverview() { return apiFetch('/api/progress/overview', 'progress'); },
+    fetchFavorites() { return apiFetch('/api/buyer/favorites', 'favorites'); },
+    addFavorite(productId) { return apiFetchWithBody('/api/buyer/favorites', 'POST', { product_id: productId }); },
+    removeFavorite(productId) { return apiFetchWithBody('/api/buyer/favorites/' + productId, 'DELETE'); }
 };
 
 window.api = api;

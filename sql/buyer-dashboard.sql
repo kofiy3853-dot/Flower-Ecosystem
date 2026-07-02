@@ -88,4 +88,15 @@ CREATE TABLE IF NOT EXISTS buyers.delivery_schedule (
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Favorites / Wishlist
+CREATE TABLE IF NOT EXISTS buyers.favorites (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id         UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    product_id      UUID NOT NULL,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, product_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_favorites_user ON buyers.favorites(user_id);
+
 CREATE INDEX IF NOT EXISTS idx_delivery_schedule_user ON buyers.delivery_schedule(user_id);
