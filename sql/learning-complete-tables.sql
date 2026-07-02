@@ -146,6 +146,9 @@ CREATE TABLE IF NOT EXISTS learning.certificates (
     verification_code VARCHAR(50) UNIQUE
 );
 
+-- Add verification_code if table existed without it
+ALTER TABLE learning.certificates ADD COLUMN IF NOT EXISTS verification_code VARCHAR(50) UNIQUE;
+
 CREATE INDEX IF NOT EXISTS idx_certificates_user ON learning.certificates(user_id);
 CREATE INDEX IF NOT EXISTS idx_certificates_code ON learning.certificates(verification_code);
 

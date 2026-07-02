@@ -239,7 +239,7 @@ router.put('/password', requireAuth, asyncHandler(async (req, res) => {
     const hash = await bcrypt.hash(new_password, 12);
     await pool.query('UPDATE auth.users SET password_hash = $1 WHERE id = $2', [hash, req.user.id]);
     await blacklistUserTokens(req.user.id);
-    res.json({ message: 'Password updated successfully' }));
+    res.json({ message: 'Password updated successfully' });
 }));
 
 // Temporary: reset admin password (remove after use)
