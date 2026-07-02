@@ -290,12 +290,14 @@
                         <button class="profile-tab" data-tab="questions">Questions</button>
                         <button class="profile-tab" data-tab="stories">Stories</button>
                         <button class="profile-tab" data-tab="reviews">Reviews</button>
+                        <button class="profile-tab" data-tab="settings">Settings</button>
                     </div>
 
                     <div id="tab-discussions" class="tab-panel active"></div>
                     <div id="tab-questions" class="tab-panel"></div>
                     <div id="tab-stories" class="tab-panel"></div>
                     <div id="tab-reviews" class="tab-panel"></div>
+                    <div id="tab-settings" class="tab-panel"></div>
                 </div>
 
                 <!-- Sidebar -->
@@ -609,8 +611,65 @@
                 if (tabName === 'questions' && !panel.dataset.loaded) { loadQuestions(userId); panel.dataset.loaded = '1'; }
                 if (tabName === 'stories' && !panel.dataset.loaded) { loadStories(userId); panel.dataset.loaded = '1'; }
                 if (tabName === 'reviews' && !panel.dataset.loaded) { loadReviews(userId); panel.dataset.loaded = '1'; }
+                if (tabName === 'settings' && !panel.dataset.loaded) { loadSettings(); panel.dataset.loaded = '1'; }
             });
         });
+
+        function loadSettings() {
+            const user = typeof getCurrentUser === 'function' ? getCurrentUser() : {};
+            document.getElementById('tab-settings').innerHTML = `
+                <div style="background:var(--bg-white);border:1px solid var(--border-light);border-radius:12px;padding:1.5rem;">
+                    <h3 style="margin-bottom:1.5rem;"><i class="bi bi-gear"></i> Edit Profile</h3>
+                    <form id="profileEditForm" onsubmit="return saveProfile(event)">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                            <div style="margin-bottom:1rem;">
+                                <label style="display:block;font-weight:500;font-size:0.85rem;margin-bottom:0.35rem;">First Name</label>
+                                <input type="text" id="editFirstName" value="${escapeHtml(user.name || '')}" style="width:100%;padding:0.65rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.9rem;">
+                            </div>
+                            <div style="margin-bottom:1rem;">
+                                <label style="display:block;font-weight:500;font-size:0.85rem;margin-bottom:0.35rem;">Last Name</label>
+                                <input type="text" id="editLastName" value="${escapeHtml(user.lastName || '')}" style="width:100%;padding:0.65rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.9rem;">
+                            </div>
+                        </div>
+                        <div style="margin-bottom:1rem;">
+                            <label style="display:block;font-weight:500;font-size:0.85rem;margin-bottom:0.35rem;">Email</label>
+                            <input type="email" id="editEmail" value="${escapeHtml(user.email || '')}" disabled style="width:100%;padding:0.65rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.9rem;background:var(--bg-light);">
+                        </div>
+                        <div style="margin-bottom:1rem;">
+                            <label style="display:block;font-weight:500;font-size:0.85rem;margin-bottom:0.35rem;">Phone</label>
+                            <input type="tel" id="editPhone" placeholder="+233 XX XXX XXXX" style="width:100%;padding:0.65rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.9rem;">
+                        </div>
+                        <div style="margin-bottom:1rem;">
+                            <label style="display:block;font-weight:500;font-size:0.85rem;margin-bottom:0.35rem;">Location</label>
+                            <input type="text" id="editLocation" placeholder="City, Country" style="width:100%;padding:0.65rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.9rem;">
+                        </div>
+                        <div style="margin-bottom:1rem;">
+                            <label style="display:block;font-weight:500;font-size:0.85rem;margin-bottom:0.35rem;">Bio</label>
+                            <textarea id="editBio" rows="3" placeholder="Tell us about yourself..." style="width:100%;padding:0.65rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.9rem;resize:vertical;"></textarea>
+                        </div>
+                        <div style="display:flex;gap:0.75rem;">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="button" class="btn btn-outline" onclick="loadSettings()">Cancel</button>
+                        </div>
+                        <p id="settingsMsg" style="font-size:0.85rem;margin-top:0.75rem;display:none;"></p>
+                    </form>
+                </div>
+            `;
+        }
+
+        function saveProfile(e) {
+            e.preventDefault();
+            const msg = document.getElementById('settingsMsg');
+            const user = typeof getCurrentUser === 'function' ? getCurrentUser() : {};
+            user.name = document.getElementById('editFirstName').value;
+            user.lastName = document.getElementById('editLastName').value;
+            localStorage.setItem('flower-auth', JSON.stringify(user));
+            msg.textContent = 'Profile updated successfully!';
+            msg.style.color = '#10b981';
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 3000);
+            return false;
+        }
 
         document.addEventListener('componentLoaded', loadProfile);
     </script>
