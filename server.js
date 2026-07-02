@@ -161,6 +161,7 @@ app.get('/contact', (_, res) => res.sendFile(path.join(__dirname, 'contact.html'
 app.get('/account', (_, res) => res.sendFile(path.join(__dirname, 'account.html')));
 app.get('/following', (_, res) => res.sendFile(path.join(__dirname, 'following.html')));
 app.get('/learning-path', (_, res) => res.sendFile(path.join(__dirname, 'learning-path.html')));
+app.get('/learning-paths', (_, res) => res.sendFile(path.join(__dirname, 'learning-paths.html')));
 app.get('/instructors', (_, res) => res.sendFile(path.join(__dirname, 'instructors.html')));
 app.get('/workshop', (_, res) => res.sendFile(path.join(__dirname, 'workshop-detail.html')));
 app.get('/live-classes', (_, res) => res.sendFile(path.join(__dirname, 'live-classes.html')));

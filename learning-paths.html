@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Career-oriented learning paths for florists, growers, and floral business owners on Flower Ecosystem.">
+    <title>Learning Paths | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .lp-list-hero{background:linear-gradient(135deg,#0f3460 0%,#16213e 50%,#1a1a2e 100%);padding:5rem 0 3rem;color:white;text-align:center;}
+        .lp-list-hero h1{font-size:clamp(2rem,4vw,2.8rem);margin-bottom:0.5rem;}
+        .lp-list-hero p{opacity:0.85;max-width:600px;margin:0 auto 1.5rem;}
+        .lp-list-search{display:flex;background:white;border-radius:12px;overflow:hidden;max-width:500px;margin:0 auto;}
+        .lp-list-search input{flex:1;border:none;padding:1rem 1.25rem;font-size:1rem;outline:none;}
+        .lp-list-search button{background:var(--primary-color);color:white;border:none;padding:1rem 1.5rem;cursor:pointer;}
+        .lp-list-stats{display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;margin-top:1.5rem;}
+        .lp-list-stat{text-align:center;}
+        .lp-list-stat strong{font-size:1.5rem;display:block;}
+        .lp-list-stat span{font-size:0.85rem;opacity:0.8;}
+        .lp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;}
+        .lp-card{background:white;border:1px solid var(--border-color);border-radius:14px;overflow:hidden;transition:all 0.3s;}
+        .lp-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.1);}
+        .lp-card-banner{height:180px;overflow:hidden;position:relative;}
+        .lp-card-banner img{width:100%;height:100%;object-fit:cover;}
+        .lp-card-level{position:absolute;top:0.75rem;right:0.75rem;padding:0.2rem 0.6rem;border-radius:6px;font-size:0.7rem;font-weight:600;color:white;}
+        .level-beginner{background:#10b981;}
+        .level-intermediate{background:#f59e0b;}
+        .level-advanced{background:#e74c3c;}
+        .lp-card-body{padding:1.25rem;}
+        .lp-card-title{font-weight:600;font-size:1.1rem;margin-bottom:0.5rem;}
+        .lp-card-desc{font-size:0.85rem;color:var(--text-light);line-height:1.5;margin-bottom:0.75rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+        .lp-card-meta{display:flex;flex-wrap:wrap;gap:1rem;font-size:0.8rem;color:var(--text-light);margin-bottom:0.75rem;}
+        .lp-card-meta span{display:flex;align-items:center;gap:0.35rem;}
+        .lp-card-skills{display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.75rem;}
+        .lp-skill{font-size:0.72rem;padding:0.2rem 0.5rem;border-radius:4px;background:var(--primary-light);color:var(--primary-color);}
+        .lp-card-footer{display:flex;justify-content:space-between;align-items:center;padding-top:0.75rem;border-top:1px solid var(--border-light);}
+        .lp-card-price{font-size:1.1rem;font-weight:700;color:var(--primary-color);}
+        .lp-empty{text-align:center;padding:4rem 2rem;color:var(--text-light);}
+        .lp-empty i{font-size:4rem;color:var(--border-color);display:block;margin-bottom:1rem;}
+        @media(max-width:768px){.lp-grid{grid-template-columns:1fr;}}
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="lp-list-hero">
+        <div class="container">
+            <h1>Learning Paths</h1>
+            <p>Choose a career path and follow a structured curriculum from beginner to professional. Each path bundles related courses into a guided learning journey.</p>
+            <div class="lp-list-search">
+                <input type="text" id="lpSearch" placeholder="Search learning paths...">
+                <button onclick="applyFilters()"><i class="bi bi-search"></i></button>
+            </div>
+            <div class="lp-list-stats">
+                <div class="lp-list-stat"><strong id="statPaths">0</strong><span>Learning Paths</span></div>
+                <div class="lp-list-stat"><strong>32+</strong><span>Courses Included</span></div>
+                <div class="lp-list-stat"><strong>12,500+</strong><span>Students Enrolled</span></div>
+                <div class="lp-list-stat"><strong>4.8</strong><span>Average Rating</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="lp-grid" id="lpGrid"></div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        const pathsData = [
+            { slug: 'beginner-florist', title: 'Beginner Florist', desc: 'Start your floristry journey from scratch. Learn flower identification, basic care, simple arrangements, and wrapping techniques.', image: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=600&auto=format&fit=crop', level: 'Beginner', courses: 4, hours: 16, students: 2850, rating: 4.8, price: 'Free', skills: ['Flower ID', 'Basic Arrangements', 'Wrapping', 'Color Matching'] },
+            { slug: 'professional-florist', title: 'Professional Florist', desc: 'Master advanced floral design, wedding arrangements, luxury bouquets, and professional event styling.', image: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=600&auto=format&fit=crop', level: 'Intermediate', courses: 6, hours: 32, students: 4850, rating: 4.9, price: 'GHS 450', skills: ['Luxury Design', 'Wedding', 'Event Styling', 'Client Management'] },
+            { slug: 'flower-farmer', title: 'Professional Flower Farmer', desc: 'Learn soil preparation, cultivation, pest control, harvesting, and wholesale selling of cut flowers.', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=600&auto=format&fit=crop', level: 'Intermediate', courses: 8, hours: 48, students: 1920, rating: 4.7, price: 'GHS 650', skills: ['Soil Science', 'Greenhouse', 'Pest Control', 'Harvesting'] },
+            { slug: 'flower-business', title: 'Flower Business Owner', desc: 'Learn to start, brand, manage, and grow a successful flower shop or floral service business.', image: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=600&auto=format&fit=crop', level: 'Intermediate', courses: 7, hours: 36, students: 3200, rating: 4.8, price: 'GHS 550', skills: ['Business Planning', 'Branding', 'Pricing', 'Marketing'] },
+            { slug: 'event-decorator', title: 'Wedding & Event Decorator', desc: 'Master floral decoration for weddings, corporate events, birthdays, and special celebrations.', image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=600&auto=format&fit=crop', level: 'Advanced', courses: 5, hours: 24, students: 2100, rating: 4.9, price: 'GHS 400', skills: ['Wedding Design', 'Corporate Events', 'Venue Styling', 'Budget Management'] }
+        ];
+
+        async function initLearningPaths() {
+            // Try API first
+            try {
+                const apiData = await api.fetchLearningPaths();
+                if (apiData && apiData.length) {
+                    pathsData.length = 0;
+                    apiData.forEach(p => pathsData.push({
+                        slug: p.slug || p.id,
+                        title: p.title,
+                        desc: p.description || '',
+                        image: p.image || 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=600&auto=format&fit=crop',
+                        level: p.level || 'Beginner',
+                        courses: p.course_count || 0,
+                        hours: p.duration_hours || 0,
+                        students: p.student_count || 0,
+                        rating: Number(p.rating) || 0,
+                        price: p.price || 'Free',
+                        skills: []
+                    }));
+                }
+            } catch (e) {}
+
+            document.getElementById('statPaths').textContent = pathsData.length;
+            renderPaths(pathsData);
+        }
+
+        function renderPaths(paths) {
+            const grid = document.getElementById('lpGrid');
+            if (!paths.length) {
+                grid.innerHTML = '<div class="lp-empty"><i class="bi bi-signpost"></i><h3>No learning paths found</h3><p>Try adjusting your search.</p></div>';
+                return;
+            }
+
+            grid.innerHTML = paths.map(p => `
+                <a href="learning-path.html?id=${escapeHtml(p.slug)}" style="text-decoration:none;color:inherit;">
+                    <div class="lp-card">
+                        <div class="lp-card-banner">
+                            <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)}" loading="lazy">
+                            <div class="lp-card-level level-${p.level.toLowerCase()}">${escapeHtml(p.level)}</div>
+                        </div>
+                        <div class="lp-card-body">
+                            <div class="lp-card-title">${escapeHtml(p.title)}</div>
+                            <div class="lp-card-desc">${escapeHtml(p.desc)}</div>
+                            <div class="lp-card-meta">
+                                <span><i class="bi bi-book"></i> ${p.courses} Courses</span>
+                                <span><i class="bi bi-clock"></i> ${p.hours}h</span>
+                                <span><i class="bi bi-people"></i> ${p.students.toLocaleString()}</span>
+                                <span><i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${p.rating}</span>
+                            </div>
+                            <div class="lp-card-skills">
+                                ${(p.skills || []).slice(0, 4).map(s => `<span class="lp-skill">${escapeHtml(s)}</span>`).join('')}
+                            </div>
+                            <div class="lp-card-footer">
+                                <div class="lp-card-price">${p.price}</div>
+                                <span style="font-size:0.85rem;color:var(--primary-color);font-weight:500;">View Path <i class="bi bi-arrow-right"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        function applyFilters() {
+            const q = document.getElementById('lpSearch').value.toLowerCase();
+            const filtered = pathsData.filter(p =>
+                !q || `${p.title} ${p.desc} ${(p.skills || []).join(' ')}`.toLowerCase().includes(q)
+            );
+            renderPaths(filtered);
+        }
+
+        document.getElementById('lpSearch')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') applyFilters();
+        });
+
+        initLearningPaths();
+    </script>
+</body>
+</html>
