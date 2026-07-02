@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Test your knowledge with quizzes and exams on Flower Ecosystem Learning Center.">
+    <title>Quizzes & Exams | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .quiz-hero{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:5rem 0 3rem;color:white;text-align:center;}
+        .quiz-hero h1{font-size:clamp(2rem,4vw,2.8rem);margin-bottom:0.5rem;}
+        .quiz-hero p{opacity:0.85;max-width:600px;margin:0 auto;}
+        .quiz-stats{display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;margin-top:1.5rem;}
+        .quiz-stat{text-align:center;}
+        .quiz-stat strong{font-size:1.5rem;display:block;}
+        .quiz-stat span{font-size:0.85rem;opacity:0.8;}
+        .quiz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;}
+        .quiz-card{background:white;border:1px solid var(--border-color);border-radius:14px;overflow:hidden;transition:all 0.3s;}
+        .quiz-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.1);}
+        .quiz-card-header{background:linear-gradient(135deg,var(--primary-light),#fce7f0);padding:1.25rem;text-align:center;}
+        .quiz-card-header i{font-size:2.5rem;color:var(--primary-color);margin-bottom:0.5rem;display:block;}
+        .quiz-card-body{padding:1.25rem;}
+        .quiz-card-title{font-weight:600;font-size:1.05rem;margin-bottom:0.5rem;}
+        .quiz-card-meta{display:flex;flex-wrap:wrap;gap:0.75rem;font-size:0.8rem;color:var(--text-light);margin-bottom:0.75rem;}
+        .quiz-card-meta span{display:flex;align-items:center;gap:0.25rem;}
+        .quiz-card-footer{display:flex;gap:0.5rem;padding-top:0.75rem;border-top:1px solid var(--border-light);}
+        .quiz-card-footer .btn{flex:1;}
+        .quiz-timer{position:fixed;top:0;left:0;right:0;background:var(--primary-color);color:white;padding:0.75rem;display:none;justify-content:space-between;align-items:center;z-index:1000;font-weight:600;}
+        .quiz-timer.active{display:flex;}
+        .quiz-container{max-width:800px;margin:0 auto;padding:2rem 0;}
+        .quiz-question{background:white;border:1px solid var(--border-color);border-radius:12px;padding:1.5rem;margin-bottom:1.25rem;}
+        .quiz-question h3{font-size:1rem;margin-bottom:1rem;}
+        .quiz-option{display:block;padding:0.75rem 1rem;border:2px solid var(--border-color);border-radius:8px;margin-bottom:0.5rem;cursor:pointer;transition:all 0.2s;font-size:0.9rem;}
+        .quiz-option:hover{border-color:var(--primary-color);background:rgba(216,68,124,0.05);}
+        .quiz-option.selected{border-color:var(--primary-color);background:rgba(216,68,124,0.1);}
+        .quiz-option.correct{border-color:#10b981;background:rgba(16,185,129,0.1);}
+        .quiz-option.incorrect{border-color:#e74c3c;background:rgba(231,76,60,0.1);}
+        .quiz-result{text-align:center;padding:3rem;background:white;border:1px solid var(--border-color);border-radius:14px;margin-top:2rem;}
+        .quiz-result .score{font-size:4rem;font-weight:700;color:var(--primary-color);}
+        .quiz-result .feedback{font-size:1.1rem;color:var(--text-light);margin:1rem 0;}
+        .quiz-nav{display:flex;justify-content:space-between;margin-top:1.5rem;}
+        @media(max-width:768px){.quiz-grid{grid-template-columns:1fr;}}
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div class="quiz-timer" id="quizTimer">
+        <span><i class="bi bi-clock"></i> Time Remaining: <span id="timerDisplay">15:00</span></span>
+        <button class="btn btn-sm" style="background:white;color:var(--primary-color);" onclick="submitQuiz()">Submit Quiz</button>
+    </div>
+
+    <section class="quiz-hero" id="quizHero">
+        <div class="container">
+            <h1>Quizzes & Exams</h1>
+            <p>Test your knowledge, track your progress, and earn certifications with our comprehensive assessment system.</p>
+            <div class="quiz-stats">
+                <div class="quiz-stat"><strong>25</strong><span>Available Quizzes</span></div>
+                <div class="quiz-stat"><strong>156</strong><span>Questions</span></div>
+                <div class="quiz-stat"><strong>12</strong><span>Completed</span></div>
+                <div class="quiz-stat"><strong>88%</strong><span>Avg Score</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Browse -->
+    <section class="section-padding" id="browseSection">
+        <div class="container">
+            <h2 style="margin-bottom:1.5rem;">Available Quizzes</h2>
+            <div class="quiz-grid" id="quizGrid"></div>
+        </div>
+    </section>
+
+    <!-- Active Quiz -->
+    <section class="section-padding" id="activeQuizSection" style="display:none;">
+        <div class="quiz-container">
+            <h2 id="activeQuizTitle" style="margin-bottom:0.5rem;"></h2>
+            <p id="activeQuizMeta" style="color:var(--text-light);margin-bottom:2rem;"></p>
+            <div id="quizQuestions"></div>
+            <div class="quiz-nav">
+                <button class="btn btn-outline" id="prevBtn" onclick="prevQuestion()" style="display:none;"><i class="bi bi-arrow-left"></i> Previous</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Next <i class="bi bi-arrow-right"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Result -->
+    <section class="section-padding" id="resultSection" style="display:none;">
+        <div class="quiz-container">
+            <div class="quiz-result" id="quizResult"></div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        const quizzes = [
+            { id: 'q1', title: 'Flower Identification', course: 'Introduction to Flowers', questions: 20, time: 15, difficulty: 'Beginner', icon: 'bi-flower1', students: 1250, score: null,
+              data: [
+                { q: 'Which flower is known as the "Queen of Flowers"?', opts: ['Rose', 'Tulip', 'Orchid', 'Lily'], correct: 0 },
+                { q: 'What is the most popular color for roses?', opts: ['Yellow', 'Red', 'Pink', 'White'], correct: 1 },
+                { q: 'Sunflowers turn to face which direction?', opts: ['West', 'North', 'East (toward the sun)', 'South'], correct: 2 },
+                { q: 'Which flower symbolizes purity?', opts: ['Rose', 'Daisy', 'Tulip', 'Orchid'], correct: 1 },
+                { q: 'What is the national flower of Ghana?', opts: ['Rose', 'Sunflower', 'Yellow Trumpet', 'Orchid'], correct: 2 }
+              ]
+            },
+            { id: 'q2', title: 'Floral Design Basics', course: 'Professional Floral Design', questions: 15, time: 20, difficulty: 'Intermediate', icon: 'bi-palette', students: 980, score: null,
+              data: [
+                { q: 'What is the primary rule of floral arrangement?', opts: ['Symmetry', 'Balance', 'Color matching', 'Size variation'], correct: 1 },
+                { q: 'Which tool is essential for cutting stems?', opts: ['Knife', 'Scissors', 'Pruning shears', 'Wire cutters'], correct: 2 },
+                { q: 'What is the focal point in an arrangement?', opts: ['The largest flower', 'The center of attention', 'The tallest element', 'The greenery'], correct: 1 },
+                { q: 'What does "odd number rule" refer to?', opts: ['Using odd colors', 'Odd number of stems', 'Odd number of vases', 'Odd angles'], correct: 1 },
+                { q: 'What is the best water temperature for most flowers?', opts: ['Ice cold', 'Room temperature', 'Lukewarm', 'Hot'], correct: 2 }
+              ]
+            },
+            { id: 'q3', title: 'Wedding Floristry', course: 'Wedding Floral Design', questions: 25, time: 30, difficulty: 'Advanced', icon: 'bi-ring', students: 750, score: null,
+              data: [
+                { q: 'What is a bridal bouquet style that hangs downward?', opts: ['Nosegay', 'Cascade', 'Round', 'Posy'], correct: 1 },
+                { q: 'How many boutonnieres are typically needed for a wedding?', opts: ['1-2', '3-5', '5-8', '10+'], correct: 2 },
+                { q: 'What is the most popular flower for weddings?', opts: ['Tulip', 'Rose', 'Peony', 'Hydrangea'], correct: 1 },
+                { q: 'When should wedding flowers be delivered?', opts: ['1 week before', 'Day before', 'Morning of the wedding', '2 hours before ceremony'], correct: 2 },
+                { q: 'What is a "throwing bouquet"?', opts: ['The bridesmaid bouquet', 'A smaller bouquet tossed to single guests', 'The centerpiece', 'A practice bouquet'], correct: 1 }
+              ]
+            },
+            { id: 'q4', title: 'Flower Care & Handling', course: 'Flower Care Basics', questions: 18, time: 15, difficulty: 'Beginner', icon: 'bi-droplet', students: 1100, score: null,
+              data: [
+                { q: 'How should you cut flower stems?', opts: ['Straight across', 'At a 45-degree angle', 'Diagonally up', 'Ragged tear'], correct: 1 },
+                { q: 'How often should you change flower water?', opts: ['Every day', 'Every 2-3 days', 'Once a week', 'Never'], correct: 1 },
+                { q: 'Which flowers are toxic to cats?', opts: ['Sunflowers', 'Roses', 'Lilies', 'Daisies'], correct: 2 },
+                { q: 'What is the best storage temperature for most cut flowers?', opts: ['32-34°F (0-1°C)', '45-50°F (7-10°C)', '60-65°F (15-18°C)', 'Room temperature'], correct: 1 },
+                { q: 'What causes flowers to wilt faster?', opts: ['Cold water', 'Warm water', 'Bacteria in the water', 'Direct sunlight'], correct: 2 }
+              ]
+            },
+            { id: 'q5', title: 'Flower Farming Basics', course: 'Flower Farming', questions: 20, time: 25, difficulty: 'Intermediate', icon: 'bi-tree', students: 620, score: null,
+              data: [
+                { q: 'What pH level do most flowers prefer?', opts: ['5.0-6.0', '6.0-7.0', '7.0-8.0', '8.0-9.0'], correct: 1 },
+                { q: 'What is the best time to harvest roses?', opts: ['Morning', 'Noon', 'Evening', 'Night'], correct: 0 },
+                { q: 'Which soil type is best for flower farming?', opts: ['Clay', 'Sandy', 'Loamy', 'Rocky'], correct: 2 },
+                { q: 'How deep should tulip bulbs be planted?', opts: ['1 inch', '3 inches', '6 inches', '12 inches'], correct: 2 },
+                { q: 'What is deadheading?', opts: ['Watering plants', 'Removing spent blooms', 'Planting seeds', 'Adding fertilizer'], correct: 1 }
+              ]
+            },
+            { id: 'q6', title: 'Floral Business', course: 'Flower Business Management', questions: 22, time: 20, difficulty: 'Intermediate', icon: 'bi-shop', students: 480, score: null,
+              data: [
+                { q: 'What is the typical markup for fresh flowers?', opts: ['50-100%', '100-200%', '200-400%', '400-600%'], correct: 2 },
+                { q: 'What is the most important factor in flower shop location?', opts: ['Rent cost', 'Foot traffic', 'Parking', 'Size'], correct: 1 },
+                { q: 'How many days of inventory should a flower shop carry?', opts: ['1-2 days', '3-4 days', '5-7 days', '1-2 weeks'], correct: 0 },
+                { q: 'What percentage of revenue should go to marketing?', opts: ['1-3%', '5-10%', '15-20%', '25-30%'], correct: 1 },
+                { q: 'What is the average flower shop profit margin?', opts: ['5-10%', '10-15%', '15-25%', '30-40%'], correct: 2 }
+              ]
+            }
+        ];
+
+        let currentQuiz = null;
+        let currentQuestion = 0;
+        let answers = {};
+        let timerInterval = null;
+        let timeLeft = 0;
+
+        function renderQuizzes() {
+            const grid = document.getElementById('quizGrid');
+            grid.innerHTML = quizzes.map(q => `
+                <div class="quiz-card">
+                    <div class="quiz-card-header">
+                        <i class="bi ${q.icon}"></i>
+                    </div>
+                    <div class="quiz-card-body">
+                        <div class="quiz-card-title">${escapeHtml(q.title)}</div>
+                        <div style="font-size:0.85rem;color:var(--primary-color);margin-bottom:0.5rem;">${escapeHtml(q.course)}</div>
+                        <div class="quiz-card-meta">
+                            <span><i class="bi bi-question-circle"></i> ${q.questions} Questions</span>
+                            <span><i class="bi bi-clock"></i> ${q.time} min</span>
+                            <span><i class="bi bi-bar-chart"></i> ${q.difficulty}</span>
+                            <span><i class="bi bi-people"></i> ${q.students}</span>
+                        </div>
+                        ${q.score !== null ? `<div style="font-size:0.9rem;font-weight:600;color:#10b981;margin-bottom:0.5rem;"><i class="bi bi-check-circle"></i> Score: ${q.score}%</div>` : ''}
+                        <div class="quiz-card-footer">
+                            <button class="btn btn-primary btn-sm" onclick="startQuiz('${q.id}')">${q.score !== null ? 'Retake' : 'Start Quiz'}</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function startQuiz(id) {
+            currentQuiz = quizzes.find(q => q.id === id);
+            if (!currentQuiz) return;
+            currentQuestion = 0;
+            answers = {};
+            timeLeft = currentQuiz.time * 60;
+
+            document.getElementById('browseSection').style.display = 'none';
+            document.getElementById('quizHero').style.display = 'none';
+            document.getElementById('activeQuizSection').style.display = 'block';
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('activeQuizTitle').textContent = currentQuiz.title;
+            document.getElementById('activeQuizMeta').textContent = `${currentQuiz.questions} Questions · ${currentQuiz.time} Minutes · ${currentQuiz.difficulty}`;
+
+            document.getElementById('quizTimer').classList.add('active');
+            renderQuestion();
+            startTimer();
+        }
+
+        function renderQuestion() {
+            const q = currentQuiz.data[currentQuestion];
+            const total = currentQuiz.data.length;
+            document.getElementById('quizQuestions').innerHTML = `
+                <div class="quiz-question">
+                    <div style="font-size:0.85rem;color:var(--primary-color);margin-bottom:0.5rem;">Question ${currentQuestion + 1} of ${total}</div>
+                    <h3>${escapeHtml(q.q)}</h3>
+                    ${q.opts.map((opt, i) => `
+                        <label class="quiz-option ${answers[currentQuestion] === i ? 'selected' : ''}" onclick="selectAnswer(${i})">
+                            <input type="radio" name="q${currentQuestion}" value="${i}" style="display:none;" ${answers[currentQuestion] === i ? 'checked' : ''}>
+                            ${escapeHtml(opt)}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('prevBtn').style.display = currentQuestion > 0 ? 'block' : 'none';
+            document.getElementById('nextBtn').textContent = currentQuestion === total - 1 ? 'Submit Quiz' : 'Next →';
+            document.getElementById('nextBtn').onclick = currentQuestion === total - 1 ? submitQuiz : nextQuestion;
+        }
+
+        function selectAnswer(idx) {
+            answers[currentQuestion] = idx;
+            document.querySelectorAll('.quiz-option').forEach((el, i) => {
+                el.classList.toggle('selected', i === idx);
+            });
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < currentQuiz.data.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const m = Math.floor(timeLeft / 60);
+                const s = timeLeft % 60;
+                document.getElementById('timerDisplay').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                if (timeLeft <= 0) submitQuiz();
+            }, 1000);
+        }
+
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            document.getElementById('quizTimer').classList.remove('active');
+
+            let correct = 0;
+            currentQuiz.data.forEach((q, i) => {
+                if (answers[i] === q.correct) correct++;
+            });
+
+            const total = currentQuiz.data.length;
+            const pct = Math.round((correct / total) * 100);
+            currentQuiz.score = pct;
+
+            const feedback = pct >= 80 ? 'Excellent! You have a strong understanding of this topic.' : pct >= 50 ? 'Good effort! Review the material and try again.' : 'Keep studying! Review the lessons and retake the quiz.';
+
+            document.getElementById('browseSection').style.display = 'none';
+            document.getElementById('quizHero').style.display = 'none';
+            document.getElementById('activeQuizSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'block';
+
+            document.getElementById('quizResult').innerHTML = `
+                <div class="score">${pct}%</div>
+                <p style="font-size:1.1rem;font-weight:600;">${correct}/${total} Correct</p>
+                <div class="feedback">${feedback}</div>
+                <div style="display:flex;gap:0.75rem;justify-content:center;">
+                    <button class="btn btn-primary" onclick="startQuiz('${currentQuiz.id}')">Retake Quiz</button>
+                    <button class="btn btn-outline" onclick="backToBrowse()">Browse Quizzes</button>
+                </div>
+            `;
+        }
+
+        function backToBrowse() {
+            document.getElementById('browseSection').style.display = 'block';
+            document.getElementById('quizHero').style.display = 'block';
+            document.getElementById('activeQuizSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'none';
+            renderQuizzes();
+        }
+
+        renderQuizzes();
+    </script>
+</body>
+</html>

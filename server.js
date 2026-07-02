@@ -165,6 +165,8 @@ app.get('/instructors', (_, res) => res.sendFile(path.join(__dirname, 'instructo
 app.get('/workshop', (_, res) => res.sendFile(path.join(__dirname, 'workshop-detail.html')));
 app.get('/live-classes', (_, res) => res.sendFile(path.join(__dirname, 'live-classes.html')));
 app.get('/student-dashboard', (_, res) => res.sendFile(path.join(__dirname, 'student-dashboard.html')));
+app.get('/assignments', (_, res) => res.sendFile(path.join(__dirname, 'assignments.html')));
+app.get('/quizzes', (_, res) => res.sendFile(path.join(__dirname, 'quizzes.html')));
 app.get('/terms', (_, res) => res.sendFile(path.join(__dirname, 'terms.html')));
 app.get('/privacy', (_, res) => res.sendFile(path.join(__dirname, 'privacy.html')));
 
