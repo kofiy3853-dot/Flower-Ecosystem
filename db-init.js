@@ -83,6 +83,19 @@ async function run() {
             }
         }
 
+        // Run learning complete tables (paths, quizzes, discussions, resources, certificates)
+        const learningCompletePath = path.join(__dirname, 'sql', 'learning-complete-tables.sql');
+        if (fs.existsSync(learningCompletePath)) {
+            const learningComplete = fs.readFileSync(learningCompletePath, 'utf8');
+            console.log('Running learning-complete-tables.sql...');
+            try {
+                await client.query(learningComplete);
+                console.log('Learning complete tables applied.');
+            } catch (e) {
+                console.log('Learning complete tables partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
         console.log('Database initialized successfully.');
     } catch (err) {
         console.error('DB init error:', err.message);
