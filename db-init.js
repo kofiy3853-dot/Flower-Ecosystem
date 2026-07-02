@@ -57,6 +57,32 @@ async function run() {
             }
         }
 
+        // Run learning extra tables (workshops, live classes, assignments)
+        const learningExtraPath = path.join(__dirname, 'sql', 'learning-extra-tables.sql');
+        if (fs.existsSync(learningExtraPath)) {
+            const learningExtra = fs.readFileSync(learningExtraPath, 'utf8');
+            console.log('Running learning-extra-tables.sql...');
+            try {
+                await client.query(learningExtra);
+                console.log('Learning extra tables applied.');
+            } catch (e) {
+                console.log('Learning extra tables partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
+        // Run learning system fixes
+        const learningFixesPath = path.join(__dirname, 'sql', 'learning-system-fixes.sql');
+        if (fs.existsSync(learningFixesPath)) {
+            const learningFixes = fs.readFileSync(learningFixesPath, 'utf8');
+            console.log('Running learning-system-fixes.sql...');
+            try {
+                await client.query(learningFixes);
+                console.log('Learning system fixes applied.');
+            } catch (e) {
+                console.log('Learning system fixes partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
         console.log('Database initialized successfully.');
     } catch (err) {
         console.error('DB init error:', err.message);
