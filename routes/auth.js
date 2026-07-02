@@ -242,19 +242,6 @@ router.put('/password', requireAuth, asyncHandler(async (req, res) => {
     res.json({ message: 'Password updated successfully' });
 }));
 
-// Temporary: reset admin password (remove after use)
-router.post('/reset-admin-password', asyncHandler(async (req, res) => {
-    const { email, new_password } = req.body;
-    if (!email || !new_password) return res.status(400).json({ error: 'Email and new_password required' });
-    if (new_password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
-    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const hash = await bcrypt.hash(new_password, 12);
-    const r = await pool.query(
-        "UPDATE auth.users SET password_hash = $1 WHERE email = $2 AND role = 'ADMIN' RETURNING id",
-        [hash, email]
-    );
-    if (!r.rows.length) return res.status(404).json({ error: 'Admin user not found' });
-    res.json({ message: 'Admin password reset successfully' });
-}));
+
 
 module.exports = router;

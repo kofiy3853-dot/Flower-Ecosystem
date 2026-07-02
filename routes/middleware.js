@@ -99,6 +99,27 @@ function cleanupBlacklist() {
     }).catch(() => {});
 }
 
+// Load persisted blacklist from DB into memory on startup so tokens
+// blacklisted before a restart remain invalid across server restarts.
+async function loadBlacklistFromDb() {
+    try {
+        const r = await pool.query(
+            'SELECT token_hash FROM auth.token_blacklist WHERE expires_at > CURRENT_TIMESTAMP'
+        );
+        for (const row of r.rows) {
+            blacklistedTokens.add(row.token_hash);
+        }
+        if (r.rows.length) {
+            console.log(`Token blacklist restored: ${r.rows.length} entries loaded from DB`);
+        }
+    } catch {
+        // Table may not exist yet (first boot before migrations) — non-fatal
+    }
+}
+
+// Hydrate on startup (non-blocking)
+loadBlacklistFromDb();
+
 async function blacklistUserTokens(userId) {
     try {
         const userHash = crypto.createHash('sha256').update(`user:${userId}`).digest('hex');

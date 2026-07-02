@@ -206,9 +206,13 @@ pool.query('SELECT 1')
                 await pool.query("ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS description TEXT");
                 const adminExists = await pool.query("SELECT id FROM auth.users WHERE role = 'ADMIN' LIMIT 1");
                 if (!adminExists.rows.length) {
-                    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
-                    if (adminPassword.length < 8) {
-                        console.error('Seed aborted: admin password too short');
+                    const adminPassword = process.env.ADMIN_PASSWORD;
+                    if (!adminPassword) {
+                        console.error('Seed skipped: set ADMIN_PASSWORD in your .env to create the default admin account');
+                        return;
+                    }
+                    if (adminPassword.length < 12) {
+                        console.error('Seed aborted: ADMIN_PASSWORD must be at least 12 characters');
                         return;
                     }
                     const hash = await bcrypt.hash(adminPassword, 12);
@@ -220,7 +224,7 @@ pool.query('SELECT 1')
                         "INSERT INTO auth.users (first_name, last_name, email, password_hash, role) VALUES ('Admin', 'User', $1, $2, 'ADMIN')",
                         [ADMIN_EMAIL, hash]
                     );
-                    console.log(`Default admin created: ${ADMIN_EMAIL} — password: ${adminPassword}`);
+                    console.log(`Default admin seeded: ${ADMIN_EMAIL}`);
                 } else if (process.env.ADMIN_PASSWORD) {
                     const hash = await bcrypt.hash(process.env.ADMIN_PASSWORD, 12);
                     await pool.query("UPDATE auth.users SET password_hash = $1 WHERE email = $2 AND role = 'ADMIN'", [hash, ADMIN_EMAIL]);

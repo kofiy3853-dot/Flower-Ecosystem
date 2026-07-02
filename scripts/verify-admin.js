@@ -1,27 +1,30 @@
 const bcrypt = require('bcryptjs');
 const { Pool } = require('pg');
+require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
+
+// Usage: ADMIN_PASSWORD=<password> node scripts/verify-admin.js
+// Verifies the stored hash matches the supplied password.
+const passwordToCheck = process.env.ADMIN_PASSWORD;
+if (!passwordToCheck) {
+    console.error('Set ADMIN_PASSWORD env var to verify.\nExample: ADMIN_PASSWORD=MyStr0ngP@ss node scripts/verify-admin.js');
+    process.exit(1);
+}
 
 const pool = new Pool({
-    host: 'localhost', port: 5432,
-    database: 'flower_ecosystem', user: 'postgres', password: ''
+    host: process.env.PG_HOST || 'localhost',
+    port: parseInt(process.env.PG_PORT || '5432'),
+    database: process.env.PG_DATABASE || 'flower_ecosystem',
+    user: process.env.PG_USER || 'postgres',
+    password: process.env.PG_PASSWORD || '',
 });
 
 pool.query("SELECT password_hash FROM auth.users WHERE email='admin@flower.com'")
     .then(r => {
+        if (!r.rows.length) { console.error('Admin user not found'); return pool.end(); }
         const hash = r.rows[0].password_hash;
-        console.log('Hash:', hash);
-        console.log('Matches admin123:', bcrypt.compareSync('admin123', hash));
-        
-        // Force re-set the password
-        const newHash = bcrypt.hashSync('admin123', 12);
-        return pool.query("UPDATE auth.users SET password_hash=$1 WHERE email='admin@flower.com'", [newHash]);
-    })
-    .then(() => {
-        console.log('Password forcefully re-set');
-        return pool.query("SELECT password_hash FROM auth.users WHERE email='admin@flower.com'");
-    })
-    .then(r => {
-        console.log('New hash matches admin123:', bcrypt.compareSync('admin123', r.rows[0].password_hash));
+        const matches = bcrypt.compareSync(passwordToCheck, hash);
+        console.log(`Hash found: ${hash.substring(0, 20)}...`);
+        console.log(`Password matches: ${matches}`);
         pool.end();
     })
     .catch(e => { console.error(e.message); pool.end(); });
