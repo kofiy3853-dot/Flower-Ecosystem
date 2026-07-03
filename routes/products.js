@@ -419,26 +419,41 @@ router.get('/list/categories', asyncHandler(async (_, res) => {
 }));
 
 // Florists
-router.get('/list/florists', asyncHandler(async (_, res) => {
+router.get('/list/florists', asyncHandler(async (req, res) => {
+    const { search, location, sort = 'rating' } = req.query;
     return queryWithFallback(
         async () => {
+            const conditions = ["u.role IN ('SELLER', 'FLORIST')", "u.is_active = true"];
+            const values = [];
+            let idx = 1;
+            if (search) { conditions.push(`(COALESCE(u.first_name,'') || ' ' || COALESCE(u.last_name,'') ILIKE $${idx} OR COALESCE(u.description,'') ILIKE $${idx} OR COALESCE(u.business_name,'') ILIKE $${idx})`); values.push(`%${search}%`); idx++; }
+            if (location) { conditions.push(`u.location ILIKE $${idx}`); values.push(`%${location}%`); idx++; }
+            const where = 'WHERE ' + conditions.join(' AND ');
+            const sortMap = { rating: 'rating DESC', reviews: 'review_count DESC', name: 'name ASC', products: 'product_count DESC' };
+            const orderBy = sortMap[sort] || 'rating DESC';
+
             const r = await pool.query(
                 `SELECT u.id,
-                    COALESCE(u.first_name || ' ' || u.last_name, u.first_name) AS name,
+                    COALESCE(u.first_name || ' ' || u.last_name, u.first_name, 'Florist') AS name,
                     u.profile_image AS image,
                     u.role,
-                    COALESCE(AVG(pr.rating)::numeric(2,1), 4.5) AS rating,
-                    COUNT(DISTINCT pr.id)::int AS reviews,
+                    COALESCE(u.location, '') AS location,
+                    COALESCE(u.business_type, u.role) AS specialty,
+                    COALESCE(u.description, '') AS description,
+                    u.email,
+                    COALESCE(AVG(pr.rating)::numeric(2,1), 0) AS rating,
+                    COUNT(DISTINCT pr.id)::int AS review_count,
                     COUNT(DISTINCT p.id)::int AS product_count
                  FROM auth.users u
                  LEFT JOIN marketplace.products p ON p.seller_id = u.id AND p.is_active = true
                  LEFT JOIN marketplace.product_reviews pr ON pr.product_id = p.id
-                 WHERE u.role IN ('SELLER', 'FLORIST') AND u.is_active = true
+                 ${where}
                  GROUP BY u.id
-                 ORDER BY COUNT(DISTINCT pr.id) DESC
-                 LIMIT 20`
+                 ORDER BY ${orderBy}
+                 LIMIT 50`,
+                values
             );
-            return { florists: r.rows };
+            return r.rows.map(r => ({ ...r, reviews: r.review_count, products: r.product_count, portfolio: [] }));
         },
         'florists', res, false, (fallback) => ({ florists: fallback })
     );

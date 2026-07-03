@@ -225,10 +225,8 @@ pool.query('SELECT 1')
                         [ADMIN_EMAIL, hash]
                     );
                     console.log(`Default admin seeded: ${ADMIN_EMAIL}`);
-                } else if (process.env.ADMIN_PASSWORD) {
-                    const hash = await bcrypt.hash(process.env.ADMIN_PASSWORD, 12);
-                    await pool.query("UPDATE auth.users SET password_hash = $1 WHERE email = $2 AND role = 'ADMIN'", [hash, ADMIN_EMAIL]);
-                    console.log(`Admin password updated from ADMIN_PASSWORD env var`);
+                } else {
+                    console.log(`Admin account already exists: ${ADMIN_EMAIL}`);
                 }
             }
         } catch (seedErr) {

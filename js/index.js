@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchJSON('/api/products/list/categories',    60),   // 1 min cache
         fetchJSON('/api/products?limit=8',            30),   // 30s cache
         fetchJSON('data/articles.json',               300),  // 5 min cache
-        fetchJSON('data/videos.json',                 300),
-        fetchJSON('data/courses.json',                300),
+        fetchJSON('/api/videos',                       300),
+        fetchJSON('/api/courses',                      300),
         fetchJSON('/api/products/list/florists',      60),   // 1 min cache
         fetchJSON('data/events.json',                 300),
     ]).then(([stats, categories, products, articles, videos, courses, florists, events]) => {

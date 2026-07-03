@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { pool, dbAvailable, asyncHandler } = require('./middleware');
+const { pool, dbAvailable, asyncHandler, requireAuth } = require('./middleware');
 
 router.get('/:id', asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Service unavailable' });
@@ -114,6 +114,77 @@ router.get('/:id/contributions', asyncHandler(async (req, res) => {
 
     items.sort((a, b) => b.count - a.count);
     res.json({ contributions: items.slice(0, 5) });
+}));
+
+// ─── Follow System ────────────────────────────────────
+router.get('/:id/follow-counts', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json({ followers: 0, following: 0 });
+    try {
+        const [followers, following] = await Promise.all([
+            pool.query('SELECT COUNT(*)::int AS c FROM platform.follows WHERE following_id = $1', [req.params.id]),
+            pool.query('SELECT COUNT(*)::int AS c FROM platform.follows WHERE follower_id = $1', [req.params.id])
+        ]);
+        res.json({ followers: followers.rows[0].c, following: following.rows[0].c });
+    } catch { res.json({ followers: 0, following: 0 }); }
+}));
+
+router.get('/:id/following', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    try {
+        const r = await pool.query(
+            `SELECT u.id, u.first_name, u.last_name, u.profile_image, u.role, f.created_at AS followed_at
+             FROM platform.follows f JOIN auth.users u ON u.id = f.following_id
+             WHERE f.follower_id = $1 ORDER BY f.created_at DESC`, [req.params.id]
+        );
+        res.json(r.rows);
+    } catch { res.json([]); }
+}));
+
+router.get('/:id/followers', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    try {
+        const r = await pool.query(
+            `SELECT u.id, u.first_name, u.last_name, u.profile_image, u.role, f.created_at AS followed_at
+             FROM platform.follows f JOIN auth.users u ON u.id = f.follower_id
+             WHERE f.following_id = $1 ORDER BY f.created_at DESC`, [req.params.id]
+        );
+        res.json(r.rows);
+    } catch { res.json([]); }
+}));
+
+router.get('/:id/follow-check', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json({ following: false });
+    try {
+        const r = await pool.query(
+            'SELECT 1 FROM platform.follows WHERE follower_id = $1 AND following_id = $2',
+            [req.user.id, req.params.id]
+        );
+        res.json({ following: r.rows.length > 0 });
+    } catch { res.json({ following: false }); }
+}));
+
+router.post('/:id/follow', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    if (req.user.id === req.params.id) return res.status(400).json({ error: 'Cannot follow yourself' });
+    try {
+        await pool.query(
+            'INSERT INTO platform.follows (follower_id, following_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+            [req.user.id, req.params.id]
+        );
+        res.json({ following: true });
+    } catch (err) {
+        if (err.code === '23503') return res.status(404).json({ error: 'User not found' });
+        throw err;
+    }
+}));
+
+router.delete('/:id/follow', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    await pool.query(
+        'DELETE FROM platform.follows WHERE follower_id = $1 AND following_id = $2',
+        [req.user.id, req.params.id]
+    );
+    res.json({ following: false });
 }));
 
 module.exports = router;

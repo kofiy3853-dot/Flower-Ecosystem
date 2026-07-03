@@ -387,8 +387,36 @@ router.get('/articles/:id/related', asyncHandler(async (req, res) => {
 }));
 
 router.get('/videos', asyncHandler(async (_, res) => {
-    const data = readJSON(path.join(__dirname, '..', 'data', 'videos.json'));
-    res.json(data);
+    return queryWithFallback(
+        async () => {
+            const r = await pool.query(`
+                SELECT l.id, l.title, l.content AS description, l.video_url, l.duration_minutes,
+                       l.sort_order,
+                       c.title AS course_title, c.instructor, c.category, c.thumbnail_url AS course_image,
+                       c.id AS course_id
+                FROM learning.lessons l
+                JOIN learning.courses c ON c.id = l.course_id
+                WHERE l.video_url IS NOT NULL AND l.video_url != '' AND c.is_published = true
+                ORDER BY l.sort_order DESC, c.created_at DESC
+                LIMIT 12
+            `);
+            return r.rows.map(row => ({
+                id: row.id,
+                title: row.title,
+                description: row.description || '',
+                video_url: row.video_url,
+                duration: row.duration_minutes ? `${row.duration_minutes} min` : '',
+                image: row.course_image,
+                instructor: row.instructor,
+                category: row.category || '',
+                tag: 'Course',
+                views: 0,
+                course_id: row.course_id,
+                course_title: row.course_title
+            }));
+        },
+        'videos', res
+    );
 }));
 
 router.get('/flowers', asyncHandler(async (_, res) => {

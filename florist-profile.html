@@ -361,24 +361,49 @@
 
             // Follow button
             const followBtn = document.getElementById('fpFollowBtn');
-            const followKey = 'flower-following';
-            let following = JSON.parse(localStorage.getItem(followKey) || '[]');
-            if (following.includes(id)) {
+            let isFollowing = false;
+
+            if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+                try {
+                    const fc = await fetch('/api/users/' + id + '/follow-check', {
+                        headers: { 'Authorization': 'Bearer ' + getToken() }
+                    }).then(r => r.json());
+                    isFollowing = fc.following;
+                } catch {}
+            } else {
+                // Fallback to localStorage for non-logged-in visitors
+                const localFollowing = JSON.parse(localStorage.getItem('flower-following') || '[]');
+                isFollowing = localFollowing.includes(id);
+            }
+
+            if (isFollowing) {
                 followBtn.classList.add('active');
                 const icon = followBtn.querySelector('i');
                 icon.classList.remove('bi-heart');
                 icon.classList.add('bi-heart-fill');
             }
-            followBtn.addEventListener('click', function() {
-                this.classList.toggle('active');
+
+            followBtn.addEventListener('click', async function() {
+                if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+                    try {
+                        const method = isFollowing ? 'DELETE' : 'POST';
+                        const res = await fetch('/api/users/' + id + '/follow', {
+                            method,
+                            headers: { 'Authorization': 'Bearer ' + getToken() }
+                        }).then(r => r.json());
+                        isFollowing = res.following;
+                    } catch { return; }
+                } else {
+                    isFollowing = !isFollowing;
+                    const arr = JSON.parse(localStorage.getItem('flower-following') || '[]');
+                    const idx = arr.indexOf(id);
+                    if (idx >= 0) arr.splice(idx, 1); else arr.push(id);
+                    localStorage.setItem('flower-following', JSON.stringify(arr));
+                }
+                this.classList.toggle('active', isFollowing);
                 const icon = this.querySelector('i');
-                icon.classList.toggle('bi-heart');
-                icon.classList.toggle('bi-heart-fill');
-                following = JSON.parse(localStorage.getItem(followKey) || '[]');
-                const idx = following.indexOf(id);
-                if (idx >= 0) following.splice(idx, 1);
-                else following.push(id);
-                localStorage.setItem(followKey, JSON.stringify(following));
+                icon.classList.toggle('bi-heart', !isFollowing);
+                icon.classList.toggle('bi-heart-fill', isFollowing);
             });
 
             // Load products

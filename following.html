@@ -60,74 +60,102 @@
     <script src="js/shared/api.js?v=3.4"></script>
     <script>
         async function loadFollowing() {
-            const following = JSON.parse(localStorage.getItem('flower-following') || '[]');
             const grid = document.getElementById('fwGrid');
             const empty = document.getElementById('fwEmpty');
             const count = document.getElementById('fwCount');
 
-            if (!following.length) {
-                grid.style.display = 'none';
-                empty.style.display = 'block';
-                count.textContent = '0 florists';
-                return;
-            }
+            if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+                // Server-side follow list
+                try {
+                    const userId = JSON.parse(atob(getToken().split('.')[1])).id;
+                    const data = await fetch('/api/users/' + userId + '/following', {
+                        headers: { 'Authorization': 'Bearer ' + getToken() }
+                    }).then(r => r.json());
 
-            count.textContent = `${following.length} florist${following.length !== 1 ? 's' : ''}`;
+                    if (!data.length) {
+                        grid.style.display = 'none';
+                        empty.style.display = 'block';
+                        count.textContent = '0 florists';
+                        return;
+                    }
 
-            let florists = [];
-            try {
-                const data = await fetch('/api/products/list/florists').then(r => r.json());
-                florists = data.florists || data || [];
-            } catch {}
+                    count.textContent = `${data.length} florist${data.length !== 1 ? 's' : ''}`;
+                    grid.innerHTML = data.map(f => {
+                        const name = [f.first_name, f.last_name].filter(Boolean).join(' ') || 'Florist';
+                        const initial = name.charAt(0);
+                        return `
+                        <div class="fw-card">
+                            <div class="fw-card-header">
+                                <div class="fw-card-avatar">${f.profile_image ? `<img src="${escapeHtml(f.profile_image)}" alt="${escapeHtml(name)}">` : initial}</div>
+                            </div>
+                            <div class="fw-card-body">
+                                <div class="fw-card-name">${escapeHtml(name)}</div>
+                                <div class="fw-card-specialty">${escapeHtml(f.role || 'Florist')}</div>
+                                <div class="fw-card-actions">
+                                    <a href="florist-profile.html?id=${f.id}" class="btn btn-primary btn-sm">View Profile</a>
+                                    <a href="messages.html?to=${f.id}" class="btn btn-outline btn-sm"><i class="bi bi-chat-dots"></i> Message</a>
+                                    <button class="btn btn-outline btn-sm fw-unfollow" data-id="${f.id}"><i class="bi bi-heart-fill"></i></button>
+                                </div>
+                            </div>
+                        </div>`;
+                    }).join('');
 
-            const matched = florists.filter(f => following.includes(f.id));
-
-            if (!matched.length) {
-                grid.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:2rem;grid-column:1/-1;">No followed florists found. They may have deactivated their account.</p>';
-                return;
-            }
-
-            grid.innerHTML = matched.map(f => `
-                <div class="fw-card">
-                    <div class="fw-card-header">
-                        <div class="fw-card-avatar">${f.image ? `<img src="${escapeHtml(f.image)}" alt="${escapeHtml(f.name)}">` : (f.name || '?')[0]}</div>
-                    </div>
-                    <div class="fw-card-body">
-                        <div class="fw-card-name">${escapeHtml(f.name)}</div>
-                        <div class="fw-card-specialty">${escapeHtml(f.role || f.specialty || 'Florist')}</div>
-                        <div class="fw-card-meta">
-                            <span><i class="bi bi-geo-alt"></i> ${escapeHtml(f.location || 'Accra')}</span>
+                    document.querySelectorAll('.fw-unfollow').forEach(btn => {
+                        btn.addEventListener('click', async function() {
+                            const targetId = this.dataset.id;
+                            await fetch('/api/users/' + targetId + '/follow', {
+                                method: 'DELETE',
+                                headers: { 'Authorization': 'Bearer ' + getToken() }
+                            });
+                            const card = this.closest('.fw-card');
+                            card.style.transition = 'opacity 0.3s, transform 0.3s';
+                            card.style.opacity = '0';
+                            card.style.transform = 'scale(0.95)';
+                            setTimeout(() => {
+                                card.remove();
+                                const remaining = document.querySelectorAll('.fw-card').length;
+                                count.textContent = `${remaining} florist${remaining !== 1 ? 's' : ''}`;
+                                if (!remaining) { grid.style.display = 'none'; empty.style.display = 'block'; }
+                            }, 300);
+                        });
+                    });
+                } catch { count.textContent = '0 florists'; grid.style.display = 'none'; empty.style.display = 'block'; }
+            } else {
+                // localStorage fallback for non-logged-in users
+                const following = JSON.parse(localStorage.getItem('flower-following') || '[]');
+                if (!following.length) {
+                    grid.style.display = 'none';
+                    empty.style.display = 'block';
+                    count.textContent = '0 florists';
+                    return;
+                }
+                count.textContent = `${following.length} florist${following.length !== 1 ? 's' : ''}`;
+                let florists = [];
+                try {
+                    const data = await fetch('/api/products/list/florists').then(r => r.json());
+                    florists = data.florists || data || [];
+                } catch {}
+                const matched = florists.filter(f => following.includes(f.id));
+                if (!matched.length) {
+                    grid.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:2rem;grid-column:1/-1;">No followed florists found.</p>';
+                    return;
+                }
+                grid.innerHTML = matched.map(f => `
+                    <div class="fw-card">
+                        <div class="fw-card-header">
+                            <div class="fw-card-avatar">${f.image ? `<img src="${escapeHtml(f.image)}" alt="${escapeHtml(f.name)}">` : (f.name || '?')[0]}</div>
                         </div>
-                        <div class="fw-card-actions">
-                            <a href="florist-profile.html?id=${f.id}" class="btn btn-primary btn-sm">View Profile</a>
-                            <a href="messages.html?to=${f.id}" class="btn btn-outline btn-sm"><i class="bi bi-chat-dots"></i> Message</a>
-                            <button class="btn btn-outline btn-sm fw-unfollow" data-id="${f.id}"><i class="bi bi-heart-fill"></i></button>
+                        <div class="fw-card-body">
+                            <div class="fw-card-name">${escapeHtml(f.name)}</div>
+                            <div class="fw-card-specialty">${escapeHtml(f.role || f.specialty || 'Florist')}</div>
+                            <div class="fw-card-actions">
+                                <a href="florist-profile.html?id=${f.id}" class="btn btn-primary btn-sm">View Profile</a>
+                                <a href="messages.html?to=${f.id}" class="btn btn-outline btn-sm"><i class="bi bi-chat-dots"></i> Message</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
-
-            document.querySelectorAll('.fw-unfollow').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const id = this.dataset.id;
-                    let arr = JSON.parse(localStorage.getItem('flower-following') || '[]');
-                    arr = arr.filter(i => i !== id);
-                    localStorage.setItem('flower-following', JSON.stringify(arr));
-                    const card = this.closest('.fw-card');
-                    card.style.transition = 'opacity 0.3s, transform 0.3s';
-                    card.style.opacity = '0';
-                    card.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        card.remove();
-                        const remaining = document.querySelectorAll('.fw-card').length;
-                        count.textContent = `${remaining} florist${remaining !== 1 ? 's' : ''}`;
-                        if (!remaining) {
-                            grid.style.display = 'none';
-                            empty.style.display = 'block';
-                        }
-                    }, 300);
-                });
-            });
+                `).join('');
+            }
         }
 
         loadFollowing();

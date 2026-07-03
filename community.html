@@ -203,86 +203,132 @@
     <script src="js/shared/animations.js?v=3.0"></script>
     <script>
         (async () => {
-            const data = await api.fetchJSON('data/community.json');
+            const [discussionsRes, questionsRes, storiesRes, statsRes] = await Promise.all([
+                api.fetchJSON('/api/discussions?limit=5').catch(() => null),
+                api.fetchJSON('/api/qa/questions?limit=4&sort=votes').catch(() => null),
+                api.fetchJSON('/api/stories/featured').catch(() => null),
+                api.fetchJSON('/api/discussions/stats/overview').catch(() => null)
+            ]);
 
-            // Discussions
+            // Update hero stats from live data
+            if (statsRes) {
+                const statEls = document.querySelectorAll('.stat-number');
+                if (statEls[0] && statsRes.members) statEls[0].textContent = statsRes.members >= 1000 ? Math.round(statsRes.members / 1000) + 'K' : statsRes.members;
+                if (statEls[1] && statsRes.discussions) statEls[1].textContent = statsRes.discussions >= 1000 ? Math.round(statsRes.discussions / 1000) + 'K' : statsRes.discussions;
+            }
+
+            // Discussions — handle both community.discussions and community.posts shapes
             const discussionList = document.getElementById('discussionList');
-            discussionList.innerHTML = data.discussions.map(d => `
-                <div class="discussion-item${d.pinned ? ' pinned' : ''}" style="cursor:pointer;" onclick="window.location.href='discussion-detail.html?id=${d.id}'">
-                    <div class="discussion-avatar">${d.avatar}</div>
-                    <div>
-                        <h4 style="font-size:1rem; margin-bottom:0.15rem;">
-                            ${d.pinned ? '<span class="pinned-badge">?? Pinned</span>' : ''}
-                            ${d.title}
-                        </h4>
-                        <div style="font-size:0.85rem; color:var(--text-light);">
-                            by ${d.author} — <span class="category-chip">${d.category}</span>
+            const discussions = (discussionsRes && discussionsRes.discussions) || [];
+            if (discussions.length) {
+                discussionList.innerHTML = discussions.map(d => {
+                    const author = d.author_name || [d.first_name, d.last_name].filter(Boolean).join(' ') || 'Anonymous';
+                    const initial = author.charAt(0).toUpperCase();
+                    const replies = d.reply_count != null ? d.reply_count : (d.comment_count || 0);
+                    const views = d.views != null ? d.views : (d.view_count || 0);
+                    const category = d.category_name || d.category || 'General';
+                    const excerpt = d.excerpt || (d.content || '').slice(0, 160);
+                    return `
+                    <div class="discussion-item${d.is_pinned ? ' pinned' : ''}" style="cursor:pointer;" onclick="window.location.href='discussion-detail.html?id=${d.id}'">
+                        <div class="discussion-avatar">${d.author_avatar ? `<img src="${escapeAttr(d.author_avatar)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" alt="">` : initial}</div>
+                        <div>
+                            <h4 style="font-size:1rem; margin-bottom:0.15rem;">
+                                ${d.is_pinned ? '<span class="pinned-badge">📌 Pinned</span>' : ''}
+                                ${escapeHtml(d.title)}
+                            </h4>
+                            <div style="font-size:0.85rem; color:var(--text-light);">
+                                by ${escapeHtml(author)} — <span class="category-chip">${escapeHtml(category)}</span>
+                            </div>
+                            <p style="font-size:0.9rem; color:var(--text-light); margin-top:0.5rem; line-height:1.5;">${escapeHtml(excerpt)}</p>
+                            <div class="discussion-meta">
+                                <span><i class="bi bi-chat-dots"></i> ${replies} replies</span>
+                                <span><i class="bi bi-eye"></i> ${views} views</span>
+                                <span><i class="bi bi-clock"></i> ${timeAgo(d.created_at)}</span>
+                            </div>
                         </div>
-                        <p style="font-size:0.9rem; color:var(--text-light); margin-top:0.5rem; line-height:1.5;">${d.excerpt}</p>
-                        <div class="discussion-meta">
-                            <span><i class="bi bi-chat-dots"></i> ${d.replies} replies</span>
-                            <span><i class="bi bi-eye"></i> ${d.views} views</span>
-                            <span><i class="bi bi-clock"></i> ${d.lastActive}</span>
+                        <div class="discussion-stats">
+                            <span><i class="bi bi-chat-dots"></i> ${replies}</span>
+                            <span style="font-size:0.75rem;">replies</span>
                         </div>
-                    </div>
-                    <div class="discussion-stats">
-                        <span><i class="bi bi-chat-dots"></i> ${d.replies}</span>
-                        <span style="font-size:0.75rem;">replies</span>
-                    </div>
-                </div>
-            `).join('');
+                    </div>`;
+                }).join('');
+            } else {
+                discussionList.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">No discussions yet. <a href="create-discussion.html" style="color:var(--primary-color);">Start one!</a></p>';
+            }
 
             // Q&A
             const questionList = document.getElementById('questionList');
-            questionList.innerHTML = data.questions.map(q => `
-                <div class="question-card">
-                    <div>
-                        <h4>${q.title}</h4>
-                        <div class="q-meta">by ${q.author} — ${q.timeAgo} — <span class="category-chip">${q.category}</span></div>
+            const questions = (questionsRes && questionsRes.questions) || [];
+            if (questions.length) {
+                questionList.innerHTML = questions.map(q => `
+                    <div class="question-card" style="cursor:pointer;" onclick="window.location.href='question-detail.html?id=${q.id}'">
+                        <div>
+                            <h4>${escapeHtml(q.title)}</h4>
+                            <div class="q-meta">by ${escapeHtml(q.author_name || 'Anonymous')} — ${timeAgo(q.created_at)} — <span class="category-chip">${escapeHtml(q.category_name || 'General')}</span></div>
+                        </div>
+                        <div class="q-stats">
+                            <strong>${q.answer_count}</strong> answers<br>
+                            <span>${q.upvotes || 0} votes</span>
+                        </div>
                     </div>
-                    <div class="q-stats">
-                        <strong>${q.answers}</strong> answers<br>
-                        <span>${q.votes} votes</span>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            } else {
+                questionList.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">No questions yet. <a href="ask-question.html" style="color:var(--primary-color);">Ask one!</a></p>';
+            }
 
             // Success Stories
             const storyGrid = document.getElementById('storyGrid');
-            storyGrid.innerHTML = data.successStories.map(s => `
-                <div class="story-card">
-                    <img loading="lazy" src="${s.image}" alt="${s.title}">
-                    <div class="story-body">
-                        <h3>${s.title}</h3>
-                        <div class="story-author">${s.avatar} ${s.author} — ${s.role}</div>
-                        <p>${s.story}</p>
-                        <div style="margin-top:0.75rem; display:flex; gap:1rem; font-size:0.85rem; color:var(--text-light);">
-                            <span><i class="bi bi-heart" style="color:var(--error-color);"></i> ${s.likes}</span>
-                            <span><i class="bi bi-chat-dots"></i> ${s.comments}</span>
+            const stories = Array.isArray(storiesRes) ? storiesRes : (storiesRes && storiesRes.stories) || [];
+            if (stories.length) {
+                storyGrid.innerHTML = stories.slice(0, 3).map(s => `
+                    <div class="story-card">
+                        <img loading="lazy" src="${escapeAttr(s.cover_image || s.thumbnail || placeholderImg(0))}" alt="${escapeHtml(s.title)}">
+                        <div class="story-body">
+                            <h3>${escapeHtml(s.title)}</h3>
+                            <div class="story-author">${escapeHtml(s.author_name || 'Community Member')} — ${escapeHtml(s.category || 'Story')}</div>
+                            <p>${escapeHtml((s.content || '').slice(0, 160))}</p>
+                            <div style="margin-top:0.75rem; display:flex; gap:1rem; font-size:0.85rem; color:var(--text-light);">
+                                <span><i class="bi bi-heart" style="color:var(--error-color);"></i> ${s.like_count || 0}</span>
+                                <span><i class="bi bi-chat-dots"></i> ${s.comment_count || 0}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            } else {
+                storyGrid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">No stories shared yet.</p>';
+            }
 
-            // Challenges
+            // Challenges — static fallback (no backend yet)
+            const challengeData = [
+                { name: 'Spring Centerpiece Challenge', participants: 342, entries: 89, endsIn: '12 days', prize: 'Featured on homepage', description: 'Create your best spring-themed centerpiece using at least three seasonal flowers. Share your process and final arrangement.' },
+                { name: 'Best Rose Photo', participants: 215, entries: 56, endsIn: '5 days', prize: '$50 gift card', description: 'Capture the most stunning rose photograph. Any variety, any setting. Judged on composition, lighting, and creativity.' },
+                { name: '30-Day Flower Journal', participants: 128, entries: 0, endsIn: 'Starts in 3 days', prize: 'Premium plan upgrade', description: 'Document your garden or flower care routine for 30 consecutive days. Share weekly updates and a final recap.' }
+            ];
             const challengeGrid = document.getElementById('challengeGrid');
-            challengeGrid.innerHTML = data.challenges.map(c => `
+            challengeGrid.innerHTML = challengeData.map(c => `
                 <div class="challenge-card">
-                    <div class="challenge-icon">??</div>
-                    <h3>${c.name}</h3>
+                    <div class="challenge-icon">🏆</div>
+                    <h3>${escapeHtml(c.name)}</h3>
                     <div class="challenge-meta">
                         <span><i class="bi bi-people"></i> ${c.participants} participants</span> — 
                         <span>${c.entries} entries</span> — 
-                        <span>Ends ${c.endsIn}</span>
+                        <span>Ends ${escapeHtml(c.endsIn)}</span>
                     </div>
-                    <p>${c.description}</p>
+                    <p>${escapeHtml(c.description)}</p>
                     <div style="margin-top:1rem; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.8rem; color:var(--text-light);"><i class="bi bi-gift"></i> ${c.prize}</span>
+                        <span style="font-size:0.8rem; color:var(--text-light);"><i class="bi bi-gift"></i> ${escapeHtml(c.prize)}</span>
                         <a href="community.html" class="btn btn-primary btn-sm">Join Challenge</a>
                     </div>
                 </div>
             `).join('');
         })();
+
+        function placeholderImg(seed) {
+            const colors = ['FF5FA2','e84393','6C5CE7','00B894','FDCB6E','E17055','0984E3'];
+            const c = colors[(seed || 0) % colors.length];
+            return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect fill="#${c}" width="400" height="300" rx="12"/><text x="200" y="170" text-anchor="middle" fill="white" font-size="60" font-family="Arial" font-weight="bold">F</text></svg>`)}`;
+        }
+        function escapeAttr(s) { return (s || '').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
     </script>
     <script>
         document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
