@@ -116,6 +116,58 @@ async function run() {
             }
         }
 
+        // Run community discussions schema
+        const discussionsPath = path.join(__dirname, 'sql', 'discussions.sql');
+        if (fs.existsSync(discussionsPath)) {
+            const discussions = fs.readFileSync(discussionsPath, 'utf8');
+            console.log('Running discussions.sql...');
+            try {
+                await client.query(discussions);
+                console.log('Discussions schema applied.');
+            } catch (e) {
+                console.log('Discussions schema partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
+        // Run Q&A system schema
+        const qaPath = path.join(__dirname, 'sql', 'qa-system.sql');
+        if (fs.existsSync(qaPath)) {
+            const qa = fs.readFileSync(qaPath, 'utf8');
+            console.log('Running qa-system.sql...');
+            try {
+                await client.query(qa);
+                console.log('QA system schema applied.');
+            } catch (e) {
+                console.log('QA system schema partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
+        // Run success stories schema
+        const storiesPath = path.join(__dirname, 'sql', 'success-stories.sql');
+        if (fs.existsSync(storiesPath)) {
+            const stories = fs.readFileSync(storiesPath, 'utf8');
+            console.log('Running success-stories.sql...');
+            try {
+                await client.query(stories);
+                console.log('Success stories schema applied.');
+            } catch (e) {
+                console.log('Success stories schema partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
+        // Run follows schema
+        const followsPath = path.join(__dirname, 'sql', 'follows.sql');
+        if (fs.existsSync(followsPath)) {
+            const follows = fs.readFileSync(followsPath, 'utf8');
+            console.log('Running follows.sql...');
+            try {
+                await client.query(follows);
+                console.log('Follows schema applied.');
+            } catch (e) {
+                console.log('Follows schema partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
         console.log('Database initialized successfully.');
     } catch (err) {
         console.error('DB init error:', err.message);
