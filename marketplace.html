@@ -764,16 +764,40 @@
         }
 
         // ─── Helpers ───────────────────────────────────────────────────
-        function addToCart(id, name, price, image) {
-            try {
-                let cart = JSON.parse(localStorage.getItem('flower-cart') || '[]');
-                const existing = cart.find(i => i.id === id);
-                if (existing) existing.qty = (existing.qty || 1) + 1;
-                else cart.push({ id, name, price, image, qty: 1 });
-                localStorage.setItem('flower-cart', JSON.stringify(cart));
-                if (typeof updateAllBadges === 'function') updateAllBadges();
-                if (typeof window.showToast === 'function') window.showToast('Added to cart!', 'success');
-            } catch {}
+        async function addToCart(id, name, price, image) {
+            // Update localStorage immediately for fast UI feedback
+            let cart = JSON.parse(localStorage.getItem('flower-cart') || '[]');
+            const existing = cart.find(i => i.id === id);
+            if (existing) existing.qty = (existing.qty || 1) + 1;
+            else cart.push({ id, name, price, image, qty: 1 });
+            localStorage.setItem('flower-cart', JSON.stringify(cart));
+            if (typeof updateAllBadges === 'function') updateAllBadges();
+
+            // Sync to server when logged in
+            const token = localStorage.getItem('flower-token');
+            if (token) {
+                try {
+                    const res = await fetch('/api/cart/items', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                        body: JSON.stringify({ product_id: id, quantity: 1 })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        // Reconcile localStorage with server cart
+                        if (data.items) {
+                            const serverCart = data.items.map(i => ({
+                                id: i.product_id, name: i.name, price: parseFloat(i.price),
+                                image: (i.images && i.images[0]) || i.image || '', qty: i.quantity,
+                                cartItemId: i.id
+                            }));
+                            localStorage.setItem('flower-cart', JSON.stringify(serverCart));
+                        }
+                        if (typeof updateAllBadges === 'function') updateAllBadges();
+                    }
+                } catch {}
+            }
+            if (typeof window.showToast === 'function') window.showToast('Added to cart!', 'success');
         }
 
         function toggleSidebar(open) {

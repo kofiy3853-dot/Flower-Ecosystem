@@ -59,7 +59,7 @@
         const code = inp ? inp.value.trim() : '';
         if (!code) { msg.textContent = 'Enter a coupon code'; msg.style.color = 'var(--error-color)'; msg.style.display = 'block'; return; }
         try {
-            const res = await fetch('/api/coupons/validate', {
+            const res = await fetch('/api/products/coupons/validate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code, cart_total: subtotal })

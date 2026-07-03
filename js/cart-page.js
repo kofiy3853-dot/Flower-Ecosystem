@@ -77,7 +77,7 @@ function renderSavedItems(savedData, container) {
                 <div class="cart-item-top">
                     <div>
                         <a href="product-detail.html?id=${escapeHtml(String(item.id))}" class="cart-item-name">${escapeHtml(item.name)}</a>
-                        <p class="cart-item-price">$${Number(item.price).toFixed(2)}</p>
+                        <p class="cart-item-price">${item.currency || 'GHS'} ${Number(item.price).toFixed(2)}</p>
                     </div>
                     <button class="cart-item-remove" data-action="unsave" data-idx="${idx}" aria-label="Remove from saved" title="Remove">
                         <i class="bi bi-x"></i>
@@ -131,6 +131,16 @@ function userLoggedIn() {
     return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token');
 }
 
+function handleError(err, msg) {
+    console.error(msg, err);
+    if (typeof showToast === 'function') showToast(msg, 'error');
+}
+
+function authHeaders() {
+    const token = localStorage.getItem('flower-token');
+    return token ? { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } : { 'Content-Type': 'application/json' };
+}
+
 async function handleCartAction(action, idx, delta) {
     let cart, saved;
     try { cart = JSON.parse(localStorage.getItem('flower-cart')) || []; } catch { cart = []; }
@@ -179,11 +189,26 @@ async function handleCartAction(action, idx, delta) {
         const item = saved.splice(idx, 1)[0];
         if (userLoggedIn()) {
             try {
-                await fetch('/api/cart/items', {
+                const res = await fetch('/api/cart/items', {
                     method: 'POST',
                     headers: authHeaders(),
                     body: JSON.stringify({ product_id: item.id, quantity: item.qty || 1 })
                 });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.items) {
+                        const serverCart = data.items.map(i => ({
+                            id: i.product_id, name: i.name, price: parseFloat(i.price),
+                            image: (i.images && i.images[0]) || i.image || '', qty: i.quantity,
+                            cartItemId: i.id
+                        }));
+                        localStorage.setItem('flower-cart', JSON.stringify(serverCart));
+                        localStorage.setItem('flower-saved', JSON.stringify(saved));
+                        updateCartBadge();
+                        renderCart();
+                        return;
+                    }
+                }
             } catch (err) { handleError(err, 'Failed to add item'); }
         }
         const existing = cart.find(i => i.id === item.id);
@@ -205,24 +230,32 @@ function applyPromoCode() {
     const code = input.value.trim().toUpperCase();
     if (!code) { msg.textContent = 'Please enter a promo code'; msg.className = 'promo-msg promo-error'; return; }
 
-    const promos = { 'FLORAL10': 10, 'SPRING15': 15, 'WELCOME20': 20 };
-    const discount = promos[code];
+    let cart;
+    try { cart = JSON.parse(localStorage.getItem('flower-cart')) || []; } catch { cart = []; }
+    const subtotal = cart.reduce((sum, item) => sum + item.price * (item.qty || 1), 0);
+    const currency = cart[0]?.currency || 'GHS';
 
-    if (discount) {
-        let cart;
-        try { cart = JSON.parse(localStorage.getItem('flower-cart')) || []; } catch { cart = []; }
-        const subtotal = cart.reduce((sum, item) => sum + item.price * (item.qty || 1), 0);
-        const currency = cart[0]?.currency || 'GHS';
-        const discountAmount = Math.min(subtotal * (discount / 100), subtotal);
+    fetch('/api/products/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, cart_total: subtotal })
+    })
+    .then(res => res.json().then(data => ({ ok: res.ok, data })))
+    .then(({ ok, data }) => {
+        if (!ok || !data.valid) throw new Error(data.error || 'Invalid coupon');
+        const discountAmount = Math.min(data.discount, subtotal);
         sessionStorage.setItem('cart-discount', discountAmount.toFixed(2));
+        sessionStorage.setItem('cart-coupon', code);
+        sessionStorage.setItem('cart-coupon-id', data.coupon.id);
         msg.textContent = `Code applied! ${currency} ${discountAmount.toFixed(2)} off your order.`;
         msg.className = 'promo-msg promo-success';
         input.value = '';
         renderCart();
-    } else {
-        msg.textContent = 'Invalid promo code. Try FLORAL10, SPRING15, or WELCOME20.';
+    })
+    .catch(e => {
+        msg.textContent = e.message || 'Invalid promo code';
         msg.className = 'promo-msg promo-error';
-    }
+    });
 }
 
 document.addEventListener('click', (e) => {
