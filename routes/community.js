@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const path = require('path');
-const { pool, JWT_SECRET, upload, asyncHandler, escapeHtml, dbAvailable, readJSON, requireAuth, requireRole, getFileUrl, rateLimiter } = require('./middleware');
+const { pool, JWT_SECRET, upload, asyncHandler, escapeHtml, dbAvailable, readJSON, requireAuth, getFileUrl, rateLimiter } = require('./middleware');
 const { checkAndAwardBadges } = require('./badges');
 
 const writeLimiter = rateLimiter(20, 60000);

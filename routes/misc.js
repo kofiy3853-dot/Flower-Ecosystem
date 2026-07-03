@@ -2,7 +2,7 @@ const router = require('express').Router();
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
-const { pool, JWT_SECRET, upload, uploadVideo, rateLimiter, asyncHandler, escapeHtml, dbAvailable, requireAuth, getFileUrl, useCloudinary } = require('./middleware');
+const { pool, JWT_SECRET, upload, uploadVideo, rateLimiter, asyncHandler, escapeHtml, dbAvailable, requireAuth, getFileUrl } = require('./middleware');
 
 function getVideoDuration(filePath) {
     return new Promise((resolve) => {
@@ -60,29 +60,6 @@ router.post('/newsletter/subscribe', asyncHandler(async (req, res) => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Invalid email format' });
     console.log(`Newsletter subscription: ${email}`);
     res.json({ message: 'Successfully subscribed' });
-}));
-
-// AI Flower Scan — redirects to the real OpenAI-powered endpoint
-router.post('/ai/flower-scan', requireAuth, upload.single('image'), asyncHandler(async (req, res) => {
-    if (!req.file) return res.status(400).json({ error: 'Image file required' });
-    const forwardReq = require('http').request({
-        hostname: 'localhost',
-        port: process.env.PORT || 3000,
-        path: '/api/openrouter/analyze-flower',
-        method: 'POST',
-        headers: {
-            'Content-Type': req.headers['content-type'],
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    }, (proxyRes) => {
-        let body = '';
-        proxyRes.on('data', (chunk) => body += chunk);
-        proxyRes.on('end', () => {
-            res.status(proxyRes.statusCode).setHeader('Content-Type', 'application/json').end(body);
-        });
-    });
-    forwardReq.on('error', () => res.status(500).json({ error: 'AI analysis unavailable' }));
-    req.pipe(forwardReq);
 }));
 
 // Image Upload

@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const path = require('path');
-const { pool, JWT_SECRET, upload, asyncHandler, escapeHtml, dbAvailable, readJSON, requireAuth, getFileUrl } = require('./middleware');
+const { pool, JWT_SECRET, upload, asyncHandler, escapeHtml, dbAvailable, requireAuth, getFileUrl } = require('./middleware');
 
 async function getUser(req) {
     if (req.headers.authorization) {

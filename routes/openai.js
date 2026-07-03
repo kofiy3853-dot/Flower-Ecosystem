@@ -54,8 +54,6 @@ async function getImageBase64(file) {
     }
 }
 
-// ─── Existing endpoints ────────────────────────────────────────────────────
-
 router.post('/analyze-flower', requireAuth, upload.single('image'), asyncHandler(async (req, res) => {
     if (!OPENROUTER_API_KEY) return res.status(500).json({ error: 'OpenRouter API key not configured' });
 
@@ -97,40 +95,7 @@ router.post('/analyze-flower', requireAuth, upload.single('image'), asyncHandler
     }
 }));
 
-router.post('/recommendations', asyncHandler(async (req, res) => {
-    if (!OPENROUTER_API_KEY) return res.status(500).json({ error: 'OpenRouter API key not configured' });
-    const { occasion, color, budget } = req.body;
-    try {
-        const prompt = `Recommend 3-5 flower types for ${occasion || 'general use'}` + (color ? ` with ${color} color` : '') + (budget ? ` within a $${budget} budget` : '') + '. For each recommendation, provide: flower name, why it fits, and estimated price range. Respond in JSON format with a "recommendations" array.';
-        const content = await callOpenRouter([{ role: 'user', content: prompt }]);
-        let recommendations;
-        try { recommendations = JSON.parse(content); } catch { recommendations = { raw: content }; }
-        res.json({ recommendations });
-    } catch (error) {
-        console.error('OpenRouter API error:', error);
-        res.status(500).json({ error: 'Failed to get recommendations', details: error.message });
-    }
-}));
-
-router.post('/chat', asyncHandler(async (req, res) => {
-    if (!OPENROUTER_API_KEY) return res.status(500).json({ error: 'OpenRouter API key not configured' });
-    const { message, history = [] } = req.body;
-    if (!message) return res.status(400).json({ error: 'message is required' });
-    try {
-        const messages = [
-            { role: 'system', content: 'You are a helpful flower and gardening assistant. Provide accurate, practical advice about flowers, plants, gardening, and floral arrangements. Be concise and friendly.' },
-            ...history,
-            { role: 'user', content: message }
-        ];
-        const reply = await callOpenRouter(messages, 300);
-        res.json({ reply });
-    } catch (error) {
-        console.error('OpenRouter API error:', error);
-        res.status(500).json({ error: 'Failed to get chat response', details: error.message });
-    }
-}));
-
-// ─── NEW: Flower Expert endpoint ──────────────────────────────────────────
+// ─── Flower Expert endpoint ──────────────────────────────────────────
 
 router.post('/flower-expert', requireAuth, upload.single('image'), asyncHandler(async (req, res) => {
     if (!OPENROUTER_API_KEY) return res.status(500).json({ error: 'OpenRouter API key not configured' });
