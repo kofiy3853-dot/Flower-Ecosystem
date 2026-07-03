@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Browse upcoming floristry events, workshops, webinars, flower shows, exhibitions and competitions on Flower Ecosystem.">
+    <meta name="description" content="Discover floral events, workshops, webinars, exhibitions, and competitions. Register, attend, and connect with the flower community.">
     <title>Events & Workshops | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,146 +12,568 @@
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
-        .events-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
-        .events-search { display:flex; gap:0.5rem; flex:1; max-width:400px; }
-        .events-search input { flex:1; padding:0.6rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.9rem; background:var(--bg-white); color:var(--text-main); }
-        .events-search input:focus { outline:none; border-color:var(--primary-color); }
-        .events-actions { display:flex; gap:0.5rem; }
-        .category-tabs { display:flex; gap:0.5rem; overflow-x:auto; padding-bottom:0.5rem; margin-bottom:1.5rem; scrollbar-width:thin; }
-        .category-tab { padding:0.5rem 1rem; border:1px solid var(--border-color); border-radius:20px; font-size:0.85rem; white-space:nowrap; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; }
-        .category-tab:hover { border-color:var(--primary-color); color:var(--primary-color); }
-        .category-tab.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
-        .featured-banner { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; margin-bottom:2rem; display:grid; grid-template-columns:1fr 1fr; }
-        .featured-img { height:100%; min-height:300px; object-fit:cover; }
-        .featured-info { padding:2rem; display:flex; flex-direction:column; justify-content:center; }
-        .featured-badge { display:inline-flex; align-items:center; gap:0.3rem; background:var(--accent-gold); color:white; font-size:0.7rem; font-weight:600; padding:0.25rem 0.75rem; border-radius:12px; margin-bottom:0.75rem; width:fit-content; }
-        .featured-info h2 { font-size:1.5rem; margin-bottom:0.5rem; }
-        .featured-meta { display:flex; gap:1.5rem; flex-wrap:wrap; margin:0.75rem 0; }
-        .featured-meta span { display:flex; align-items:center; gap:0.3rem; font-size:0.88rem; color:var(--text-light); }
-        .featured-desc { font-size:0.9rem; color:var(--text-light); line-height:1.6; margin-bottom:1rem; }
-        .featured-footer { display:flex; gap:0.75rem; align-items:center; }
-        .view-toggle { display:flex; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.2rem; }
-        .view-btn { padding:0.4rem 0.75rem; border:none; background:none; border-radius:var(--radius-sm); cursor:pointer; font-size:0.85rem; color:var(--text-light); transition:all 0.2s; }
-        .view-btn.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
-        .sort-tabs { display:flex; gap:0.25rem; margin-bottom:1rem; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.25rem; }
-        .sort-tab { padding:0.4rem 0.75rem; border-radius:var(--radius-sm); font-size:0.8rem; cursor:pointer; color:var(--text-light); transition:all 0.2s; border:none; background:none; }
-        .sort-tab.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
-        .events-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
-        .event-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; transition:all 0.3s; display:flex; flex-direction:column; cursor:pointer; }
-        .event-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
-        .event-img-wrap { position:relative; height:180px; overflow:hidden; }
-        .event-img-wrap img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
-        .event-card:hover .event-img-wrap img { transform:scale(1.05); }
-        .event-date-badge { position:absolute; top:0.75rem; left:0.75rem; background:var(--primary-color); color:white; padding:0.5rem 0.75rem; border-radius:8px; text-align:center; min-width:52px; line-height:1.2; }
-        .event-date-badge .day { font-size:1.3rem; font-weight:700; display:block; }
-        .event-date-badge .month { font-size:0.65rem; text-transform:uppercase; opacity:0.85; }
-        .event-type-badge { position:absolute; top:0.75rem; right:0.75rem; background:rgba(0,0,0,0.6); color:white; font-size:0.7rem; padding:0.2rem 0.5rem; border-radius:4px; }
-        .event-body { padding:1rem 1.25rem 1.25rem; flex-grow:1; display:flex; flex-direction:column; }
-        .event-category { display:inline-block; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-green); margin-bottom:0.3rem; }
-        .event-body h3 { font-size:1rem; margin-bottom:0.4rem; line-height:1.3; }
-        .event-meta { display:flex; gap:0.75rem; flex-wrap:wrap; font-size:0.8rem; color:var(--text-light); margin-bottom:0.5rem; }
-        .event-meta span { display:flex; align-items:center; gap:0.2rem; }
-        .event-desc { font-size:0.85rem; color:var(--text-light); line-height:1.5; flex-grow:1; margin-bottom:0.75rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-        .event-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid var(--border-light); }
-        .event-price { font-weight:600; color:var(--primary-color); }
-        .event-price.free { color:var(--accent-green); }
-        .events-list { display:flex; flex-direction:column; gap:0.75rem; }
-        .event-list-item { display:grid; grid-template-columns:auto 1fr auto; gap:1rem; padding:1rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s; }
-        .event-list-item:hover { border-color:var(--primary-color); box-shadow:var(--shadow-sm); }
-        .event-list-date { width:60px; text-align:center; background:var(--primary-light); border-radius:var(--radius-sm); padding:0.5rem; flex-shrink:0; }
-        .event-list-date .day { font-size:1.2rem; font-weight:700; color:var(--primary-color); display:block; }
-        .event-list-date .month { font-size:0.7rem; color:var(--primary-color); text-transform:uppercase; }
-        .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; }
-        .calendar-header { padding:0.75rem; text-align:center; font-weight:600; font-size:0.8rem; background:var(--bg-light); color:var(--text-light); }
-        .calendar-day { min-height:100px; padding:0.5rem; border:1px solid var(--border-light); font-size:0.85rem; }
-        .calendar-day.other-month { opacity:0.4; }
-        .calendar-day .day-num { font-weight:500; margin-bottom:0.25rem; }
-        .calendar-event { font-size:0.7rem; padding:0.15rem 0.3rem; border-radius:3px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
-        .calendar-event.workshop { background:rgba(16,185,129,0.15); color:var(--accent-green); }
-        .calendar-event.webinar { background:rgba(14,165,233,0.15); color:var(--accent-blue); }
-        .calendar-event.exhibition { background:rgba(172,50,80,0.15); color:var(--primary-color); }
-        .calendar-nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
-        .calendar-nav h3 { font-size:1.1rem; }
-        .calendar-nav button { background:none; border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:0.4rem 0.75rem; cursor:pointer; font-size:0.85rem; }
-        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); grid-column:1/-1; }
+        /* ─── Layout ──────────────────────────────────────────────── */
+        .evt-layout { display:grid; grid-template-columns:240px 1fr 280px; gap:1.5rem; }
+        .evt-left, .evt-right { position:sticky; top:80px; align-self:start; max-height:calc(100vh - 100px); overflow-y:auto; }
+        .evt-main { min-width:0; }
+
+        /* ─── Hero ────────────────────────────────────────────────── */
+        .evt-hero { background:linear-gradient(135deg, #fdf2f6 0%, #fce7f0 50%, #f8d7e8 100%); padding:4rem 0 3rem; margin-bottom:2rem; }
+        .evt-hero h1 { font-size:clamp(1.8rem, 3.5vw, 2.5rem); margin-bottom:0.5rem; }
+        .evt-hero p { color:var(--text-light); font-size:1rem; margin-bottom:1.5rem; max-width:600px; }
+        .evt-hero-search { display:flex; background:white; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); overflow:hidden; max-width:560px; }
+        .evt-hero-search input { flex:1; border:none; padding:1rem 1.25rem; font-size:1rem; outline:none; }
+        .evt-hero-search button { border-radius:0 12px 12px 0 !important; padding:1rem 1.5rem !important; }
+        .evt-hero-btns { display:flex; gap:0.75rem; margin-top:1rem; }
+
+        /* ─── Left Sidebar ────────────────────────────────────────── */
+        .evt-sidebar-nav { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:0.75rem; }
+        .evt-nav-item { display:flex; align-items:center; gap:0.7rem; padding:0.55rem 0.8rem; border-radius:var(--radius-sm); font-size:0.88rem; color:var(--text-main); text-decoration:none; transition:all 0.2s; cursor:pointer; }
+        .evt-nav-item:hover { background:var(--bg-light); color:var(--primary-color); }
+        .evt-nav-item.active { background:var(--primary-light); color:var(--primary-color); font-weight:500; }
+        .evt-nav-item i { font-size:1rem; width:20px; text-align:center; flex-shrink:0; }
+        .evt-nav-item .count { margin-left:auto; font-size:0.72rem; background:var(--bg-light); padding:0.1rem 0.45rem; border-radius:10px; color:var(--text-muted); }
+        .evt-nav-divider { height:1px; background:var(--border-light); margin:0.5rem 0.8rem; }
+        .evt-nav-section { font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); padding:0.5rem 0.8rem 0.3rem; }
+
+        /* ─── Mini Calendar ───────────────────────────────────────── */
+        .mini-cal { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1rem; margin-top:1rem; }
+        .mini-cal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; }
+        .mini-cal-header h4 { font-size:0.88rem; }
+        .mini-cal-header button { background:none; border:none; cursor:pointer; color:var(--text-muted); padding:0.2rem; }
+        .mini-cal-header button:hover { color:var(--primary-color); }
+        .mini-cal-grid { display:grid; grid-template-columns:repeat(7, 1fr); gap:2px; text-align:center; }
+        .mini-cal-day { font-size:0.68rem; padding:0.25rem; color:var(--text-muted); font-weight:600; }
+        .mini-cal-date { font-size:0.72rem; padding:0.3rem; border-radius:50%; cursor:pointer; transition:all 0.15s; }
+        .mini-cal-date:hover { background:var(--bg-light); }
+        .mini-cal-date.today { background:var(--primary-color); color:white; font-weight:600; }
+        .mini-cal-date.has-event { position:relative; }
+        .mini-cal-date.has-event::after { content:''; position:absolute; bottom:1px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:var(--accent-green); }
+        .mini-cal-date.other { opacity:0.3; }
+
+        /* ─── Category Cards ──────────────────────────────────────── */
+        .evt-cat-cards { display:grid; grid-template-columns:repeat(4, 1fr); gap:0.6rem; margin-bottom:1.5rem; }
+        .evt-cat-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:0.85rem 0.5rem; cursor:pointer; transition:all 0.25s; text-align:center; }
+        .evt-cat-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); border-color:var(--primary-color); }
+        .evt-cat-card.active { border-color:var(--primary-color); background:var(--primary-light); }
+        .evt-cat-card-icon { font-size:1.4rem; margin-bottom:0.2rem; }
+        .evt-cat-card-name { font-size:0.75rem; font-weight:500; }
+
+        /* ─── Featured Carousel ───────────────────────────────────── */
+        .evt-featured { position:relative; border-radius:var(--radius-md); overflow:hidden; margin-bottom:1.5rem; background:var(--bg-white); border:1px solid var(--border-color); }
+        .evt-featured-track { display:flex; transition:transform 0.5s ease; }
+        .evt-featured-slide { min-width:100%; position:relative; }
+        .evt-featured-slide img { width:100%; height:360px; object-fit:cover; }
+        .evt-featured-overlay { position:absolute; bottom:0; left:0; right:0; padding:2rem; background:linear-gradient(transparent, rgba(0,0,0,0.8)); color:white; }
+        .evt-featured-badge { display:inline-flex; align-items:center; gap:0.3rem; background:var(--accent-gold); color:white; font-size:0.7rem; font-weight:600; padding:0.2rem 0.6rem; border-radius:4px; margin-bottom:0.5rem; }
+        .evt-featured-overlay h2 { font-size:1.4rem; margin-bottom:0.3rem; }
+        .evt-featured-meta { display:flex; gap:1rem; font-size:0.85rem; opacity:0.9; flex-wrap:wrap; }
+        .evt-featured-meta span { display:flex; align-items:center; gap:0.3rem; }
+        .evt-featured-countdown { display:flex; gap:0.75rem; margin-top:0.75rem; }
+        .evt-countdown-item { text-align:center; }
+        .evt-countdown-num { font-size:1.3rem; font-weight:700; display:block; }
+        .evt-countdown-label { font-size:0.6rem; text-transform:uppercase; opacity:0.8; }
+        .evt-carousel-btn { position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.9); border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.15); z-index:2; transition:all 0.2s; }
+        .evt-carousel-btn:hover { background:white; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+        .evt-carousel-prev { left:1rem; }
+        .evt-carousel-next { right:1rem; }
+        .evt-carousel-dots { position:absolute; bottom:1rem; right:1rem; display:flex; gap:0.4rem; z-index:2; }
+        .evt-carousel-dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.5); cursor:pointer; transition:all 0.2s; }
+        .evt-carousel-dot.active { background:white; width:20px; border-radius:4px; }
+
+        /* ─── Toolbar ─────────────────────────────────────────────── */
+        .evt-toolbar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; }
+        .evt-view-toggle { display:flex; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.2rem; }
+        .evt-view-btn { padding:0.4rem 0.75rem; border:none; background:none; border-radius:var(--radius-sm); cursor:pointer; font-size:0.85rem; color:var(--text-light); transition:all 0.2s; display:flex; align-items:center; gap:0.3rem; }
+        .evt-view-btn.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
+        .evt-sort-tabs { display:flex; gap:0.25rem; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.25rem; }
+        .evt-sort-tab { padding:0.4rem 0.75rem; border-radius:var(--radius-sm); font-size:0.8rem; cursor:pointer; color:var(--text-light); border:none; background:none; transition:all 0.2s; }
+        .evt-sort-tab.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
+        .evt-filter-chips { display:flex; gap:0.4rem; flex-wrap:wrap; }
+        .evt-chip { padding:0.35rem 0.7rem; border:1px solid var(--border-color); border-radius:16px; font-size:0.78rem; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; }
+        .evt-chip:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .evt-chip.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+
+        /* ─── Event Cards ─────────────────────────────────────────── */
+        .evt-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:1.25rem; }
+        .evt-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; transition:all 0.3s; cursor:pointer; display:flex; flex-direction:column; }
+        .evt-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
+        .evt-card-img { position:relative; height:170px; overflow:hidden; }
+        .evt-card-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .evt-card:hover .evt-card-img img { transform:scale(1.05); }
+        .evt-card-date-badge { position:absolute; top:0.75rem; left:0.75rem; background:var(--primary-color); color:white; padding:0.4rem 0.65rem; border-radius:8px; text-align:center; min-width:48px; line-height:1.2; }
+        .evt-card-date-badge .day { font-size:1.2rem; font-weight:700; display:block; }
+        .evt-card-date-badge .month { font-size:0.6rem; text-transform:uppercase; opacity:0.85; }
+        .evt-card-badges { position:absolute; top:0.75rem; right:0.75rem; display:flex; gap:0.3rem; }
+        .evt-badge { padding:0.15rem 0.5rem; border-radius:4px; font-size:0.65rem; font-weight:600; }
+        .evt-badge.featured { background:var(--accent-gold); color:white; }
+        .evt-badge.free { background:var(--accent-green); color:white; }
+        .evt-badge.online { background:var(--accent-blue); color:white; }
+        .evt-badge.limited { background:var(--error-color); color:white; }
+        .evt-badge.sold-out { background:var(--text-muted); color:white; }
+        .evt-card-body { padding:1rem 1.25rem; flex-grow:1; display:flex; flex-direction:column; }
+        .evt-card-category { display:inline-block; font-size:0.68rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-green); margin-bottom:0.3rem; }
+        .evt-card-body h3 { font-size:0.98rem; margin-bottom:0.4rem; line-height:1.3; }
+        .evt-card-meta { display:flex; gap:0.6rem; flex-wrap:wrap; font-size:0.78rem; color:var(--text-light); margin-bottom:0.5rem; }
+        .evt-card-meta span { display:flex; align-items:center; gap:0.2rem; }
+        .evt-card-desc { font-size:0.82rem; color:var(--text-light); line-height:1.5; flex-grow:1; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin-bottom:0.75rem; }
+        .evt-card-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid var(--border-light); }
+        .evt-card-price { font-weight:700; color:var(--primary-color); }
+        .evt-card-price.free { color:var(--accent-green); }
+        .evt-card-spots { font-size:0.75rem; color:var(--text-muted); }
+
+        /* ─── List View ───────────────────────────────────────────── */
+        .evt-list { display:flex; flex-direction:column; gap:0.75rem; }
+        .evt-list-item { display:grid; grid-template-columns:auto 1fr auto; gap:1rem; padding:1rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s; }
+        .evt-list-item:hover { border-color:var(--primary-color); box-shadow:var(--shadow-sm); }
+        .evt-list-date { width:56px; text-align:center; background:var(--primary-light); border-radius:var(--radius-sm); padding:0.5rem; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+        .evt-list-date .day { font-size:1.2rem; font-weight:700; color:var(--primary-color); display:block; }
+        .evt-list-date .month { font-size:0.65rem; color:var(--primary-color); text-transform:uppercase; }
+        .evt-list-body h3 { font-size:0.95rem; margin-bottom:0.25rem; }
+        .evt-list-meta { display:flex; gap:0.75rem; font-size:0.78rem; color:var(--text-light); flex-wrap:wrap; }
+        .evt-list-meta span { display:flex; align-items:center; gap:0.2rem; }
+
+        /* ─── Calendar View ───────────────────────────────────────── */
+        .evt-cal-nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+        .evt-cal-nav h3 { font-size:1.1rem; }
+        .evt-cal-nav button { background:none; border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:0.4rem 0.75rem; cursor:pointer; font-size:0.85rem; }
+        .evt-cal-grid { display:grid; grid-template-columns:repeat(7, 1fr); gap:2px; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; }
+        .evt-cal-header { padding:0.6rem; text-align:center; font-weight:600; font-size:0.78rem; background:var(--bg-light); color:var(--text-light); }
+        .evt-cal-day { min-height:90px; padding:0.4rem; border:1px solid var(--border-light); font-size:0.8rem; }
+        .evt-cal-day.other-month { opacity:0.35; }
+        .evt-cal-day .day-num { font-weight:500; margin-bottom:0.2rem; }
+        .evt-cal-day.today { background:var(--primary-light); }
+        .evt-cal-event { font-size:0.65rem; padding:0.1rem 0.3rem; border-radius:3px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+        .evt-cal-event.workshop { background:rgba(16,185,129,0.15); color:var(--accent-green); }
+        .evt-cal-event.webinar { background:rgba(14,165,233,0.15); color:var(--accent-blue); }
+        .evt-cal-event.exhibition { background:rgba(172,50,80,0.15); color:var(--primary-color); }
+        .evt-cal-event.competition { background:rgba(245,158,11,0.15); color:var(--accent-gold); }
+
+        /* ─── Right Sidebar ───────────────────────────────────────── */
+        .sidebar-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; margin-bottom:1rem; }
+        .sidebar-card h3 { font-size:0.9rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
+        .my-event-item { display:flex; gap:0.75rem; padding:0.5rem 0; border-bottom:1px solid var(--border-light); }
+        .my-event-item:last-child { border-bottom:none; }
+        .my-event-date { width:40px; height:40px; border-radius:8px; background:var(--primary-light); display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0; }
+        .my-event-date .day { font-size:0.9rem; font-weight:700; color:var(--primary-color); line-height:1; }
+        .my-event-date .month { font-size:0.5rem; color:var(--primary-color); text-transform:uppercase; }
+        .my-event-info h4 { font-size:0.82rem; font-weight:500; margin-bottom:0.1rem; }
+        .my-event-info p { font-size:0.72rem; color:var(--text-muted); }
+        .trending-city { display:flex; align-items:center; gap:0.5rem; padding:0.4rem 0; font-size:0.85rem; cursor:pointer; }
+        .trending-city:hover { color:var(--primary-color); }
+        .trending-city .count { margin-left:auto; font-size:0.72rem; color:var(--text-muted); }
+        .suggest-event { padding:0.5rem 0; border-bottom:1px solid var(--border-light); }
+        .suggest-event:last-child { border-bottom:none; }
+        .suggest-event h4 { font-size:0.82rem; font-weight:500; cursor:pointer; }
+        .suggest-event h4:hover { color:var(--primary-color); }
+        .suggest-event p { font-size:0.72rem; color:var(--text-muted); margin-top:0.1rem; }
+        .stat-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; text-align:center; }
+        .stat-item { padding:0.5rem; }
+        .stat-num { font-size:1.2rem; font-weight:700; color:var(--primary-color); }
+        .stat-label { font-size:0.7rem; color:var(--text-light); }
+
+        /* ─── Host CTA ────────────────────────────────────────────── */
+        .evt-host-cta { background:linear-gradient(135deg, var(--primary-light), #fce7f0); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; text-align:center; margin-bottom:1rem; }
+        .evt-host-cta h3 { font-size:1rem; margin-bottom:0.5rem; }
+        .evt-host-cta p { font-size:0.85rem; color:var(--text-light); margin-bottom:1rem; line-height:1.5; }
+
+        /* ─── Modal Styles ────────────────────────────────────────── */
+        .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; display:none; align-items:center; justify-content:center; padding:1rem; }
+        .modal-overlay.open { display:flex; }
+        .modal { background:var(--bg-white); border-radius:var(--radius-md); width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:modalIn 0.2s ease; }
+        @keyframes modalIn { from { opacity:0; transform:scale(0.95) translateY(10px); } to { opacity:1; transform:scale(1) translateY(0); } }
+        .modal-header { display:flex; justify-content:space-between; align-items:center; padding:1.25rem 1.5rem; border-bottom:1px solid var(--border-color); }
+        .modal-header h3 { font-size:1.1rem; }
+        .modal-close { background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text-muted); padding:0; line-height:1; }
+        .modal-close:hover { color:var(--text-main); }
+        .modal-body { padding:1.25rem 1.5rem; }
+        .modal-footer { display:flex; justify-content:flex-end; gap:0.75rem; padding:1rem 1.5rem; border-top:1px solid var(--border-color); }
+        .form-input { width:100%; padding:0.6rem 0.75rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.88rem; font-family:inherit; transition:border-color 0.2s; box-sizing:border-box; }
+        .form-input:focus { outline:none; border-color:var(--primary-color); box-shadow:0 0 0 3px var(--primary-light); }
+        select.form-input { appearance:auto; }
+        textarea.form-input { resize:vertical; }
+
+        /* ─── Toast ────────────────────────────────────────────────── */
+        .evt-toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%); background:#333; color:white; padding:0.75rem 1.5rem; border-radius:8px; font-size:0.88rem; z-index:3000; opacity:0; transition:opacity 0.3s; pointer-events:none; }
+        .evt-toast.show { opacity:1; }
+
+        /* ─── Empty State ─────────────────────────────────────────── */
+        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); }
         .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
+
+        /* ─── Pagination ──────────────────────────────────────────── */
         .pagination { display:flex; justify-content:center; gap:0.25rem; margin-top:1.5rem; }
         .page-btn { padding:0.4rem 0.75rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.85rem; cursor:pointer; background:var(--bg-white); color:var(--text-main); transition:all 0.2s; }
         .page-btn.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
-        .host-cta { display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:center; }
-        .host-features { display:flex; flex-direction:column; gap:1.25rem; background:var(--bg-white); padding:2rem; border-radius:var(--radius-md); border:1px solid var(--border-color); }
-        .host-feature { display:flex; gap:1rem; align-items:flex-start; }
-        .host-feature .icon { font-size:1.5rem; min-width:40px; }
-        .host-feature h4 { margin-bottom:0.25rem; }
-        .host-feature p { color:var(--text-light); font-size:0.9rem; }
-        @media(max-width:1024px) { .events-grid { grid-template-columns:repeat(2,1fr); } .featured-banner { grid-template-columns:1fr; } .featured-img { min-height:200px; } }
-        @media(max-width:768px) { .events-grid { grid-template-columns:1fr; } .host-cta { grid-template-columns:1fr; } .calendar-day { min-height:60px; } }
+        .page-btn:hover:not(.active) { border-color:var(--primary-color); }
+
+        /* ─── Mobile ──────────────────────────────────────────────── */
+        .mobile-filter-btn { display:none; padding:0.5rem 1rem; border:1px solid var(--border-color); background:var(--bg-white); border-radius:var(--radius-sm); font-size:0.85rem; cursor:pointer; align-items:center; gap:0.35rem; }
+        .mobile-filter-drawer { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; display:none; }
+        .mobile-filter-drawer.open { display:block; }
+        .mobile-filter-panel { position:absolute; bottom:0; left:0; right:0; background:var(--bg-white); border-radius:16px 16px 0 0; max-height:85vh; overflow-y:auto; padding:1.5rem; animation:slideUp 0.3s ease; }
+        .mobile-filter-handle { width:40px; height:4px; background:var(--border-color); border-radius:2px; margin:0 auto 1rem; }
+        @keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+        .evt-mobile-nav { display:none; position:fixed; bottom:0; left:0; right:0; background:var(--bg-white); border-top:1px solid var(--border-color); z-index:100; padding:0.5rem 0 env(safe-area-inset-bottom, 0.5rem); }
+        .evt-mobile-nav-inner { display:flex; justify-content:space-around; align-items:center; }
+        .evt-mobile-nav-item { display:flex; flex-direction:column; align-items:center; gap:0.1rem; font-size:0.62rem; color:var(--text-muted); text-decoration:none; padding:0.25rem 0.5rem; }
+        .evt-mobile-nav-item.active { color:var(--primary-color); }
+        .evt-mobile-nav-item i { font-size:1.15rem; }
+        .evt-mobile-fab { width:52px; height:52px; border-radius:50%; background:var(--primary-color); color:white; display:flex; align-items:center; justify-content:center; font-size:1.4rem; margin-top:-1.2rem; box-shadow:var(--shadow-primary); border:none; cursor:pointer; }
+
+        @media(max-width:1200px) { .evt-layout { grid-template-columns:1fr 260px; } .evt-left { display:none; } }
+        @media(max-width:900px) {
+            .evt-layout { grid-template-columns:1fr; }
+            .evt-right { display:none; }
+            .evt-cat-cards { grid-template-columns:repeat(4, 1fr); gap:0.5rem; }
+            .mobile-filter-btn { display:inline-flex; }
+            .evt-mobile-nav { display:block; }
+            body { padding-bottom:80px; }
+        }
+        @media(max-width:640px) {
+            .evt-hero { padding:3rem 0 2rem; }
+            .evt-hero h1 { font-size:1.5rem; }
+            .evt-hero p { font-size:0.9rem; }
+            .evt-hero-search { flex-direction:column; border-radius:12px; }
+            .evt-hero-search input { padding:0.85rem 1rem; font-size:0.9rem; }
+            .evt-hero-search button { border-radius:0 0 12px 12px !important; padding:0.85rem !important; }
+            .evt-hero-btns { flex-direction:column; }
+            .evt-hero-btns .btn { width:100%; justify-content:center; }
+            .evt-cat-cards { grid-template-columns:repeat(4, 1fr); gap:0.4rem; overflow-x:auto; display:flex; scroll-snap-type:x mandatory; scrollbar-width:none; padding-bottom:0.5rem; }
+            .evt-cat-cards::-webkit-scrollbar { display:none; }
+            .evt-cat-card { min-width:70px; scroll-snap-align:start; padding:0.65rem 0.4rem; flex-shrink:0; }
+            .evt-cat-card-icon { font-size:1.2rem; }
+            .evt-cat-card-name { font-size:0.65rem; }
+            .evt-featured-slide img { height:220px; }
+            .evt-featured-overlay { padding:1.25rem; }
+            .evt-featured-overlay h2 { font-size:1.1rem; }
+            .evt-featured-meta { font-size:0.75rem; gap:0.5rem; }
+            .evt-toolbar { flex-direction:column; align-items:stretch; gap:0.5rem; }
+            .evt-sort-tabs { overflow-x:auto; display:flex; scrollbar-width:none; }
+            .evt-sort-tabs::-webkit-scrollbar { display:none; }
+            .evt-sort-tab { white-space:nowrap; font-size:0.75rem; }
+            .evt-filter-chips { overflow-x:auto; display:flex; scrollbar-width:none; flex-wrap:nowrap; }
+            .evt-filter-chips::-webkit-scrollbar { display:none; }
+            .evt-chip { white-space:nowrap; font-size:0.72rem; flex-shrink:0; }
+            .evt-grid { grid-template-columns:1fr; }
+            .evt-card-img { height:160px; }
+            .evt-card-body { padding:0.85rem 1rem; }
+            .evt-card-body h3 { font-size:0.9rem; }
+            .evt-list-item { grid-template-columns:auto 1fr; }
+            .evt-list-date { width:48px; }
+            .evt-cal-day { min-height:60px; padding:0.25rem; }
+            .evt-cal-event { font-size:0.55rem; padding:0.05rem 0.2rem; }
+            .section-padding { padding-left:1rem; padding-right:1rem; }
+            .container { max-width:100%; padding-left:0; padding-right:0; }
+        }
     </style>
 </head>
 <body>
     <div id="header-container"></div>
 
-    <section class="page-header primary-bg text-white section-padding text-center" style="padding-top:5rem; padding-bottom:2.5rem;">
-        <div class="container reveal-up">
-            <span class="subtitle" style="color:rgba(255,255,255,0.7)">JOIN US LIVE</span>
-            <h1 style="color:white;">Events & Workshops</h1>
-            <p class="section-subtitle text-white">Discover flower exhibitions, floristry workshops, webinars, competitions, and community events</p>
+    <!-- ─── Hero ─────────────────────────────────────────────────────── -->
+    <section class="evt-hero">
+        <div class="container">
+            <div class="reveal-up">
+                <span class="subtitle" style="color:var(--primary-color);">DISCOVER & CONNECT</span>
+                <h1>Discover Floral Events<br>Around You</h1>
+                <p>Attend workshops, exhibitions, webinars, competitions, and networking events to grow your skills and connect with the floral community.</p>
+                <div class="evt-hero-search">
+                    <input type="text" id="heroSearch" placeholder="Search events, workshops, exhibitions, cities..." onkeydown="if(event.key==='Enter')searchFromHero()">
+                    <button class="btn btn-primary" onclick="searchFromHero()"><i class="bi bi-search"></i></button>
+                </div>
+                <div class="evt-hero-btns">
+                    <a href="events.html" class="btn btn-primary"><i class="bi bi-compass"></i> Explore Events</a>
+                    <button class="btn btn-outline" onclick="openHostEventModal()"><i class="bi bi-plus-lg"></i> Host an Event</button>
+                </div>
+            </div>
         </div>
     </section>
 
-    <section class="section-padding">
+    <!-- ─── Main Content ─────────────────────────────────────────────── -->
+    <section class="section-padding" style="padding-top:0;">
         <div class="container">
-            <div id="featuredBanner"></div>
+            <!-- Category Cards -->
+            <div class="evt-cat-cards reveal-up" id="catCards"></div>
 
-            <div class="events-header reveal-up">
-                <div class="events-search">
-                    <input type="text" id="eventSearch" placeholder="Search events..." aria-label="Search events">
-                    <button class="btn btn-primary btn-sm" id="eventSearchBtn"><i class="bi bi-search"></i></button>
-                </div>
-                <div class="events-actions">
-                    <div class="view-toggle">
-                        <button class="view-btn active" data-view="grid" title="Grid View"><i class="bi bi-grid-3x3-gap"></i></button>
-                        <button class="view-btn" data-view="list" title="List View"><i class="bi bi-list-ul"></i></button>
-                        <button class="view-btn" data-view="calendar" title="Calendar View"><i class="bi bi-calendar3"></i></button>
+            <div class="evt-layout">
+
+                <!-- ─── Left Sidebar ────────────────────────────────────── -->
+                <aside class="evt-left">
+                    <nav class="evt-sidebar-nav">
+                        <div class="evt-nav-section">Browse</div>
+                        <a class="evt-nav-item active" data-filter="all"><i class="bi bi-calendar-event"></i> All Events</a>
+                        <a class="evt-nav-item" data-filter="upcoming"><i class="bi bi-clock"></i> Upcoming</a>
+                        <a class="evt-nav-item" data-filter="this-week"><i class="bi bi-calendar-week"></i> This Week</a>
+                        <a class="evt-nav-item" data-filter="this-month"><i class="bi bi-calendar-month"></i> This Month</a>
+                        <a class="evt-nav-item" data-filter="past"><i class="bi bi-clock-history"></i> Past Events</a>
+
+                        <div class="evt-nav-divider"></div>
+                        <div class="evt-nav-section">Personal</div>
+                        <a class="evt-nav-item" data-filter="my-events"><i class="bi bi-ticket"></i> My Tickets</a>
+                        <a class="evt-nav-item" data-filter="saved"><i class="bi bi-bookmark"></i> Saved Events</a>
+                        <a class="evt-nav-item" data-filter="hosting"><i class="bi bi-mic"></i> Hosting</a>
+
+                        <div class="evt-nav-divider"></div>
+                        <div class="evt-nav-section">Event Type</div>
+                        <a class="evt-nav-item" data-filter="workshop"><i class="bi bi-tools"></i> Workshops</a>
+                        <a class="evt-nav-item" data-filter="webinar"><i class="bi bi-camera-video"></i> Webinars</a>
+                        <a class="evt-nav-item" data-filter="exhibition"><i class="bi bi-image"></i> Exhibitions</a>
+                        <a class="evt-nav-item" data-filter="competition"><i class="bi bi-trophy"></i> Competitions</a>
+                        <a class="evt-nav-item" data-filter="meetup"><i class="bi bi-people"></i> Meetups</a>
+                    </nav>
+
+                    <!-- Mini Calendar -->
+                    <div class="mini-cal">
+                        <div class="mini-cal-header">
+                            <button onclick="miniCalNav(-1)"><i class="bi bi-chevron-left"></i></button>
+                            <h4 id="miniCalTitle"></h4>
+                            <button onclick="miniCalNav(1)"><i class="bi bi-chevron-right"></i></button>
+                        </div>
+                        <div class="mini-cal-grid" id="miniCalGrid"></div>
                     </div>
-                    <a href="create-event.html" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Create Event</a>
-                </div>
+                </aside>
+
+                <!-- ─── Main Feed ───────────────────────────────────────── -->
+                <main class="evt-main">
+                    <!-- Featured Carousel -->
+                    <div class="evt-featured reveal-up" id="featuredCarousel" style="display:none;">
+                        <div class="evt-featured-track" id="featuredTrack"></div>
+                        <button class="evt-carousel-btn evt-carousel-prev" onclick="carouselNav(-1)"><i class="bi bi-chevron-left"></i></button>
+                        <button class="evt-carousel-btn evt-carousel-next" onclick="carouselNav(1)"><i class="bi bi-chevron-right"></i></button>
+                        <div class="evt-carousel-dots" id="carouselDots"></div>
+                    </div>
+
+                    <!-- Toolbar -->
+                    <div class="evt-toolbar">
+                        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                            <button class="mobile-filter-btn" onclick="openMobileFilter()"><i class="bi bi-funnel"></i> Filters</button>
+                            <div class="evt-sort-tabs" id="sortTabs">
+                                <button class="evt-sort-tab active" data-sort="date">By Date</button>
+                                <button class="evt-sort-tab" data-sort="popular">Most Popular</button>
+                                <button class="evt-sort-tab" data-sort="price_low">Price: Low</button>
+                                <button class="evt-sort-tab" data-sort="newest">Newest</button>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.75rem;">
+                            <div class="evt-filter-chips" id="filterChips">
+                                <span class="evt-chip active" data-filter="all">All</span>
+                                <span class="evt-chip" data-filter="free">Free</span>
+                                <span class="evt-chip" data-filter="online">Online</span>
+                                <span class="evt-chip" data-filter="in-person">In Person</span>
+                            </div>
+                            <div class="evt-view-toggle">
+                                <button class="evt-view-btn active" data-view="grid" onclick="setView('grid')"><i class="bi bi-grid-3x3-gap"></i></button>
+                                <button class="evt-view-btn" data-view="list" onclick="setView('list')"><i class="bi bi-list-ul"></i></button>
+                                <button class="evt-view-btn" data-view="calendar" onclick="setView('calendar')"><i class="bi bi-calendar3"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Events Container -->
+                    <div id="eventsContainer" class="evt-grid"></div>
+                    <div class="pagination" id="pagination"></div>
+                </main>
+
+                <!-- ─── Right Sidebar ───────────────────────────────────── -->
+                <aside class="evt-right">
+                    <!-- Host CTA -->
+                    <div class="evt-host-cta">
+                        <h3><i class="bi bi-megaphone" style="color:var(--primary-color);"></i> Host with Us</h3>
+                        <p>Share your expertise with 89,000+ flower lovers. We handle promotion, registration, and payments.</p>
+                        <button class="btn btn-primary btn-sm" onclick="openHostEventModal()"><i class="bi bi-plus-lg"></i> Create Event</button>
+                    </div>
+
+                    <!-- My Upcoming -->
+                    <div class="sidebar-card" id="myUpcomingCard">
+                        <h3><i class="bi bi-ticket" style="color:var(--primary-color)"></i> My Upcoming Events</h3>
+                        <div id="myUpcomingEvents"></div>
+                    </div>
+
+                    <!-- Suggested Events -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-stars" style="color:var(--accent-gold)"></i> Suggested For You</h3>
+                        <div id="suggestedEvents"></div>
+                    </div>
+
+                    <!-- Upcoming This Week -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-calendar-week" style="color:var(--accent-green)"></i> Upcoming This Week</h3>
+                        <div id="upcomingWeekEvents"></div>
+                    </div>
+
+                    <!-- Popular Organizers -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-person-badge" style="color:var(--primary-color)"></i> Popular Organizers</h3>
+                        <div id="popularOrganizers"></div>
+                    </div>
+
+                    <!-- Recently Added -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-clock-history" style="color:var(--accent-blue)"></i> Recently Added</h3>
+                        <div id="recentlyAddedEvents"></div>
+                    </div>
+
+                    <!-- Trending Locations -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-geo-alt" style="color:var(--primary-color)"></i> Trending Locations</h3>
+                        <div id="trendingLocations"></div>
+                    </div>
+
+                    <!-- Event Stats -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-bar-chart" style="color:var(--primary-color)"></i> Event Stats</h3>
+                        <div class="stat-grid" id="eventStatsGrid"></div>
+                    </div>
+                </aside>
             </div>
-
-            <div class="category-tabs reveal-up" id="categoryTabs"></div>
-
-            <div class="sort-tabs reveal-up" id="sortTabs">
-                <button class="sort-tab active" data-sort="date">By Date</button>
-                <button class="sort-tab" data-sort="newest">Newest</button>
-                <button class="sort-tab" data-sort="price_low">Price: Low</button>
-                <button class="sort-tab" data-sort="price_high">Price: High</button>
-                <button class="sort-tab" data-sort="popular">Most Popular</button>
-            </div>
-
-            <div id="eventsContainer" class="events-grid reveal-up"></div>
-            <div class="pagination" id="pagination"></div>
         </div>
     </section>
 
-    <section class="section-padding bg-light">
-        <div class="container">
-            <div class="host-cta reveal-up">
-                <div>
-                    <span class="subtitle">HOST WITH US</span>
-                    <h2>Want to Host Your Own Event?</h2>
-                    <p style="color:var(--text-light); line-height:1.7; margin-bottom:1.5rem;">Share your expertise with our community of 89,000+ flower lovers. We handle promotion, registration, and payment processing — you just bring the knowledge.</p>
-                    <a href="contact.html" class="btn btn-primary">Get In Touch ?</a>
+    <!-- ─── Registration Modal ─────────────────────────────────────────── -->
+    <div class="modal-overlay" id="registerEventModal" onclick="closeAnyModal(event)">
+        <div class="modal" style="max-width:460px;">
+            <div class="modal-header">
+                <h3 id="registerModalTitle">Register for Event</h3>
+                <button class="modal-close" onclick="closeRegisterModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="registerEventDetails">
+                    <p style="text-align:center;color:var(--text-muted);">Loading...</p>
                 </div>
-                <div class="host-features">
-                    <div class="host-feature"><div class="icon">??</div><div><h4>We Promote Your Event</h4><p>Reach our full audience through email, social, and the platform.</p></div></div>
-                    <div class="host-feature"><div class="icon">???</div><div><h4>Easy Registration</h4><p>Attendees register through our platform — no setup needed.</p></div></div>
-                    <div class="host-feature"><div class="icon">??</div><div><h4>Keep 85% of Revenue</h4><p>We take just a small platform fee. The rest is yours.</p></div></div>
+                <div style="margin-top:1rem;font-size:0.8rem;color:var(--text-muted);">
+                    <i class="bi bi-info-circle"></i> By registering, you agree to the event terms and conditions.
                 </div>
             </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeRegisterModal()">Cancel</button>
+                <button class="btn btn-primary" id="registerEventBtn" onclick="confirmRegistration()" disabled>Confirm Registration</button>
+            </div>
         </div>
-    </section>
+    </div>
+
+    <!-- ─── Host Event Modal ──────────────────────────────────────────── -->
+    <div class="modal-overlay" id="hostEventModal" onclick="closeAnyModal(event)">
+        <div class="modal" style="max-width:520px;">
+            <div class="modal-header">
+                <h3>Host an Event</h3>
+                <button class="modal-close" onclick="closeHostEventModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="hostEventForm">
+                    <div style="margin-bottom:1rem;">
+                        <label style="font-weight:500;font-size:0.88rem;display:block;margin-bottom:0.3rem;">Event Title *</label>
+                        <input type="text" id="hostTitle" class="form-input" placeholder="e.g. Beginner's Floral Design Workshop" required>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label style="font-weight:500;font-size:0.88rem;display:block;margin-bottom:0.3rem;">Description</label>
+                        <textarea id="hostDescription" class="form-input" rows="3" placeholder="Describe your event..."></textarea>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
+                        <div>
+                            <label style="font-weight:500;font-size:0.88rem;display:block;margin-bottom:0.3rem;">Date *</label>
+                            <input type="date" id="hostDate" class="form-input" required>
+                        </div>
+                        <div>
+                            <label style="font-weight:500;font-size:0.88rem;display:block;margin-bottom:0.3rem;">Time</label>
+                            <input type="time" id="hostTime" class="form-input">
+                        </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
+                        <div>
+                            <label style="font-weight:500;font-size:0.88rem;display:block;margin-bottom:0.3rem;">Type</label>
+                            <select id="hostType" class="form-input">
+                                <option value="WORKSHOP">Workshop</option>
+                                <option value="WEBINAR">Webinar</option>
+                                <option value="COMPETITION">Competition</option>
+                                <option value="EXHIBITION">Exhibition</option>
+                                <option value="GARDEN_TOUR">Garden Tour</option>
+                                <option value="NETWORKING">Networking</option>
+                                <option value="MEETUP">Community Meetup</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-weight:500;font-size:0.88rem;display:block;margin-bottom:0.3rem;">Price ($)</label>
+                            <input type="number" id="hostPrice" class="form-input" min="0" step="0.01" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
+                        <div>
+                            <label style="font-weight:500;font-size:0.88rem;display:block;margin-bottom:0.3rem;">Location</label>
+                            <input type="text" id="hostLocation" class="form-input" placeholder="City or Online">
+                        </div>
+                        <div>
+                            <label style="font-weight:500;font-size:0.88rem;display:block;margin-bottom:0.3rem;">Capacity</label>
+                            <input type="number" id="hostCapacity" class="form-input" min="1" placeholder="Unlimited">
+                        </div>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label style="font-weight:500;font-size:0.88rem;display:block;margin-bottom:0.3rem;">Meeting Link (for online events)</label>
+                        <input type="url" id="hostMeetingLink" class="form-input" placeholder="https://zoom.us/j/...">
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label style="font-weight:500;font-size:0.88rem;display:block;margin-bottom:0.3rem;">Event Image</label>
+                        <input type="file" accept="image/*" onchange="handleHostImage(this)">
+                        <div id="hostEventPreview" style="margin-top:0.5rem;"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeHostEventModal()">Cancel</button>
+                <button class="btn btn-primary" id="hostEventBtn" onclick="submitHostEvent()">Create Event</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Mobile Filter Drawer ─────────────────────────────────────── -->
+    <div class="mobile-filter-drawer" id="mobileFilterDrawer" onclick="if(event.target===this)closeMobileFilter()">
+        <div class="mobile-filter-panel">
+            <div class="mobile-filter-handle"></div>
+            <h3 style="font-size:1.05rem;margin-bottom:1rem;">Filter Events</h3>
+
+            <div style="margin-bottom:1rem;">
+                <h4 style="font-size:0.85rem;margin-bottom:0.5rem;">Sort By</h4>
+                <div class="evt-sort-tabs" id="mobileSortTabs" style="flex-wrap:wrap;">
+                    <button class="evt-sort-tab active" data-sort="date">By Date</button>
+                    <button class="evt-sort-tab" data-sort="popular">Most Popular</button>
+                    <button class="evt-sort-tab" data-sort="price_low">Price: Low</button>
+                    <button class="evt-sort-tab" data-sort="newest">Newest</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <h4 style="font-size:0.85rem;margin-bottom:0.5rem;">Event Type</h4>
+                <div class="evt-filter-chips" id="mobileFilterChips" style="flex-wrap:wrap;">
+                    <span class="evt-chip active" data-filter="all">All</span>
+                    <span class="evt-chip" data-filter="free">Free</span>
+                    <span class="evt-chip" data-filter="online">Online</span>
+                    <span class="evt-chip" data-filter="in-person">In Person</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <h4 style="font-size:0.85rem;margin-bottom:0.5rem;">Category</h4>
+                <div id="mobileCategories" style="display:flex;flex-wrap:wrap;gap:0.4rem;"></div>
+            </div>
+
+            <button class="btn btn-primary" style="width:100%;" onclick="applyMobileFilters()">Apply Filters</button>
+        </div>
+    </div>
+
+    <!-- ─── Mobile Bottom Nav ────────────────────────────────────────── -->
+    <nav class="evt-mobile-nav">
+        <div class="evt-mobile-nav-inner">
+            <a class="evt-mobile-nav-item active" href="events.html"><i class="bi bi-calendar-event"></i> Events</a>
+            <a class="evt-mobile-nav-item" href="discussions.html"><i class="bi bi-chat-dots"></i> Discuss</a>
+            <button class="evt-mobile-fab" onclick="openHostEventModal()"><i class="bi bi-plus-lg"></i></button>
+            <a class="evt-mobile-nav-item" href="learning.html"><i class="bi bi-mortarboard"></i> Learn</a>
+            <a class="evt-mobile-nav-item" href="feed.html"><i class="bi bi-rss"></i> Feed</a>
+        </div>
+    </nav>
 
     <div id="footer-container"></div>
+
+    <div class="evt-toast" id="evtToast"></div>
 
     <script src="js/shared/api.js?v=4.0"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
@@ -160,6 +582,9 @@
     <script src="js/shared/cart.js?v=3.0"></script>
     <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/components/event-card.js?v=1.0"></script>
+    <script src="js/components/event-sidebar.js?v=1.0"></script>
+    <script src="js/components/event-registration.js?v=1.0"></script>
     <script src="js/events.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {

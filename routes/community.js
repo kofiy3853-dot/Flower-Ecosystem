@@ -1,34 +1,42 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const path = require('path');
-const { pool, JWT_SECRET, upload, asyncHandler, escapeHtml, dbAvailable, readJSON, requireAuth, requireRole, getFileUrl } = require('./middleware');
+const { pool, JWT_SECRET, upload, asyncHandler, escapeHtml, dbAvailable, readJSON, requireAuth, requireRole, getFileUrl, rateLimiter } = require('./middleware');
+
+const writeLimiter = rateLimiter(20, 60000);
 
 // Posts
 router.get('/posts', asyncHandler(async (req, res) => {
+    const { page = 1, limit = 20, type } = req.query;
+    const pg = Math.max(1, parseInt(page, 10) || 1);
+    const lim = Math.min(50, Math.max(1, parseInt(limit, 10) || 20));
+    const offset = (pg - 1) * lim;
+
     if (await dbAvailable()) {
         try {
+            const conditions = ['p.is_published = true'];
+            const values = [];
+            let idx = 1;
+            if (type) { conditions.push(`p.post_type = $${idx}`); values.push(type); idx++; }
+            const where = 'WHERE ' + conditions.join(' AND ');
+            values.push(lim, offset);
+
             const r = await pool.query(
-                `SELECT p.*, u.first_name, u.last_name, u.profile_image,
-                        (SELECT COUNT(*) FROM community.comments WHERE post_id = p.id) AS comment_count
+                `SELECT p.*, u.first_name, u.last_name, u.profile_image, u.role AS user_role,
+                        COALESCE(lc.like_count, 0) AS like_count_db,
+                        (SELECT COUNT(*) FROM community.comments WHERE post_id = p.id) AS comment_count_db
                  FROM community.posts p
                  JOIN auth.users u ON u.id = p.user_id
-                 ORDER BY p.is_pinned DESC, p.created_at DESC`
+                 LEFT JOIN (SELECT post_id, COUNT(*) AS like_count FROM community.post_likes GROUP BY post_id) lc ON lc.post_id = p.id
+                 ${where}
+                 ORDER BY p.is_pinned DESC, p.created_at DESC
+                 LIMIT $${idx} OFFSET $${idx + 1}`,
+                values
             );
             return res.json(r.rows);
         } catch (err) { console.error('Posts query error:', err.message); }
     }
-    const data = readJSON(path.join(__dirname, '..', 'data', 'community.json'));
-    const discussions = (data.discussions || []).map(d => ({
-        id: d.id, title: d.title, content: d.excerpt || '', user_id: d.author || 'unknown',
-        first_name: d.author || 'Unknown', last_name: '', is_pinned: d.pinned || false,
-        comment_count: d.replies || 0, created_at: new Date().toISOString()
-    }));
-    const stories = (data.successStories || []).map(s => ({
-        id: s.id, title: s.title, content: s.story || '', user_id: s.author || 'unknown',
-        first_name: s.author || 'Unknown', last_name: '', is_pinned: false,
-        comment_count: s.comments || 0, created_at: new Date().toISOString()
-    }));
-    res.json([...discussions, ...stories]);
+    res.json([]);
 }));
 
 router.get('/posts/:id/comments', asyncHandler(async (req, res) => {
@@ -65,14 +73,61 @@ router.delete('/comments/:id', requireAuth, asyncHandler(async (req, res) => {
     res.json({ message: 'Comment deleted' });
 }));
 
-router.post('/posts', requireAuth, asyncHandler(async (req, res) => {
+router.post('/posts', writeLimiter, requireAuth, upload.array('media', 10), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { title, content } = req.body;
-    if (!title || !content) return res.status(400).json({ error: 'Title and content are required' });
-    if (typeof title !== 'string' || typeof content !== 'string') return res.status(400).json({ error: 'Invalid input types' });
-    const r = await pool.query('INSERT INTO community.posts (user_id, title, content) VALUES ($1, $2, $3) RETURNING *', [req.user.id, escapeHtml(title).slice(0, 255), escapeHtml(content).slice(0, 10000)]);
+    const { content, post_type = 'standard', audience = 'public', tags, category,
+            poll_options, poll_duration, product_id,
+            achievement_type, achievement_detail,
+            event_title, event_date, event_time, event_venue, event_link } = req.body;
+
+    if (!content && (!req.files || !req.files.length)) {
+        return res.status(400).json({ error: 'Content or media is required' });
+    }
+
+    const safeContent = escapeHtml(content || '').slice(0, 5000);
+    const parsedTags = tryParseJSON(tags, []);
+    const parsedPollOptions = tryParseJSON(poll_options, null);
+    const mediaUrls = (req.files || []).map(f => getFileUrl(f));
+    const mediaType = (req.files || []).map(f => f.mimetype.startsWith('video/') ? 'video' : 'image');
+
+    let pollEndsAt = null;
+    if (post_type === 'poll' && poll_duration) {
+        pollEndsAt = new Date(Date.now() + parseInt(poll_duration) * 86400000);
+    }
+
+    const r = await pool.query(
+        `INSERT INTO community.posts (user_id, title, content, post_type, audience, tags, media_urls,
+         poll_options, poll_duration, poll_ends_at, product_id,
+         achievement_type, achievement_detail,
+         event_title, event_date, event_time, event_venue, event_link, category)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+         RETURNING *`,
+        [req.user.id, null, safeContent, post_type, audience, parsedTags, mediaUrls,
+         parsedPollOptions, poll_duration || null, pollEndsAt, product_id || null,
+         achievement_type || null, achievement_detail || null,
+         event_title || null, event_date || null, event_time || null, event_venue || null, event_link || null,
+         category || null]
+    );
+
+    // Save individual media entries with captions
+    if (req.files && req.files.length) {
+        for (let i = 0; i < req.files.length; i++) {
+            try {
+                await pool.query(
+                    'INSERT INTO community.post_media (post_id, url, media_type, sort_order) VALUES ($1, $2, $3, $4)',
+                    [r.rows[0].id, mediaUrls[i], mediaType[i], i]
+                );
+            } catch (err) { console.error('Post media insert error:', err.message); }
+        }
+    }
+
     res.status(201).json(r.rows[0]);
 }));
+
+function tryParseJSON(val, fallback) {
+    if (!val) return fallback;
+    try { return JSON.parse(val); } catch { return fallback; }
+}
 
 router.put('/posts/:id', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
@@ -81,7 +136,9 @@ router.put('/posts/:id', requireAuth, asyncHandler(async (req, res) => {
     if (!existing.rows.length) return res.status(404).json({ error: 'Post not found' });
     if (existing.rows[0].user_id !== req.user.id && req.user.role !== 'ADMIN') return res.status(403).json({ error: 'Not authorized' });
     const { title, content } = req.body;
-    const r = await pool.query('UPDATE community.posts SET title = COALESCE($1, title), content = COALESCE($2, content) WHERE id = $3 RETURNING *', [title, content, id]);
+    const safeTitle = title ? escapeHtml(title).slice(0, 255) : undefined;
+    const safeContent = content ? escapeHtml(content).slice(0, 5000) : undefined;
+    const r = await pool.query('UPDATE community.posts SET title = COALESCE($1, title), content = COALESCE($2, content) WHERE id = $3 RETURNING *', [safeTitle, safeContent, id]);
     res.json(r.rows[0]);
 }));
 
@@ -94,6 +151,25 @@ router.delete('/posts/:id', requireAuth, asyncHandler(async (req, res) => {
     if (existing.rows[0].user_id !== req.user.id && !['ADMIN', 'SUPERADMIN', 'MODERATOR'].includes(userRole)) return res.status(403).json({ error: 'Not authorized' });
     await pool.query('DELETE FROM community.posts WHERE id = $1', [id]);
     res.json({ message: 'Post deleted' });
+}));
+
+router.post('/posts/:id/like', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id } = req.params;
+    try {
+        const existing = await pool.query('SELECT 1 FROM community.post_likes WHERE post_id = $1 AND user_id = $2', [id, req.user.id]);
+        if (existing.rows.length) {
+            await pool.query('DELETE FROM community.post_likes WHERE post_id = $1 AND user_id = $2', [id, req.user.id]);
+            await pool.query('UPDATE community.posts SET like_count = GREATEST(like_count - 1, 0) WHERE id = $1', [id]);
+            res.json({ liked: false });
+        } else {
+            await pool.query('INSERT INTO community.post_likes (post_id, user_id) VALUES ($1, $2)', [id, req.user.id]);
+            await pool.query('UPDATE community.posts SET like_count = like_count + 1 WHERE id = $1', [id]);
+            res.json({ liked: true });
+        }
+    } catch (err) {
+        res.json({ liked: false });
+    }
 }));
 
 // Discussions
@@ -116,10 +192,15 @@ router.get('/discussions/categories', asyncHandler(async (_, res) => {
 }));
 
 router.get('/discussions', asyncHandler(async (req, res) => {
-    const { category, search, sort = 'newest', page = 1, limit = 20 } = req.query;
+    const { category, search, sort = 'newest', page = 1, limit = 20, following, my, saved } = req.query;
     const pg = Math.max(1, parseInt(page, 10) || 1);
     const lim = Math.min(100, Math.max(1, parseInt(limit, 10) || 20));
     const offset = (pg - 1) * lim;
+
+    let userId = null;
+    if (req.headers.authorization) {
+        try { const decoded = jwt.verify(req.headers.authorization.replace('Bearer ', ''), JWT_SECRET); userId = decoded.id; } catch {}
+    }
 
     if (await dbAvailable()) {
         try {
@@ -128,6 +209,9 @@ router.get('/discussions', asyncHandler(async (req, res) => {
             let idx = 1;
             if (category) { conditions.push(`dc.slug = $${idx}`); values.push(category); idx++; }
             if (search) { conditions.push(`(d.title ILIKE $${idx} OR d.content ILIKE $${idx})`); values.push(`%${search}%`); idx++; }
+            if (following === 'true' && userId) { conditions.push(`d.user_id IN (SELECT following_id FROM platform.follows WHERE follower_id = $${idx})`); values.push(userId); idx++; }
+            if (my === 'true' && userId) { conditions.push(`d.user_id = $${idx}`); values.push(userId); idx++; }
+            if (saved === 'true' && userId) { conditions.push(`d.id IN (SELECT post_id FROM community.post_saves WHERE user_id = $${idx})`); values.push(userId); idx++; }
             const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
             const sortMap = { newest: 'd.created_at DESC', popular: 'd.views DESC', most_replies: 'reply_count DESC', unsolved: 'd.is_solved = false, d.created_at DESC' };
             const orderBy = sortMap[sort] || 'd.created_at DESC';
@@ -145,6 +229,7 @@ router.get('/discussions', asyncHandler(async (req, res) => {
                        u.first_name || ' ' || u.last_name AS author_name,
                        u.profile_image AS author_avatar, u.role AS author_role,
                        COALESCE(v.vote_count, 0) AS vote_count,
+                       (SELECT COUNT(*) FROM community.discussion_votes WHERE discussion_id = d.id AND vote_type = 'up') AS helpful_count,
                        COALESCE(rc.reply_count, 0) AS reply_count,
                        (SELECT image_url FROM community.discussion_images WHERE discussion_id = d.id ORDER BY sort_order LIMIT 1) AS image
                 FROM community.discussions d
@@ -174,7 +259,8 @@ router.get('/discussions/:id', asyncHandler(async (req, res) => {
         SELECT d.*, dc.name AS category_name, dc.slug AS category_slug, dc.icon AS category_icon,
                u.first_name || ' ' || u.last_name AS author_name,
                u.profile_image AS author_avatar, u.role AS author_role, u.id AS author_id,
-               COALESCE(v.vote_count, 0) AS vote_count
+               COALESCE(v.vote_count, 0) AS vote_count,
+               (SELECT COUNT(*) FROM community.discussion_votes WHERE discussion_id = d.id AND vote_type = 'up') AS helpful_count
         FROM community.discussions d
         LEFT JOIN community.discussion_categories dc ON dc.id = d.category_id
         LEFT JOIN auth.users u ON u.id = d.user_id
@@ -250,14 +336,15 @@ router.delete('/discussions/:id', requireAuth, asyncHandler(async (req, res) => 
     res.json({ message: 'Discussion deleted' });
 }));
 
-router.post('/discussions/:id/comments', requireAuth, asyncHandler(async (req, res) => {
+router.post('/discussions/:id/comments', requireAuth, upload.single('video'), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
     const { id } = req.params;
     const discussion = await pool.query('SELECT id FROM community.discussions WHERE id = $1', [id]);
     if (!discussion.rows.length) return res.status(404).json({ error: 'Discussion not found' });
-    const { content } = req.body;
-    if (!content || typeof content !== 'string') return res.status(400).json({ error: 'Content is required' });
-    const r = await pool.query('INSERT INTO community.discussion_comments (discussion_id, user_id, content) VALUES ($1, $2, $3) RETURNING *', [id, req.user.id, escapeHtml(content).slice(0, 5000)]);
+    const content = req.body.content || '';
+    if (!content.trim() && !req.file) return res.status(400).json({ error: 'Content or video is required' });
+    const videoUrl = req.file ? getFileUrl(req.file) : null;
+    const r = await pool.query('INSERT INTO community.discussion_comments (discussion_id, user_id, content, video_url) VALUES ($1, $2, $3, $4) RETURNING *', [id, req.user.id, escapeHtml(content).slice(0, 5000), videoUrl]);
     res.status(201).json(r.rows[0]);
 }));
 
@@ -335,13 +422,25 @@ router.post('/discussions/comments/:id/vote', requireAuth, asyncHandler(async (r
 }));
 
 router.get('/discussions/stats/overview', asyncHandler(async (_, res) => {
-    if (!(await dbAvailable())) return res.json({ members: 0, discussions: 0, replies: 0 });
-    const [members, discussions, replies] = await Promise.all([
+    if (!(await dbAvailable())) return res.json({ members: 0, discussions: 0, replies: 0, posts: 0, events: 0, clubs: 0, showcase: 0 });
+    const [members, discussions, replies, posts, events, clubs, showcase] = await Promise.all([
         pool.query('SELECT COUNT(*) FROM auth.users'),
         pool.query('SELECT COUNT(*) FROM community.discussions'),
-        pool.query('SELECT COUNT(*) FROM community.discussion_comments')
+        pool.query('SELECT COUNT(*) FROM community.discussion_comments'),
+        pool.query("SELECT COUNT(*) FROM community.posts WHERE is_published = true"),
+        pool.query("SELECT COUNT(*) FROM events.events"),
+        pool.query("SELECT COUNT(*) FROM community.clubs"),
+        pool.query("SELECT COUNT(*) FROM community.posts WHERE post_type = 'showcase' AND is_published = true")
     ]);
-    res.json({ members: parseInt(members.rows[0].count) || 0, discussions: parseInt(discussions.rows[0].count) || 0, replies: parseInt(replies.rows[0].count) || 0 });
+    res.json({
+        members: parseInt(members.rows[0].count) || 0,
+        discussions: parseInt(discussions.rows[0].count) || 0,
+        replies: parseInt(replies.rows[0].count) || 0,
+        posts: parseInt(posts.rows[0].count) || 0,
+        events: parseInt(events.rows[0].count) || 0,
+        clubs: parseInt(clubs.rows[0].count) || 0,
+        showcase: parseInt(showcase.rows[0].count) || 0
+    });
 }));
 
 router.get('/discussions/top/contributors', asyncHandler(async (_, res) => {

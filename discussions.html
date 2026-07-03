@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Join flower care discussions, ask questions, share experiences, and connect with florists and growers worldwide.">
-    <title>Community Discussions | Flower Ecosystem</title>
+    <meta name="description" content="Ask questions, share knowledge, and solve flower-related problems with expert florists, growers, and enthusiasts.">
+    <title>Discussions | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,133 +12,443 @@
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
-        .disc-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
-        .disc-search { display:flex; gap:0.5rem; flex:1; max-width:400px; }
-        .disc-search input { flex:1; padding:0.6rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.9rem; background:var(--bg-white); color:var(--text-main); }
-        .disc-search input:focus { outline:none; border-color:var(--primary-color); }
-        .disc-actions { display:flex; gap:0.5rem; }
-        .category-tabs { display:flex; gap:0.5rem; overflow-x:auto; padding-bottom:0.5rem; margin-bottom:1.5rem; scrollbar-width:thin; }
-        .category-tab { padding:0.5rem 1rem; border:1px solid var(--border-color); border-radius:20px; font-size:0.85rem; white-space:nowrap; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; }
-        .category-tab:hover { border-color:var(--primary-color); color:var(--primary-color); }
-        .category-tab.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
-        .disc-layout { display:grid; grid-template-columns:1fr 280px; gap:1.5rem; }
+        /* ─── Layout ──────────────────────────────────────────────── */
+        .disc-layout { display:grid; grid-template-columns:240px 1fr 280px; gap:1.5rem; }
+        .disc-left, .disc-right { position:sticky; top:80px; align-self:start; max-height:calc(100vh - 100px); overflow-y:auto; }
         .disc-main { min-width:0; }
-        .disc-sidebar { display:flex; flex-direction:column; gap:1.25rem; }
-        .sort-tabs { display:flex; gap:0.25rem; margin-bottom:1rem; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.25rem; }
-        .sort-tab { padding:0.4rem 0.75rem; border-radius:var(--radius-sm); font-size:0.8rem; cursor:pointer; color:var(--text-light); transition:all 0.2s; border:none; background:none; }
+
+        /* ─── Hero ────────────────────────────────────────────────── */
+        .disc-hero { background:linear-gradient(135deg, #fdf2f6 0%, #fce7f0 50%, #f8d7e8 100%); padding:4rem 0 3rem; margin-bottom:2rem; }
+        .disc-hero h1 { font-size:clamp(1.8rem, 3.5vw, 2.5rem); margin-bottom:0.5rem; }
+        .disc-hero p { color:var(--text-light); font-size:1rem; margin-bottom:1.5rem; max-width:600px; }
+        .disc-hero-search { display:flex; background:white; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); overflow:hidden; max-width:560px; }
+        .disc-hero-search input { flex:1; border:none; padding:1rem 1.25rem; font-size:1rem; outline:none; }
+        .disc-hero-search button { border-radius:0 12px 12px 0 !important; padding:1rem 1.5rem !important; }
+        .disc-hero-btns { display:flex; gap:0.75rem; margin-top:1rem; }
+
+        /* ─── Left Sidebar ────────────────────────────────────────── */
+        .disc-sidebar-nav { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:0.75rem; }
+        .disc-nav-item { display:flex; align-items:center; gap:0.7rem; padding:0.55rem 0.8rem; border-radius:var(--radius-sm); font-size:0.88rem; color:var(--text-main); text-decoration:none; transition:all 0.2s; cursor:pointer; }
+        .disc-nav-item:hover { background:var(--bg-light); color:var(--primary-color); }
+        .disc-nav-item.active { background:var(--primary-light); color:var(--primary-color); font-weight:500; }
+        .disc-nav-item i { font-size:1rem; width:20px; text-align:center; flex-shrink:0; }
+        .disc-nav-item .count { margin-left:auto; font-size:0.72rem; background:var(--bg-light); padding:0.1rem 0.45rem; border-radius:10px; color:var(--text-muted); }
+        .disc-nav-divider { height:1px; background:var(--border-light); margin:0.5rem 0.8rem; }
+        .disc-nav-section { font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); padding:0.5rem 0.8rem 0.3rem; }
+        .disc-cat-item { display:flex; align-items:center; gap:0.55rem; padding:0.45rem 0.8rem; border-radius:var(--radius-sm); font-size:0.82rem; color:var(--text-light); cursor:pointer; transition:all 0.15s; }
+        .disc-cat-item:hover { background:var(--bg-light); color:var(--text-main); }
+        .disc-cat-item.active { color:var(--primary-color); font-weight:500; }
+
+        /* ─── Category Cards ──────────────────────────────────────── */
+        .cat-cards { display:grid; grid-template-columns:repeat(3, 1fr); gap:0.75rem; margin-bottom:1.5rem; }
+        .cat-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1rem; cursor:pointer; transition:all 0.25s; text-align:center; }
+        .cat-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); border-color:var(--primary-color); }
+        .cat-card.active { border-color:var(--primary-color); background:var(--primary-light); }
+        .cat-card-icon { font-size:1.5rem; margin-bottom:0.3rem; }
+        .cat-card-name { font-size:0.82rem; font-weight:500; }
+        .cat-card-count { font-size:0.7rem; color:var(--text-muted); }
+
+        /* ─── Featured Discussion ─────────────────────────────────── */
+        .featured-disc { background:var(--bg-white); border:2px solid var(--primary-color); border-radius:var(--radius-md); padding:1.25rem; margin-bottom:1.5rem; cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; }
+        .featured-disc:hover { box-shadow:var(--shadow-md); }
+        .featured-badge { display:inline-flex; align-items:center; gap:0.3rem; background:var(--primary-color); color:white; font-size:0.7rem; font-weight:600; padding:0.2rem 0.6rem; border-radius:4px; margin-bottom:0.75rem; }
+        .featured-disc h3 { font-size:1.1rem; font-weight:600; margin-bottom:0.5rem; line-height:1.4; }
+        .featured-disc-meta { display:flex; gap:1rem; font-size:0.8rem; color:var(--text-muted); flex-wrap:wrap; align-items:center; }
+        .featured-disc-meta span { display:flex; align-items:center; gap:0.25rem; }
+        .featured-disc-excerpt { font-size:0.88rem; color:var(--text-light); line-height:1.5; margin:0.5rem 0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+        /* ─── Sort & Filter Bar ───────────────────────────────────── */
+        .disc-toolbar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; }
+        .sort-tabs { display:flex; gap:0.25rem; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.25rem; }
+        .sort-tab { padding:0.4rem 0.75rem; border-radius:var(--radius-sm); font-size:0.8rem; cursor:pointer; color:var(--text-light); border:none; background:none; transition:all 0.2s; }
         .sort-tab.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
         .sort-tab:hover:not(.active) { color:var(--text-main); }
+        .disc-filter-chips { display:flex; gap:0.4rem; flex-wrap:wrap; }
+        .filter-chip { padding:0.35rem 0.7rem; border:1px solid var(--border-color); border-radius:16px; font-size:0.78rem; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; }
+        .filter-chip:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .filter-chip.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+
+        /* ─── Discussion Card ─────────────────────────────────────── */
         .disc-card { display:grid; grid-template-columns:auto 1fr auto; gap:1rem; padding:1.25rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); margin-bottom:0.75rem; transition:all 0.2s; cursor:pointer; }
         .disc-card:hover { border-color:var(--primary-color); box-shadow:var(--shadow-sm); transform:translateY(-1px); }
         .disc-card.pinned { border-left:3px solid var(--primary-color); background:rgba(172,50,80,0.02); }
         .disc-card.solved { border-left:3px solid var(--accent-green); }
-        .disc-avatar { width:44px; height:44px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; overflow:hidden; }
+        .disc-avatar { width:44px; height:44px; border-radius:50%; background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:1.1rem; color:var(--primary-color); flex-shrink:0; overflow:hidden; }
         .disc-avatar img { width:100%; height:100%; object-fit:cover; }
         .disc-body { min-width:0; }
-        .disc-title { font-size:1rem; font-weight:600; margin-bottom:0.25rem; color:var(--text-main); display:flex; align-items:center; gap:0.5rem; }
-        .disc-title .pinned-badge { background:var(--primary-color); color:white; font-size:0.65rem; padding:0.1rem 0.4rem; border-radius:3px; }
-        .disc-title .solved-badge { background:var(--accent-green); color:white; font-size:0.65rem; padding:0.1rem 0.4rem; border-radius:3px; }
-        .disc-meta { font-size:0.8rem; color:var(--text-light); margin-bottom:0.3rem; }
-        .disc-excerpt { font-size:0.88rem; color:var(--text-light); line-height:1.5; margin-bottom:0.4rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-        .disc-tags { display:flex; gap:0.4rem; flex-wrap:wrap; }
-        .disc-tag { padding:0.15rem 0.5rem; border-radius:12px; font-size:0.75rem; background:rgba(172,50,80,0.08); color:var(--primary-color); }
-        .disc-stats { display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem; white-space:nowrap; color:var(--text-light); font-size:0.8rem; }
+        .disc-title { font-size:0.95rem; font-weight:600; margin-bottom:0.3rem; color:var(--text-main); display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; }
+        .disc-badges { display:flex; gap:0.3rem; flex-wrap:wrap; }
+        .disc-badge { font-size:0.62rem; padding:0.1rem 0.4rem; border-radius:3px; font-weight:600; white-space:nowrap; }
+        .disc-badge.pinned { background:var(--primary-color); color:white; }
+        .disc-badge.solved { background:var(--accent-green); color:white; }
+        .disc-badge.trending { background:var(--accent-gold); color:white; }
+        .disc-badge.new { background:var(--accent-blue); color:white; }
+        .disc-badge.expert { background:#8b5cf6; color:white; }
+        .disc-meta { font-size:0.78rem; color:var(--text-light); margin-bottom:0.3rem; display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+        .disc-meta .author { font-weight:500; color:var(--text-main); }
+        .disc-excerpt { font-size:0.85rem; color:var(--text-light); line-height:1.5; margin-bottom:0.4rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .disc-tags { display:flex; gap:0.35rem; flex-wrap:wrap; margin-top:0.3rem; }
+        .disc-tag { padding:0.12rem 0.45rem; border-radius:10px; font-size:0.72rem; background:rgba(172,50,80,0.08); color:var(--primary-color); }
+        .disc-card-image { width:64px; height:64px; border-radius:6px; overflow:hidden; flex-shrink:0; }
+        .disc-card-image img { width:100%; height:100%; object-fit:cover; }
+        .disc-stats { display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem; white-space:nowrap; color:var(--text-light); font-size:0.78rem; }
         .disc-stat { display:flex; align-items:center; gap:0.25rem; }
         .disc-stat i { font-size:0.85rem; }
-        .disc-image-preview { width:60px; height:60px; border-radius:6px; overflow:hidden; flex-shrink:0; }
-        .disc-image-preview img { width:100%; height:100%; object-fit:cover; }
-        .sidebar-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; }
-        .sidebar-card h3 { font-size:0.95rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
-        .topic-list { list-style:none; padding:0; margin:0; }
-        .topic-list li { padding:0.4rem 0; font-size:0.88rem; border-bottom:1px solid var(--border-light); display:flex; align-items:center; gap:0.5rem; cursor:pointer; }
-        .topic-list li:last-child { border-bottom:none; }
-        .topic-list li:hover { color:var(--primary-color); }
+
+        /* ─── Right Sidebar ───────────────────────────────────────── */
+        .sidebar-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; margin-bottom:1rem; }
+        .sidebar-card h3 { font-size:0.9rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
+        .topic-tag { display:flex; align-items:center; gap:0.5rem; padding:0.4rem 0; font-size:0.85rem; cursor:pointer; transition:color 0.15s; }
+        .topic-tag:hover { color:var(--primary-color); }
+        .topic-tag .count { font-size:0.72rem; color:var(--text-muted); margin-left:auto; }
+        .contributor-item { display:flex; align-items:center; gap:0.6rem; padding:0.4rem 0; }
+        .contributor-rank { width:20px; font-weight:600; color:var(--text-muted); font-size:0.8rem; text-align:center; }
+        .contributor-avatar { width:32px; height:32px; border-radius:50%; background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:0.8rem; color:var(--primary-color); flex-shrink:0; overflow:hidden; }
+        .contributor-avatar img { width:100%; height:100%; object-fit:cover; }
+        .contributor-info { flex:1; min-width:0; }
+        .contributor-name { font-size:0.82rem; font-weight:500; }
+        .contributor-role { font-size:0.7rem; color:var(--text-muted); }
+        .contributor-score { font-size:0.72rem; color:var(--primary-color); font-weight:600; }
+        .ask-cta { background:linear-gradient(135deg, var(--primary-light), #fce7f0); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; text-align:center; margin-bottom:1rem; }
+        .ask-cta h3 { font-size:1rem; margin-bottom:0.5rem; }
+        .ask-cta p { font-size:0.85rem; color:var(--text-light); margin-bottom:1rem; line-height:1.5; }
         .stat-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; text-align:center; }
         .stat-item { padding:0.5rem; }
         .stat-num { font-size:1.2rem; font-weight:700; color:var(--primary-color); }
         .stat-label { font-size:0.7rem; color:var(--text-light); }
-        .contributor-list { list-style:none; padding:0; margin:0; }
-        .contributor-list li { display:flex; align-items:center; gap:0.5rem; padding:0.35rem 0; font-size:0.85rem; }
-        .contributor-rank { width:20px; font-weight:600; color:var(--text-muted); font-size:0.8rem; }
-        .contributor-avatar { width:28px; height:28px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:0.8rem; flex-shrink:0; }
-        .contributor-score { margin-left:auto; font-size:0.75rem; color:var(--text-muted); }
-        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); }
-        .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
+
+        /* ─── Start Discussion Card ──────────────────────────────────── */
+        .start-disc-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1rem 1.25rem; margin-bottom:1.25rem; }
+        .start-disc-top { display:flex; gap:0.75rem; align-items:center; margin-bottom:0.6rem; }
+        .start-disc-input { flex:1; padding:0.55rem 1rem; border:1px solid var(--border-color); border-radius:24px; font-size:0.88rem; color:var(--text-light); background:var(--bg-light); cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:0.5rem; }
+        .start-disc-input:hover { border-color:var(--primary-color); background:var(--bg-white); }
+        .start-disc-actions { display:flex; gap:0.5rem; padding-top:0.5rem; border-top:1px solid var(--border-light); flex-wrap:wrap; }
+        .start-disc-action { display:flex;align-items:center;gap:0.35rem;padding:0.35rem 0.65rem;border-radius:var(--radius-sm);font-size:0.78rem;color:var(--text-light);cursor:pointer;border:none;background:none;transition:all 0.2s; }
+        .start-disc-action:hover { background:var(--bg-light); color:var(--text-main); }
+        .start-disc-action i { font-size:1rem; }
+
+        /* ─── Discussion Status ──────────────────────────────────────── */
+        .disc-status { display:inline-flex;align-items:center;gap:0.2rem;font-size:0.68rem;font-weight:600;padding:0.1rem 0.45rem;border-radius:4px;white-space:nowrap; }
+        .disc-status.open { background:#ecfdf5;color:#059669; }
+        .disc-status.answered { background:#fef3c7;color:#d97706; }
+        .disc-status.solved { background:#dbeafe;color:#2563eb; }
+        .disc-status.closed { background:#f3f4f6;color:#6b7280; }
+
+        /* ─── Popular Tags ───────────────────────────────────────────── */
+        .pop-tag { display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.6rem;margin:0.15rem;border-radius:12px;font-size:0.75rem;background:rgba(172,50,80,0.06);color:var(--text-light);cursor:pointer;transition:all 0.15s; }
+        .pop-tag:hover { background:rgba(172,50,80,0.12);color:var(--primary-color); }
+        .pop-tag .count { font-size:0.65rem;color:var(--text-muted); }
+
+        /* ─── Related Discussions ────────────────────────────────────── */
+        .related-disc { padding:0.4rem 0;border-bottom:1px solid var(--border-light);cursor:pointer; }
+        .related-disc:last-child { border-bottom:none; }
+        .related-disc-title { font-size:0.82rem;font-weight:500;transition:color 0.15s; }
+        .related-disc-title:hover { color:var(--primary-color); }
+        .related-disc-meta { font-size:0.7rem;color:var(--text-muted);margin-top:0.1rem; }
+
+        /* ─── Mobile FAB ─────────────────────────────────────────────── */
+        .disc-fab { display:none;position:fixed;bottom:5rem;right:1.5rem;z-index:100;width:52px;height:52px;border-radius:50%;background:var(--primary-color);color:white;border:none;font-size:1.4rem;cursor:pointer;box-shadow:var(--shadow-primary);transition:transform 0.2s;align-items:center;justify-content:center; }
+        .disc-fab:hover { transform:scale(1.08); }
+        @media(max-width:900px) { .disc-fab { display:flex; } }
+
+        /* ─── Empty State ────────────────────────────────────────────── */
+        .empty-state { text-align:center;padding:3rem 1rem;color:var(--text-light); }
+        .empty-state i { font-size:3.5rem;display:block;margin-bottom:1rem;opacity:0.4;color:var(--primary-color); }
+        .empty-state h3 { font-family:var(--font-serif);font-size:1.5rem;margin-bottom:0.3rem;color:var(--text-main); }
+        .empty-state p { margin-bottom:1.5rem;font-size:0.9rem; }
+        .empty-state .btn { border-radius:50px; }
+
+        /* ─── Pagination ──────────────────────────────────────────── */
         .pagination { display:flex; justify-content:center; gap:0.25rem; margin-top:1.5rem; }
         .page-btn { padding:0.4rem 0.75rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.85rem; cursor:pointer; background:var(--bg-white); color:var(--text-main); transition:all 0.2s; }
         .page-btn.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
         .page-btn:hover:not(.active) { border-color:var(--primary-color); }
-        @media(max-width:1024px) { .disc-layout { grid-template-columns:1fr; } .disc-sidebar { display:none; } }
-        @media(max-width:640px) { .disc-card { grid-template-columns:1fr; } .disc-stats { flex-direction:row; align-items:center; } .disc-image-preview { display:none; } }
+
+        /* ─── Mobile Filter Drawer ────────────────────────────────── */
+        .mobile-filter-btn { display:none; padding:0.5rem 1rem; border:1px solid var(--border-color); background:var(--bg-white); border-radius:var(--radius-sm); font-size:0.85rem; cursor:pointer; align-items:center; gap:0.35rem; }
+        .mobile-filter-drawer { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; display:none; }
+        .mobile-filter-drawer.open { display:block; }
+        .mobile-filter-panel { position:absolute; bottom:0; left:0; right:0; background:var(--bg-white); border-radius:16px 16px 0 0; max-height:85vh; overflow-y:auto; padding:1.5rem; animation:slideUp 0.3s ease; }
+        .mobile-filter-handle { width:40px; height:4px; background:var(--border-color); border-radius:2px; margin:0 auto 1rem; }
+        @keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+
+        /* ─── Mobile Bottom Nav ───────────────────────────────────── */
+        .disc-mobile-nav { display:none; position:fixed; bottom:0; left:0; right:0; background:var(--bg-white); border-top:1px solid var(--border-color); z-index:100; padding:0.5rem 0 env(safe-area-inset-bottom, 0.5rem); }
+        .disc-mobile-nav-inner { display:flex; justify-content:space-around; align-items:center; }
+        .disc-mobile-nav-item { display:flex; flex-direction:column; align-items:center; gap:0.1rem; font-size:0.62rem; color:var(--text-muted); text-decoration:none; padding:0.25rem 0.5rem; position:relative; }
+        .disc-mobile-nav-item.active { color:var(--primary-color); }
+        .disc-mobile-nav-item i { font-size:1.15rem; }
+        .disc-mobile-nav-item .mobile-badge { position:absolute; top:-2px; right:2px; background:var(--primary-color); color:white; font-size:0.55rem; width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+        .disc-mobile-fab { width:52px; height:52px; border-radius:50%; background:var(--primary-color); color:white; display:flex; align-items:center; justify-content:center; font-size:1.4rem; margin-top:-1.2rem; box-shadow:var(--shadow-primary); border:none; cursor:pointer; }
+
+        /* ─── Responsive ──────────────────────────────────────────── */
+        @media(max-width:1200px) {
+            .disc-layout { grid-template-columns:1fr 260px; }
+            .disc-left { display:none; }
+        }
+        @media(max-width:900px) {
+            .disc-layout { grid-template-columns:1fr; }
+            .disc-right { display:none; }
+            .cat-cards { grid-template-columns:repeat(3, 1fr); gap:0.5rem; }
+            .mobile-filter-btn { display:inline-flex; }
+            .disc-mobile-nav { display:block; }
+            body { padding-bottom:80px; }
+        }
+        @media(max-width:640px) {
+            .disc-hero { padding:3rem 0 2rem; }
+            .disc-hero h1 { font-size:1.5rem; }
+            .disc-hero h1 br { display:none; }
+            .disc-hero p { font-size:0.9rem; }
+            .disc-hero-search { flex-direction:column; border-radius:12px; }
+            .disc-hero-search input { padding:0.85rem 1rem; font-size:0.9rem; }
+            .disc-hero-search button { border-radius:0 0 12px 12px !important; padding:0.85rem !important; }
+            .disc-hero-btns { flex-direction:column; }
+            .disc-hero-btns .btn { width:100%; justify-content:center; }
+
+            .cat-cards { grid-template-columns:repeat(3, 1fr); gap:0.5rem; overflow-x:auto; display:flex; scroll-snap-type:x mandatory; scrollbar-width:none; padding-bottom:0.5rem; }
+            .cat-cards::-webkit-scrollbar { display:none; }
+            .cat-card { min-width:90px; scroll-snap-align:start; padding:0.75rem 0.5rem; flex-shrink:0; }
+            .cat-card-icon { font-size:1.3rem; }
+            .cat-card-name { font-size:0.72rem; }
+
+            .disc-toolbar { flex-direction:column; align-items:stretch; gap:0.5rem; }
+            .sort-tabs { overflow-x:auto; display:flex; scrollbar-width:none; }
+            .sort-tabs::-webkit-scrollbar { display:none; }
+            .sort-tab { white-space:nowrap; font-size:0.75rem; padding:0.35rem 0.65rem; }
+            .disc-filter-chips { overflow-x:auto; display:flex; scrollbar-width:none; flex-wrap:nowrap; }
+            .disc-filter-chips::-webkit-scrollbar { display:none; }
+            .filter-chip { white-space:nowrap; font-size:0.72rem; padding:0.3rem 0.6rem; flex-shrink:0; }
+
+            .disc-card { grid-template-columns:1fr; padding:1rem; gap:0.5rem; }
+            .disc-avatar { width:36px; height:36px; font-size:0.9rem; }
+            .disc-title { font-size:0.88rem; }
+            .disc-excerpt { font-size:0.82rem; -webkit-line-clamp:2; }
+            .disc-stats { flex-direction:row; align-items:center; gap:0.75rem; padding-top:0.5rem; border-top:1px solid var(--border-light); margin-top:0.25rem; }
+            .disc-card-image { display:none; }
+            .disc-badge { font-size:0.58rem; padding:0.08rem 0.35rem; }
+
+            .featured-disc { padding:1rem; }
+            .featured-disc h3 { font-size:1rem; }
+            .featured-disc-meta { font-size:0.75rem; gap:0.5rem; }
+
+            .ask-cta { padding:1.25rem; }
+            .ask-cta h3 { font-size:0.92rem; }
+            .ask-cta p { font-size:0.8rem; }
+
+            .section-padding { padding-left:1rem; padding-right:1rem; }
+            .container { max-width:100%; padding-left:0; padding-right:0; }
+        }
+        @media(max-width:380px) {
+            .cat-cards { gap:0.4rem; }
+            .cat-card { min-width:80px; padding:0.6rem 0.4rem; }
+            .cat-card-icon { font-size:1.1rem; }
+            .cat-card-name { font-size:0.68rem; }
+        }
     </style>
 </head>
 <body>
     <div id="header-container"></div>
 
-    <section class="page-header primary-bg text-white section-padding text-center" style="padding-top:5rem; padding-bottom:2.5rem;">
-        <div class="container reveal-up">
-            <span class="subtitle" style="color:rgba(255,255,255,0.7)">COMMUNITY</span>
-            <h1 style="color:white;">Community Discussions</h1>
-            <p class="section-subtitle text-white">Connect with flower enthusiasts, florists, growers, and experts around the world</p>
+    <!-- ─── Hero ─────────────────────────────────────────────────────── -->
+    <section class="disc-hero">
+        <div class="container">
+            <div class="reveal-up">
+                <span class="subtitle" style="color:var(--primary-color);">KNOWLEDGE HUB</span>
+                <h1>Ask Questions, Share Knowledge,<br>Grow Together</h1>
+                <p>Connect with florists, growers, instructors, sellers, and enthusiasts to solve problems, exchange ideas, and learn from real experiences.</p>
+                <div class="disc-hero-search">
+                    <input type="text" id="heroSearch" placeholder="Search discussions, flowers, pests, business tips..." onkeydown="if(event.key==='Enter')searchFromHero()">
+                    <button class="btn btn-primary" onclick="searchFromHero()"><i class="bi bi-search"></i></button>
+                </div>
+                <div class="disc-hero-btns">
+                    <a href="create-discussion.html" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Ask a Question</a>
+                    <a href="#categories" class="btn btn-outline" onclick="scrollToCategories(event)">Browse Categories</a>
+                </div>
+            </div>
         </div>
     </section>
 
-    <section class="section-padding">
+    <!-- ─── Main Content ─────────────────────────────────────────────── -->
+    <section class="section-padding" style="padding-top:0;" id="categories">
         <div class="container">
-            <div class="disc-header reveal-up">
-                <div class="disc-search">
-                    <input type="text" id="discSearch" placeholder="Search discussions..." aria-label="Search discussions">
-                    <button class="btn btn-primary btn-sm" id="discSearchBtn"><i class="bi bi-search"></i></button>
-                </div>
-                <div class="disc-actions">
-                    <button class="btn btn-outline btn-sm" id="myDiscBtn"><i class="bi bi-person"></i> My Discussions</button>
-                    <a href="create-discussion.html" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Create Discussion</a>
-                </div>
-            </div>
-
-            <div class="category-tabs reveal-up" id="categoryTabs"></div>
+            <!-- Category Cards -->
+            <div class="cat-cards reveal-up" id="catCards"></div>
 
             <div class="disc-layout">
-                <div class="disc-main">
-                    <div class="sort-tabs reveal-up" id="sortTabs">
-                        <button class="sort-tab active" data-sort="newest">Newest</button>
-                        <button class="sort-tab" data-sort="popular">Popular</button>
-                        <button class="sort-tab" data-sort="most_replies">Most Replies</button>
-                        <button class="sort-tab" data-sort="unsolved">Unsolved</button>
+
+                <!-- ─── Left Sidebar ────────────────────────────────────── -->
+                <aside class="disc-left">
+                    <nav class="disc-sidebar-nav">
+                        <div class="disc-nav-section">Browse</div>
+                        <a class="disc-nav-item active" data-filter="all"><i class="bi bi-chat-dots"></i> All Discussions</a>
+                        <a class="disc-nav-item" data-filter="featured"><i class="bi bi-star"></i> Featured</a>
+                        <a class="disc-nav-item" data-filter="trending"><i class="bi bi-fire"></i> Trending</a>
+                        <a class="disc-nav-item" data-filter="solved"><i class="bi bi-check-circle"></i> Solved</a>
+                        <a class="disc-nav-item" data-filter="unsolved"><i class="bi bi-question-circle"></i> Unanswered</a>
+
+                        <div class="disc-nav-divider"></div>
+                        <div class="disc-nav-section">Personal</div>
+                        <a class="disc-nav-item" data-filter="my" onclick="filterMyDiscussions()"><i class="bi bi-person"></i> My Questions</a>
+                        <a class="disc-nav-item" data-filter="saved" onclick="filterSaved()"><i class="bi bi-bookmark"></i> Saved</a>
+                        <a class="disc-nav-item" data-filter="following"><i class="bi bi-people"></i> Following</a>
+
+                        <div class="disc-nav-divider"></div>
+                        <div class="disc-nav-section">Categories</div>
+                        <div id="sidebarCategories"></div>
+
+                        <div class="disc-nav-divider"></div>
+                        <div class="disc-nav-section">Popular Tags</div>
+                        <div id="popularTags" style="padding:0.3rem 0.8rem;">
+                            <span class="pop-tag">#RoseCare <span class="count">1.2K</span></span>
+                            <span class="pop-tag">#WeddingFlowers <span class="count">890</span></span>
+                            <span class="pop-tag">#IndoorPlants <span class="count">756</span></span>
+                            <span class="pop-tag">#FlowerBusiness <span class="count">620</span></span>
+                            <span class="pop-tag">#Orchids <span class="count">445</span></span>
+                        </div>
+                    </nav>
+                </aside>
+
+                <!-- ─── Main Feed ───────────────────────────────────────── -->
+                <main class="disc-main">
+                    <!-- Start Discussion -->
+                    <div id="startDiscussionCard"></div>
+
+                    <!-- Featured Discussion -->
+                    <div id="featuredSection"></div>
+
+                    <!-- Toolbar -->
+                    <div class="disc-toolbar">
+                        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                            <button class="mobile-filter-btn" onclick="openMobileFilter()"><i class="bi bi-funnel"></i> Filters</button>
+                            <div class="sort-tabs" id="sortTabs">
+                                <button class="sort-tab active" data-sort="newest">Latest</button>
+                                <button class="sort-tab" data-sort="popular">Most Viewed</button>
+                                <button class="sort-tab" data-sort="most_replies">Most Replied</button>
+                                <button class="sort-tab" data-sort="unsolved">Unsolved</button>
+                            </div>
+                        </div>
+                        <div class="disc-filter-chips" id="filterChips">
+                            <span class="filter-chip active" data-filter="all">All</span>
+                            <span class="filter-chip" data-filter="answered">Answered</span>
+                            <span class="filter-chip" data-filter="beginner">Beginner</span>
+                            <span class="filter-chip" data-filter="photos">With Photos</span>
+                        </div>
                     </div>
+
+                    <!-- Discussion List -->
                     <div id="discussionList"></div>
                     <div class="pagination" id="pagination"></div>
-                </div>
+                </main>
 
-                <div class="disc-sidebar">
-                    <div class="sidebar-card reveal-up">
-                        <h3><i class="bi bi-stats" style="color:var(--primary-color)"></i> Community Stats</h3>
-                        <div class="stat-grid" id="communityStats">
+                <!-- ─── Right Sidebar ───────────────────────────────────── -->
+                <aside class="disc-right">
+                    <!-- Quick Ask CTA -->
+                    <div class="ask-cta">
+                        <h3><i class="bi bi-lightbulb" style="color:var(--accent-gold);"></i> Need help?</h3>
+                        <p>Ask the community and receive answers from experienced florists and growers.</p>
+                        <a href="create-discussion.html" class="btn btn-primary btn-sm">Ask a Question</a>
+                    </div>
+
+                    <!-- Community Stats -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-bar-chart" style="color:var(--primary-color)"></i> Community Stats</h3>
+                        <div class="stat-grid">
                             <div class="stat-item"><div class="stat-num" id="statMembers">-</div><div class="stat-label">Members</div></div>
                             <div class="stat-item"><div class="stat-num" id="statDiscussions">-</div><div class="stat-label">Discussions</div></div>
                             <div class="stat-item"><div class="stat-num" id="statReplies">-</div><div class="stat-label">Replies</div></div>
                         </div>
                     </div>
 
-                    <div class="sidebar-card reveal-up">
-                        <h3><i class="bi bi-fire" style="color:var(--accent-gold)"></i> Popular Topics</h3>
-                        <ul class="topic-list" id="topicList">
-                            <li><span>??</span> Roses</li>
-                            <li><span>??</span> Sunflowers</li>
-                            <li><span>??</span> Tulips</li>
-                            <li><span>??</span> Palm Trees</li>
-                            <li><span>??</span> Medicinal Plants</li>
-                        </ul>
+                    <!-- Trending Topics -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-fire" style="color:var(--accent-gold)"></i> Trending Topics</h3>
+                        <div id="trendingTopics">
+                            <div class="topic-tag">#RoseCare <span class="count">1.2K</span></div>
+                            <div class="topic-tag">#Greenhouse <span class="count">890</span></div>
+                            <div class="topic-tag">#WeddingBouquets <span class="count">756</span></div>
+                            <div class="topic-tag">#FlowerBusiness <span class="count">620</span></div>
+                            <div class="topic-tag">#PlantDisease <span class="count">445</span></div>
+                        </div>
                     </div>
 
-                    <div class="sidebar-card reveal-up">
+                    <!-- Top Contributors -->
+                    <div class="sidebar-card">
                         <h3><i class="bi bi-trophy" style="color:var(--accent-gold)"></i> Top Contributors</h3>
-                        <ul class="contributor-list" id="topContributors"></ul>
+                        <div id="topContributors"></div>
                     </div>
-                </div>
+
+                    <!-- Related Discussions -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-link-45deg" style="color:var(--accent-blue)"></i> Related Discussions</h3>
+                        <div id="relatedDiscussions">
+                            <p style="font-size:0.82rem;color:var(--text-muted);">Loading...</p>
+                        </div>
+                    </div>
+
+                    <!-- Reputation Levels -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-award" style="color:var(--accent-gold)"></i> Reputation Levels</h3>
+                        <div style="font-size:0.82rem;color:var(--text-light);display:flex;flex-direction:column;gap:0.4rem;">
+                            <div>🌱 <strong>New Member</strong> — 0 pts</div>
+                            <div>🌿 <strong>Contributor</strong> — 100 pts</div>
+                            <div>🌸 <strong>Expert</strong> — 500 pts</div>
+                            <div>💐 <strong>Mentor</strong> — 1,500 pts</div>
+                            <div>🏆 <strong>Community Leader</strong> — 5,000 pts</div>
+                        </div>
+                    </div>
+                </aside>
             </div>
         </div>
     </section>
+
+    <!-- ─── Mobile Filter Drawer ─────────────────────────────────────── -->
+    <div class="mobile-filter-drawer" id="mobileFilterDrawer" onclick="if(event.target===this)closeMobileFilter()">
+        <div class="mobile-filter-panel">
+            <div class="mobile-filter-handle"></div>
+            <h3 style="font-size:1.05rem;margin-bottom:1rem;">Filter Discussions</h3>
+
+            <div style="margin-bottom:1rem;">
+                <h4 style="font-size:0.85rem;margin-bottom:0.5rem;">Sort By</h4>
+                <div class="sort-tabs" id="mobileSortTabs" style="flex-wrap:wrap;">
+                    <button class="sort-tab active" data-sort="newest">Latest</button>
+                    <button class="sort-tab" data-sort="popular">Most Viewed</button>
+                    <button class="sort-tab" data-sort="most_replies">Most Replied</button>
+                    <button class="sort-tab" data-sort="unsolved">Unsolved</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <h4 style="font-size:0.85rem;margin-bottom:0.5rem;">Filter By</h4>
+                <div class="disc-filter-chips" id="mobileFilterChips" style="flex-wrap:wrap;">
+                    <span class="filter-chip active" data-filter="all">All</span>
+                    <span class="filter-chip" data-filter="answered">Answered</span>
+                    <span class="filter-chip" data-filter="beginner">Beginner</span>
+                    <span class="filter-chip" data-filter="photos">With Photos</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <h4 style="font-size:0.85rem;margin-bottom:0.5rem;">Category</h4>
+                <div id="mobileCategories" style="display:flex;flex-wrap:wrap;gap:0.4rem;"></div>
+            </div>
+
+            <button class="btn btn-primary" style="width:100%;" onclick="applyMobileFilters()">Apply Filters</button>
+        </div>
+    </div>
+
+    <!-- ─── Mobile Bottom Nav ────────────────────────────────────────── -->
+    <nav class="disc-mobile-nav">
+        <div class="disc-mobile-nav-inner">
+            <a class="disc-mobile-nav-item active" href="discussions.html"><i class="bi bi-chat-dots"></i> Discussions</a>
+            <a class="disc-mobile-nav-item" href="questions.html"><i class="bi bi-question-circle"></i> Q&A</a>
+            <button class="disc-mobile-fab" onclick="window.location.href='create-discussion.html'"><i class="bi bi-plus-lg"></i></button>
+            <a class="disc-mobile-nav-item" href="events.html"><i class="bi bi-calendar-event"></i> Events</a>
+            <a class="disc-mobile-nav-item" href="feed.html"><i class="bi bi-rss"></i> Feed</a>
+        </div>
+    </nav>
+
+    <!-- ─── Mobile Floating Action Button ────────────────────────────── -->
+    <button class="disc-fab" onclick="window.location.href='create-discussion.html'" title="Start Discussion">+</button>
 
     <div id="footer-container"></div>
 
@@ -149,7 +459,11 @@
     <script src="js/shared/cart.js?v=3.0"></script>
     <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
-    <script src="js/discussions.js"></script>
+
+    <!-- Discussion Components -->
+    <script src="js/components/discussion-card.js?v=1.0"></script>
+    <script src="js/components/discussion-sidebar.js?v=1.0"></script>
+    <script src="js/discussions.js?v=2.0"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             initDiscussionsPage();

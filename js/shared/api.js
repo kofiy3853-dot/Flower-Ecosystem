@@ -143,7 +143,7 @@ const api = {
     fetchArticles() { return apiFetch('/api/articles', 'articles'); },
     fetchVideos() { return apiFetch('/api/videos', 'videos'); },
     fetchEvents() { return apiFetch('/api/events', 'events'); },
-    fetchCourses() { return apiFetch('/api/courses', 'courses'); },
+    fetchCourses() { return apiFetch('/api/courses', 'courses').then(d => Array.isArray(d) ? d : (d?.courses || [])); },
     fetchLessons() { return apiFetch('/api/lessons', 'lessons'); },
     fetchQuizzes() { return apiFetch('/api/quizzes', 'quizzes'); },
     fetchIdentification() { return apiFetch('/api/identification', 'identification'); },

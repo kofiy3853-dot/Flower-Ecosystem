@@ -42,6 +42,16 @@
         .char-count { font-size:0.75rem; color:var(--text-muted); text-align:right; margin-top:0.25rem; }
         .error-msg { color:var(--error-color); font-size:0.85rem; margin-top:0.5rem; display:none; }
         .success-msg { color:var(--accent-green); font-size:0.85rem; margin-top:0.5rem; display:none; }
+        @media(max-width:640px) {
+            .create-form { padding:0 0.5rem; }
+            .form-card { padding:1rem; }
+            .form-card h2 { font-size:1rem; }
+            .form-group textarea { min-height:150px; }
+            .form-actions { flex-direction:column; }
+            .form-actions .btn { width:100%; justify-content:center; }
+            .upload-area { padding:1.5rem; }
+            .section-padding { padding-left:0.75rem; padding-right:0.75rem; }
+        }
     </style>
 </head>
 <body>

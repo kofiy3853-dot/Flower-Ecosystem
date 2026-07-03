@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Showcase your floral creations — arrangements, gardens, bouquets, and designs. Share your flower work with the community.">
+    <title>Community Showcase | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .showcase-hero { position:relative; min-height:400px; display:flex; align-items:center; overflow:hidden; padding:5rem 0 3rem; }
+        .showcase-hero-bg { position:absolute; inset:0; }
+        .showcase-hero-bg img { width:100%; height:100%; object-fit:cover; }
+        .showcase-hero-overlay { position:absolute; inset:0; background:linear-gradient(135deg, rgba(255,245,248,0.95) 0%, rgba(255,224,235,0.85) 50%, rgba(255,255,255,0.6) 100%); }
+        .showcase-hero-content { position:relative; z-index:2; max-width:600px; }
+        .showcase-hero-content .subtitle { color:var(--primary-color);font-weight:600;letter-spacing:0.1em;font-size:0.8rem; }
+        .showcase-hero-content h1 { font-size:clamp(1.8rem,3.5vw,2.6rem); margin-bottom:0.5rem; }
+        .showcase-hero-content p { font-size:1rem; color:var(--text-light); margin-bottom:1.5rem; }
+
+        .showcase-toolbar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1.25rem; }
+        .showcase-search { display:flex; gap:0.5rem; flex:1; max-width:360px; }
+        .showcase-search input { flex:1; padding:0.55rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.88rem; background:var(--bg-white); color:var(--text-main); }
+        .showcase-search input:focus { outline:none; border-color:var(--primary-color); box-shadow:0 0 0 3px var(--primary-light); }
+
+        .showcase-categories { display:flex; gap:0.5rem; overflow-x:auto; padding-bottom:0.5rem; margin-bottom:1.25rem; scrollbar-width:thin; }
+        .showcase-categories::-webkit-scrollbar { height:3px; }
+        .showcase-categories::-webkit-scrollbar-thumb { background:var(--border-color); border-radius:3px; }
+        .showcase-cat-tab { padding:0.45rem 0.9rem; border:1px solid var(--border-color); border-radius:20px; font-size:0.8rem; white-space:nowrap; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; flex-shrink:0; }
+        .showcase-cat-tab:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .showcase-cat-tab.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+
+        .sc-cat-tab { padding:0.45rem 0.9rem; border:1px solid var(--border-color); border-radius:20px; font-size:0.8rem; white-space:nowrap; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; flex-shrink:0; }
+        .sc-cat-tab:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .sc-cat-tab.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+
+        .sc-sort-tabs { display:flex; gap:0.25rem; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.25rem; width:fit-content; margin-bottom:1rem; }
+        .sc-sort-tab { padding:0.4rem 0.75rem; border-radius:var(--radius-sm); font-size:0.8rem; cursor:pointer; color:var(--text-light); border:none; background:none; }
+        .sc-sort-tab.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
+
+        .sc-featured-section { margin-bottom:2.5rem; }
+        .sc-featured-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.25rem; }
+        .sc-creators-grid { display:flex; gap:1rem; overflow-x:auto; padding-bottom:0.5rem; }
+        .sc-creator-card { flex-shrink:0; width:160px; text-align:center; padding:1rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); cursor:pointer; transition:all 0.2s; }
+        .sc-creator-card:hover { border-color:var(--primary-color); transform:translateY(-2px); }
+        .sc-creator-avatar { width:60px;height:60px;border-radius:50%;margin:0 auto 0.5rem;overflow:hidden;background:var(--bg-light);display:flex;align-items:center;justify-content:center; }
+        .sc-creator-avatar img { width:100%;height:100%;object-fit:cover; }
+        .sc-creator-name { font-size:0.82rem;font-weight:600; }
+        .sc-creator-count { font-size:0.72rem;color:var(--text-muted); }
+
+        .showcase-grid { column-count:4; column-gap:1rem; }
+        .showcase-item { break-inside:avoid; margin-bottom:1rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; transition:all 0.3s; }
+        .showcase-item:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
+        .showcase-img { overflow:hidden; }
+        .showcase-img img { width:100%; display:block; transition:transform 0.5s; }
+        .showcase-item:hover .showcase-img img { transform:scale(1.03); }
+        .showcase-body { padding:0.85rem 1rem 1rem; }
+        .showcase-author { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem; cursor:pointer; }
+        .showcase-avatar { width:28px; height:28px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:0.7rem; overflow:hidden; flex-shrink:0; }
+        .showcase-avatar img { width:100%; height:100%; object-fit:cover; }
+        .showcase-author-name { font-weight:500; font-size:0.82rem; }
+        .showcase-author-role { font-size:0.68rem; color:var(--text-light); }
+        .showcase-desc { font-size:0.82rem; color:var(--text-light); line-height:1.5; margin-bottom:0.6rem; }
+        .showcase-actions { display:flex; gap:0.25rem; padding-top:0.6rem; border-top:1px solid var(--border-light); }
+        .showcase-action { display:flex; align-items:center; gap:0.25rem; padding:0.3rem 0.5rem; border:none; background:none; font-size:0.78rem; color:var(--text-muted); cursor:pointer; border-radius:4px; transition:all 0.15s; }
+        .showcase-action:hover { background:var(--bg-light); color:var(--text-main); }
+        .showcase-action.saved i { color:var(--error-color); }
+        .showcase-action.liked i { color:var(--error-color); }
+        .showcase-action i { font-size:0.95rem; }
+
+        .showcase-empty { text-align:center; padding:3rem 1rem; color:var(--text-light); grid-column:1/-1; }
+        .showcase-empty i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
+
+        .showcase-stats { display:flex; gap:1.5rem; margin-top:1rem; flex-wrap:wrap; }
+        .showcase-stats span { font-size:0.85rem; color:var(--text-muted); display:flex; align-items:center; gap:0.3rem; }
+        .showcase-stats strong { color:var(--text-main); }
+
+        .form-input { width:100%; padding:0.6rem 0.75rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.88rem; font-family:inherit; transition:border-color 0.2s; box-sizing:border-box; }
+        .form-input:focus { outline:none; border-color:var(--primary-color); box-shadow:0 0 0 3px var(--primary-light); }
+        select.form-input { appearance:auto; }
+        textarea.form-input { resize:vertical; }
+
+        @media(max-width:1024px) { .showcase-grid { column-count:3; } }
+        @media(max-width:768px) {
+            .showcase-grid { column-count:2; }
+            .showcase-hero { min-height:350px; padding:4rem 0 2rem; }
+            .showcase-hero-content h1 { font-size:1.5rem; }
+        }
+        @media(max-width:480px) {
+            .showcase-grid { column-count:1; }
+            .showcase-toolbar { flex-direction:column; align-items:stretch; }
+            .showcase-search { max-width:100%; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="showcase-hero">
+        <div class="showcase-hero-bg">
+            <img src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=80&w=1920&auto=format&fit=crop" alt="" loading="lazy">
+        </div>
+        <div class="showcase-hero-overlay"></div>
+        <div class="container" style="position:relative;z-index:2;">
+            <div class="showcase-hero-content reveal-up">
+                <span class="subtitle">COMMUNITY SHOWCASE</span>
+                <h1>Floral Creations<br>by Our Community</h1>
+                <p>Browse beautiful arrangements, gardens, bouquets, and designs shared by flower lovers like you. Share your own work and inspire others.</p>
+                <div class="showcase-stats">
+                    <span><i class="bi bi-image"></i> <strong id="showcaseTotal">0</strong> creations</span>
+                    <span><i class="bi bi-heart"></i> <strong id="showcaseSaved">0</strong> saved</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <!-- Featured -->
+            <div id="scFeatured" class="sc-featured-section reveal-up" style="display:none;">
+                <h2 style="margin-bottom:1rem;"><i class="bi bi-star-fill" style="color:var(--accent-gold);"></i> Featured Creations</h2>
+                <div class="sc-featured-grid" id="scFeaturedGrid"></div>
+            </div>
+
+            <!-- Top Creators -->
+            <div id="scCreators" class="reveal-up" style="margin-bottom:2.5rem;display:none;">
+                <h2 style="margin-bottom:1rem;"><i class="bi bi-trophy" style="color:var(--accent-gold);"></i> Top Creators</h2>
+                <div class="sc-creators-grid" id="scCreatorsGrid"></div>
+            </div>
+
+            <!-- Competitions -->
+            <div id="scCompetitions" class="reveal-up" style="margin-bottom:2.5rem;display:none;">
+                <h2 style="margin-bottom:1rem;"><i class="bi bi-award" style="color:var(--primary-color);"></i> Active Competitions</h2>
+                <div id="scCompetitionsGrid"></div>
+            </div>
+
+            <!-- Collections -->
+            <div id="scCollections" class="reveal-up" style="margin-bottom:2.5rem;display:none;">
+                <h2 style="margin-bottom:1rem;"><i class="bi bi-collection" style="color:var(--accent-purple);"></i> Collections</h2>
+                <div id="scCollectionsGrid"></div>
+            </div>
+
+            <div class="showcase-toolbar reveal-up">
+                <div class="showcase-search">
+                    <input type="text" id="showcaseSearch" placeholder="Search creations..." aria-label="Search showcase">
+                    <button class="btn btn-primary btn-sm" id="showcaseSearchBtn"><i class="bi bi-search"></i></button>
+                </div>
+                <button class="btn btn-primary" onclick="openShowcaseUpload()"><i class="bi bi-plus-lg"></i> Share Your Work</button>
+            </div>
+
+            <div class="showcase-categories reveal-up" id="showcaseCategories">
+                <div class="sc-sort-tabs" id="scSortTabs">
+                    <button class="sc-sort-tab active" data-sort="recent">Recent</button>
+                    <button class="sc-sort-tab" data-sort="popular">Popular</button>
+                    <button class="sc-sort-tab" data-sort="saved">Most Saved</button>
+                </div>
+            </div>
+
+            <div class="showcase-grid reveal-up" id="showcaseGrid">
+                <div class="showcase-empty"><i class="bi bi-hourglass-split"></i><h3>Loading showcase...</h3></div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/ui.js?v=2.0"></script>
+    <script src="js/shared/cart.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/components/showcase-card.js?v=1.0"></script>
+    <script src="js/showcase.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initShowcase();
+        });
+    </script>
+</body>
+</html>

@@ -3,105 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Read inspiring success stories from flower enthusiasts, florists, and growers in our community.">
+    <meta name="description" content="Read inspiring success stories from florists, gardeners, students, and entrepreneurs who have grown through the Flower Ecosystem.">
     <title>Success Stories | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
-        .stories-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
-        .stories-search { display:flex; gap:0.5rem; flex:1; max-width:400px; }
-        .stories-search input { flex:1; padding:0.6rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.9rem; background:var(--bg-white); color:var(--text-main); }
-        .stories-search input:focus { outline:none; border-color:var(--primary-color); }
+        /* ─── Layout ──────────────────────────────────────────────── */
+        .stories-layout { display:grid; grid-template-columns:1fr 300px; gap:2rem; }
+        .stories-main { min-width:0; }
+        .stories-sidebar { display:flex; flex-direction:column; gap:1.25rem; }
+
+        /* ─── Hero ────────────────────────────────────────────────── */
+        .stories-hero { position:relative; min-height:480px; display:flex; align-items:center; overflow:hidden; padding:6rem 0 4rem; margin-bottom:0; }
+        .stories-hero-bg { position:absolute; inset:0; }
+        .stories-hero-bg img { width:100%; height:100%; object-fit:cover; }
+        .stories-hero-overlay { position:absolute; inset:0; background:linear-gradient(135deg, rgba(255,245,248,0.95) 0%, rgba(255,224,235,0.85) 40%, rgba(255,240,245,0.7) 70%, rgba(255,255,255,0.5) 100%); }
+        .stories-hero-content { position:relative; z-index:2; max-width:650px; }
+        .stories-hero-content .subtitle { color:var(--primary-color);font-weight:600;letter-spacing:0.1em;font-size:0.8rem; }
+        .stories-hero-content h1 { font-size:clamp(2rem,4vw,3rem); line-height:1.2; margin-bottom:0.75rem; }
+        .stories-hero-content p { font-size:1.05rem; color:var(--text-light); line-height:1.6; margin-bottom:1.5rem; max-width:520px; }
+        .stories-hero-btns { display:flex; gap:0.75rem; flex-wrap:wrap; }
+
+        /* ─── Featured Story ──────────────────────────────────────── */
+        .featured-story-section { margin-bottom:2.5rem; }
+        .featured-story { display:grid; grid-template-columns:1fr 1fr; gap:2rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow-md); }
+        .featured-story-img { height:100%; min-height:400px; overflow:hidden; }
+        .featured-story-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.6s; }
+        .featured-story:hover .featured-story-img img { transform:scale(1.05); }
+        .featured-story-content { padding:2.5rem; display:flex; flex-direction:column; justify-content:center; }
+        .featured-story-badge { display:inline-flex; align-items:center; gap:0.4rem; background:var(--accent-gold); color:white; font-size:0.72rem; font-weight:600; padding:0.3rem 0.7rem; border-radius:4px; margin-bottom:1rem; width:fit-content; }
+        .featured-story-content h2 { font-family:'Playfair Display',serif; font-size:1.5rem; margin-bottom:0.75rem; line-height:1.3; }
+        .featured-story-author { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem; }
+        .featured-story-avatar { width:40px; height:40px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:1rem; overflow:hidden; }
+        .featured-story-avatar img { width:100%; height:100%; object-fit:cover; }
+        .featured-story-name { font-weight:600; font-size:0.95rem; }
+        .featured-story-role { font-size:0.8rem; color:var(--text-light); }
+        .featured-story-rating { color:var(--accent-gold); font-size:1.1rem; letter-spacing:2px; margin-bottom:0.75rem; }
+        .featured-story-content p { font-size:0.92rem; color:var(--text-light); line-height:1.7; margin-bottom:1rem; }
+        .featured-story-meta { display:flex; gap:1.25rem; font-size:0.85rem; color:var(--text-muted); }
+        .featured-story-meta span { display:flex; align-items:center; gap:0.3rem; }
+
+        /* ─── Category Tabs ───────────────────────────────────────── */
         .category-tabs { display:flex; gap:0.5rem; overflow-x:auto; padding-bottom:0.5rem; margin-bottom:1.5rem; scrollbar-width:thin; }
-        .category-tab { padding:0.5rem 1rem; border:1px solid var(--border-color); border-radius:20px; font-size:0.85rem; white-space:nowrap; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; }
+        .category-tabs::-webkit-scrollbar { height:3px; }
+        .category-tabs::-webkit-scrollbar-thumb { background:var(--border-color); border-radius:3px; }
+        .category-tab { padding:0.5rem 1rem; border:1px solid var(--border-color); border-radius:20px; font-size:0.82rem; white-space:nowrap; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; flex-shrink:0; }
         .category-tab:hover { border-color:var(--primary-color); color:var(--primary-color); }
         .category-tab.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
-        .featured-stories { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:2rem; }
-        .featured-card { position:relative; border-radius:var(--radius-md); overflow:hidden; height:320px; cursor:pointer; }
-        .featured-card img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
-        .featured-card:hover img { transform:scale(1.05); }
-        .featured-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 50%); display:flex; flex-direction:column; justify-content:flex-end; padding:1.5rem; }
-        .featured-overlay h3 { color:white; font-size:1.1rem; margin-bottom:0.3rem; }
-        .featured-overlay .author { color:rgba(255,255,255,0.8); font-size:0.85rem; }
-        .sort-tabs { display:flex; gap:0.25rem; margin-bottom:1rem; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.25rem; width:fit-content; }
-        .sort-tab { padding:0.4rem 0.75rem; border-radius:var(--radius-sm); font-size:0.8rem; cursor:pointer; color:var(--text-light); transition:all 0.2s; border:none; background:none; }
+
+        /* ─── Toolbar ─────────────────────────────────────────────── */
+        .stories-toolbar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1.25rem; }
+        .stories-search { display:flex; gap:0.5rem; flex:1; max-width:360px; }
+        .stories-search input { flex:1; padding:0.55rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.88rem; background:var(--bg-white); color:var(--text-main); }
+        .stories-search input:focus { outline:none; border-color:var(--primary-color); box-shadow:0 0 0 3px var(--primary-light); }
+        .sort-tabs { display:flex; gap:0.25rem; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.25rem; }
+        .sort-tab { padding:0.4rem 0.7rem; border-radius:var(--radius-sm); font-size:0.78rem; cursor:pointer; color:var(--text-light); transition:all 0.2s; border:none; background:none; white-space:nowrap; }
         .sort-tab.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
-        .stories-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
-        .story-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; transition:all 0.3s; cursor:pointer; }
+
+        /* ─── Story Grid ──────────────────────────────────────────── */
+        .stories-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:2rem; }
+        .story-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; transition:all 0.3s; cursor:pointer; display:flex; flex-direction:column; }
         .story-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
-        .story-img { height:200px; overflow:hidden; }
+        .story-img { position:relative; height:190px; overflow:hidden; flex-shrink:0; }
         .story-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
         .story-card:hover .story-img img { transform:scale(1.05); }
-        .story-body { padding:1.25rem; }
-        .story-category { display:inline-block; font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-green); margin-bottom:0.3rem; }
-        .story-body h3 { font-size:1.05rem; margin-bottom:0.4rem; line-height:1.3; }
+        .story-badge.featured { position:absolute; top:0.65rem; right:0.65rem; background:var(--accent-gold); color:white; font-size:0.62rem; font-weight:600; padding:0.2rem 0.5rem; border-radius:4px; }
+        .story-body { padding:1.25rem; flex-grow:1; display:flex; flex-direction:column; }
+        .story-meta-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem; }
+        .story-category { font-size:0.68rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-green); }
+        .story-reading-time { font-size:0.7rem; color:var(--text-muted); }
+        .story-body h3 { font-size:1rem; margin-bottom:0.4rem; line-height:1.3; }
         .story-author { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem; }
-        .story-avatar { width:28px; height:28px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:0.8rem; overflow:hidden; }
+        .story-avatar { width:26px; height:26px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:0.7rem; overflow:hidden; flex-shrink:0; }
         .story-avatar img { width:100%; height:100%; object-fit:cover; }
-        .story-author-info { font-size:0.8rem; }
+        .story-author-info { font-size:0.78rem; }
         .story-author-name { font-weight:500; color:var(--text-main); }
-        .story-author-role { color:var(--text-light); }
-        .story-excerpt { font-size:0.88rem; color:var(--text-light); line-height:1.5; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; margin-bottom:0.75rem; }
-        .story-footer { display:flex; gap:1rem; padding-top:0.75rem; border-top:1px solid var(--border-light); font-size:0.8rem; color:var(--text-light); }
+        .story-author-role { color:var(--text-light); font-size:0.72rem; }
+        .story-excerpt { font-size:0.85rem; color:var(--text-light); line-height:1.5; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; margin-bottom:0.75rem; flex-grow:1; }
+        .story-footer { display:flex; justify-content:space-between; gap:0.75rem; padding-top:0.75rem; border-top:1px solid var(--border-light); font-size:0.78rem; color:var(--text-muted); flex-shrink:0; }
         .story-footer span { display:flex; align-items:center; gap:0.25rem; }
-        .story-footer .liked { color:var(--error-color); }
-        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); grid-column:1/-1; }
-        .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
-        .pagination { display:flex; justify-content:center; gap:0.25rem; margin-top:1.5rem; }
+
+        /* ─── Pagination ──────────────────────────────────────────── */
+        .pagination { display:flex; justify-content:center; gap:0.25rem; margin:1.5rem 0; }
         .page-btn { padding:0.4rem 0.75rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.85rem; cursor:pointer; background:var(--bg-white); color:var(--text-main); transition:all 0.2s; }
         .page-btn.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
-        .cta-section { text-align:center; }
-        .cta-section h2 { margin-bottom:0.5rem; }
-        .cta-section p { color:var(--text-light); max-width:500px; margin:0 auto 1.5rem; }
-        @media(max-width:1024px) { .stories-grid, .featured-stories { grid-template-columns:repeat(2,1fr); } }
-        @media(max-width:640px) { .stories-grid, .featured-stories { grid-template-columns:1fr; } .featured-card { height:250px; } }
+        .page-btn:hover:not(.active) { border-color:var(--primary-color); }
+
+        /* ─── Featured Creators ───────────────────────────────────── */
+        .creators-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+        .creator-card { display:flex; align-items:center; gap:0.75rem; padding:1rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); transition:all 0.2s; }
+        .creator-card:hover { border-color:var(--primary-color); box-shadow:var(--shadow-sm); }
+        .creator-avatar { width:44px; height:44px; border-radius:50%; background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:1.1rem; overflow:hidden; flex-shrink:0; }
+        .creator-avatar img { width:100%; height:100%; object-fit:cover; }
+        .creator-info { min-width:0; }
+        .creator-name { font-weight:600; font-size:0.88rem; }
+        .creator-role { font-size:0.75rem; color:var(--text-light); }
+        .creator-count { font-size:0.72rem; color:var(--primary-color); font-weight:500; margin-top:0.1rem; }
+
+        /* ─── Impact Stats ────────────────────────────────────────── */
+        .impact-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin:2.5rem 0; }
+        .impact-stat { text-align:center; padding:1.5rem 1rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); }
+        .impact-stat .stat-icon { font-size:1.8rem; margin-bottom:0.5rem; display:block; }
+        .impact-stat .stat-num { font-size:1.8rem; font-weight:700; color:var(--primary-color); font-family:'Playfair Display',serif; }
+        .impact-stat .stat-label { font-size:0.82rem; color:var(--text-light); margin-top:0.2rem; }
+
+        /* ─── Sidebar ─────────────────────────────────────────────── */
+        .sidebar-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; }
+        .sidebar-card h3 { font-size:0.92rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
+        .sidebar-creator { display:flex; align-items:center; gap:0.6rem; padding:0.45rem 0; border-bottom:1px solid var(--border-light); }
+        .sidebar-creator:last-child { border-bottom:none; }
+        .sidebar-creator-avatar { width:32px; height:32px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:0.7rem; overflow:hidden; flex-shrink:0; }
+        .sidebar-creator-avatar img { width:100%; height:100%; object-fit:cover; }
+        .sidebar-creator-info { min-width:0; flex:1; }
+        .sidebar-creator-name { font-weight:500; font-size:0.82rem; }
+        .sidebar-creator-role { font-size:0.7rem; color:var(--text-light); }
+        .sidebar-creator-count { font-size:0.7rem; color:var(--primary-color); font-weight:500; }
+
+        /* ─── CTA Section ─────────────────────────────────────────── */
+        .cta-section { text-align:center; padding:3rem 0; }
+        .cta-section h2 { font-size:1.5rem; margin-bottom:0.5rem; }
+        .cta-section p { color:var(--text-light); max-width:500px; margin:0 auto 1.5rem; font-size:0.95rem; }
+
+        /* ─── Empty State ─────────────────────────────────────────── */
+        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); grid-column:1/-1; }
+        .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
+
+        /* ─── Mobile ──────────────────────────────────────────────── */
+        @media(max-width:1024px) {
+            .stories-layout { grid-template-columns:1fr; }
+            .stories-sidebar { display:none; }
+            .stories-grid { grid-template-columns:repeat(2,1fr); }
+            .creators-grid { grid-template-columns:repeat(2,1fr); }
+            .impact-stats { grid-template-columns:repeat(2,1fr); }
+            .featured-story { grid-template-columns:1fr; }
+            .featured-story-img { min-height:280px; }
+            .featured-story-content { padding:1.5rem; }
+        }
+        @media(max-width:640px) {
+            .stories-hero { min-height:400px; padding:5rem 0 3rem; }
+            .stories-hero-content h1 { font-size:1.6rem; }
+            .stories-hero-content p { font-size:0.9rem; }
+            .stories-grid { grid-template-columns:1fr; }
+            .creators-grid { grid-template-columns:1fr; }
+            .featured-story-img { min-height:200px; }
+            .stories-toolbar { flex-direction:column; align-items:stretch; }
+            .stories-search { max-width:100%; }
+            .sort-tabs { overflow-x:auto; }
+            .category-tabs { flex-wrap:nowrap; }
+            .impact-stat .stat-num { font-size:1.4rem; }
+        }
     </style>
 </head>
 <body>
     <div id="header-container"></div>
 
-    <section class="page-header primary-bg text-white section-padding text-center" style="padding-top:5rem; padding-bottom:2.5rem;">
-        <div class="container reveal-up">
-            <span class="subtitle" style="color:rgba(255,255,255,0.7)">INSPIRATION</span>
-            <h1 style="color:white;">Success Stories</h1>
-            <p class="section-subtitle text-white">Real stories from real members of our community who turned their passion for flowers into something extraordinary</p>
+    <!-- ─── Hero ─────────────────────────────────────────────────────── -->
+    <section class="stories-hero">
+        <div class="stories-hero-bg">
+            <img src="https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=1920&auto=format&fit=crop" alt="" loading="lazy">
+        </div>
+        <div class="stories-hero-overlay"></div>
+        <div class="container" style="position:relative;z-index:2;">
+            <div class="stories-hero-content reveal-up">
+                <span class="subtitle">SUCCESS STORIES</span>
+                <h1>Discover Inspiring Journeys<br>from Our Community</h1>
+                <p>Real stories from florists, gardeners, students, and entrepreneurs who have grown, learned, and thrived through the Flower Ecosystem.</p>
+                <div class="stories-hero-btns">
+                    <a href="#storiesSection" class="btn btn-primary"><i class="bi bi-book"></i> Read Stories</a>
+                    <a href="create-story.html" class="btn btn-outline"><i class="bi bi-plus-lg"></i> Share Your Story</a>
+                </div>
+            </div>
         </div>
     </section>
 
     <section class="section-padding">
         <div class="container">
-            <div id="featuredSection"></div>
+            <!-- ─── Impact Statistics ───────────────────────────────── -->
+            <div class="impact-stats reveal-up" id="impactStats">
+                <div class="impact-stat"><span class="stat-icon">👥</span><div class="stat-num">-</div><div class="stat-label">Community Members</div></div>
+                <div class="impact-stat"><span class="stat-icon">🏪</span><div class="stat-num">-</div><div class="stat-label">Businesses Started</div></div>
+                <div class="impact-stat"><span class="stat-icon">🎓</span><div class="stat-num">-</div><div class="stat-label">Courses Completed</div></div>
+                <div class="impact-stat"><span class="stat-icon">🌍</span><div class="stat-num">-</div><div class="stat-label">Countries Represented</div></div>
+            </div>
 
-            <div class="stories-header reveal-up">
-                <div class="stories-search">
-                    <input type="text" id="storySearch" placeholder="Search stories..." aria-label="Search stories">
-                    <button class="btn btn-primary btn-sm" id="storySearchBtn"><i class="bi bi-search"></i></button>
+            <!-- ─── Featured Story ──────────────────────────────────── -->
+            <div class="featured-story-section reveal-up" id="featuredStorySection"></div>
+
+            <div class="stories-layout">
+                <div class="stories-main">
+                    <!-- ─── Category Tabs ────────────────────────────── -->
+                    <div class="category-tabs reveal-up" id="categoryTabs"></div>
+
+                    <!-- ─── Toolbar ──────────────────────────────────── -->
+                    <div class="stories-toolbar reveal-up">
+                        <div class="stories-search">
+                            <input type="text" id="storySearch" placeholder="Search stories..." aria-label="Search stories">
+                            <button class="btn btn-primary btn-sm" id="storySearchBtn"><i class="bi bi-search"></i></button>
+                        </div>
+                        <div class="sort-tabs" id="sortTabs">
+                            <button class="sort-tab active" data-sort="newest">Latest</button>
+                            <button class="sort-tab" data-sort="popular">Most Inspiring</button>
+                            <button class="sort-tab" data-sort="most_comments">Most Discussed</button>
+                            <button class="sort-tab" data-sort="most_views">Most Viewed</button>
+                        </div>
+                    </div>
+
+                    <!-- ─── Story Grid ───────────────────────────────── -->
+                    <div class="stories-grid reveal-up" id="storiesGrid"></div>
+                    <div class="pagination" id="pagination"></div>
+
+                    <!-- ─── Share CTA ────────────────────────────────── -->
+                    <div class="cta-section reveal-up">
+                        <h2>Have a Success Story?</h2>
+                        <p>Tell the community how you've grown through the Flower Ecosystem. Your journey could inspire someone else to start theirs.</p>
+                        <a href="create-story.html" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Share My Story</a>
+                    </div>
                 </div>
-                <a href="create-story.html" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Share Your Story</a>
+
+                <!-- ─── Sidebar ─────────────────────────────────────── -->
+                <aside class="stories-sidebar">
+                    <!-- Featured Creators -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-person-video3" style="color:var(--primary-color)"></i> Featured Creators</h3>
+                        <div id="sidebarCreators"></div>
+                    </div>
+
+                    <!-- Story Stats -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-bar-chart" style="color:var(--primary-color)"></i> Story Stats</h3>
+                        <div id="sidebarStats" class="impact-stats" style="grid-template-columns:1fr 1fr;margin:0;gap:0.5rem;">
+                            <div class="impact-stat" style="padding:0.75rem 0.5rem;"><div class="stat-num" style="font-size:1.2rem;">-</div><div class="stat-label" style="font-size:0.72rem;">Success Stories</div></div>
+                            <div class="impact-stat" style="padding:0.75rem 0.5rem;"><div class="stat-num" style="font-size:1.2rem;">-</div><div class="stat-label" style="font-size:0.72rem;">Storytellers</div></div>
+                            <div class="impact-stat" style="padding:0.75rem 0.5rem;"><div class="stat-num" style="font-size:1.2rem;">-</div><div class="stat-label" style="font-size:0.72rem;">Total Likes</div></div>
+                            <div class="impact-stat" style="padding:0.75rem 0.5rem;"><div class="stat-num" style="font-size:1.2rem;">-</div><div class="stat-label" style="font-size:0.72rem;">Comments</div></div>
+                        </div>
+                    </div>
+
+                    <!-- Trending Categories -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-tags" style="color:var(--accent-green)"></i> Categories</h3>
+                        <div id="sidebarCategories"></div>
+                    </div>
+
+                    <!-- Share CTA Mini -->
+                    <div style="background:linear-gradient(135deg,var(--primary-light),#fce7f0);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:1.25rem;text-align:center;">
+                        <h3 style="font-size:0.95rem;margin-bottom:0.5rem;"><i class="bi bi-megaphone"></i> Inspire Others</h3>
+                        <p style="font-size:0.82rem;color:var(--text-light);margin-bottom:0.75rem;line-height:1.5;">Your story could be the motivation someone needs today.</p>
+                        <a href="create-story.html" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Share Your Story</a>
+                    </div>
+                </aside>
             </div>
-
-            <div class="category-tabs reveal-up" id="categoryTabs"></div>
-
-            <div class="sort-tabs reveal-up" id="sortTabs">
-                <button class="sort-tab active" data-sort="newest">Newest</button>
-                <button class="sort-tab" data-sort="popular">Most Liked</button>
-                <button class="sort-tab" data-sort="most_comments">Most Discussed</button>
-            </div>
-
-            <div class="stories-grid reveal-up" id="storiesGrid"></div>
-            <div class="pagination" id="pagination"></div>
-        </div>
-    </section>
-
-    <section class="section-padding bg-light cta-section">
-        <div class="container reveal-up">
-            <h2>Have a Story to Share?</h2>
-            <p>Inspire others with your flower journey — whether you grew your first garden, started a floristry business, or won a competition.</p>
-            <a href="create-story.html" class="btn btn-primary">Share Your Story ?</a>
         </div>
     </section>
 
@@ -114,6 +269,8 @@
     <script src="js/shared/cart.js?v=3.0"></script>
     <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/components/story-card.js?v=1.0"></script>
+    <script src="js/components/story-sidebar.js?v=1.0"></script>
     <script src="js/success-stories.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {

@@ -123,6 +123,9 @@ app.get('/florists', (_, res) => res.sendFile(path.join(__dirname, 'florists.htm
 app.get('/plant-database', (_, res) => res.sendFile(path.join(__dirname, 'plant-database.html')));
 app.get('/gallery', (_, res) => res.sendFile(path.join(__dirname, 'gallery.html')));
 app.get('/reviews', (_, res) => res.sendFile(path.join(__dirname, 'reviews.html')));
+app.get('/members', (_, res) => res.sendFile(path.join(__dirname, 'members.html')));
+app.get('/showcase', (_, res) => res.sendFile(path.join(__dirname, 'showcase.html')));
+app.get('/clubs', (_, res) => res.sendFile(path.join(__dirname, 'clubs.html')));
 
 // ─── Detail pages ──────────────────────────────────────────────────────────
 
@@ -160,6 +163,7 @@ app.get('/forgot-password', (_, res) => res.sendFile(path.join(__dirname, 'forgo
 app.get('/contact', (_, res) => res.sendFile(path.join(__dirname, 'contact.html')));
 app.get('/account', (_, res) => res.sendFile(path.join(__dirname, 'account.html')));
 app.get('/following', (_, res) => res.sendFile(path.join(__dirname, 'following.html')));
+app.get('/my-activities', (_, res) => res.sendFile(path.join(__dirname, 'my-activities.html')));
 app.get('/learning-path', (_, res) => res.sendFile(path.join(__dirname, 'learning-path.html')));
 app.get('/learning-paths', (_, res) => res.sendFile(path.join(__dirname, 'learning-paths.html')));
 app.get('/instructors', (_, res) => res.sendFile(path.join(__dirname, 'instructors.html')));
@@ -257,10 +261,12 @@ app.use('/api/orders', require('./routes/orders'));
 app.use('/api/seller', require('./routes/seller'));
 app.use('/api/buyer', require('./routes/buyer'));
 app.use('/api/grower', require('./routes/grower'));
+app.use('/api/upload', require('./routes/upload'));
 app.use('/api', require('./routes/learning'));
 app.use('/api/knowledge', require('./routes/knowledge'));
 app.use('/api/events', require('./routes/events'));
 app.use('/api', require('./routes/community'));
+app.use('/api/feed', require('./routes/feed'));
 app.use('/api', require('./routes/garden'));
 app.use('/api/care-guides', require('./routes/care-guides'));
 app.use('/api/admin', require('./routes/admin'));
@@ -271,6 +277,11 @@ app.use('/api/identification', require('./routes/identification'));
 app.use('/api/openai', require('./routes/openai'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api', require('./routes/misc'));
+app.use('/api', require('./routes/showcase'));
+app.use('/api', require('./routes/clubs'));
+app.use('/api', require('./routes/badges'));
+app.use('/api', require('./routes/members'));
+app.use('/api', require('./routes/my-activities'));
 
 // ─── Error handling ────────────────────────────────────────────────────────
 

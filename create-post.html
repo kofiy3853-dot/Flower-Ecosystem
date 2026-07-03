@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create a post and share with the Flower Ecosystem community.">
+    <title>Create Post | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:w300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .cp-layout { display:grid; grid-template-columns:1fr 300px; gap:1.5rem; max-width:1040px; margin:0 auto; align-items:start; }
+        .cp-main { min-width:0; }
+        .cp-sidebar { position:sticky; top:90px; }
+        @media(max-width:768px){ .cp-layout { grid-template-columns:1fr; } .cp-sidebar { display:none; } }
+
+        /* Cards */
+        .cp-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; padding:1.25rem; margin-bottom:1rem; }
+        .cp-card-title { font-size:0.95rem; font-weight:600; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+        .cp-card-title i { color:var(--primary-color); }
+
+        /* User header */
+        .cp-user { display:flex; align-items:center; gap:0.75rem; }
+        .cp-avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,var(--primary-color),#e84393); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; flex-shrink:0; overflow:hidden; }
+        .cp-avatar img { width:100%; height:100%; object-fit:cover; }
+        .cp-user-info { flex:1; }
+        .cp-user-name { font-weight:600; font-size:0.95rem; }
+        .cp-user-role { font-size:0.78rem; color:var(--text-light); }
+        .cp-audience { display:flex; align-items:center; gap:0.4rem; padding:0.35rem 0.75rem; border:1px solid var(--border-color); border-radius:20px; font-size:0.8rem; cursor:pointer; background:var(--bg-main); transition:all 0.2s; }
+        .cp-audience:hover { border-color:var(--primary-color); }
+        .cp-audience select { border:none; background:transparent; font-size:0.8rem; font-family:inherit; color:var(--text-main); cursor:pointer; outline:none; }
+
+        /* Post type selector */
+        .cp-type-grid { display:grid; grid-template-columns:repeat(5, 1fr); gap:0.5rem; }
+        @media(max-width:600px){ .cp-type-grid { grid-template-columns:repeat(3, 1fr); } }
+        .cp-type-btn { display:flex; flex-direction:column; align-items:center; gap:0.3rem; padding:0.75rem 0.5rem; border:2px solid var(--border-color); border-radius:10px; cursor:pointer; transition:all 0.2s; background:var(--bg-main); font-size:0.75rem; color:var(--text-light); }
+        .cp-type-btn:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .cp-type-btn.active { border-color:var(--primary-color); background:rgba(172,50,80,0.05); color:var(--primary-color); font-weight:600; }
+        .cp-type-btn i { font-size:1.3rem; }
+
+        /* Editor */
+        .cp-editor { width:100%; min-height:180px; border:none; outline:none; font-family:inherit; font-size:0.95rem; line-height:1.7; resize:vertical; background:transparent; color:var(--text-main); }
+        .cp-editor::placeholder { color:var(--text-muted); }
+        .cp-editor-wrap { border:1px solid var(--border-color); border-radius:10px; padding:1rem; transition:border-color 0.2s; }
+        .cp-editor-wrap:focus-within { border-color:var(--primary-color); }
+
+        /* Media upload */
+        .cp-upload-zone { border:2px dashed var(--border-color); border-radius:10px; padding:1.5rem; text-align:center; cursor:pointer; transition:all 0.2s; }
+        .cp-upload-zone:hover, .cp-upload-zone.dragover { border-color:var(--primary-color); background:rgba(172,50,80,0.03); }
+        .cp-upload-zone i { font-size:1.8rem; color:var(--text-muted); display:block; margin-bottom:0.4rem; }
+        .cp-upload-zone p { font-size:0.82rem; color:var(--text-light); margin:0; }
+        .cp-media-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(100px, 1fr)); gap:0.5rem; margin-top:0.75rem; }
+        .cp-media-item { position:relative; aspect-ratio:1; border-radius:8px; overflow:hidden; border:1px solid var(--border-color); }
+        .cp-media-item img { width:100%; height:100%; object-fit:cover; }
+        .cp-media-remove { position:absolute; top:4px; right:4px; width:22px; height:22px; border-radius:50%; background:rgba(0,0,0,0.65); color:white; border:none; cursor:pointer; font-size:0.7rem; display:flex; align-items:center; justify-content:center; }
+        .cp-media-caption { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent,rgba(0,0,0,0.7)); padding:0.3rem 0.4rem; }
+        .cp-media-caption input { width:100%; border:none; background:transparent; color:white; font-size:0.7rem; outline:none; }
+
+        /* Tags */
+        .cp-tags { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.5rem; }
+        .cp-tag { display:inline-flex; align-items:center; gap:0.3rem; padding:0.25rem 0.6rem; background:rgba(172,50,80,0.08); color:var(--primary-color); border-radius:20px; font-size:0.78rem; font-weight:500; }
+        .cp-tag button { background:none; border:none; color:var(--primary-color); cursor:pointer; font-size:0.9rem; padding:0; line-height:1; }
+        .cp-tag-input { border:none; outline:none; font-size:0.82rem; padding:0.25rem 0; background:transparent; min-width:100px; flex:1; }
+
+        /* Poll */
+        .cp-poll-option { display:flex; gap:0.5rem; align-items:center; margin-bottom:0.5rem; }
+        .cp-poll-option input { flex:1; padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.88rem; font-family:inherit; }
+        .cp-poll-option input:focus { outline:none; border-color:var(--primary-color); }
+        .cp-poll-remove { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.1rem; }
+        .cp-poll-add { display:flex; align-items:center; gap:0.4rem; color:var(--primary-color); font-size:0.85rem; cursor:pointer; border:none; background:none; font-weight:500; padding:0.3rem 0; }
+        .cp-poll-duration { display:flex; gap:0.5rem; margin-top:0.75rem; }
+        .cp-poll-duration select { padding:0.4rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.85rem; font-family:inherit; }
+
+        /* Product attach */
+        .cp-product-attach { display:flex; gap:0.75rem; align-items:center; padding:0.75rem; border:1px solid var(--border-color); border-radius:10px; background:var(--bg-light); }
+        .cp-product-attach img { width:56px; height:56px; border-radius:8px; object-fit:cover; }
+        .cp-product-attach-info { flex:1; }
+        .cp-product-attach-info h4 { font-size:0.88rem; margin:0 0 0.15rem; }
+        .cp-product-attach-info p { font-size:0.8rem; color:var(--text-light); margin:0; }
+        .cp-product-attach-remove { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1rem; }
+
+        /* Question */
+        .cp-question-cat { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.5rem; }
+        .cp-cat-chip { padding:0.3rem 0.7rem; border:1px solid var(--border-color); border-radius:20px; font-size:0.78rem; cursor:pointer; transition:all 0.2s; }
+        .cp-cat-chip:hover { border-color:var(--primary-color); }
+        .cp-cat-chip.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+
+        /* Event */
+        .cp-event-row { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+
+        /* Achievement */
+        .cp-achievement-card { display:flex; gap:1rem; align-items:center; padding:1rem; border:1px solid var(--border-color); border-radius:10px; background:linear-gradient(135deg,#fdf2f6,#fce7f0); }
+        .cp-achievement-icon { width:48px; height:48px; border-radius:50%; background:var(--primary-color); color:white; display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; }
+
+        /* Preview */
+        .cp-preview { background:var(--bg-light); border-radius:10px; padding:1rem; }
+        .cp-preview-empty { text-align:center; padding:1.5rem; color:var(--text-muted); font-size:0.85rem; }
+
+        /* Actions */
+        .cp-actions { display:flex; gap:0.75rem; justify-content:flex-end; flex-wrap:wrap; }
+        .cp-actions .btn { min-width:120px; }
+
+        /* Sidebar */
+        .cp-tips { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; padding:1.25rem; margin-bottom:1rem; }
+        .cp-tips h3 { font-size:0.9rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
+        .cp-tips ul { padding-left:1.1rem; margin:0; }
+        .cp-tips li { font-size:0.82rem; color:var(--text-light); margin-bottom:0.4rem; line-height:1.4; }
+        .cp-drafts { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; padding:1.25rem; }
+        .cp-drafts h3 { font-size:0.9rem; margin-bottom:0.75rem; }
+        .cp-draft-item { display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0; border-bottom:1px solid var(--border-color); font-size:0.82rem; }
+        .cp-draft-item:last-child { border-bottom:none; }
+        .cp-draft-item button { background:none; border:none; color:var(--error-color); cursor:pointer; font-size:0.78rem; }
+
+        /* Status bar */
+        .cp-status { display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; background:var(--bg-light); border-radius:10px; margin-bottom:1rem; font-size:0.82rem; color:var(--text-light); }
+        .cp-status i { color:var(--accent-green); }
+        .cp-char-count { margin-left:auto; }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="section-padding" style="padding-top:1.5rem;">
+        <div class="container">
+            <div class="cp-layout">
+                <!-- Main -->
+                <div class="cp-main">
+                    <a href="community.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-size:0.88rem;color:var(--text-light);margin-bottom:1rem;text-decoration:none;"><i class="bi bi-arrow-left"></i> Back to Community</a>
+
+                    <!-- User Header -->
+                    <div class="cp-card">
+                        <div class="cp-user">
+                            <div class="cp-avatar" id="cpAvatar"></div>
+                            <div class="cp-user-info">
+                                <div class="cp-user-name" id="cpUserName">Loading...</div>
+                                <div class="cp-user-role" id="cpUserRole"></div>
+                            </div>
+                            <div class="cp-audience">
+                                <i class="bi bi-globe"></i>
+                                <select id="cpAudience">
+                                    <option value="public">🌍 Public</option>
+                                    <option value="followers">👥 Followers Only</option>
+                                    <option value="private">🔒 Private Draft</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Post Type -->
+                    <div class="cp-card">
+                        <div class="cp-card-title"><i class="bi bi-grid"></i> Post Type</div>
+                        <div class="cp-type-grid" id="cpTypeGrid">
+                            <div class="cp-type-btn active" data-type="standard"><i class="bi bi-pencil-square"></i>Standard</div>
+                            <div class="cp-type-btn" data-type="photo"><i class="bi bi-camera"></i>Photo</div>
+                            <div class="cp-type-btn" data-type="video"><i class="bi bi-play-circle"></i>Video</div>
+                            <div class="cp-type-btn" data-type="question"><i class="bi bi-question-circle"></i>Question</div>
+                            <div class="cp-type-btn" data-type="poll"><i class="bi bi-bar-chart"></i>Poll</div>
+                            <div class="cp-type-btn" data-type="showcase"><i class="bi bi-stars"></i>Showcase</div>
+                            <div class="cp-type-btn" data-type="product"><i class="bi bi-bag"></i>Product</div>
+                            <div class="cp-type-btn" data-type="achievement"><i class="bi bi-trophy"></i>Achievement</div>
+                            <div class="cp-type-btn" data-type="event"><i class="bi bi-calendar-event"></i>Event</div>
+                            <div class="cp-type-btn" data-type="story"><i class="bi bi-book"></i>Story</div>
+                        </div>
+                    </div>
+
+                    <!-- Editor -->
+                    <div class="cp-card">
+                        <div class="cp-editor-wrap">
+                            <textarea class="cp-editor" id="cpEditor" placeholder="What's blooming today? Share your flowers, projects, questions, or experiences..."></textarea>
+                        </div>
+                        <div class="cp-status">
+                            <i class="bi bi-check-circle-fill" id="cpAutoSaveIcon" style="display:none;"></i>
+                            <span id="cpAutoSaveText"></span>
+                            <div class="cp-char-count"><span id="cpCharCount">0</span> / 5,000</div>
+                        </div>
+
+                        <!-- Tags -->
+                        <div style="margin-top:0.75rem;">
+                            <div style="font-size:0.82rem;color:var(--text-light);margin-bottom:0.3rem;"><i class="bi bi-hash"></i> Tags</div>
+                            <div class="cp-tags" id="cpTags">
+                                <input type="text" class="cp-tag-input" id="cpTagInput" placeholder="Add a tag and press Enter">
+                            </div>
+                            <div style="display:flex;gap:0.3rem;margin-top:0.4rem;flex-wrap:wrap;" id="cpSuggestedTags"></div>
+                        </div>
+                    </div>
+
+                    <!-- Media Upload -->
+                    <div class="cp-card" id="cpMediaCard">
+                        <div class="cp-card-title"><i class="bi bi-images"></i> Media</div>
+                        <div class="cp-upload-zone" id="cpUploadZone">
+                            <i class="bi bi-cloud-arrow-up"></i>
+                            <p>Click or drag photos/videos here</p>
+                            <p style="font-size:0.72rem;margin-top:0.25rem;">Max 10 images (5MB each) + 1 video (50MB)</p>
+                        </div>
+                        <input type="file" id="cpFileInput" multiple accept="image/*,video/*" style="display:none;">
+                        <div class="cp-media-grid" id="cpMediaGrid"></div>
+                    </div>
+
+                    <!-- Question Type Options -->
+                    <div class="cp-card" id="cpQuestionCard" style="display:none;">
+                        <div class="cp-card-title"><i class="bi bi-question-circle"></i> Question Details</div>
+                        <div style="margin-bottom:0.75rem;">
+                            <label style="font-size:0.85rem;font-weight:500;display:block;margin-bottom:0.3rem;">Category</label>
+                            <div class="cp-question-cat" id="cpQuestionCats"></div>
+                        </div>
+                    </div>
+
+                    <!-- Poll Type Options -->
+                    <div class="cp-card" id="cpPollCard" style="display:none;">
+                        <div class="cp-card-title"><i class="bi bi-bar-chart"></i> Create Poll</div>
+                        <div id="cpPollOptions">
+                            <div class="cp-poll-option"><input type="text" placeholder="Option 1" maxlength="100"></div>
+                            <div class="cp-poll-option"><input type="text" placeholder="Option 2" maxlength="100"></div>
+                        </div>
+                        <button class="cp-poll-add" id="cpPollAdd"><i class="bi bi-plus-circle"></i> Add option</button>
+                        <div class="cp-poll-duration">
+                            <label style="font-size:0.82rem;color:var(--text-light);">Duration:</label>
+                            <select id="cpPollDuration">
+                                <option value="1">1 day</option>
+                                <option value="3" selected>3 days</option>
+                                <option value="7">7 days</option>
+                                <option value="14">14 days</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Product Showcase -->
+                    <div class="cp-card" id="cpProductCard" style="display:none;">
+                        <div class="cp-card-title"><i class="bi bi-bag"></i> Attach Product</div>
+                        <div id="cpProductSearch" style="margin-bottom:0.75rem;">
+                            <input type="text" id="cpProductInput" placeholder="Search your products..." style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.88rem;font-family:inherit;">
+                            <div id="cpProductResults" style="margin-top:0.5rem;"></div>
+                        </div>
+                        <div id="cpAttachedProduct"></div>
+                    </div>
+
+                    <!-- Achievement -->
+                    <div class="cp-card" id="cpAchievementCard" style="display:none;">
+                        <div class="cp-card-title"><i class="bi bi-trophy"></i> Share Achievement</div>
+                        <div class="cp-achievement-card" id="cpAchievementPreview">
+                            <div class="cp-achievement-icon"><i class="bi bi-award"></i></div>
+                            <div>
+                                <div style="font-weight:600;font-size:0.95rem;" id="cpAchievementTitle">Select your achievement</div>
+                                <div style="font-size:0.82rem;color:var(--text-light);" id="cpAchievementDesc"></div>
+                            </div>
+                        </div>
+                        <div style="margin-top:0.75rem;">
+                            <select id="cpAchievementType" style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.88rem;font-family:inherit;">
+                                <option value="">Choose achievement type</option>
+                                <option value="course_completed">🎓 Completed a Course</option>
+                                <option value="certificate">🏆 Earned Certificate</option>
+                                <option value="milestone">🎯 Reached a Milestone</option>
+                                <option value="first_sale">💰 First Sale</option>
+                                <option value="contest_won">🥇 Won a Contest</option>
+                            </select>
+                        </div>
+                        <input type="text" id="cpAchievementDetail" placeholder="e.g., Wedding Floristry Masterclass" style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.88rem;font-family:inherit;margin-top:0.5rem;">
+                    </div>
+
+                    <!-- Event -->
+                    <div class="cp-card" id="cpEventCard" style="display:none;">
+                        <div class="cp-card-title"><i class="bi bi-calendar-event"></i> Event Details</div>
+                        <div style="margin-bottom:0.75rem;">
+                            <label style="font-size:0.85rem;font-weight:500;display:block;margin-bottom:0.3rem;">Event Title</label>
+                            <input type="text" id="cpEventTitle" placeholder="e.g., Spring Flower Workshop" style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.88rem;font-family:inherit;">
+                        </div>
+                        <div class="cp-event-row" style="margin-bottom:0.75rem;">
+                            <div>
+                                <label style="font-size:0.85rem;font-weight:500;display:block;margin-bottom:0.3rem;">Date</label>
+                                <input type="date" id="cpEventDate" style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.88rem;font-family:inherit;">
+                            </div>
+                            <div>
+                                <label style="font-size:0.85rem;font-weight:500;display:block;margin-bottom:0.3rem;">Time</label>
+                                <input type="time" id="cpEventTime" style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.88rem;font-family:inherit;">
+                            </div>
+                        </div>
+                        <div style="margin-bottom:0.75rem;">
+                            <label style="font-size:0.85rem;font-weight:500;display:block;margin-bottom:0.3rem;">Venue</label>
+                            <input type="text" id="cpEventVenue" placeholder="Physical address or 'Online'" style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.88rem;font-family:inherit;">
+                        </div>
+                        <div>
+                            <label style="font-size:0.85rem;font-weight:500;display:block;margin-bottom:0.3rem;">Registration Link (optional)</label>
+                            <input type="url" id="cpEventLink" placeholder="https://..." style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.88rem;font-family:inherit;">
+                        </div>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="cp-card">
+                        <div class="cp-card-title"><i class="bi bi-eye"></i> Preview</div>
+                        <div class="cp-preview" id="cpPreview">
+                            <div class="cp-preview-empty">Start writing to see a preview of your post...</div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="cp-card">
+                        <div class="cp-actions">
+                            <button class="btn btn-outline" id="cpSaveDraft"><i class="bi bi-save"></i> Save Draft</button>
+                            <button class="btn btn-outline" id="cpSchedule"><i class="bi bi-clock"></i> Schedule</button>
+                            <button class="btn btn-primary" id="cpPublish"><i class="bi bi-send"></i> Publish</button>
+                        </div>
+                        <div class="error-msg" id="cpError" style="margin-top:0.75rem;text-align:center;"></div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="cp-sidebar">
+                    <div class="cp-tips">
+                        <h3><i class="bi bi-lightbulb" style="color:var(--accent-gold);"></i> Posting Tips</h3>
+                        <ul>
+                            <li>Use clear, well-lit photos of your flowers</li>
+                            <li>Add hashtags like #Rose #Wedding #Bouquet</li>
+                            <li>Mention the flower species by name</li>
+                            <li>Sellers: link your products for extra reach</li>
+                            <li>Ask specific questions to get better answers</li>
+                            <li>Tag your post type so others can find it</li>
+                        </ul>
+                    </div>
+                    <div class="cp-drafts">
+                        <h3><i class="bi bi-file-earmark-text"></i> Your Drafts</h3>
+                        <div id="cpDraftList">
+                            <p style="font-size:0.82rem;color:var(--text-muted);">No saved drafts</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/ui.js?v=2.0"></script>
+    <script src="js/shared/cart.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+    <script>
+    (async () => {
+        // ─── Auth gate ────────────────────────────────────
+        if (typeof isLoggedIn === 'function' && !isLoggedIn()) {
+            window.location.href = 'index.html';
+            return;
+        }
+
+        const token = getToken();
+        let currentUser = null;
+        try {
+            const me = await fetch('/api/auth/me', { headers: { Authorization: 'Bearer ' + token } }).then(r => r.json());
+            currentUser = me.user;
+        } catch { window.location.href = 'index.html'; return; }
+
+        // ─── User header ──────────────────────────────────
+        const avatar = document.getElementById('cpAvatar');
+        const userName = document.getElementById('cpUserName');
+        const userRole = document.getElementById('cpUserRole');
+        const name = [currentUser.first_name, currentUser.last_name].filter(Boolean).join(' ') || 'You';
+        userName.textContent = name;
+        userRole.textContent = (currentUser.role || 'Member').charAt(0) + (currentUser.role || 'Member').slice(1).toLowerCase();
+        avatar.innerHTML = currentUser.profile_image
+            ? `<img src="${escapeHtml(currentUser.profile_image)}" alt="">`
+            : name.charAt(0).toUpperCase();
+
+        // ─── State ────────────────────────────────────────
+        let postType = 'standard';
+        let mediaFiles = [];
+        let attachedProduct = null;
+        let tags = [];
+        let draftKey = 'cp_draft_' + currentUser.id;
+
+        // ─── Post type selector ───────────────────────────
+        const typeGrid = document.getElementById('cpTypeGrid');
+        const questionCard = document.getElementById('cpQuestionCard');
+        const pollCard = document.getElementById('cpPollCard');
+        const productCard = document.getElementById('cpProductCard');
+        const achievementCard = document.getElementById('cpAchievementCard');
+        const eventCard = document.getElementById('cpEventCard');
+
+        typeGrid.addEventListener('click', e => {
+            const btn = e.target.closest('.cp-type-btn');
+            if (!btn) return;
+            typeGrid.querySelectorAll('.cp-type-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            postType = btn.dataset.type;
+            questionCard.style.display = postType === 'question' ? '' : 'none';
+            pollCard.style.display = postType === 'poll' ? '' : 'none';
+            productCard.style.display = postType === 'product' ? '' : 'none';
+            achievementCard.style.display = postType === 'achievement' ? '' : 'none';
+            eventCard.style.display = postType === 'event' ? '' : 'none';
+            updatePreview();
+        });
+
+        // ─── Question categories ──────────────────────────
+        const qCats = ['Flower Care', 'Flower Identification', 'Floristry', 'Gardening', 'Buying Advice', 'Selling Tips', 'Arrangements', 'Events'];
+        const catContainer = document.getElementById('cpQuestionCats');
+        let selectedQCat = '';
+        qCats.forEach(c => {
+            const chip = document.createElement('div');
+            chip.className = 'cp-cat-chip';
+            chip.textContent = c;
+            chip.onclick = () => {
+                catContainer.querySelectorAll('.cp-cat-chip').forEach(x => x.classList.remove('active'));
+                chip.classList.add('active');
+                selectedQCat = c;
+            };
+            catContainer.appendChild(chip);
+        });
+
+        // ─── Poll options ─────────────────────────────────
+        document.getElementById('cpPollAdd').onclick = () => {
+            const container = document.getElementById('cpPollOptions');
+            if (container.children.length >= 6) return;
+            const div = document.createElement('div');
+            div.className = 'cp-poll-option';
+            div.innerHTML = `<input type="text" placeholder="Option ${container.children.length + 1}" maxlength="100"><button class="cp-poll-remove" onclick="this.parentElement.remove()"><i class="bi bi-x"></i></button>`;
+            container.appendChild(div);
+        };
+
+        // ─── Achievement type change ──────────────────────
+        const achIcons = { course_completed: 'bi-mortarboard', certificate: 'bi-award', milestone: 'bi-bullseye', first_sale: 'bi-cash-coin', contest_won: 'bi-trophy' };
+        document.getElementById('cpAchievementType').onchange = function() {
+            const icon = document.getElementById('cpAchievementPreview').querySelector('i');
+            const title = document.getElementById('cpAchievementTitle');
+            const desc = document.getElementById('cpAchievementDesc');
+            if (this.value) {
+                icon.className = 'bi ' + (achIcons[this.value] || 'bi-award');
+                title.textContent = this.options[this.selectedIndex].text;
+                desc.textContent = 'Share this with the community!';
+            } else {
+                icon.className = 'bi bi-award';
+                title.textContent = 'Select your achievement';
+                desc.textContent = '';
+            }
+        };
+
+        // ─── Media upload ─────────────────────────────────
+        const uploadZone = document.getElementById('cpUploadZone');
+        const fileInput = document.getElementById('cpFileInput');
+        const mediaGrid = document.getElementById('cpMediaGrid');
+
+        uploadZone.onclick = () => fileInput.click();
+        uploadZone.ondragover = e => { e.preventDefault(); uploadZone.classList.add('dragover'); };
+        uploadZone.ondragleave = () => uploadZone.classList.remove('dragover');
+        uploadZone.ondrop = e => { e.preventDefault(); uploadZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); };
+        fileInput.onchange = e => handleFiles(e.target.files);
+
+        function handleFiles(files) {
+            Array.from(files).forEach(f => {
+                if (mediaFiles.length >= 10) return;
+                if (f.size > 5 * 1024 * 1024) return;
+                if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) return;
+                const id = Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+                mediaFiles.push({ id, file: f, caption: '' });
+                renderMedia();
+            });
+            fileInput.value = '';
+        }
+
+        function renderMedia() {
+            mediaGrid.innerHTML = mediaFiles.map(m => {
+                const url = URL.createObjectURL(m.file);
+                const isVideo = m.file.type.startsWith('video/');
+                return `<div class="cp-media-item">
+                    ${isVideo ? `<video src="${url}" style="width:100%;height:100%;object-fit:cover;" muted></video>` : `<img src="${url}" alt="">`}
+                    <button class="cp-media-remove" onclick="removeMedia('${m.id}')"><i class="bi bi-x"></i></button>
+                </div>`;
+            }).join('');
+        }
+
+        window.removeMedia = function(id) {
+            mediaFiles = mediaFiles.filter(m => m.id !== id);
+            renderMedia();
+        };
+
+        // ─── Tags ─────────────────────────────────────────
+        const tagInput = document.getElementById('cpTagInput');
+        const tagsContainer = document.getElementById('cpTags');
+        const suggestedTags = document.getElementById('cpSuggestedTags');
+        const defaultTags = ['#Rose', '#Wedding', '#Bouquet', '#FlowerCare', '#Gardening', '#Floristry', '#IndoorPlants', '#Business'];
+
+        function renderSuggestedTags() {
+            const available = defaultTags.filter(t => !tags.includes(t));
+            suggestedTags.innerHTML = available.slice(0, 5).map(t =>
+                `<button class="cp-tag" style="cursor:pointer;background:var(--bg-light);color:var(--text-light);border:1px solid var(--border-color);" onclick="addTag('${t}')">${t}</button>`
+            ).join('');
+        }
+
+        window.addTag = function(tag) {
+            if (tags.includes(tag) || tags.length >= 10) return;
+            tags.push(tag);
+            renderTags();
+            renderSuggestedTags();
+        };
+
+        function renderTags() {
+            const tagEls = tags.map(t => `<span class="cp-tag">${escapeHtml(t)} <button onclick="removeTag('${t}')">&times;</button></span>`).join('');
+            tagsContainer.innerHTML = tagEls + `<input type="text" class="cp-tag-input" id="cpTagInput" placeholder="${tags.length ? '' : 'Add a tag and press Enter'}">`;
+            document.getElementById('cpTagInput').onkeydown = e => {
+                if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    let val = e.target.value.trim();
+                    if (val && !val.startsWith('#')) val = '#' + val;
+                    if (val) { addTag(val); e.target.value = ''; }
+                }
+            };
+        }
+
+        window.removeTag = function(tag) {
+            tags = tags.filter(t => t !== tag);
+            renderTags();
+            renderSuggestedTags();
+        };
+
+        renderSuggestedTags();
+
+        // ─── Product search (sellers only) ────────────────
+        if (currentUser.role === 'SELLER' || currentUser.role === 'FLORIST') {
+            const productInput = document.getElementById('cpProductInput');
+            const productResults = document.getElementById('cpProductResults');
+            let searchTimeout;
+            productInput.oninput = () => {
+                clearTimeout(searchTimeout);
+                const q = productInput.value.trim();
+                if (q.length < 2) { productResults.innerHTML = ''; return; }
+                searchTimeout = setTimeout(async () => {
+                    try {
+                        const data = await fetch('/api/products?search=' + encodeURIComponent(q) + '&limit=5').then(r => r.json());
+                        const products = data.products || data || [];
+                        productResults.innerHTML = products.slice(0, 5).map(p => `
+                            <div style="display:flex;gap:0.5rem;align-items:center;padding:0.5rem;border:1px solid var(--border-color);border-radius:8px;margin-bottom:0.4rem;cursor:pointer;" onclick="attachProduct('${escapeAttr(p.id)}','${escapeAttr(p.name)}','${escapeAttr(p.image || p.thumbnail_url || '')}','${escapeAttr(p.price || '0')}','${escapeAttr(p.currency || 'GHS')}')">
+                                <img src="${escapeAttr(p.image || p.thumbnail_url || '')}" style="width:40px;height:40px;border-radius:6px;object-fit:cover;" alt="">
+                                <div style="flex:1;min-width:0;"><div style="font-size:0.85rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(p.name)}</div><div style="font-size:0.78rem;color:var(--text-light);">${escapeHtml(p.currency || 'GHS')} ${p.price || 0}</div></div>
+                            </div>
+                        `).join('') || '<p style="font-size:0.82rem;color:var(--text-muted);">No products found</p>';
+                    } catch { productResults.innerHTML = ''; }
+                }, 300);
+            };
+        }
+
+        window.attachProduct = function(id, name, image, price, currency) {
+            attachedProduct = { id, name, image, price, currency };
+            document.getElementById('cpProductSearch').style.display = 'none';
+            document.getElementById('cpAttachedProduct').innerHTML = `
+                <div class="cp-product-attach">
+                    <img src="${escapeAttr(image)}" alt="">
+                    <div class="cp-product-attach-info"><h4>${escapeHtml(name)}</h4><p>${escapeHtml(currency)} ${price}</p></div>
+                    <button class="cp-product-attach-remove" onclick="detachProduct()"><i class="bi bi-x-lg"></i></button>
+                </div>`;
+        };
+
+        window.detachProduct = function() {
+            attachedProduct = null;
+            document.getElementById('cpProductSearch').style.display = '';
+            document.getElementById('cpAttachedProduct').innerHTML = '';
+            document.getElementById('cpProductInput').value = '';
+            document.getElementById('cpProductResults').innerHTML = '';
+        };
+
+        // ─── Editor & preview ─────────────────────────────
+        const editor = document.getElementById('cpEditor');
+        const charCount = document.getElementById('cpCharCount');
+
+        editor.oninput = () => {
+            charCount.textContent = editor.value.length;
+            updatePreview();
+            autoSaveDraft();
+        };
+
+        function updatePreview() {
+            const preview = document.getElementById('cpPreview');
+            const text = editor.value.trim();
+            if (!text && !mediaFiles.length && !attachedProduct) {
+                preview.innerHTML = '<div class="cp-preview-empty">Start writing to see a preview of your post...</div>';
+                return;
+            }
+            let html = `<div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.75rem;">
+                <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary-color),#e84393);color:white;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;">${name.charAt(0)}</div>
+                <div><div style="font-weight:600;font-size:0.88rem;">${escapeHtml(name)}</div><div style="font-size:0.75rem;color:var(--text-muted);">Just now</div></div>
+            </div>`;
+            if (text) html += `<p style="font-size:0.9rem;line-height:1.6;white-space:pre-wrap;">${escapeHtml(text)}</p>`;
+            if (tags.length) html += `<div style="margin-top:0.5rem;">${tags.map(t => `<span style="color:var(--primary-color);font-size:0.82rem;">${escapeHtml(t)}</span>`).join(' ')}</div>`;
+            if (mediaFiles.length) {
+                html += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.4rem;margin-top:0.75rem;">`;
+                mediaFiles.forEach(m => { html += `<div style="aspect-ratio:1;border-radius:8px;overflow:hidden;"><img src="${URL.createObjectURL(m.file)}" style="width:100%;height:100%;object-fit:cover;" alt=""></div>`; });
+                html += `</div>`;
+            }
+            if (attachedProduct) {
+                html += `<div style="margin-top:0.75rem;padding:0.75rem;border:1px solid var(--border-color);border-radius:8px;display:flex;gap:0.5rem;align-items:center;">
+                    <img src="${escapeAttr(attachedProduct.image)}" style="width:48px;height:48px;border-radius:6px;object-fit:cover;" alt="">
+                    <div><div style="font-weight:600;font-size:0.88rem;">${escapeHtml(attachedProduct.name)}</div><div style="font-size:0.8rem;color:var(--primary-color);">${escapeHtml(attachedProduct.currency)} ${attachedProduct.price}</div></div>
+                </div>`;
+            }
+            if (postType === 'poll') {
+                const opts = Array.from(document.querySelectorAll('#cpPollOptions input')).map(i => i.value.trim()).filter(Boolean);
+                if (opts.length) {
+                    html += `<div style="margin-top:0.75rem;">${opts.map(o => `<div style="padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;margin-bottom:0.4rem;font-size:0.88rem;">${escapeHtml(o)}</div>`).join('')}</div>`;
+                }
+            }
+            if (postType === 'event') {
+                const et = document.getElementById('cpEventTitle').value;
+                const ed = document.getElementById('cpEventDate').value;
+                if (et) html += `<div style="margin-top:0.75rem;padding:0.75rem;border:1px solid var(--border-color);border-radius:8px;"><strong>📅 ${escapeHtml(et)}</strong>${ed ? `<div style="font-size:0.82rem;color:var(--text-light);margin-top:0.25rem;">${ed}</div>` : ''}</div>`;
+            }
+            preview.innerHTML = html;
+        }
+
+        // Live-update preview on poll/event changes
+        document.querySelectorAll('#cpPollOptions input, #cpEventTitle, #cpEventDate').forEach(el => {
+            el.oninput = updatePreview;
+        });
+
+        // ─── Auto-save draft ──────────────────────────────
+        let autoSaveTimer;
+        function autoSaveDraft() {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => {
+                const draft = { text: editor.value, type: postType, tags, audience: document.getElementById('cpAudience').value, savedAt: new Date().toISOString() };
+                try { localStorage.setItem(draftKey, JSON.stringify(draft)); } catch {}
+                document.getElementById('cpAutoSaveIcon').style.display = '';
+                document.getElementById('cpAutoSaveText').textContent = 'Draft auto-saved';
+                setTimeout(() => { document.getElementById('cpAutoSaveIcon').style.display = 'none'; document.getElementById('cpAutoSaveText').textContent = ''; }, 2000);
+            }, 2000);
+        }
+
+        // ─── Load drafts ──────────────────────────────────
+        function loadDrafts() {
+            const list = document.getElementById('cpDraftList');
+            let draft = null;
+            try { draft = JSON.parse(localStorage.getItem(draftKey)); } catch {}
+            if (draft && draft.text) {
+                list.innerHTML = `<div class="cp-draft-item">
+                    <span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(draft.text.slice(0, 50))}${draft.text.length > 50 ? '...' : ''}</span>
+                    <button onclick="loadDraft()">Restore</button>
+                    <button onclick="deleteDraft()" style="color:var(--text-muted);">Delete</button>
+                </div>`;
+            } else {
+                list.innerHTML = '<p style="font-size:0.82rem;color:var(--text-muted);">No saved drafts</p>';
+            }
+        }
+
+        window.loadDraft = function() {
+            try {
+                const draft = JSON.parse(localStorage.getItem(draftKey));
+                if (draft) {
+                    editor.value = draft.text || '';
+                    tags = draft.tags || [];
+                    document.getElementById('cpAudience').value = draft.audience || 'public';
+                    renderTags();
+                    renderSuggestedTags();
+                    charCount.textContent = editor.value.length;
+                    updatePreview();
+                }
+            } catch {}
+        };
+
+        window.deleteDraft = function() {
+            localStorage.removeItem(draftKey);
+            loadDrafts();
+        };
+
+        loadDrafts();
+
+        // ─── Save draft button ────────────────────────────
+        document.getElementById('cpSaveDraft').onclick = () => {
+            const draft = { text: editor.value, type: postType, tags, audience: document.getElementById('cpAudience').value, savedAt: new Date().toISOString() };
+            try { localStorage.setItem(draftKey, JSON.stringify(draft)); } catch {}
+            loadDrafts();
+            alert('Draft saved!');
+        };
+
+        // ─── Publish ──────────────────────────────────────
+        document.getElementById('cpPublish').onclick = async () => {
+            const errorEl = document.getElementById('cpError');
+            errorEl.style.display = 'none';
+            const text = editor.value.trim();
+            if (!text && !mediaFiles.length) {
+                errorEl.textContent = 'Please write something or add media.';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            const btn = document.getElementById('cpPublish');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Publishing...';
+
+            try {
+                const formData = new FormData();
+                formData.append('content', text);
+                formData.append('post_type', postType);
+                formData.append('audience', document.getElementById('cpAudience').value);
+                formData.append('tags', JSON.stringify(tags));
+
+                if (postType === 'question' && selectedQCat) formData.append('category', selectedQCat);
+                if (postType === 'poll') {
+                    const opts = Array.from(document.querySelectorAll('#cpPollOptions input')).map(i => i.value.trim()).filter(Boolean);
+                    formData.append('poll_options', JSON.stringify(opts));
+                    formData.append('poll_duration', document.getElementById('cpPollDuration').value);
+                }
+                if (postType === 'product' && attachedProduct) formData.append('product_id', attachedProduct.id);
+                if (postType === 'achievement') {
+                    formData.append('achievement_type', document.getElementById('cpAchievementType').value);
+                    formData.append('achievement_detail', document.getElementById('cpAchievementDetail').value);
+                }
+                if (postType === 'event') {
+                    formData.append('event_title', document.getElementById('cpEventTitle').value);
+                    formData.append('event_date', document.getElementById('cpEventDate').value);
+                    formData.append('event_time', document.getElementById('cpEventTime').value);
+                    formData.append('event_venue', document.getElementById('cpEventVenue').value);
+                    formData.append('event_link', document.getElementById('cpEventLink').value);
+                }
+
+                mediaFiles.forEach(m => formData.append('media', m.file));
+
+                const res = await fetch('/api/posts', {
+                    method: 'POST',
+                    headers: { Authorization: 'Bearer ' + token },
+                    body: formData
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({ error: 'Failed to create post' }));
+                    throw new Error(err.error || 'Failed to create post');
+                }
+
+                localStorage.removeItem(draftKey);
+                window.location.href = 'community.html';
+            } catch (err) {
+                errorEl.textContent = err.message;
+                errorEl.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-send"></i> Publish';
+            }
+        };
+
+        // ─── Schedule (placeholder) ───────────────────────
+        document.getElementById('cpSchedule').onclick = () => {
+            alert('Scheduling will be available in a future update.');
+        };
+
+        // ─── Escape helpers ───────────────────────────────
+        window.escapeAttr = s => (s || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    })();
+    </script>
+</body>
+</html>

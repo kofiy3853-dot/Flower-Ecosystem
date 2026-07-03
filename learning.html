@@ -3,326 +3,479 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Learn floristry with expert articles, video tutorials, guides, and quizzes on Flower Ecosystem.">
-    <meta property="og:title" content="Learning Center | Flower Ecosystem">
-    <meta property="og:description" content="Master floristry with expert guides, video tutorials, interactive quizzes, and hands-on lessons.">
-    <meta property="og:type" content="website">
-    <title>Learning Center — Floristry Guides & Tutorials | Flower Ecosystem</title>
+    <meta name="description" content="Learn floristry with expert courses, video tutorials, guides, and quizzes. Track your progress and earn certificates.">
+    <title>Learning Center | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* ─── Layout ──────────────────────────────────────────────── */
+        .learn-layout { display:grid; grid-template-columns:240px 1fr 280px; gap:1.5rem; }
+        .learn-left, .learn-right { position:sticky; top:80px; align-self:start; max-height:calc(100vh - 100px); overflow-y:auto; }
+        .learn-main { min-width:0; }
+
+        /* ─── Hero ────────────────────────────────────────────────── */
+        .learn-hero { background:linear-gradient(135deg, #fdf2f6 0%, #fce7f0 50%, #f8d7e8 100%); padding:4rem 0 3rem; margin-bottom:2rem; }
+        .learn-hero h1 { font-size:clamp(1.8rem, 3.5vw, 2.5rem); margin-bottom:0.5rem; }
+        .learn-hero p { color:var(--text-light); font-size:1rem; margin-bottom:1.5rem; max-width:600px; }
+        .learn-hero-search { display:flex; background:white; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); overflow:hidden; max-width:560px; }
+        .learn-hero-search input { flex:1; border:none; padding:1rem 1.25rem; font-size:1rem; outline:none; }
+        .learn-hero-search button { border-radius:0 12px 12px 0 !important; padding:1rem 1.5rem !important; }
+        .learn-hero-btns { display:flex; gap:0.75rem; margin-top:1rem; }
+        .learn-stats { display:flex; gap:2rem; margin-top:1.5rem; }
+        .learn-stat { text-align:center; }
+        .learn-stat strong { display:block; font-size:1.3rem; color:var(--primary-color); }
+        .learn-stat span { font-size:0.78rem; color:var(--text-light); }
+
+        /* ─── Left Sidebar ────────────────────────────────────────── */
+        .learn-sidebar-nav { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:0.75rem; }
+        .learn-nav-item { display:flex; align-items:center; gap:0.7rem; padding:0.55rem 0.8rem; border-radius:var(--radius-sm); font-size:0.88rem; color:var(--text-main); text-decoration:none; transition:all 0.2s; cursor:pointer; }
+        .learn-nav-item:hover { background:var(--bg-light); color:var(--primary-color); }
+        .learn-nav-item.active { background:var(--primary-light); color:var(--primary-color); font-weight:500; }
+        .learn-nav-item i { font-size:1rem; width:20px; text-align:center; flex-shrink:0; }
+        .learn-nav-item .count { margin-left:auto; font-size:0.72rem; background:var(--bg-light); padding:0.1rem 0.45rem; border-radius:10px; color:var(--text-muted); }
+        .learn-nav-divider { height:1px; background:var(--border-light); margin:0.5rem 0.8rem; }
+        .learn-nav-section { font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); padding:0.5rem 0.8rem 0.3rem; }
+        .learn-cat-item { display:flex; align-items:center; gap:0.55rem; padding:0.45rem 0.8rem; border-radius:var(--radius-sm); font-size:0.82rem; color:var(--text-light); cursor:pointer; transition:all 0.15s; }
+        .learn-cat-item:hover { background:var(--bg-light); color:var(--text-main); }
+        .learn-cat-item.active { color:var(--primary-color); font-weight:500; }
+        .learn-cat-icon { width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; flex-shrink:0; }
+
+        /* ─── Category Cards ──────────────────────────────────────── */
+        .learn-cat-cards { display:grid; grid-template-columns:repeat(4, 1fr); gap:0.6rem; margin-bottom:1.5rem; }
+        .learn-cat-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:0.85rem 0.5rem; cursor:pointer; transition:all 0.25s; text-align:center; }
+        .learn-cat-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); border-color:var(--primary-color); }
+        .learn-cat-card.active { border-color:var(--primary-color); background:var(--primary-light); }
+        .learn-cat-card-icon { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 0.4rem; font-size:1.2rem; }
+        .learn-cat-card-name { font-size:0.75rem; font-weight:500; }
+
+        /* ─── Toolbar ─────────────────────────────────────────────── */
+        .learn-toolbar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; }
+        .learn-view-toggle { display:flex; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.2rem; }
+        .learn-view-btn { padding:0.4rem 0.75rem; border:none; background:none; border-radius:var(--radius-sm); cursor:pointer; font-size:0.85rem; color:var(--text-light); transition:all 0.2s; display:flex; align-items:center; gap:0.3rem; }
+        .learn-view-btn.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
+        .learn-sort-tabs { display:flex; gap:0.25rem; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.25rem; }
+        .learn-sort-tab { padding:0.4rem 0.75rem; border-radius:var(--radius-sm); font-size:0.8rem; cursor:pointer; color:var(--text-light); border:none; background:none; transition:all 0.2s; }
+        .learn-sort-tab.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
+        .learn-filter-chips { display:flex; gap:0.4rem; flex-wrap:wrap; }
+        .learn-chip { padding:0.35rem 0.7rem; border:1px solid var(--border-color); border-radius:16px; font-size:0.78rem; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; }
+        .learn-chip:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .learn-chip.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+
+        /* ─── Course Cards ─────────────────────────────────────────── */
+        .learn-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:1.25rem; }
+        .learn-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; transition:all 0.3s; cursor:pointer; display:flex; flex-direction:column; }
+        .learn-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:var(--primary-color); }
+        .learn-card-img { position:relative; height:160px; overflow:hidden; }
+        .learn-card-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .learn-card:hover .learn-card-img img { transform:scale(1.05); }
+        .learn-card-badges { position:absolute; top:0.75rem; left:0.75rem; display:flex; gap:0.3rem; }
+        .learn-badge { padding:0.15rem 0.5rem; border-radius:4px; font-size:0.65rem; font-weight:600; }
+        .learn-badge.level { background:var(--accent-blue); color:white; }
+        .learn-badge.free { background:var(--accent-green); color:white; }
+        .learn-badge.new { background:var(--accent-gold); color:white; }
+        .learn-badge.certificate { background:#8b5cf6; color:white; }
+        .learn-card-duration { position:absolute; bottom:0.75rem; right:0.75rem; background:rgba(0,0,0,0.7); color:white; font-size:0.7rem; padding:0.15rem 0.5rem; border-radius:4px; }
+        .learn-card-body { padding:1rem 1.25rem; flex-grow:1; display:flex; flex-direction:column; }
+        .learn-card-category { display:inline-block; font-size:0.68rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-green); margin-bottom:0.3rem; }
+        .learn-card-body h3 { font-size:0.95rem; margin-bottom:0.4rem; line-height:1.3; }
+        .learn-card-instructor { display:flex; align-items:center; gap:0.4rem; font-size:0.8rem; color:var(--text-light); margin-bottom:0.4rem; }
+        .learn-card-instructor-avatar { width:24px; height:24px; border-radius:50%; background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:var(--primary-color); flex-shrink:0; }
+        .learn-card-rating { display:flex; align-items:center; gap:0.3rem; font-size:0.8rem; margin-bottom:0.5rem; }
+        .learn-card-rating .stars { color:#f59e0b; }
+        .learn-card-rating .count { color:var(--text-muted); }
+        .learn-card-meta { display:flex; gap:0.75rem; font-size:0.75rem; color:var(--text-light); margin-bottom:0.5rem; }
+        .learn-card-meta span { display:flex; align-items:center; gap:0.2rem; }
+        .learn-card-progress { margin-top:auto; padding-top:0.5rem; }
+        .learn-progress-bar { height:4px; background:var(--bg-light); border-radius:2px; overflow:hidden; }
+        .learn-progress-fill { height:100%; background:var(--primary-color); border-radius:2px; transition:width 0.3s; }
+        .learn-card-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid var(--border-light); }
+        .learn-card-price { font-weight:700; color:var(--primary-color); }
+        .learn-card-price.free { color:var(--accent-green); }
+
+        /* ─── Right Sidebar ───────────────────────────────────────── */
+        .sidebar-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; margin-bottom:1rem; }
+        .sidebar-card h3 { font-size:0.9rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
+        .progress-ring { width:80px; height:80px; margin:0 auto 0.75rem; }
+        .progress-ring circle { fill:none; stroke-width:6; }
+        .progress-ring .bg { stroke:var(--bg-light); }
+        .progress-ring .fill { stroke:var(--primary-color); stroke-linecap:round; transform:rotate(-90deg); transform-origin:center; transition:stroke-dashoffset 0.5s; }
+        .progress-text { text-align:center; font-size:0.82rem; color:var(--text-light); }
+        .progress-text strong { display:block; font-size:1.1rem; color:var(--primary-color); }
+        .my-course-item { display:flex; gap:0.75rem; padding:0.5rem 0; border-bottom:1px solid var(--border-light); cursor:pointer; }
+        .my-course-item:last-child { border-bottom:none; }
+        .my-course-thumb { width:48px; height:48px; border-radius:6px; overflow:hidden; flex-shrink:0; background:var(--bg-light); }
+        .my-course-thumb img { width:100%; height:100%; object-fit:cover; }
+        .my-course-info { flex:1; min-width:0; }
+        .my-course-info h4 { font-size:0.82rem; font-weight:500; margin-bottom:0.1rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .my-course-info p { font-size:0.72rem; color:var(--text-muted); }
+        .my-course-progress { font-size:0.72rem; color:var(--primary-color); font-weight:600; margin-top:0.2rem; }
+        .trending-topic { display:flex; align-items:center; gap:0.5rem; padding:0.4rem 0; font-size:0.85rem; cursor:pointer; }
+        .trending-topic:hover { color:var(--primary-color); }
+        .trending-topic .count { margin-left:auto; font-size:0.72rem; color:var(--text-muted); }
+        .instructor-item { display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0; border-bottom:1px solid var(--border-light); }
+        .instructor-item:last-child { border-bottom:none; }
+        .instructor-avatar { width:36px; height:36px; border-radius:50%; background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:0.85rem; color:var(--primary-color); flex-shrink:0; overflow:hidden; }
+        .instructor-avatar img { width:100%; height:100%; object-fit:cover; }
+        .instructor-info { flex:1; }
+        .instructor-name { font-size:0.82rem; font-weight:500; }
+        .instructor-role { font-size:0.7rem; color:var(--text-muted); }
+        .stat-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; text-align:center; }
+        .stat-item { padding:0.5rem; }
+        .stat-num { font-size:1.2rem; font-weight:700; color:var(--primary-color); }
+        .stat-label { font-size:0.7rem; color:var(--text-light); }
+
+        /* ─── Format Cards ────────────────────────────────────────── */
+        .learn-formats { display:grid; grid-template-columns:repeat(4, 1fr); gap:0.75rem; margin-bottom:1.5rem; }
+        .learn-format-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; text-align:center; cursor:pointer; transition:all 0.25s; }
+        .learn-format-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); border-color:var(--primary-color); }
+        .learn-format-card i { font-size:1.8rem; color:var(--primary-color); margin-bottom:0.5rem; display:block; }
+        .learn-format-card h4 { font-size:0.88rem; margin-bottom:0.2rem; }
+        .learn-format-card p { font-size:0.75rem; color:var(--text-light); line-height:1.4; }
+
+        /* ─── Learning Paths ──────────────────────────────────────── */
+        .learn-paths { display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; margin-bottom:1.5rem; }
+        .learn-path-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; cursor:pointer; transition:all 0.25s; }
+        .learn-path-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); border-color:var(--primary-color); }
+        .learn-path-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:0.75rem; }
+        .learn-path-card h3 { font-size:0.95rem; margin-bottom:0.3rem; }
+        .learn-path-card p { font-size:0.82rem; color:var(--text-light); line-height:1.5; margin-bottom:0.5rem; }
+        .learn-path-meta { font-size:0.75rem; color:var(--text-muted); display:flex; gap:0.75rem; }
+
+        /* ─── Encyclopedia Section ────────────────────────────────── */
+        .learn-encyclopedia { background:linear-gradient(135deg, var(--primary-light), #fce7f0); border-radius:var(--radius-md); padding:2rem; text-align:center; margin-bottom:1.5rem; }
+        .learn-encyclopedia h2 { margin-bottom:0.5rem; }
+        .learn-encyclopedia p { color:var(--text-light); margin-bottom:1.25rem; max-width:500px; margin-left:auto; margin-right:auto; }
+        .learn-encyclopedia-tags { display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:center; }
+
+        /* ─── Tabs ────────────────────────────────────────────────── */
+        .learn-tabs { display:flex; gap:0.25rem; background:var(--bg-light); border-radius:var(--radius-sm); padding:0.25rem; margin-bottom:1.25rem; }
+        .learn-tab { padding:0.5rem 1rem; border-radius:var(--radius-sm); font-size:0.85rem; cursor:pointer; border:none; background:none; color:var(--text-light); transition:all 0.2s; display:flex; align-items:center; gap:0.35rem; }
+        .learn-tab.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
+
+        /* ─── Empty State ─────────────────────────────────────────── */
+        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); }
+        .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
+
+        /* ─── Pagination ──────────────────────────────────────────── */
+        .pagination { display:flex; justify-content:center; gap:0.25rem; margin-top:1.5rem; }
+        .page-btn { padding:0.4rem 0.75rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.85rem; cursor:pointer; background:var(--bg-white); color:var(--text-main); transition:all 0.2s; }
+        .page-btn.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+        .page-btn:hover:not(.active) { border-color:var(--primary-color); }
+
+        /* ─── Mobile ──────────────────────────────────────────────── */
+        .mobile-filter-btn { display:none; padding:0.5rem 1rem; border:1px solid var(--border-color); background:var(--bg-white); border-radius:var(--radius-sm); font-size:0.85rem; cursor:pointer; align-items:center; gap:0.35rem; }
+        .mobile-filter-drawer { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; display:none; }
+        .mobile-filter-drawer.open { display:block; }
+        .mobile-filter-panel { position:absolute; bottom:0; left:0; right:0; background:var(--bg-white); border-radius:16px 16px 0 0; max-height:85vh; overflow-y:auto; padding:1.5rem; animation:slideUp 0.3s ease; }
+        .mobile-filter-handle { width:40px; height:4px; background:var(--border-color); border-radius:2px; margin:0 auto 1rem; }
+        @keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+        .learn-mobile-nav { display:none; position:fixed; bottom:0; left:0; right:0; background:var(--bg-white); border-top:1px solid var(--border-color); z-index:100; padding:0.5rem 0 env(safe-area-inset-bottom, 0.5rem); }
+        .learn-mobile-nav-inner { display:flex; justify-content:space-around; align-items:center; }
+        .learn-mobile-nav-item { display:flex; flex-direction:column; align-items:center; gap:0.1rem; font-size:0.62rem; color:var(--text-muted); text-decoration:none; padding:0.25rem 0.5rem; }
+        .learn-mobile-nav-item.active { color:var(--primary-color); }
+        .learn-mobile-nav-item i { font-size:1.15rem; }
+        .learn-mobile-fab { width:52px; height:52px; border-radius:50%; background:var(--primary-color); color:white; display:flex; align-items:center; justify-content:center; font-size:1.4rem; margin-top:-1.2rem; box-shadow:var(--shadow-primary); border:none; cursor:pointer; }
+
+        @media(max-width:1200px) { .learn-layout { grid-template-columns:1fr 260px; } .learn-left { display:none; } }
+        @media(max-width:900px) {
+            .learn-layout { grid-template-columns:1fr; }
+            .learn-right { display:none; }
+            .learn-cat-cards { grid-template-columns:repeat(4, 1fr); gap:0.5rem; }
+            .learn-formats { grid-template-columns:repeat(2, 1fr); }
+            .learn-paths { grid-template-columns:1fr; }
+            .mobile-filter-btn { display:inline-flex; }
+            .learn-mobile-nav { display:block; }
+            body { padding-bottom:80px; }
+        }
+        @media(max-width:640px) {
+            .learn-hero { padding:3rem 0 2rem; }
+            .learn-hero h1 { font-size:1.5rem; }
+            .learn-hero p { font-size:0.9rem; }
+            .learn-hero-search { flex-direction:column; border-radius:12px; }
+            .learn-hero-search input { padding:0.85rem 1rem; font-size:0.9rem; }
+            .learn-hero-search button { border-radius:0 0 12px 12px !important; padding:0.85rem !important; }
+            .learn-hero-btns { flex-direction:column; }
+            .learn-hero-btns .btn { width:100%; justify-content:center; }
+            .learn-stats { gap:1rem; }
+            .learn-stat strong { font-size:1rem; }
+            .learn-cat-cards { grid-template-columns:repeat(4, 1fr); gap:0.4rem; overflow-x:auto; display:flex; scroll-snap-type:x mandatory; scrollbar-width:none; padding-bottom:0.5rem; }
+            .learn-cat-cards::-webkit-scrollbar { display:none; }
+            .learn-cat-card { min-width:70px; scroll-snap-align:start; padding:0.65rem 0.4rem; flex-shrink:0; }
+            .learn-cat-card-icon { width:32px; height:32px; font-size:1rem; }
+            .learn-cat-card-name { font-size:0.65rem; }
+            .learn-toolbar { flex-direction:column; align-items:stretch; gap:0.5rem; }
+            .learn-sort-tabs { overflow-x:auto; display:flex; scrollbar-width:none; }
+            .learn-sort-tabs::-webkit-scrollbar { display:none; }
+            .learn-sort-tab { white-space:nowrap; font-size:0.75rem; }
+            .learn-filter-chips { overflow-x:auto; display:flex; scrollbar-width:none; flex-wrap:nowrap; }
+            .learn-filter-chips::-webkit-scrollbar { display:none; }
+            .learn-chip { white-space:nowrap; font-size:0.72rem; flex-shrink:0; }
+            .learn-grid { grid-template-columns:1fr; }
+            .learn-card-img { height:160px; }
+            .learn-formats { grid-template-columns:repeat(2, 1fr); gap:0.5rem; }
+            .learn-format-card { padding:1rem; }
+            .learn-format-card i { font-size:1.4rem; }
+            .learn-encyclopedia { padding:1.5rem; }
+            .section-padding { padding-left:1rem; padding-right:1rem; }
+            .container { max-width:100%; padding-left:0; padding-right:0; }
+        }
+    </style>
 </head>
 <body>
-
     <div id="header-container"></div>
 
-    <!-- ===== COMPACT LEARNING HERO ===== -->
+    <!-- ─── Hero ─────────────────────────────────────────────────────── -->
     <section class="learn-hero">
         <div class="container">
-            <div class="learn-hero-inner reveal-up">
-                <h1 class="learn-hero-title">Learning Center</h1>
-                <p class="learn-hero-sub">Master floristry — from beginner basics to professional event design</p>
-
-                <!-- Search -->
-                <div class="mkt-search-wrap">
-                    <i class="bi bi-search mkt-search-icon"></i>
-                    <input type="search" id="learningSearch" class="mkt-search-input" placeholder="Search courses, articles, tutorials...">
-                    <a href="my-learning.html" class="btn btn-primary mkt-search-btn">
-                        <i class="bi bi-person-circle"></i> My Learning
-                    </a>
+            <div class="reveal-up">
+                <span class="subtitle" style="color:var(--primary-color);">LEARN & GROW</span>
+                <h1>Master Floristry</h1>
+                <p>From beginner basics to professional event design — courses, tutorials, and expert guidance to grow your skills.</p>
+                <div class="learn-hero-search">
+                    <input type="text" id="heroSearch" placeholder="Search courses, articles, tutorials..." onkeydown="if(event.key==='Enter')searchFromHero()">
+                    <button class="btn btn-primary" onclick="searchFromHero()"><i class="bi bi-search"></i></button>
                 </div>
-
-                <!-- Learning path pills -->
-                <div class="mkt-cat-pills">
-                    <a href="#featured-courses" class="mkt-cat-pill"><i class="bi bi-seed"></i> Beginner</a>
-                    <a href="#featured-courses" class="mkt-cat-pill"><i class="bi bi-flower1"></i> Flower Care</a>
-                    <a href="#featured-courses" class="mkt-cat-pill"><i class="bi bi-flower2"></i> Bouquet Design</a>
-                    <a href="#featured-courses" class="mkt-cat-pill"><i class="bi bi-ring"></i> Wedding</a>
-                    <a href="#featured-courses" class="mkt-cat-pill"><i class="bi bi-shop"></i> Floral Business</a>
-                    <a href="#featured-courses" class="mkt-cat-pill"><i class="bi bi-calendar-event"></i> Event Decor</a>
-                    <a href="#featured-courses" class="mkt-cat-pill"><i class="bi bi-camera"></i> Floral Photography</a>
+                <div class="learn-hero-btns">
+                    <a href="my-learning.html" class="btn btn-primary"><i class="bi bi-person-circle"></i> My Learning</a>
+                    <a href="#courses" class="btn btn-outline" onclick="scrollToCourses(event)">Browse Courses</a>
                 </div>
-            </div>
-
-            <!-- Stats strip -->
-            <div class="learn-stats reveal-up">
-                <div class="learn-stat">
-                    <strong>5,000+</strong>
-                    <span>Students</span>
-                </div>
-                <div class="learn-stat">
-                    <strong>120+</strong>
-                    <span>Lessons</span>
-                </div>
-                <div class="learn-stat">
-                    <strong>25+</strong>
-                    <span>Courses</span>
-                </div>
-                <div class="learn-stat">
-                    <strong>15+</strong>
-                    <span>Expert Instructors</span>
+                <div class="learn-stats">
+                    <div class="learn-stat"><strong>5,000+</strong><span>Students</span></div>
+                    <div class="learn-stat"><strong>120+</strong><span>Lessons</span></div>
+                    <div class="learn-stat"><strong>25+</strong><span>Courses</span></div>
+                    <div class="learn-stat"><strong>15+</strong><span>Instructors</span></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== COURSE CATEGORIES ===== -->
-    <section class="section-padding" style="padding-top:1rem;">
+    <!-- ─── Main Content ─────────────────────────────────────────────── -->
+    <section class="section-padding" style="padding-top:0;" id="courses">
         <div class="container">
-            <div class="flex-between reveal-up">
-                <div>
-                    <span class="subtitle">BROWSE BY CATEGORY</span>
-                    <h2>Course Categories</h2>
+            <!-- Category Cards -->
+            <div class="learn-cat-cards reveal-up" id="catCards"></div>
+
+            <!-- Format Cards -->
+            <div class="learn-formats reveal-up">
+                <div class="learn-format-card" onclick="window.location.href='video-detail.html?id=v1'">
+                    <i class="bi bi-play-circle"></i>
+                    <h4>Video Lessons</h4>
+                    <p>Watch professionals demonstrate techniques</p>
+                </div>
+                <div class="learn-format-card" onclick="window.location.href='article-detail.html?id=a1'">
+                    <i class="bi bi-journal-text"></i>
+                    <h4>Articles & Guides</h4>
+                    <p>In-depth written guides</p>
+                </div>
+                <div class="learn-format-card" onclick="window.location.href='tutorial-detail.html?id=v1'">
+                    <i class="bi bi-tools"></i>
+                    <h4>Tutorials</h4>
+                    <p>Hands-on projects with instructions</p>
+                </div>
+                <div class="learn-format-card" onclick="window.location.href='quiz-detail.html?id=qz1'">
+                    <i class="bi bi-lightbulb"></i>
+                    <h4>Quizzes</h4>
+                    <p>Test your knowledge</p>
                 </div>
             </div>
-            <div id="courseCatsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.25rem;margin-top:1.5rem;"></div>
+
+            <!-- Learning Paths -->
+            <div style="margin-bottom:1.5rem;">
+                <h2 style="margin-bottom:1rem;">Popular Learning Paths</h2>
+                <div class="learn-paths" id="learningPaths"></div>
+            </div>
+
+            <div class="learn-layout">
+
+                <!-- ─── Left Sidebar ────────────────────────────────────── -->
+                <aside class="learn-left">
+                    <nav class="learn-sidebar-nav">
+                        <div class="learn-nav-section">Browse</div>
+                        <a class="learn-nav-item active" data-filter="all"><i class="bi bi-book"></i> All Courses</a>
+                        <a class="learn-nav-item" data-filter="featured"><i class="bi bi-star"></i> Featured</a>
+                        <a class="learn-nav-item" data-filter="newest"><i class="bi bi-clock-history"></i> Newest</a>
+                        <a class="learn-nav-item" data-filter="popular"><i class="bi bi-fire"></i> Most Popular</a>
+                        <a class="learn-nav-item" data-filter="free"><i class="bi bi-gift"></i> Free Courses</a>
+
+                        <div class="learn-nav-divider"></div>
+                        <div class="learn-nav-section">My Learning</div>
+                        <a class="learn-nav-item" data-filter="enrolled"><i class="bi bi-play-circle"></i> Enrolled</a>
+                        <a class="learn-nav-item" data-filter="completed"><i class="bi bi-check-circle"></i> Completed</a>
+                        <a class="learn-nav-item" data-filter="saved"><i class="bi bi-bookmark"></i> Saved</a>
+                        <a class="learn-nav-item" data-filter="certificates"><i class="bi bi-award"></i> Certificates</a>
+
+                        <div class="learn-nav-divider"></div>
+                        <div class="learn-nav-section">Categories</div>
+                        <div id="sidebarCategories"></div>
+                    </nav>
+                </aside>
+
+                <!-- ─── Main Feed ───────────────────────────────────────── -->
+                <main class="learn-main">
+                    <!-- Toolbar -->
+                    <div class="learn-toolbar">
+                        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                            <button class="mobile-filter-btn" onclick="openMobileFilter()"><i class="bi bi-funnel"></i> Filters</button>
+                            <div class="learn-sort-tabs" id="sortTabs">
+                                <button class="learn-sort-tab active" data-sort="popular">Most Popular</button>
+                                <button class="learn-sort-tab" data-sort="newest">Newest</button>
+                                <button class="learn-sort-tab" data-sort="rating">Highest Rated</button>
+                                <button class="learn-sort-tab" data-sort="price_low">Price: Low</button>
+                            </div>
+                        </div>
+                        <div class="learn-filter-chips" id="filterChips">
+                            <span class="learn-chip active" data-filter="all">All</span>
+                            <span class="learn-chip" data-filter="beginner">Beginner</span>
+                            <span class="learn-chip" data-filter="intermediate">Intermediate</span>
+                            <span class="learn-chip" data-filter="advanced">Advanced</span>
+                        </div>
+                    </div>
+
+                    <!-- Course Tabs -->
+                    <div class="learn-tabs" id="contentTabs">
+                        <button class="learn-tab active" data-tab="courses"><i class="bi bi-book"></i> Courses</button>
+                        <button class="learn-tab" data-tab="articles"><i class="bi bi-journal-text"></i> Articles</button>
+                        <button class="learn-tab" data-tab="videos"><i class="bi bi-play-circle"></i> Videos</button>
+                        <button class="learn-tab" data-tab="quizzes"><i class="bi bi-lightbulb"></i> Quizzes</button>
+                    </div>
+
+                    <!-- Courses Grid -->
+                    <div id="learnContainer" class="learn-grid"></div>
+                    <div class="pagination" id="pagination"></div>
+                </main>
+
+                <!-- ─── Right Sidebar ───────────────────────────────────── -->
+                <aside class="learn-right">
+                    <!-- Learning Progress -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-graph-up" style="color:var(--primary-color)"></i> Your Progress</h3>
+                        <div style="text-align:center;">
+                            <svg class="progress-ring" viewBox="0 0 80 80">
+                                <circle class="bg" cx="40" cy="40" r="34"/>
+                                <circle class="fill" cx="40" cy="40" r="34" stroke-dasharray="213.6" stroke-dashoffset="150" id="progressRing"/>
+                            </svg>
+                            <div class="progress-text">
+                                <strong id="progressPercent">30%</strong>
+                                courses completed
+                            </div>
+                        </div>
+                        <div style="margin-top:0.75rem;font-size:0.82rem;">
+                            <div style="display:flex;justify-content:space-between;padding:0.3rem 0;"><span style="color:var(--text-light);">Enrolled</span><strong id="statEnrolled">-</strong></div>
+                            <div style="display:flex;justify-content:space-between;padding:0.3rem 0;"><span style="color:var(--text-light);">Completed</span><strong id="statCompleted">-</strong></div>
+                            <div style="display:flex;justify-content:space-between;padding:0.3rem 0;"><span style="color:var(--text-light);">Certificates</span><strong id="statCerts">-</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Continue Learning -->
+                    <div class="sidebar-card" id="continueCard">
+                        <h3><i class="bi bi-play-circle" style="color:var(--accent-green)"></i> Continue Learning</h3>
+                        <div id="continueCourses"></div>
+                    </div>
+
+                    <!-- Trending Topics -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-fire" style="color:var(--accent-gold)"></i> Trending Topics</h3>
+                        <div id="trendingTopics">
+                            <div class="trending-topic">#WeddingBouquets <span class="count">2.4K</span></div>
+                            <div class="trending-topic">#RoseCare <span class="count">1.8K</span></div>
+                            <div class="trending-topic">#FloralDesign <span class="count">1.5K</span></div>
+                            <div class="trending-topic">#FlowerFarming <span class="count">980</span></div>
+                            <div class="trending-topic">#BusinessTips <span class="count">756</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Top Instructors -->
+                    <div class="sidebar-card">
+                        <h3><i class="bi bi-person-badge" style="color:var(--primary-color)"></i> Top Instructors</h3>
+                        <div id="topInstructors"></div>
+                    </div>
+                </aside>
+            </div>
         </div>
     </section>
 
-    <!-- ===== FEATURED COURSES ===== -->
-    <section id="featured-courses" class="section-padding">
+    <!-- ─── Encyclopedia Section ──────────────────────────────────────── -->
+    <section class="section-padding" style="padding-top:0;">
         <div class="container">
-            <div class="flex-between reveal-up">
-                <div>
-                    <span class="subtitle">HAND-PICKED</span>
-                    <h2>Featured Courses</h2>
+            <div class="learn-encyclopedia reveal-up">
+                <h2><i class="bi bi-bookmark-heart"></i> Flower Knowledge Encyclopedia</h2>
+                <p>Explore medicinal, ornamental, perfume, and culinary uses of flowers from around the world</p>
+                <div class="learn-encyclopedia-tags">
+                    <a href="flower-knowledge-hub.html?category=medicinal" class="btn btn-outline" style="border-radius:50px;"><i class="bi bi-capsule"></i> Medicinal</a>
+                    <a href="flower-knowledge-hub.html?category=perfume" class="btn btn-outline" style="border-radius:50px;"><i class="bi bi-droplet"></i> Perfume</a>
+                    <a href="flower-knowledge-hub.html?category=ornamental" class="btn btn-outline" style="border-radius:50px;"><i class="bi bi-palette"></i> Ornamental</a>
+                    <a href="flower-knowledge-hub.html?category=edible" class="btn btn-outline" style="border-radius:50px;"><i class="bi bi-cup-hot"></i> Edible</a>
+                    <a href="flower-knowledge-hub.html" class="btn btn-primary" style="border-radius:50px;">Browse All <i class="bi bi-arrow-right"></i></a>
+                    <a href="bloom-calendar.html" class="btn btn-outline" style="border-radius:50px;"><i class="bi bi-calendar-event"></i> Bloom Calendar</a>
+                    <a href="my-garden.html" class="btn btn-outline" style="border-radius:50px;"><i class="bi bi-flower1"></i> Garden Planner</a>
                 </div>
-                <a href="#content" class="btn btn-outline">All Resources <i class="bi bi-arrow-right"></i></a>
             </div>
-            <div class="product-grid reveal-up" id="courseGrid" style="margin-top:1.5rem;"></div>
         </div>
     </section>
 
-    <!-- ===== LEARNING PATHS ===== -->
-    <section id="categories" class="section-padding bg-light">
-        <div class="container">
-            <div class="flex-between reveal-up">
-                <div>
-                    <span class="subtitle">STRUCTURED PATHS</span>
-                    <h2>Popular Learning Paths</h2>
+    <!-- ─── Mobile Filter Drawer ─────────────────────────────────────── -->
+    <div class="mobile-filter-drawer" id="mobileFilterDrawer" onclick="if(event.target===this)closeMobileFilter()">
+        <div class="mobile-filter-panel">
+            <div class="mobile-filter-handle"></div>
+            <h3 style="font-size:1.05rem;margin-bottom:1rem;">Filter Courses</h3>
+
+            <div style="margin-bottom:1rem;">
+                <h4 style="font-size:0.85rem;margin-bottom:0.5rem;">Sort By</h4>
+                <div class="learn-sort-tabs" id="mobileSortTabs" style="flex-wrap:wrap;">
+                    <button class="learn-sort-tab active" data-sort="popular">Most Popular</button>
+                    <button class="learn-sort-tab" data-sort="newest">Newest</button>
+                    <button class="learn-sort-tab" data-sort="rating">Highest Rated</button>
+                    <button class="learn-sort-tab" data-sort="price_low">Price: Low</button>
                 </div>
             </div>
-            <div class="category-grid reveal-up" id="categoryGrid" style="margin-top:1.5rem;"></div>
-        </div>
-    </section>
 
-    <!-- ===== HOW YOU'LL LEARN ===== -->
-    <section class="section-padding">
-        <div class="container">
-            <div class="text-center reveal-up">
-                <span class="subtitle">FORMATS</span>
-                <h2>How You'll Learn</h2>
-                <p class="section-subtitle">Multiple formats designed for every learning style</p>
-            </div>
-            <div class="explore-grid reveal-up" style="margin-top:2rem;">
-                <a href="video-detail.html?id=v1" class="explore-card text-center" style="text-decoration:none;color:inherit;padding:2rem 1.5rem;">
-                    <div style="font-size:2.5rem; margin-bottom:0.75rem;"><i class="bi bi-play-circle"></i></div>
-                    <h3>Video Lessons</h3>
-                    <p class="card-desc">Watch professional florists demonstrate techniques step by step.</p>
-                </a>
-                <a href="article-detail.html?id=a1" class="explore-card text-center" style="text-decoration:none;color:inherit;padding:2rem 1.5rem;">
-                    <div style="font-size:2.5rem; margin-bottom:0.75rem;"><i class="bi bi-journal-text"></i></div>
-                    <h3>Articles &amp; Guides</h3>
-                    <p class="card-desc">In-depth written guides covering every aspect of floristry.</p>
-                </a>
-                <a href="tutorial-detail.html?id=v1" class="explore-card text-center" style="text-decoration:none;color:inherit;padding:2rem 1.5rem;">
-                    <div style="font-size:2.5rem; margin-bottom:0.75rem;"><i class="bi bi-tools"></i></div>
-                    <h3>Tutorials</h3>
-                    <p class="card-desc">Hands-on projects with clear instructions and material lists.</p>
-                </a>
-                <a href="quiz-detail.html?id=qz1" class="explore-card text-center" style="text-decoration:none;color:inherit;padding:2rem 1.5rem;">
-                    <div style="font-size:2.5rem; margin-bottom:0.75rem;"><i class="bi bi-lightbulb"></i></div>
-                    <h3>Quizzes</h3>
-                    <p class="card-desc">Test your knowledge and reinforce what you've learned.</p>
-                </a>
-                <a href="my-learning.html" class="explore-card text-center" style="text-decoration:none;color:inherit;padding:2rem 1.5rem;">
-                    <div style="font-size:2.5rem; margin-bottom:0.75rem;"><i class="bi bi-graph-up"></i></div>
-                    <h3>Progress Tracking</h3>
-                    <p class="card-desc">Track completed lessons, saved articles, and skill growth over time.</p>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== FLOWER KNOWLEDGE ENCYCLOPEDIA ===== -->
-    <section class="section-padding learn-encyclopedia">
-        <div class="container text-center reveal-up">
-            <span class="subtitle">ENCYCLOPEDIA</span>
-            <h2><i class="bi bi-bookmark-heart"></i> Flower Knowledge</h2>
-            <p class="section-subtitle" style="max-width:600px;margin:0 auto 1.5rem;">
-                Explore medicinal, ornamental, perfume, and culinary uses of flowers from around the world
-            </p>
-            <div style="display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;">
-                <a href="flower-knowledge-hub.html?category=medicinal" class="btn btn-outline" style="border-radius:50px;"><i class="bi bi-capsule"></i> Medicinal</a>
-                <a href="flower-knowledge-hub.html?category=perfume" class="btn btn-outline" style="border-radius:50px;"><i class="bi bi-droplet"></i> Perfume</a>
-                <a href="flower-knowledge-hub.html?category=ornamental" class="btn btn-outline" style="border-radius:50px;"><i class="bi bi-palette"></i> Ornamental</a>
-                <a href="flower-knowledge-hub.html?category=edible" class="btn btn-outline" style="border-radius:50px;"><i class="bi bi-cup-hot"></i> Edible</a>
-                <a href="flower-knowledge-hub.html?category=palm-trees" class="btn btn-outline" style="border-radius:50px;"><i class="bi bi-tree"></i> Palms</a>
-                <a href="flower-knowledge-hub.html?category=indoor-plants" class="btn btn-outline" style="border-radius:50px;"><i class="bi bi-flower2"></i> Indoor</a>
-                <a href="flower-knowledge-hub.html" class="btn btn-primary" style="border-radius:50px;">Browse All <i class="bi bi-arrow-right"></i></a>
-                <a href="bloom-calendar.html" class="btn btn-outline" style="border-radius:50px;"><i class="bi bi-calendar-event"></i> Bloom Calendar</a>
-                <a href="my-garden.html" class="btn btn-outline" style="border-radius:50px;"><i class="bi bi-flower1"></i> Garden Planner</a>
-                <a href="flower-quiz.html" class="btn btn-outline" style="border-radius:50px;"><i class="bi bi-lightbulb"></i> Take Quiz</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== TOP INSTRUCTORS ===== -->
-    <section class="section-padding">
-        <div class="container">
-            <div class="flex-between reveal-up">
-                <div>
-                    <span class="subtitle">EXPERTS</span>
-                    <h2>Top Instructors</h2>
-                </div>
-                <a href="florists.html" class="btn btn-outline">View All <i class="bi bi-arrow-right"></i></a>
-            </div>
-            <div id="instructorsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem;margin-top:1.5rem;"></div>
-        </div>
-    </section>
-
-    <!-- ===== RECENTLY ADDED ===== -->
-    <section class="section-padding bg-light">
-        <div class="container">
-            <div class="flex-between reveal-up">
-                <div>
-                    <span class="subtitle">NEW</span>
-                    <h2>Recently Added</h2>
+            <div style="margin-bottom:1rem;">
+                <h4 style="font-size:0.85rem;margin-bottom:0.5rem;">Level</h4>
+                <div class="learn-filter-chips" id="mobileFilterChips" style="flex-wrap:wrap;">
+                    <span class="learn-chip active" data-filter="all">All</span>
+                    <span class="learn-chip" data-filter="beginner">Beginner</span>
+                    <span class="learn-chip" data-filter="intermediate">Intermediate</span>
+                    <span class="learn-chip" data-filter="advanced">Advanced</span>
                 </div>
             </div>
-            <div id="recentGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem;margin-top:1.5rem;"></div>
-        </div>
-    </section>
 
-    <!-- ===== ALL RESOURCES ===== -->
-    <section id="content" class="section-padding bg-light">
-        <div class="container">
-            <div class="flex-between reveal-up">
-                <div>
-                    <span class="subtitle">LIBRARY</span>
-                    <h2>All Learning Resources</h2>
-                </div>
-                <p class="section-subtitle" id="resourceCount" style="margin:0;align-self:flex-end;"></p>
+            <div style="margin-bottom:1rem;">
+                <h4 style="font-size:0.85rem;margin-bottom:0.5rem;">Category</h4>
+                <div id="mobileCategories" style="display:flex;flex-wrap:wrap;gap:0.4rem;"></div>
             </div>
-            <div class="learning-tabs" style="justify-content:center; margin:1.5rem 0;">
-                <button class="tab-btn active" data-tab="articles"><i class="bi bi-journal-text"></i> Articles &amp; Guides</button>
-                <button class="tab-btn" data-tab="videos"><i class="bi bi-play-circle"></i> Video Tutorials</button>
-                <button class="tab-btn" data-tab="quizzes"><i class="bi bi-lightbulb"></i> Quizzes</button>
-            </div>
-            <div id="articles-tab" class="tab-content active">
-                <div class="article-grid" id="articlesContainer"></div>
-            </div>
-            <div id="videos-tab" class="tab-content">
-                <div class="video-grid" id="videosContainer"></div>
-            </div>
-            <div id="quizzes-tab" class="tab-content">
-                <div class="article-grid" id="quizContainer"></div>
-            </div>
+
+            <button class="btn btn-primary" style="width:100%;" onclick="applyMobileFilters()">Apply Filters</button>
         </div>
-    </section>
+    </div>
+
+    <!-- ─── Mobile Bottom Nav ────────────────────────────────────────── -->
+    <nav class="learn-mobile-nav">
+        <div class="learn-mobile-nav-inner">
+            <a class="learn-mobile-nav-item active" href="learning.html"><i class="bi bi-book"></i> Learn</a>
+            <a class="learn-mobile-nav-item" href="discussions.html"><i class="bi bi-chat-dots"></i> Discuss</a>
+            <button class="learn-mobile-fab" onclick="window.location.href='my-learning.html'"><i class="bi bi-play-circle"></i></button>
+            <a class="learn-mobile-nav-item" href="events.html"><i class="bi bi-calendar-event"></i> Events</a>
+            <a class="learn-mobile-nav-item" href="feed.html"><i class="bi bi-rss"></i> Feed</a>
+        </div>
+    </nav>
 
     <div id="footer-container"></div>
-    <div id="auth-modal-container"></div>
 
-    <script src="js/shared/components.js?v=3.1"></script>
-    <script src="js/shared/auth.js?v=3.4"></script>
-    <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/animations.js?v=3.0"></script>
     <script src="js/shared/api.js?v=4.0"></script>
-    <script src="js/shared/cart.js?v=3.0"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
     <script src="js/shared/ui.js?v=2.0"></script>
+    <script src="js/shared/cart.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
     <script src="js/learning.js"></script>
     <script>
-        // ─── Course Categories ────────────────────────────────────────
-        const courseCategories = [
-            { name: 'Floral Design', icon: 'bi bi-flower1', color: '#e74c3c', slug: 'floral-design' },
-            { name: 'Flower Farming', icon: 'bi bi-tree', color: '#27ae60', slug: 'flower-farming' },
-            { name: 'Plant Care', icon: 'bi bi-flower2', color: '#10b981', slug: 'plant-care' },
-            { name: 'Business', icon: 'bi bi-shop', color: '#8b5cf6', slug: 'business' },
-            { name: 'Event Decoration', icon: 'bi bi-calendar-event', color: '#f59e0b', slug: 'event-decoration' },
-            { name: 'Gardening', icon: 'bi bi-leaf', color: '#3b82f6', slug: 'gardening' },
-            { name: 'Photography', icon: 'bi bi-camera', color: '#ec4899', slug: 'photography' },
-            { name: 'Sustainability', icon: 'bi bi-globe', color: '#14b8a6', slug: 'sustainability' }
-        ];
-        document.getElementById('courseCatsGrid').innerHTML = courseCategories.map(c => `
-            <a href="marketplace?category=${c.slug}" style="text-decoration:none;color:inherit;">
-                <div class="explore-card" style="padding:1.5rem;text-align:center;border-left:4px solid ${c.color};">
-                    <div style="width:56px;height:56px;border-radius:50%;background:${c.color}15;display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem;">
-                        <i class="bi ${c.icon}" style="font-size:1.5rem;color:${c.color};"></i>
-                    </div>
-                    <div style="font-weight:600;font-size:0.95rem;">${c.name}</div>
-                </div>
-            </a>
-        `).join('');
-
-        // ─── Top Instructors ──────────────────────────────────────────
-        async function loadInstructors() {
-            const el = document.getElementById('instructorsGrid');
-            try {
-                const data = await fetch('/api/products/list/florists').then(r => r.json());
-                const sellers = (data.florists || data || []).slice(0, 4);
-                if (!sellers.length) { el.innerHTML = '<p style="text-align:center;color:var(--text-light);grid-column:1/-1;padding:2rem;">No instructors yet.</p>'; return; }
-                el.innerHTML = sellers.map(s => `
-                    <a href="florist-profile.html?id=${escapeHtml(s.id)}" class="explore-card" style="text-decoration:none;color:inherit;padding:1.5rem;text-align:center;">
-                        <div style="width:72px;height:72px;border-radius:50%;margin:0 auto 0.75rem;overflow:hidden;background:var(--primary-light);display:flex;align-items:center;justify-content:center;">
-                            ${s.image ? `<img src="${escapeHtml(s.image)}" alt="${escapeHtml(s.name)}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:1.5rem;color:var(--primary-color);">${(s.name || '?')[0]}</span>`}
-                        </div>
-                        <div style="font-weight:600;font-size:1rem;margin-bottom:0.25rem;">${escapeHtml(s.name)}</div>
-                        <div style="font-size:0.85rem;color:var(--primary-color);margin-bottom:0.5rem;">${escapeHtml(s.role || 'Master Florist')}</div>
-                        <div style="color:#f59e0b;font-size:0.85rem;margin-bottom:0.25rem;"><i class="bi bi-star-fill"></i> 4.${Math.floor(Math.random() * 5) + 5} <span style="color:var(--text-light);">(200+ reviews)</span></div>
-                        <div style="font-size:0.8rem;color:var(--text-light);"><i class="bi bi-book"></i> ${Math.floor(Math.random() * 10) + 5} Courses</div>
-                    </a>
-                `).join('');
-            } catch { el.innerHTML = ''; }
-        }
-
-        // ─── Recently Added ───────────────────────────────────────────
-        async function loadRecent() {
-            const el = document.getElementById('recentGrid');
-            try {
-                const data = await fetch('/api/products?limit=8&sort=newest').then(r => r.json());
-                const items = data.products || data || [];
-                if (!items.length) { el.innerHTML = '<p style="text-align:center;color:var(--text-light);grid-column:1/-1;padding:2rem;">No recent courses yet.</p>'; return; }
-                el.innerHTML = items.map(p => {
-                    const img = p.image || (p.images && p.images[0]) || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200"><rect fill="%23fce7f0" width="300" height="200"/><text x="150" y="110" text-anchor="middle" fill="%23d8447c" font-size="20">No Image</text></svg>';
-                    return `
-                    <a href="course-detail.html?id=${escapeHtml(p.id)}" style="text-decoration:none;color:inherit;">
-                        <div class="explore-card" style="overflow:hidden;">
-                            <div style="position:relative;height:160px;overflow:hidden;">
-                                <img src="${img}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
-                                <span style="position:absolute;top:0.75rem;right:0.75rem;background:#10b981;color:white;padding:0.2rem 0.6rem;border-radius:6px;font-size:0.7rem;font-weight:600;">New</span>
-                            </div>
-                            <div style="padding:1rem;">
-                                <div style="font-weight:600;font-size:0.95rem;margin-bottom:0.25rem;">${escapeHtml(p.name)}</div>
-                                <div style="font-size:0.8rem;color:var(--text-light);margin-bottom:0.5rem;">${escapeHtml(p.seller || 'Instructor')}</div>
-                                <div style="display:flex;justify-content:space-between;align-items:center;">
-                                    <span style="font-weight:700;color:var(--primary-color);">${p.currency || 'GHS'} ${Number(p.price || 0).toFixed(2)}</span>
-                                    <span style="font-size:0.8rem;color:#f59e0b;"><i class="bi bi-star-fill"></i> ${Number(p.rating || 4.5).toFixed(1)}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>`;
-                }).join('');
-            } catch { el.innerHTML = ''; }
-        }
-
-        loadInstructors();
-        loadRecent();
-
-        // Live search across visible cards
-        let learnSearchTimeout;
-        document.getElementById('learningSearch').addEventListener('input', function () {
-            clearTimeout(learnSearchTimeout);
-            learnSearchTimeout = setTimeout(() => {
-                const q = this.value.trim().toLowerCase();
-                document.querySelectorAll('.article-card, .video-card, .product-card').forEach(el => {
-                    el.style.display = (!q || el.textContent.toLowerCase().includes(q)) ? '' : 'none';
-                });
-                if (q) document.getElementById('content').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 300);
+        document.addEventListener('DOMContentLoaded', () => {
+            initLearningPage();
         });
     </script>
 </body>

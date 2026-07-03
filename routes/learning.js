@@ -2,14 +2,54 @@ const router = require('express').Router();
 const path = require('path');
 const { pool, asyncHandler, dbAvailable, readJSON, queryWithFallback, requireAuth, requireInstructor } = require('./middleware');
 
-router.get('/courses', asyncHandler(async (_, res) => {
+router.get('/courses', asyncHandler(async (req, res) => {
     return queryWithFallback(
         async () => {
-            const r = await pool.query('SELECT * FROM learning.courses WHERE is_published = true ORDER BY created_at DESC');
-            return r.rows;
+            const { category, search, level, price, sort = 'popular', page = 1, limit = 12, featured } = req.query;
+            const conditions = ['is_published = true'];
+            const values = [];
+            let idx = 1;
+
+            if (category) { conditions.push(`category = $${idx}`); values.push(category); idx++; }
+            if (search) { conditions.push(`(title ILIKE $${idx} OR description ILIKE $${idx})`); values.push(`%${search}%`); idx++; }
+            if (level) { conditions.push(`level ILIKE $${idx}`); values.push(level); idx++; }
+            if (price === 'free') { conditions.push('(price = 0 OR price IS NULL)'); }
+            if (price === 'paid') { conditions.push('price > 0'); }
+            if (featured === 'true') { conditions.push('is_featured = true'); }
+
+            const where = 'WHERE ' + conditions.join(' AND ');
+            const sortMap = { popular: 'students_count DESC NULLS LAST', newest: 'created_at DESC', rating: 'rating DESC NULLS LAST', price_low: 'price ASC', price_high: 'price DESC' };
+            const orderBy = sortMap[sort] || 'created_at DESC';
+
+            const pg = Math.max(1, parseInt(page, 10) || 1);
+            const lim = Math.min(50, Math.max(1, parseInt(limit, 10) || 12));
+            const offset = (pg - 1) * lim;
+
+            const countR = await pool.query(`SELECT COUNT(*)::int AS c FROM learning.courses ${where}`, values);
+            const total = countR.rows[0].c;
+
+            values.push(lim);
+            values.push(offset);
+            const dataR = await pool.query(`SELECT * FROM learning.courses ${where} ORDER BY ${orderBy} LIMIT $${idx} OFFSET $${idx + 1}`, values);
+
+            return { courses: dataR.rows, total, page: pg, pages: Math.ceil(total / lim) };
         },
         'courses', res
     );
+}));
+
+router.get('/courses/enrolled', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json({ courses: [] });
+    try {
+        const r = await pool.query(`
+            SELECT c.*, cp.completion_percentage AS progress
+            FROM learning.enrollments e
+            JOIN learning.courses c ON c.id = e.course_id
+            LEFT JOIN learning.progress cp ON cp.user_id = e.user_id AND cp.course_id = e.course_id
+            WHERE e.user_id = $1
+            ORDER BY e.enrolled_at DESC`, [req.user.id]);
+        res.json({ courses: r.rows });
+    } catch { res.json({ courses: [] }); }
 }));
 
 router.get('/courses/:id', asyncHandler(async (req, res) => {

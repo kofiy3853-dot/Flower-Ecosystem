@@ -12,36 +12,62 @@
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
-        .back-link { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.88rem; color:var(--text-light); margin-bottom:1rem; text-decoration:none; }
+        .back-link { display:inline-flex;align-items:center;gap:0.4rem;font-size:0.88rem;color:var(--text-light);margin-bottom:1rem;text-decoration:none; }
         .back-link:hover { color:var(--primary-color); }
-        .story-hero { height:400px; border-radius:var(--radius-md); overflow:hidden; margin-bottom:2rem; position:relative; }
+        .story-hero { height:420px; border-radius:var(--radius-md); overflow:hidden; margin-bottom:2rem; position:relative; }
         .story-hero img { width:100%; height:100%; object-fit:cover; }
-        .story-hero-overlay { position:absolute; bottom:0; left:0; right:0; padding:2rem; background:linear-gradient(to top, rgba(0,0,0,0.7), transparent); }
-        .story-hero-overlay h1 { color:white; font-size:1.8rem; margin-bottom:0.5rem; }
+        .story-hero-overlay { position:absolute; bottom:0; left:0; right:0; padding:2rem; background:linear-gradient(to top, rgba(0,0,0,0.75), transparent); color:white; }
+        .story-hero-overlay h1 { font-size:1.8rem; margin-bottom:0.3rem; }
+        .story-hero-overlay .meta { font-size:0.85rem; opacity:0.85; display:flex; gap:1rem; flex-wrap:wrap; }
         .detail-layout { display:grid; grid-template-columns:1fr 300px; gap:2rem; }
         .detail-main { min-width:0; }
         .detail-sidebar { display:flex; flex-direction:column; gap:1.25rem; }
+
         .story-meta-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; margin-bottom:1.5rem; }
-        .author-block { display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem; }
-        .author-avatar { width:48px; height:48px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:1.3rem; overflow:hidden; }
+        .author-block { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem; }
+        .author-avatar { width:48px; height:48px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:1.3rem; overflow:hidden; flex-shrink:0; }
         .author-avatar img { width:100%; height:100%; object-fit:cover; }
         .author-name { font-weight:600; font-size:1rem; }
         .author-role { font-size:0.8rem; color:var(--text-light); }
-        .story-actions { display:flex; gap:0.75rem; margin-top:1rem; }
-        .action-btn { display:flex; align-items:center; gap:0.3rem; padding:0.5rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); background:var(--bg-white); color:var(--text-light); cursor:pointer; font-size:0.85rem; transition:all 0.2s; }
+        .story-actions { display:flex; gap:0.5rem; margin-top:1rem; flex-wrap:wrap; }
+        .action-btn { display:flex;align-items:center;gap:0.3rem;padding:0.45rem 0.85rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);background:var(--bg-white);color:var(--text-light);cursor:pointer;font-size:0.82rem;transition:all 0.2s; }
         .action-btn:hover { border-color:var(--primary-color); color:var(--primary-color); }
         .action-btn.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
         .action-btn.liked { background:var(--error-color); color:white; border-color:var(--error-color); }
+
         .story-content { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:2rem; margin-bottom:1.5rem; }
-        .story-content h2 { font-size:1.1rem; margin-bottom:1rem; }
+        .story-content h2 { font-family:'Playfair Display',serif; font-size:1.2rem; margin:1.5rem 0 1rem; color:var(--text-main); }
+        .story-content h2:first-child { margin-top:0; }
         .story-text { font-size:0.95rem; line-height:1.8; color:var(--text-main); white-space:pre-wrap; }
-        .story-images { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:1.5rem; }
-        .story-images img { max-width:300px; max-height:200px; border-radius:var(--radius-sm); object-fit:cover; cursor:pointer; border:1px solid var(--border-color); }
-        .comments-section { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; }
+
+        .story-gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:0.75rem; margin-top:1.5rem; }
+        .gallery-item { position:relative; border-radius:var(--radius-sm); overflow:hidden; cursor:pointer; border:1px solid var(--border-color); }
+        .gallery-item img { width:100%; height:160px; object-fit:cover; transition:transform 0.3s; display:block; }
+        .gallery-item:hover img { transform:scale(1.05); }
+        .gallery-caption { position:absolute; bottom:0; left:0; right:0; padding:0.4rem 0.6rem; background:rgba(0,0,0,0.6); color:white; font-size:0.72rem; }
+
+        .story-timeline { position:relative; padding-left:2rem; margin:1.5rem 0; }
+        .story-timeline::before { content:''; position:absolute; left:7px; top:0; bottom:0; width:2px; background:var(--border-color); }
+        .timeline-item { position:relative; padding-bottom:1.5rem; }
+        .timeline-item.last { padding-bottom:0; }
+        .timeline-dot { position:absolute; left:-2rem; top:0.25rem; width:16px; height:16px; border-radius:50%; background:var(--primary-color); border:3px solid var(--bg-white); box-shadow:0 0 0 2px var(--primary-color); }
+        .timeline-year { font-size:0.78rem; font-weight:600; color:var(--primary-color); margin-bottom:0.15rem; }
+        .timeline-desc { font-size:0.9rem; color:var(--text-main); line-height:1.5; }
+
+        .sidebar-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; }
+        .sidebar-card h3 { font-size:0.92rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
+        .related-list { list-style:none; padding:0; margin:0; }
+        .related-list li { padding:0.5rem 0; border-bottom:1px solid var(--border-light); }
+        .related-list li:last-child { border-bottom:none; }
+        .related-list a { font-size:0.85rem; color:var(--text-main); text-decoration:none; display:block; }
+        .related-list a:hover { color:var(--primary-color); }
+
+        .comments-section { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; margin-bottom:1.5rem; }
         .comments-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+        .comments-header h2 { font-size:1.1rem; }
         .comment-card { display:grid; grid-template-columns:auto 1fr auto; gap:0.75rem; padding:0.75rem; border-bottom:1px solid var(--border-light); }
         .comment-card:last-child { border-bottom:none; }
-        .comment-avatar { width:32px; height:32px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:0.8rem; overflow:hidden; }
+        .comment-avatar { width:32px; height:32px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:0.8rem; overflow:hidden; flex-shrink:0; }
         .comment-avatar img { width:100%; height:100%; object-fit:cover; }
         .comment-meta { font-size:0.8rem; color:var(--text-light); margin-bottom:0.2rem; }
         .comment-meta .name { font-weight:500; color:var(--text-main); }
@@ -51,19 +77,14 @@
         .reply-box { display:flex; gap:0.75rem; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border-light); }
         .reply-box textarea { flex:1; padding:0.6rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-family:inherit; font-size:0.88rem; resize:none; min-height:60px; background:var(--bg-main); color:var(--text-main); }
         .reply-box textarea:focus { outline:none; border-color:var(--primary-color); }
-        .sidebar-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; }
-        .sidebar-card h3 { font-size:0.95rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
-        .related-list { list-style:none; padding:0; margin:0; }
-        .related-list li { padding:0.5rem 0; border-bottom:1px solid var(--border-light); }
-        .related-list li:last-child { border-bottom:none; }
-        .related-list a { font-size:0.85rem; color:var(--text-main); text-decoration:none; display:block; }
-        .related-list a:hover { color:var(--primary-color); }
         .login-prompt { text-align:center; padding:1.5rem; color:var(--text-light); font-size:0.9rem; }
         .login-prompt a { color:var(--primary-color); text-decoration:underline; }
+
         .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); }
         .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
+
         @media(max-width:1024px) { .detail-layout { grid-template-columns:1fr; } .detail-sidebar { display:none; } }
-        @media(max-width:640px) { .story-hero { height:250px; } }
+        @media(max-width:640px) { .story-hero { height:250px; } .story-content { padding:1.25rem; } .story-actions { gap:0.3rem; } .action-btn { font-size:0.78rem; padding:0.35rem 0.6rem; } }
     </style>
 </head>
 <body>
@@ -72,7 +93,9 @@
     <section class="section-padding" style="padding-top:2rem;">
         <div class="container">
             <a href="success-stories.html" class="back-link"><i class="bi bi-arrow-left"></i> Back to Stories</a>
-            <div id="storyContent"></div>
+            <div id="storyContent">
+                <div class="empty-state"><i class="bi bi-hourglass-split"></i><h3>Loading story...</h3></div>
+            </div>
         </div>
     </section>
 
@@ -85,6 +108,8 @@
     <script src="js/shared/cart.js?v=3.0"></script>
     <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/components/story-card.js?v=1.0"></script>
+    <script src="js/components/story-sidebar.js?v=1.0"></script>
     <script src="js/success-stories.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {

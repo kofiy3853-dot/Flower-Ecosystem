@@ -3,192 +3,694 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Connect with florists and flower enthusiasts worldwide. Discussions, Q&A, success stories, photo sharing, and flower challenges.">
-    <title>Community — Connect with Florists | Flower Ecosystem</title>
+    <meta name="description" content="Bloom Together — Join thousands of florists, gardeners, and flower lovers. Share ideas, ask questions, discover workshops, and connect worldwide.">
+    <title>Community — Bloom Together | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
-        .feature-icon { font-size:2.2rem; margin-bottom:0.75rem; }
-        .community-feature-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:1.25rem; margin-top:2rem; }
-        .community-feature-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.75rem 1.25rem; text-align:center; transition:all 0.3s ease; cursor:default; }
-        .community-feature-card:hover { transform:translateY(-6px); box-shadow:0 12px 32px rgba(0,0,0,0.1); border-color:var(--primary-color); }
-        .community-feature-card h3 { font-size:1rem; margin-bottom:0.5rem; color:var(--text-main); }
-        .community-feature-card p { font-size:0.85rem; color:var(--text-light); line-height:1.5; }
-        .discussion-list { margin-top:2rem; }
-        .discussion-item { display:grid; grid-template-columns:auto 1fr auto; gap:1rem; align-items:start; padding:1.25rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; margin-bottom:0.75rem; transition:all 0.2s ease; }
-        .discussion-item:hover { border-color:var(--primary-color); box-shadow:0 4px 16px rgba(0,0,0,0.06); }
-        .discussion-item.pinned { border-left:4px solid var(--primary-color); background:rgba(172,50,80,0.03); }
-        .discussion-avatar { font-size:2rem; width:48px; height:48px; display:flex; align-items:center; justify-content:center; background:var(--bg-light); border-radius:50%; flex-shrink:0; }
-        .discussion-meta { display:flex; gap:1rem; font-size:0.8rem; color:var(--text-light); margin-top:0.4rem; }
-        .discussion-stats { text-align:right; white-space:nowrap; color:var(--text-light); font-size:0.85rem; }
-        .discussion-stats span { display:block; margin-bottom:0.25rem; }
-        .pinned-badge { background:var(--primary-color); color:white; font-size:0.7rem; padding:0.15rem 0.5rem; border-radius:4px; margin-left:0.5rem; vertical-align:middle; }
-        .question-card { padding:1rem 1.25rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; margin-bottom:0.75rem; display:flex; justify-content:space-between; align-items:center; gap:1rem; }
-        .question-card h4 { font-size:0.95rem; margin-bottom:0.25rem; }
-        .question-card .q-meta { font-size:0.8rem; color:var(--text-light); }
-        .q-stats { text-align:right; font-size:0.85rem; color:var(--text-light); white-space:nowrap; }
-        .q-stats strong { color:var(--primary-color); }
-        .story-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; overflow:hidden; transition:all 0.3s ease; }
-        .story-card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,0.1); }
-        .story-card img { width:100%; height:180px; object-fit:cover; }
-        .story-body { padding:1.25rem; }
-        .story-body h3 { font-size:1.05rem; margin-bottom:0.3rem; }
-        .story-body .story-author { font-size:0.85rem; color:var(--text-light); margin-bottom:0.75rem; }
-        .story-body p { font-size:0.9rem; color:var(--text-light); line-height:1.6; }
-        .challenge-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.5rem; transition:all 0.3s ease; display:flex; flex-direction:column; }
-        .challenge-card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,0.1); border-color:var(--primary-color); }
-        .challenge-card .challenge-icon { font-size:2rem; margin-bottom:0.75rem; }
-        .challenge-card h3 { font-size:1rem; margin-bottom:0.3rem; }
-        .challenge-card .challenge-meta { font-size:0.8rem; color:var(--text-light); margin-bottom:0.75rem; }
-        .challenge-card p { font-size:0.9rem; color:var(--text-light); line-height:1.5; flex-grow:1; }
-        .category-chip { display:inline-block; padding:0.25rem 0.75rem; border-radius:20px; font-size:0.8rem; background:rgba(172,50,80,0.1); color:var(--primary-color); font-weight:500; }
-        .photo-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-top:2rem; }
-        .photo-grid-item { aspect-ratio:1; border-radius:10px; overflow:hidden; position:relative; cursor:pointer; }
-        .photo-grid-item img { width:100%; height:100%; object-fit:cover; transition:transform 0.4s ease; }
-        .photo-grid-item:hover img { transform:scale(1.08); }
-        .photo-grid-item .photo-overlay { position:absolute; bottom:0; left:0; right:0; padding:0.75rem; background:linear-gradient(to top, rgba(0,0,0,0.7), transparent); color:white; font-size:0.8rem; opacity:0; transition:opacity 0.3s ease; }
-        .photo-grid-item:hover .photo-overlay { opacity:1; }
-        @media(max-width:1024px){ .community-feature-grid { grid-template-columns:repeat(3,1fr); } .photo-grid { grid-template-columns:repeat(3,1fr); } }
-        @media(max-width:768px){ .community-feature-grid { grid-template-columns:repeat(2,1fr); } .discussion-item { grid-template-columns:1fr; } .discussion-stats { text-align:left; } .question-card { flex-direction:column; align-items:start; } .story-card img { height:140px; } .photo-grid { grid-template-columns:repeat(2,1fr); } }
-        @media(max-width:480px){ .community-feature-grid { grid-template-columns:1fr; } .photo-grid { grid-template-columns:1fr; } }
+        /* ════════════════════════════════════════════════════════════════
+           COMMUNITY LANDING PAGE — Component Styles
+           ════════════════════════════════════════════════════════════════ */
+
+        /* ─── Hero ─────────────────────────────────────────────── */
+        .community-hero {
+            position: relative;
+            min-height: 520px;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #fff5f8 0%, #ffe0eb 40%, #fff0f5 70%, #fff 100%);
+            overflow: hidden;
+            padding: 6rem 0 4rem;
+        }
+        :root.dark-mode .community-hero {
+            background: linear-gradient(135deg, #1a1118 0%, #2d1524 40%, #1a1f35 70%, #0f172a 100%);
+        }
+        .community-hero::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,95,162,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .community-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,95,162,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 580px; }
+        .hero-content h1 {
+            font-family: var(--font-serif);
+            font-size: 3.6rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1.15;
+            margin-bottom: 0.75rem;
+        }
+        :root.dark-mode .hero-content h1 { color: var(--primary-color); }
+        .hero-content .hero-subtitle {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: var(--text-light);
+            line-height: 1.65;
+            margin-bottom: 0.5rem;
+        }
+        .hero-content .hero-tagline {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .hero-actions { display: flex; gap: 0.85rem; flex-wrap: wrap; }
+        .hero-actions .btn { padding: 0.85rem 1.75rem; border-radius: 50px; font-weight: 600; font-size: 0.92rem; }
+        .hero-visual {
+            position: relative; z-index: 1; flex: 1;
+            display: flex; align-items: center; justify-content: center;
+            min-height: 380px;
+        }
+        .hero-flower-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            width: 100%;
+            max-width: 420px;
+        }
+        .hero-flower-grid .flower-item {
+            aspect-ratio: 1;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .hero-flower-grid .flower-item:hover { transform: scale(1.05) rotate(-2deg); box-shadow: var(--shadow-hover); }
+        .hero-flower-grid .flower-item:nth-child(2) { margin-top: 1.5rem; }
+        .hero-flower-grid .flower-item:nth-child(4) { margin-top: -0.75rem; }
+        .hero-flower-grid .flower-item:nth-child(6) { margin-top: 1rem; }
+        .hero-flower-grid .flower-item img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-flower-grid .flower-item:last-child { grid-column: 2 / 4; aspect-ratio: 2 / 1; }
+
+        /* ─── Stats Section ────────────────────────────────────── */
+        .community-stats {
+            background: var(--bg-white);
+            border-top: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            padding: 2.5rem 0;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1rem;
+            text-align: center;
+        }
+        .stat-block { padding: 0.5rem; }
+        .stat-block .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            font-family: var(--font-serif);
+            line-height: 1.2;
+        }
+        .stat-block .stat-label {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 0.15rem;
+        }
+        .stat-block .stat-icon { font-size: 1.4rem; margin-bottom: 0.25rem; display: block; }
+
+        /* ─── Quick Actions ────────────────────────────────────── */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1rem;
+        }
+        .quick-action-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .quick-action-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--bg-white), var(--bg-main));
+        }
+        .quick-action-card .qa-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            transition: transform 0.3s ease;
+        }
+        .quick-action-card:hover .qa-icon { transform: scale(1.12); }
+        .quick-action-card .qa-label { font-size: 0.82rem; font-weight: 500; }
+
+        /* ─── Explore Section ──────────────────────────────────── */
+        .explore-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+        }
+        .explore-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .explore-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary-color);
+        }
+        .explore-card .ec-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            display: inline-block;
+        }
+        .explore-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.3rem; }
+        .explore-card p { font-size: 0.85rem; color: var(--text-light); line-height: 1.55; margin-bottom: 1rem; flex: 1; }
+        .explore-card .btn { align-self: flex-start; border-radius: 50px; font-size: 0.8rem; padding: 0.45rem 1.1rem; }
+
+        /* ─── Trending Discussions ──────────────────────────────── */
+        .trending-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        .trending-disc-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .trending-disc-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-xs);
+        }
+        .trending-disc-rank {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            font-family: var(--font-serif);
+            width: 32px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .trending-disc-content { flex: 1; min-width: 0; }
+        .trending-disc-content h4 { font-size: 0.92rem; font-weight: 500; margin-bottom: 0.15rem; }
+        .trending-disc-content .td-meta { font-size: 0.78rem; color: var(--text-muted); }
+        .trending-disc-arrow { color: var(--text-muted); font-size: 0.85rem; flex-shrink: 0; }
+
+        /* ─── Clubs ────────────────────────────────────────────── */
+        .clubs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        .club-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.25s ease;
+        }
+        .club-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-sm);
+            border-color: var(--primary-color);
+        }
+        .club-card .club-icon { font-size: 1.6rem; margin-bottom: 0.5rem; }
+        .club-card h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.15rem; }
+        .club-card .club-members { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+        .club-card .btn { font-size: 0.75rem; padding: 0.35rem 0.9rem; border-radius: 50px; align-self: flex-start; }
+
+        /* ─── Events ───────────────────────────────────────────── */
+        .events-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        .event-mini-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .event-mini-card:hover {
+            border-color: var(--accent-gold);
+            box-shadow: var(--shadow-xs);
+        }
+        .event-mini-date {
+            text-align: center;
+            flex-shrink: 0;
+            width: 52px;
+        }
+        .event-mini-date .day {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1.1;
+            font-family: var(--font-serif);
+        }
+        .event-mini-date .month {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.04em;
+        }
+        .event-mini-info { flex: 1; min-width: 0; }
+        .event-mini-info h4 { font-size: 0.88rem; font-weight: 500; margin-bottom: 0.1rem; }
+        .event-mini-info .em-meta { font-size: 0.75rem; color: var(--text-muted); }
+        .event-mini-cta .btn { font-size: 0.72rem; padding: 0.35rem 0.85rem; border-radius: 50px; }
+
+        /* ─── Featured Members ─────────────────────────────────── */
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+        }
+        .member-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 1.5rem 1rem;
+            text-align: center;
+            transition: all 0.25s ease;
+        }
+        .member-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-sm);
+            border-color: var(--primary-color);
+        }
+        .member-card .mc-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            margin: 0 auto 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            overflow: hidden;
+        }
+        .member-card .mc-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .member-card h4 { font-size: 0.9rem; font-weight: 600; }
+        .member-card .mc-role { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .member-card .mc-score { font-size: 0.75rem; color: var(--accent-gold); margin-bottom: 0.75rem; }
+        .member-card .btn { font-size: 0.72rem; padding: 0.35rem 1rem; border-radius: 50px; }
+
+        /* ─── Gallery / Masonry ────────────────────────────────── */
+        .gallery-masonry {
+            column-count: 4;
+            column-gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .gallery-item {
+            break-inside: avoid;
+            margin-bottom: 1rem;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        .gallery-item:hover { transform: scale(1.02); }
+        .gallery-item img { width: 100%; display: block; border-radius: var(--radius-md); }
+        .gallery-item .gallery-overlay {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 1.5rem 0.75rem 0.75rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+            color: white;
+            font-size: 0.78rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .gallery-item:hover .gallery-overlay { opacity: 1; }
+        .gallery-item .gallery-overlay strong { display: block; font-size: 0.85rem; }
+
+        /* ─── Recent Posts ─────────────────────────────────────── */
+        .recent-posts-list { display: flex; flex-direction: column; gap: 0.85rem; }
+        .rp-card {
+            display: flex;
+            gap: 1rem;
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .rp-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-xs);
+        }
+        .rp-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--primary-color);
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .rp-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .rp-info { flex: 1; min-width: 0; }
+        .rp-info .rp-author { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.1rem; }
+        .rp-info .rp-text { font-size: 0.88rem; color: var(--text-light); line-height: 1.5; }
+        .rp-info .rp-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem; display: flex; gap: 0.75rem; }
+        .rp-image {
+            width: 72px;
+            height: 72px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        /* ─── Join Banner ──────────────────────────────────────── */
+        .join-banner {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #8c0340 100%);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .join-banner::before {
+            content: '';
+            position: absolute;
+            top: -40%; right: -15%;
+            width: 350px; height: 350px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .join-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -30%; left: -10%;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .join-banner h2 { color: white; font-size: 1.8rem; margin-bottom: 0.5rem; font-family: var(--font-serif); }
+        .join-banner p { color: rgba(255,255,255,0.85); max-width: 480px; margin: 0 auto 1.5rem; font-size: 0.95rem; }
+        .join-banner .btn {
+            background: white;
+            color: var(--primary-color);
+            font-weight: 600;
+            padding: 0.9rem 2.2rem;
+            border-radius: 50px;
+            border: none;
+            position: relative;
+            z-index: 1;
+        }
+        .join-banner .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+
+        /* ─── Loading & Empty States ───────────────────────────── */
+        .section-skeleton { text-align: center; padding: 2rem; color: var(--text-muted); }
+        .section-skeleton .spinner { width: 28px; height: 28px; border: 3px solid var(--border-color); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 0.5rem; display: inline-block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ─── Section Headers ──────────────────────────────────── */
+        .section-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 1.5rem;
+        }
+        .section-header-flex h2 { font-family: var(--font-serif); font-size: 1.6rem; }
+
+        /* ─── Responsive ───────────────────────────────────────── */
+        @media(max-width:1100px) {
+            .explore-grid { grid-template-columns: repeat(2, 1fr); }
+            .clubs-grid { grid-template-columns: repeat(2, 1fr); }
+            .members-grid { grid-template-columns: repeat(2, 1fr); }
+            .gallery-masonry { column-count: 3; }
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
+            .quick-actions-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media(max-width:900px) {
+            .community-hero { flex-direction: column; text-align: center; padding: 5rem 0 2rem; min-height: auto; }
+            .hero-content { max-width: 100%; }
+            .hero-content h1 { font-size: 2.8rem; }
+            .hero-actions { justify-content: center; }
+            .hero-visual { min-height: 260px; margin-top: 2rem; }
+            .hero-flower-grid { max-width: 320px; }
+            .explore-grid { grid-template-columns: 1fr; }
+            .members-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media(max-width:640px) {
+            .hero-content h1 { font-size: 2.2rem; }
+            .hero-flower-grid { max-width: 260px; gap: 0.6rem; }
+            .hero-visual { min-height: 200px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+            .stat-block .stat-number { font-size: 1.5rem; }
+            .quick-actions-grid { grid-template-columns: repeat(2, 1fr); }
+            .clubs-grid { grid-template-columns: 1fr; }
+            .members-grid { grid-template-columns: 1fr; }
+            .gallery-masonry { column-count: 2; }
+            .join-banner { padding: 2rem 1.5rem; border-radius: var(--radius-md); }
+            .join-banner h2 { font-size: 1.4rem; }
+            .section-header-flex { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            .rp-card { flex-wrap: wrap; }
+        }
     </style>
 </head>
 <body>
     <div id="header-container"></div>
 
-    <!-- Hero -->
-    <section class="page-header primary-bg text-white section-padding text-center" style="padding-top:6rem; padding-bottom:3rem;">
-        <div class="container reveal-up">
-            <span class="subtitle" style="color:rgba(255,255,255,0.7)">CONNECT & SHARE</span>
-            <h1 style="color:white;">Our Community</h1>
-            <p class="section-subtitle text-white">Join 89,000+ flower enthusiasts, florists, and growers from around the world</p>
-        </div>
-    </section>
-
-    <!-- Stats -->
-    <section class="section-padding bg-light">
-        <div class="container">
-            <div class="quick-stats reveal-up">
-                <div class="stat-item"><div class="stat-number">89K</div><div class="stat-label">Members</div></div>
-                <div class="stat-item"><div class="stat-number">12K</div><div class="stat-label">Posts This Month</div></div>
-                <div class="stat-item"><div class="stat-number">340+</div><div class="stat-label">Events Hosted</div></div>
-                <div class="stat-item"><div class="stat-number">98%</div><div class="stat-label">Satisfaction Rate</div></div>
+    <!-- ═══════════════════════ Hero ═══════════════════════════════ -->
+    <section class="community-hero">
+        <div class="container" style="display:flex;align-items:center;gap:3rem;width:100%;">
+            <div class="hero-content reveal-up">
+                <span class="subtitle" style="margin-bottom:0.5rem;">FLOWER COMMUNITY</span>
+                <h1>Bloom Together</h1>
+                <p class="hero-subtitle">Learn. Share. Grow.</p>
+                <p class="hero-tagline">Share ideas, ask questions, discover workshops, showcase your floral creations, and connect with thousands of passionate flower enthusiasts.</p>
+                <div class="hero-actions">
+                    <a href="register.html" class="btn btn-primary">Join Community</a>
+                    <a href="feed.html" class="btn btn-outline">Explore Feed</a>
+                </div>
+            </div>
+            <div class="hero-visual reveal-up">
+                <div class="hero-flower-grid">
+                    <div class="flower-item"><img src="https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?q=80&w=300&auto=format&fit=crop" alt="Red rose" loading="lazy"></div>
+                    <div class="flower-item"><img src="https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=300&auto=format&fit=crop" alt="Sunflowers" loading="lazy"></div>
+                    <div class="flower-item"><img src="https://images.unsplash.com/photo-1526045612212-70caf35c14df?q=80&w=300&auto=format&fit=crop" alt="Tulips" loading="lazy"></div>
+                    <div class="flower-item"><img src="https://images.unsplash.com/photo-1468327768560-75b778cbb551?q=80&w=300&auto=format&fit=crop" alt="Peonies" loading="lazy"></div>
+                    <div class="flower-item"><img src="https://images.unsplash.com/photo-1494972308805-463bc619d34d?q=80&w=300&auto=format&fit=crop" alt="Bouquet" loading="lazy"></div>
+                    <div class="flower-item"><img src="https://images.unsplash.com/photo-1471899236350-e3016bf1e69e?q=80&w=300&auto=format&fit=crop" alt="Lily" loading="lazy"></div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Community Features -->
+    <!-- ═══════════════════════ Stats ══════════════════════════════ -->
+    <section class="community-stats stats-section" id="statsSection">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-block"><span class="stat-icon">👥</span><div class="stat-number counter" data-target="18420">0</div><div class="stat-label">Members</div></div>
+                <div class="stat-block"><span class="stat-icon">📝</span><div class="stat-number counter" data-target="72000">0</div><div class="stat-label">Posts</div></div>
+                <div class="stat-block"><span class="stat-icon">💬</span><div class="stat-number counter" data-target="5600">0</div><div class="stat-label">Discussions</div></div>
+                <div class="stat-block"><span class="stat-icon">🌼</span><div class="stat-number counter" data-target="230">0</div><div class="stat-label">Clubs</div></div>
+                <div class="stat-block"><span class="stat-icon">🎉</span><div class="stat-number counter" data-target="160">0</div><div class="stat-label">Events</div></div>
+                <div class="stat-block"><span class="stat-icon">🏆</span><div class="stat-number counter" data-target="4200">0</div><div class="stat-label">Showcase Posts</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════ Quick Actions ══════════════════════ -->
     <section class="section-padding">
         <div class="container">
             <div class="text-center reveal-up">
-                <span class="subtitle">GET INVOLVED</span>
-                <h2>Community Features</h2>
-                <p class="section-subtitle">Connect, learn, and grow with fellow flower enthusiasts</p>
+                <span class="subtitle">GET STARTED</span>
+                <h2>What would you like to do?</h2>
+                <p class="section-subtitle">Jump right into the action</p>
             </div>
-            <div class="community-feature-grid reveal-up" id="featureGrid">
-                <div class="community-feature-card" style="cursor:pointer;" onclick="window.location.href='discussions.html'"><div class="feature-icon">??</div><h3>Discussion Forum</h3><p>Join conversations about flower care, arrangements, and industry trends. Share your expertise and learn from others.</p></div>
-                <div class="community-feature-card"><div class="feature-icon">?</div><h3>Questions & Answers</h3><p>Ask the community for advice on any floral topic. Get answers from experienced florists and growers worldwide.</p></div>
-                <div class="community-feature-card" style="cursor:pointer;" onclick="window.location.href='success-stories.html'"><div class="feature-icon">??</div><h3>Success Stories</h3><p>Read inspiring stories from community members who turned their passion for flowers into something extraordinary.</p></div>
-                <div class="community-feature-card"><div class="feature-icon">??</div><h3>Photo Sharing</h3><p>Showcase your best floral photography. Get feedback, inspiration, and recognition from fellow flower lovers.</p></div>
-                <div class="community-feature-card"><div class="feature-icon">??</div><h3>Flower Challenges</h3><p>Participate in themed challenges, compete for prizes, and push your creativity to new heights.</p></div>
+            <div class="quick-actions-grid reveal-up" style="margin-top:2rem;">
+                <a href="create-post.html" class="quick-action-card"><div class="qa-icon" style="background:rgba(255,95,162,0.12);color:var(--primary-color);"><i class="bi bi-pencil-square"></i></div><span class="qa-label">Create Post</span></a>
+                <a href="ask-question.html" class="quick-action-card"><div class="qa-icon" style="background:rgba(245,158,11,0.12);color:var(--accent-gold);"><i class="bi bi-question-circle"></i></div><span class="qa-label">Ask Question</span></a>
+                <a href="clubs.html" class="quick-action-card"><div class="qa-icon" style="background:rgba(16,185,129,0.12);color:var(--accent-green);"><i class="bi bi-people"></i></div><span class="qa-label">Join Club</span></a>
+                <a href="events.html" class="quick-action-card"><div class="qa-icon" style="background:rgba(14,165,233,0.12);color:var(--accent-blue);"><i class="bi bi-calendar-event"></i></div><span class="qa-label">Explore Events</span></a>
+                <a href="create-discussion.html" class="quick-action-card"><div class="qa-icon" style="background:rgba(139,92,246,0.12);color:#8b5cf6;"><i class="bi bi-chat-dots"></i></div><span class="qa-label">Start Discussion</span></a>
+                <a href="showcase.html" class="quick-action-card"><div class="qa-icon" style="background:rgba(255,95,162,0.12);color:var(--primary-color);"><i class="bi bi-flower1"></i></div><span class="qa-label">Showcase</span></a>
             </div>
         </div>
     </section>
 
-    <!-- Categories -->
+    <!-- ═══════════════════════ Explore ════════════════════════════ -->
     <section class="section-padding bg-light">
         <div class="container">
             <div class="text-center reveal-up">
-                <span class="subtitle">BROWSE BY TOPIC</span>
-                <h2>Discussion Categories</h2>
-                <p class="section-subtitle">Find conversations that matter to you</p>
+                <span class="subtitle">EXPLORE THE COMMUNITY</span>
+                <h2>Find Your Space</h2>
+                <p class="section-subtitle">Discover everything our community has to offer</p>
             </div>
-            <div class="identification-grid reveal-up" style="grid-template-columns:repeat(5,1fr); margin-top:2rem;">
-                <div class="id-card" style="cursor:pointer;"><div class="id-icon">??</div><h3>Flower Care</h3><p class="id-subtitle">Watering, pruning, pests</p></div>
-                <div class="id-card" style="cursor:pointer;"><div class="id-icon">??</div><h3>Buying Advice</h3><p class="id-subtitle">Where & what to buy</p></div>
-                <div class="id-card" style="cursor:pointer;"><div class="id-icon">??</div><h3>Selling Tips</h3><p class="id-subtitle">Pricing, marketing, growth</p></div>
-                <div class="id-card" style="cursor:pointer;"><div class="id-icon">??</div><h3>Arrangements</h3><p class="id-subtitle">Designs, techniques, tools</p></div>
-                <div class="id-card" style="cursor:pointer;"><div class="id-icon">??</div><h3>Gardening</h3><p class="id-subtitle">Growing, soil, seasons</p></div>
+            <div class="explore-grid reveal-up" style="margin-top:2rem;">
+                <div class="explore-card">
+                    <span class="ec-icon">📰</span>
+                    <h3>Feed</h3>
+                    <p>Latest community posts, photos, and updates from florists worldwide.</p>
+                    <a href="feed.html" class="btn btn-outline btn-sm">Browse Feed <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="explore-card">
+                    <span class="ec-icon">💬</span>
+                    <h3>Discussions</h3>
+                    <p>Ask & answer questions about flower care, arrangements, and business.</p>
+                    <a href="discussions.html" class="btn btn-outline btn-sm">Join Discussion <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="explore-card">
+                    <span class="ec-icon">🌼</span>
+                    <h3>Clubs</h3>
+                    <p>Join communities of like-minded flower enthusiasts and specialists.</p>
+                    <a href="clubs.html" class="btn btn-outline btn-sm">Find Clubs <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="explore-card">
+                    <span class="ec-icon">🎉</span>
+                    <h3>Events</h3>
+                    <p>Attend workshops, webinars, and floral design competitions.</p>
+                    <a href="events.html" class="btn btn-outline btn-sm">View Events <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="explore-card">
+                    <span class="ec-icon">🌸</span>
+                    <h3>Showcase</h3>
+                    <p>See beautiful flowers shared by our talented community members.</p>
+                    <a href="showcase.html" class="btn btn-outline btn-sm">View Showcase <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="explore-card">
+                    <span class="ec-icon">❓</span>
+                    <h3>Questions</h3>
+                    <p>Get help from experienced florists, growers, and arrangers.</p>
+                    <a href="questions.html" class="btn btn-outline btn-sm">Ask Now <i class="bi bi-arrow-right"></i></a>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Discussions -->
-    <section class="section-padding" id="discussionsSection">
+    <!-- ═══════════════════════ Trending Discussions ═══════════════ -->
+    <section class="section-padding" id="trendingSection">
         <div class="container">
-            <div class="flex-between reveal-up">
-                <div><span class="subtitle">HOT TOPICS</span><h2>Recent Discussions</h2></div>
-                <a href="discussions.html" class="btn btn-outline btn-sm" style="align-self:flex-end;">View All ?</a>
+            <div class="section-header-flex reveal-up">
+                <div><span class="subtitle">HOT TOPICS</span><h2>Trending Discussions</h2></div>
+                <a href="discussions.html" class="btn btn-outline btn-sm">View All <i class="bi bi-arrow-right"></i></a>
             </div>
-            <div class="discussion-list reveal-up" id="discussionList"></div>
+            <div class="trending-list reveal-up" id="trendingList">
+                <div class="section-skeleton"><div class="spinner"></div></div>
+            </div>
         </div>
     </section>
 
-    <!-- Q&A -->
-    <section class="section-padding bg-light" id="qaSection">
+    <!-- ═══════════════════════ Popular Clubs ═════════════════════─ -->
+    <section class="section-padding bg-light" id="clubsSection">
         <div class="container">
-            <div class="flex-between reveal-up">
-                <div><span class="subtitle">ASK & ANSWER</span><h2>Top Questions</h2></div>
-                <a href="ask-question.html" class="btn btn-primary btn-sm" style="align-self:flex-end;">Ask a Question <i class="bi bi-arrow-right"></i></a>
+            <div class="section-header-flex reveal-up">
+                <div><span class="subtitle">COMMUNITIES</span><h2>Popular Clubs</h2></div>
+                <a href="clubs.html" class="btn btn-outline btn-sm">View All <i class="bi bi-arrow-right"></i></a>
             </div>
-            <div class="reveal-up" id="questionList" style="margin-top:2rem;"></div>
+            <div class="clubs-grid reveal-up" id="clubsGrid"></div>
         </div>
     </section>
 
-    <!-- Success Stories -->
-    <section class="section-padding" id="storiesSection">
+    <!-- ═══════════════════════ Upcoming Events ═══════════════════─ -->
+    <section class="section-padding" id="eventsSection">
         <div class="container">
-            <div class="text-center reveal-up">
-                <span class="subtitle">INSPIRATION</span>
-                <h2>Success Stories</h2>
-                <p class="section-subtitle">Real stories from real members of our community</p>
+            <div class="section-header-flex reveal-up">
+                <div><span class="subtitle">UPCOMING</span><h2>Events & Workshops</h2></div>
+                <a href="events.html" class="btn btn-outline btn-sm">View All <i class="bi bi-arrow-right"></i></a>
             </div>
-            <div class="identification-grid reveal-up" style="grid-template-columns:repeat(3,1fr); margin-top:2rem;" id="storyGrid"></div>
+            <div class="events-list reveal-up" id="eventsList">
+                <div class="section-skeleton"><div class="spinner"></div></div>
+            </div>
         </div>
     </section>
 
-    <!-- Photo Sharing -->
-    <section class="section-padding bg-light" id="photosSection">
+    <!-- ═══════════════════════ Featured Members ═══════════════════ -->
+    <section class="section-padding bg-light" id="membersSection">
         <div class="container">
-            <div class="flex-between reveal-up">
-                <div><span class="subtitle">GALLERY</span><h2>Member Photos</h2></div>
-                <a href="gallery.html" class="btn btn-outline btn-sm" style="align-self:flex-end;">Upload Photo <i class="bi bi-arrow-right"></i></a>
+            <div class="section-header-flex reveal-up">
+                <div><span class="subtitle">TOP CONTRIBUTORS</span><h2>Featured Members</h2></div>
+                <a href="members.html" class="btn btn-outline btn-sm">View All <i class="bi bi-arrow-right"></i></a>
             </div>
-            <div class="photo-grid reveal-up" id="photoGrid">
-                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?q=80&w=400&auto=format&fit=crop" alt="Red rose close-up" loading="lazy"><div class="photo-overlay">?? by Maria</div></div>
-                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop" alt="Sunflower field" loading="lazy"><div class="photo-overlay">?? by James</div></div>
-                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1526045612212-70caf35c14df?q=80&w=400&auto=format&fit=crop" alt="Tulip bouquet" loading="lazy"><div class="photo-overlay">?? by Priya</div></div>
-                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1470509037662-253afb3100f9?q=80&w=400&auto=format&fit=crop" alt="Lavender field" loading="lazy"><div class="photo-overlay">?? by Chen</div></div>
-                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1494972308805-463bc619d34d?q=80&w=400&auto=format&fit=crop" alt="Mixed arrangement" loading="lazy"><div class="photo-overlay">?? by Emma</div></div>
-                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1471899236350-e3016bf1e69e?q=80&w=400&auto=format&fit=crop" alt="White lily" loading="lazy"><div class="photo-overlay">?? by Liam</div></div>
-                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1470509037662-253afb3100f9?q=80&w=400&auto=format&fit=crop" alt="Garden view" loading="lazy"><div class="photo-overlay">?? by Amara</div></div>
-                <div class="photo-grid-item"><img src="https://images.unsplash.com/photo-1468327768560-75b778cbb551?q=80&w=400&auto=format&fit=crop" alt="Peony bloom" loading="lazy"><div class="photo-overlay">?? by Rosa</div></div>
+            <div class="members-grid reveal-up" id="membersGrid">
+                <div class="section-skeleton" style="grid-column:1/-1;"><div class="spinner"></div></div>
             </div>
         </div>
     </section>
 
-    <!-- Flower Challenges -->
-    <section class="section-padding" id="challengesSection">
+    <!-- ═══════════════════════ Community Gallery ══════════════════ -->
+    <section class="section-padding" id="gallerySection">
         <div class="container">
-            <div class="text-center reveal-up">
-                <span class="subtitle">COMPETE & WIN</span>
-                <h2>Active Challenges</h2>
-                <p class="section-subtitle">Participate in community challenges and earn recognition</p>
+            <div class="section-header-flex reveal-up">
+                <div><span class="subtitle">GALLERY</span><h2>Community Showcase</h2></div>
+                <a href="showcase.html" class="btn btn-outline btn-sm">Upload Photo <i class="bi bi-arrow-right"></i></a>
             </div>
-            <div class="identification-grid reveal-up" style="grid-template-columns:repeat(3,1fr); margin-top:2rem;" id="challengeGrid"></div>
+            <div class="gallery-masonry reveal-up" id="galleryMasonry">
+                <div class="section-skeleton" style="column-span:all;"><div class="spinner"></div></div>
+            </div>
         </div>
     </section>
 
-    <!-- Join CTA -->
-    <section class="section-padding primary-bg text-white text-center">
+    <!-- ═══════════════════════ Recent Posts ═══════════════════════ -->
+    <section class="section-padding bg-light" id="recentPostsSection">
+        <div class="container">
+            <div class="section-header-flex reveal-up">
+                <div><span class="subtitle">LATEST</span><h2>Recent Community Posts</h2></div>
+                <a href="feed.html" class="btn btn-outline btn-sm">View All <i class="bi bi-arrow-right"></i></a>
+            </div>
+            <div class="recent-posts-list reveal-up" id="recentPostsList">
+                <div class="section-skeleton"><div class="spinner"></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════ Join Banner ═══════════════════════─ -->
+    <section class="section-padding">
         <div class="container reveal-up">
-            <h2 style="color:white;">Ready to Join the Community?</h2>
-            <p style="color:rgba(255,255,255,0.85); max-width:480px; margin:0 auto 2rem;">Create your free account and start connecting with flower lovers worldwide today.</p>
-            <a href="index.html" class="btn" style="background:white; color:var(--primary-color); font-weight:600; padding:0.9rem 2rem;">Join Free ?</a>
+            <div class="join-banner">
+                <h2>Ready to bloom with us?</h2>
+                <p>Join thousands of flower lovers. Create your free account and start connecting today.</p>
+                <a href="register.html" class="btn">Join Now</a>
+            </div>
         </div>
     </section>
 
@@ -201,144 +703,6 @@
     <script src="js/shared/cart.js?v=3.0"></script>
     <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
-    <script>
-        (async () => {
-            const [discussionsRes, questionsRes, storiesRes, statsRes] = await Promise.all([
-                api.fetchJSON('/api/discussions?limit=5').catch(() => null),
-                api.fetchJSON('/api/qa/questions?limit=4&sort=votes').catch(() => null),
-                api.fetchJSON('/api/stories/featured').catch(() => null),
-                api.fetchJSON('/api/discussions/stats/overview').catch(() => null)
-            ]);
-
-            // Update hero stats from live data
-            if (statsRes) {
-                const statEls = document.querySelectorAll('.stat-number');
-                if (statEls[0] && statsRes.members) statEls[0].textContent = statsRes.members >= 1000 ? Math.round(statsRes.members / 1000) + 'K' : statsRes.members;
-                if (statEls[1] && statsRes.discussions) statEls[1].textContent = statsRes.discussions >= 1000 ? Math.round(statsRes.discussions / 1000) + 'K' : statsRes.discussions;
-            }
-
-            // Discussions — handle both community.discussions and community.posts shapes
-            const discussionList = document.getElementById('discussionList');
-            const discussions = (discussionsRes && discussionsRes.discussions) || [];
-            if (discussions.length) {
-                discussionList.innerHTML = discussions.map(d => {
-                    const author = d.author_name || [d.first_name, d.last_name].filter(Boolean).join(' ') || 'Anonymous';
-                    const initial = author.charAt(0).toUpperCase();
-                    const replies = d.reply_count != null ? d.reply_count : (d.comment_count || 0);
-                    const views = d.views != null ? d.views : (d.view_count || 0);
-                    const category = d.category_name || d.category || 'General';
-                    const excerpt = d.excerpt || (d.content || '').slice(0, 160);
-                    return `
-                    <div class="discussion-item${d.is_pinned ? ' pinned' : ''}" style="cursor:pointer;" onclick="window.location.href='discussion-detail.html?id=${d.id}'">
-                        <div class="discussion-avatar">${d.author_avatar ? `<img src="${escapeAttr(d.author_avatar)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" alt="">` : initial}</div>
-                        <div>
-                            <h4 style="font-size:1rem; margin-bottom:0.15rem;">
-                                ${d.is_pinned ? '<span class="pinned-badge">📌 Pinned</span>' : ''}
-                                ${escapeHtml(d.title)}
-                            </h4>
-                            <div style="font-size:0.85rem; color:var(--text-light);">
-                                by ${escapeHtml(author)} — <span class="category-chip">${escapeHtml(category)}</span>
-                            </div>
-                            <p style="font-size:0.9rem; color:var(--text-light); margin-top:0.5rem; line-height:1.5;">${escapeHtml(excerpt)}</p>
-                            <div class="discussion-meta">
-                                <span><i class="bi bi-chat-dots"></i> ${replies} replies</span>
-                                <span><i class="bi bi-eye"></i> ${views} views</span>
-                                <span><i class="bi bi-clock"></i> ${timeAgo(d.created_at)}</span>
-                            </div>
-                        </div>
-                        <div class="discussion-stats">
-                            <span><i class="bi bi-chat-dots"></i> ${replies}</span>
-                            <span style="font-size:0.75rem;">replies</span>
-                        </div>
-                    </div>`;
-                }).join('');
-            } else {
-                discussionList.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">No discussions yet. <a href="create-discussion.html" style="color:var(--primary-color);">Start one!</a></p>';
-            }
-
-            // Q&A
-            const questionList = document.getElementById('questionList');
-            const questions = (questionsRes && questionsRes.questions) || [];
-            if (questions.length) {
-                questionList.innerHTML = questions.map(q => `
-                    <div class="question-card" style="cursor:pointer;" onclick="window.location.href='question-detail.html?id=${q.id}'">
-                        <div>
-                            <h4>${escapeHtml(q.title)}</h4>
-                            <div class="q-meta">by ${escapeHtml(q.author_name || 'Anonymous')} — ${timeAgo(q.created_at)} — <span class="category-chip">${escapeHtml(q.category_name || 'General')}</span></div>
-                        </div>
-                        <div class="q-stats">
-                            <strong>${q.answer_count}</strong> answers<br>
-                            <span>${q.upvotes || 0} votes</span>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                questionList.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">No questions yet. <a href="ask-question.html" style="color:var(--primary-color);">Ask one!</a></p>';
-            }
-
-            // Success Stories
-            const storyGrid = document.getElementById('storyGrid');
-            const stories = Array.isArray(storiesRes) ? storiesRes : (storiesRes && storiesRes.stories) || [];
-            if (stories.length) {
-                storyGrid.innerHTML = stories.slice(0, 3).map(s => `
-                    <div class="story-card">
-                        <img loading="lazy" src="${escapeAttr(s.cover_image || s.thumbnail || placeholderImg(0))}" alt="${escapeHtml(s.title)}">
-                        <div class="story-body">
-                            <h3>${escapeHtml(s.title)}</h3>
-                            <div class="story-author">${escapeHtml(s.author_name || 'Community Member')} — ${escapeHtml(s.category || 'Story')}</div>
-                            <p>${escapeHtml((s.content || '').slice(0, 160))}</p>
-                            <div style="margin-top:0.75rem; display:flex; gap:1rem; font-size:0.85rem; color:var(--text-light);">
-                                <span><i class="bi bi-heart" style="color:var(--error-color);"></i> ${s.like_count || 0}</span>
-                                <span><i class="bi bi-chat-dots"></i> ${s.comment_count || 0}</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                storyGrid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">No stories shared yet.</p>';
-            }
-
-            // Challenges — static fallback (no backend yet)
-            const challengeData = [
-                { name: 'Spring Centerpiece Challenge', participants: 342, entries: 89, endsIn: '12 days', prize: 'Featured on homepage', description: 'Create your best spring-themed centerpiece using at least three seasonal flowers. Share your process and final arrangement.' },
-                { name: 'Best Rose Photo', participants: 215, entries: 56, endsIn: '5 days', prize: '$50 gift card', description: 'Capture the most stunning rose photograph. Any variety, any setting. Judged on composition, lighting, and creativity.' },
-                { name: '30-Day Flower Journal', participants: 128, entries: 0, endsIn: 'Starts in 3 days', prize: 'Premium plan upgrade', description: 'Document your garden or flower care routine for 30 consecutive days. Share weekly updates and a final recap.' }
-            ];
-            const challengeGrid = document.getElementById('challengeGrid');
-            challengeGrid.innerHTML = challengeData.map(c => `
-                <div class="challenge-card">
-                    <div class="challenge-icon">🏆</div>
-                    <h3>${escapeHtml(c.name)}</h3>
-                    <div class="challenge-meta">
-                        <span><i class="bi bi-people"></i> ${c.participants} participants</span> — 
-                        <span>${c.entries} entries</span> — 
-                        <span>Ends ${escapeHtml(c.endsIn)}</span>
-                    </div>
-                    <p>${escapeHtml(c.description)}</p>
-                    <div style="margin-top:1rem; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.8rem; color:var(--text-light);"><i class="bi bi-gift"></i> ${escapeHtml(c.prize)}</span>
-                        <a href="community.html" class="btn btn-primary btn-sm">Join Challenge</a>
-                    </div>
-                </div>
-            `).join('');
-        })();
-
-        function placeholderImg(seed) {
-            const colors = ['FF5FA2','e84393','6C5CE7','00B894','FDCB6E','E17055','0984E3'];
-            const c = colors[(seed || 0) % colors.length];
-            return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect fill="#${c}" width="400" height="300" rx="12"/><text x="200" y="170" text-anchor="middle" fill="white" font-size="60" font-family="Arial" font-weight="bold">F</text></svg>`)}`;
-        }
-        function escapeAttr(s) { return (s || '').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
-    </script>
-    <script>
-        document.querySelectorAll('.nav-dropdown > .dropdown-toggle').forEach(toggle => {
-            toggle.addEventListener('click', function(e) {
-                if (window.innerWidth <= 768) {
-                    e.preventDefault();
-                    this.parentElement.classList.toggle('mobile-open');
-                }
-            });
-        });
-    </script>
+    <script src="js/community.js?v=1.0"></script>
 </body>
 </html>

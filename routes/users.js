@@ -4,7 +4,7 @@ const { pool, dbAvailable, asyncHandler, requireAuth } = require('./middleware')
 router.get('/:id', asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Service unavailable' });
     const r = await pool.query(
-        'SELECT id, first_name, last_name, role, created_at, profile_image, description FROM auth.users WHERE id = $1',
+        'SELECT id, first_name, last_name, role, created_at, profile_image, cover_image, description, location, city, website, social_instagram, social_facebook, social_twitter FROM auth.users WHERE id = $1',
         [req.params.id]
     );
     if (!r.rows.length) return res.status(404).json({ error: 'User not found' });
@@ -14,24 +14,28 @@ router.get('/:id', asyncHandler(async (req, res) => {
 router.get('/:id/stats', asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Service unavailable' });
     const uid = req.params.id;
-    const counts = { discussions: 0, questions: 0, stories: 0, reviews: 0 };
+    const counts = { discussions: 0, questions: 0, stories: 0, reviews: 0, showcase: 0 };
 
     try {
-        const dr = await pool.query('SELECT COUNT(*)::int AS c FROM community.discussions WHERE author_id = $1', [uid]);
+        const dr = await pool.query('SELECT COUNT(*)::int AS c FROM community.discussions WHERE user_id = $1', [uid]);
         counts.discussions = dr.rows[0].c;
-    } catch {}
+    } catch { console.error('Stats discussions error:', uid); }
     try {
-        const qr = await pool.query('SELECT COUNT(*)::int AS c FROM qa.questions WHERE author_id = $1', [uid]);
+        const qr = await pool.query('SELECT COUNT(*)::int AS c FROM qa.questions WHERE user_id = $1', [uid]);
         counts.questions = qr.rows[0].c;
-    } catch {}
+    } catch { console.error('Stats questions error:', uid); }
     try {
-        const sr = await pool.query('SELECT COUNT(*)::int AS c FROM community.stories WHERE author_id = $1', [uid]);
+        const sr = await pool.query('SELECT COUNT(*)::int AS c FROM community.stories WHERE user_id = $1', [uid]);
         counts.stories = sr.rows[0].c;
-    } catch {}
+    } catch { console.error('Stats stories error:', uid); }
     try {
         const rr = await pool.query('SELECT COUNT(*)::int AS c FROM marketplace.reviews WHERE user_id = $1', [uid]);
         counts.reviews = rr.rows[0].c;
-    } catch {}
+    } catch (err) { console.error('Stats reviews error:', err.message); }
+    try {
+        const scr = await pool.query("SELECT COUNT(*)::int AS c FROM community.posts WHERE user_id = $1 AND post_type = 'showcase'", [uid]);
+        counts.showcase = scr.rows[0].c;
+    } catch { console.error('Stats showcase error:', uid); }
 
     res.json(counts);
 }));
@@ -42,7 +46,7 @@ router.get('/:id/discussions', asyncHandler(async (req, res) => {
         const r = await pool.query(
             `SELECT d.id, d.title, d.content, d.created_at, d.views,
                     (SELECT COUNT(*)::int FROM community.discussion_comments WHERE discussion_id = d.id) AS reply_count
-             FROM community.discussions d WHERE d.author_id = $1 ORDER BY d.created_at DESC LIMIT 20`,
+             FROM community.discussions d WHERE d.user_id = $1 ORDER BY d.created_at DESC LIMIT 20`,
             [req.params.id]
         );
         res.json({ discussions: r.rows });
@@ -55,7 +59,7 @@ router.get('/:id/questions', asyncHandler(async (req, res) => {
         const r = await pool.query(
             `SELECT q.id, q.title, q.content, q.created_at, q.views,
                     (SELECT COUNT(*)::int FROM qa.answers WHERE question_id = q.id) AS answer_count
-             FROM qa.questions q WHERE q.author_id = $1 ORDER BY q.created_at DESC LIMIT 20`,
+             FROM qa.questions q WHERE q.user_id = $1 ORDER BY q.created_at DESC LIMIT 20`,
             [req.params.id]
         );
         res.json({ questions: r.rows });
@@ -67,11 +71,67 @@ router.get('/:id/stories', asyncHandler(async (req, res) => {
     try {
         const r = await pool.query(
             `SELECT s.id, s.title, s.content, s.created_at, s.views, s.like_count
-             FROM community.stories s WHERE s.author_id = $1 ORDER BY s.created_at DESC LIMIT 20`,
+             FROM community.stories s WHERE s.user_id = $1 ORDER BY s.created_at DESC LIMIT 20`,
             [req.params.id]
         );
         res.json({ stories: r.rows });
     } catch { res.json({ stories: [] }); }
+}));
+
+router.get('/:id/showcase', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Service unavailable' });
+    try {
+        const r = await pool.query(
+            `SELECT p.id, p.title, p.content, p.created_at, p.media_urls,
+                    (SELECT COUNT(*)::int FROM community.comments WHERE post_id = p.id) AS comment_count
+             FROM community.posts p WHERE p.user_id = $1 AND p.post_type = 'showcase' ORDER BY p.created_at DESC LIMIT 50`,
+            [req.params.id]
+        );
+        res.json({ showcase: r.rows.map(p => ({ ...p, images: p.media_urls || [] })) });
+    } catch { res.json({ showcase: [] }); }
+}));
+
+// ─── Members directory ────────────────────────────────────────
+router.get('/list/members', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json({ members: [], total: 0 });
+    const { role, search, sort = 'recent', page = 1, limit = 24 } = req.query;
+    const pg = Math.max(1, parseInt(page) || 1);
+    const lim = Math.min(100, Math.max(1, parseInt(limit) || 24));
+    const offset = (pg - 1) * lim;
+
+    try {
+        const conditions = ['u.is_active = true'];
+        const values = [];
+        let idx = 1;
+        if (role) { conditions.push(`u.role = $${idx}`); values.push(role.toUpperCase()); idx++; }
+        if (search) { conditions.push(`(u.first_name ILIKE $${idx} OR u.last_name ILIKE $${idx} OR u.business_name ILIKE $${idx})`); values.push(`%${search}%`); idx++; }
+
+        const where = 'WHERE ' + conditions.join(' AND ');
+        const sortMap = {
+            recent: 'u.created_at DESC',
+            name: 'u.first_name ASC',
+            discussions: '(SELECT COUNT(*) FROM community.discussions WHERE user_id = u.id) DESC',
+            answers: '(SELECT COUNT(*) FROM qa.answers WHERE user_id = u.id) DESC',
+            showcase: "(SELECT COUNT(*) FROM community.posts WHERE user_id = u.id AND post_type = 'showcase') DESC"
+        };
+        const orderBy = sortMap[sort] || 'u.created_at DESC';
+
+        const countR = await pool.query(`SELECT COUNT(*)::int AS c FROM auth.users u ${where}`, values);
+        const total = countR.rows[0].c;
+        values.push(lim); values.push(offset);
+
+        const r = await pool.query(`
+            SELECT u.id, u.first_name, u.last_name, u.profile_image, u.role, u.business_name, u.description, u.location, u.created_at,
+                (SELECT COUNT(*)::int FROM community.discussions WHERE user_id = u.id) AS discussions,
+                (SELECT COUNT(*)::int FROM qa.questions WHERE user_id = u.id) AS questions,
+                (SELECT COUNT(*)::int FROM community.stories WHERE user_id = u.id) AS stories,
+                (SELECT COUNT(*)::int FROM community.posts WHERE user_id = u.id AND post_type = 'showcase') AS showcase
+            FROM auth.users u ${where}
+            ORDER BY ${orderBy}
+            LIMIT $${idx} OFFSET $${idx + 1}`, values);
+        return res.json({ members: r.rows, total, page: pg, pages: Math.ceil(total / lim) });
+    } catch (err) { console.error('Members list error:', err.message); }
+    res.json({ members: [], total: 0 });
 }));
 
 router.get('/:id/reviews', asyncHandler(async (req, res) => {
@@ -97,20 +157,20 @@ router.get('/:id/contributions', asyncHandler(async (req, res) => {
     try {
         const dr = await pool.query(
             `SELECT d.title, (SELECT COUNT(*)::int FROM community.discussion_comments WHERE discussion_id = d.id) AS score
-             FROM community.discussions d WHERE d.author_id = $1 ORDER BY score DESC LIMIT 5`,
+             FROM community.discussions d WHERE d.user_id = $1 ORDER BY score DESC LIMIT 5`,
             [uid]
         );
         dr.rows.forEach(r => items.push({ title: r.title, count: r.score, type: 'discussion' }));
-    } catch {}
+    } catch { console.error('Contributions discussions error:', uid); }
 
     try {
         const qr = await pool.query(
             `SELECT q.title, (SELECT COUNT(*)::int FROM qa.answers WHERE question_id = q.id) AS score
-             FROM qa.questions q WHERE q.author_id = $1 ORDER BY score DESC LIMIT 5`,
+             FROM qa.questions q WHERE q.user_id = $1 ORDER BY score DESC LIMIT 5`,
             [uid]
         );
         qr.rows.forEach(r => items.push({ title: r.title, count: r.score, type: 'question' }));
-    } catch {}
+    } catch { console.error('Contributions questions error:', uid); }
 
     items.sort((a, b) => b.count - a.count);
     res.json({ contributions: items.slice(0, 5) });

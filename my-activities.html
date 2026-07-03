@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Activities - Flower Ecosystem</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        :root {
+            --accent-pink: #ec4899;
+            --accent-gold: #f59e0b;
+            --accent-green: #10b981;
+            --accent-blue: #0ea5e9;
+            --accent-purple: #8b5cf6;
+            --accent-teal: #14b8a6;
+            --radius-lg: 20px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+        }
+        .ma-page { padding: 2rem 0; }
+        .ma-container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+        .ma-hero { position: relative; border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 2rem; background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fbcfe8 100%); border: 1px solid #f9a8d4; padding: 0; }
+        .ma-hero-cover { height: 140px; background: linear-gradient(135deg, #ec4899, #d946ef); }
+        .ma-hero-body { padding: 1.5rem 2rem; display: flex; align-items: flex-start; gap: 1.5rem; margin-top: -50px; position: relative; }
+        .ma-avatar { width: 90px; height: 90px; border-radius: 50%; border: 4px solid white; background: var(--bg-white); box-shadow: var(--shadow-md); overflow: hidden; flex-shrink: 0; }
+        .ma-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .ma-avatar .placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-muted); background: var(--bg-light); }
+        .ma-hero-info { flex: 1; padding-top: 0.5rem; }
+        .ma-hero-info h1 { font-size: 1.5rem; margin: 0; }
+        .ma-hero-info .ma-role { font-size: 0.85rem; color: var(--text-light); }
+        .ma-hero-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.3rem; }
+        .ma-hero-row .badge-item { font-size: 0.78rem; }
+        .ma-hero-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
+        .ma-hero-actions .btn { font-size: 0.82rem; padding: 0.45rem 0.9rem; }
+
+        .ma-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+        .stat-card { background: var(--bg-white); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 1rem; display: flex; align-items: center; gap: 0.75rem; transition: all 0.2s; }
+        .stat-card:hover { border-color: var(--primary-color); box-shadow: var(--shadow-sm); }
+        .stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+        .stat-body { min-width: 0; }
+        .stat-value { font-size: 1.1rem; font-weight: 700; line-height: 1.2; }
+        .stat-label { font-size: 0.75rem; color: var(--text-muted); }
+
+        .ma-tabs { display: flex; gap: 0.25rem; overflow-x: auto; margin-bottom: 1.5rem; background: var(--bg-white); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 0.35rem; }
+        .ma-tab { padding: 0.55rem 1rem; border: none; background: transparent; border-radius: 8px; font-size: 0.82rem; font-weight: 500; color: var(--text-light); cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+        .ma-tab:hover { background: var(--bg-light); color: var(--text-main); }
+        .ma-tab.active { background: var(--primary-color); color: white; }
+
+        .ma-content { min-height: 300px; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        .tab-panel-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .tab-panel-title .view-all { margin-left: auto; font-size: 0.82rem; font-weight: 400; }
+
+        .tl-item { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--border-light); cursor: pointer; transition: background 0.2s; }
+        .tl-item:hover { background: var(--bg-light); margin: 0 -1rem; padding: 1rem; border-radius: var(--radius-sm); }
+        .tl-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+        .tl-body { flex: 1; min-width: 0; }
+        .tl-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.2rem; }
+        .tl-type { font-size: 0.78rem; font-weight: 600; }
+        .tl-date { font-size: 0.72rem; color: var(--text-muted); }
+        .tl-text { font-size: 0.85rem; color: var(--text-main); }
+        .tl-title { font-size: 0.82rem; color: var(--text-light); font-style: italic; margin-top: 0.1rem; }
+
+        .content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem; }
+        .content-card { background: var(--bg-white); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 1rem; cursor: pointer; transition: all 0.2s; }
+        .content-card:hover { border-color: var(--primary-color); box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+        .content-card-body { min-width: 0; }
+        .content-card-title { font-size: 0.88rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .content-card-meta { display: flex; gap: 1rem; font-size: 0.78rem; color: var(--text-muted); align-items: center; }
+        .solved-badge { display: inline-block; font-size: 0.72rem; color: var(--accent-green); font-weight: 500; margin-left: 0.4rem; }
+        .event-status { font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 500; }
+        .event-status.upcoming { background: #dbeafe; color: #2563eb; }
+        .event-status.completed { background: #d1fae5; color: #059669; }
+        .club-role-badge { font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 500; }
+
+        .showcase-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; }
+        .sc-item { border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; }
+        .sc-item:hover { border-color: var(--primary-color); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+        .sc-item img { width: 100%; height: 140px; object-fit: cover; display: block; }
+        .sc-placeholder { width: 100%; height: 140px; background: var(--bg-light); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--text-muted); }
+        .sc-label { padding: 0.5rem; font-size: 0.78rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .saved-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .saved-item { background: var(--bg-white); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 0.85rem 1rem; cursor: pointer; transition: all 0.2s; }
+        .saved-item:hover { border-color: var(--primary-color); }
+        .saved-item-title { font-size: 0.88rem; font-weight: 600; margin-bottom: 0.25rem; }
+        .saved-item-excerpt { font-size: 0.8rem; color: var(--text-light); margin-bottom: 0.35rem; }
+        .saved-item-author { font-size: 0.75rem; color: var(--text-muted); }
+        .saved-item-meta { display: flex; gap: 1rem; font-size: 0.75rem; color: var(--text-muted); }
+
+        .ach-grid { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+        .ach-badge { text-align: center; width: 110px; padding: 0.75rem 0.5rem; background: var(--bg-white); border: 1px solid var(--border-light); border-radius: var(--radius-sm); transition: all 0.2s; }
+        .ach-badge:hover { border-color: var(--primary-color); box-shadow: var(--shadow-sm); }
+        .ach-badge-icon { font-size: 1.8rem; margin-bottom: 0.35rem; border: 2px solid; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.35rem; }
+        .ach-badge-name { font-size: 0.75rem; font-weight: 600; margin-bottom: 0.15rem; }
+        .ach-badge-level { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .rep-progress { background: var(--bg-white); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 1.5rem; }
+        .rep-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+        .rep-level { font-size: 1.1rem; font-weight: 700; }
+        .rep-xp { font-size: 0.85rem; color: var(--text-light); }
+        .rep-bar-wrap { height: 10px; background: var(--bg-light); border-radius: 999px; overflow: hidden; margin-bottom: 0.75rem; }
+        .rep-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-pink), #d946ef); border-radius: 999px; transition: width 0.5s; }
+        .rep-ways { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+        .rep-way { font-size: 0.72rem; background: var(--bg-light); padding: 0.2rem 0.6rem; border-radius: 999px; color: var(--text-muted); }
+
+        .notif-list { display: flex; flex-direction: column; gap: 0.35rem; }
+        .notif-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 1rem; background: var(--bg-white); border: 1px solid var(--border-light); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s; }
+        .notif-item.unread { border-left: 3px solid var(--accent-pink); }
+        .notif-item:hover { border-color: var(--primary-color); }
+        .notif-icon { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-light); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: var(--text-muted); flex-shrink: 0; }
+        .notif-body { flex: 1; min-width: 0; }
+        .notif-text { font-size: 0.82rem; }
+        .notif-time { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem; }
+        .notif-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-pink); flex-shrink: 0; margin-top: 12px; }
+
+        .heatmap { background: var(--bg-white); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1.5rem; overflow-x: auto; }
+        .heatmap-header { font-size: 0.88rem; font-weight: 600; margin-bottom: 0.75rem; }
+        .heatmap-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; max-width: 400px; }
+        .hm-day-label { font-size: 0.65rem; color: var(--text-muted); text-align: center; padding: 2px 0; }
+        .hm-cell { width: 100%; aspect-ratio: 1; border-radius: 3px; min-height: 20px; }
+        .hm-cell.empty { background: transparent; }
+        .hm-cell.level-0 { background: var(--bg-light); }
+        .hm-cell.level-1 { background: #fce7f3; }
+        .hm-cell.level-2 { background: #fbcfe8; }
+        .hm-cell.level-3 { background: #f9a8d4; }
+        .hm-cell.level-4 { background: #ec4899; }
+        .hm-legend { display: flex; align-items: center; gap: 3px; margin-top: 0.5rem; font-size: 0.65rem; color: var(--text-muted); }
+        .hm-legend .hm-cell { width: 16px; min-height: 16px; }
+
+        .analytics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
+        .analytic-card { background: var(--bg-white); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 1.25rem; text-align: center; }
+        .analytic-value { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin-bottom: 0.2rem; }
+        .analytic-label { font-size: 0.78rem; color: var(--text-muted); }
+        .analytic-card .top-link { font-size: 0.75rem; color: var(--accent-pink); text-decoration: none; display: block; margin-top: 0.3rem; }
+
+        .privacy-section { background: var(--bg-white); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 1.5rem; }
+        .privacy-section h3 { font-size: 1rem; margin-bottom: 1rem; }
+        .privacy-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0; cursor: pointer; font-size: 0.85rem; }
+        .privacy-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent-pink); }
+        .privacy-label { color: var(--text-main); }
+
+        .btn-sm { font-size: 0.82rem; padding: 0.45rem 0.9rem; }
+        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-light); }
+        .empty-state i { font-size: 2.5rem; display: block; margin-bottom: 0.75rem; }
+        .empty-state p { font-size: 0.88rem; margin-bottom: 1rem; }
+
+        .loading-spinner { text-align: center; padding: 3rem; color: var(--text-light); }
+        .loading-spinner .spinner { margin: 0 auto 0.75rem; width: 28px; height: 28px; border: 3px solid var(--border-color); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 0.8s linear infinite; }
+
+        .timeline-load-more { text-align: center; padding: 1rem; }
+        .timeline-load-more .btn { font-size: 0.82rem; }
+
+        .events-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media (max-width: 640px) { .ma-hero-body { flex-direction: column; align-items: center; text-align: center; } .ma-hero-row { justify-content: center; } .ma-hero-actions { justify-content: center; } .ma-stats { grid-template-columns: repeat(2, 1fr); } .content-grid { grid-template-columns: 1fr; } .showcase-grid { grid-template-columns: repeat(2, 1fr); } .events-split { grid-template-columns: 1fr; } .analytics-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div class="ma-page">
+        <div class="ma-container">
+            <!-- Hero / Profile Summary -->
+            <div class="ma-hero" id="maHero" style="display:none;">
+                <div class="ma-hero-cover"></div>
+                <div class="ma-hero-body">
+                    <div class="ma-avatar" id="maAvatar"><div class="placeholder"><i class="bi bi-person"></i></div></div>
+                    <div class="ma-hero-info">
+                        <h1 id="maName">Loading...</h1>
+                        <div class="ma-role" id="maRole"></div>
+                        <div class="ma-hero-row" id="maHeroRow">
+                            <span id="maStars"></span>
+                            <span id="maLevel" class="badge-item"></span>
+                            <span id="maRepText" style="font-size:0.82rem;color:var(--text-muted);"></span>
+                        </div>
+                        <div class="ma-hero-actions">
+                            <a href="create-post.html" class="btn btn-sm"><i class="bi bi-pencil"></i> Create Post</a>
+                            <a href="upload-showcase.html" class="btn btn-sm btn-outline"><i class="bi bi-images"></i> Upload Showcase</a>
+                            <a href="create-discussion.html" class="btn btn-sm btn-outline"><i class="bi bi-chat-dots"></i> Start Discussion</a>
+                            <a href="events.html" class="btn btn-sm btn-outline"><i class="bi bi-calendar-plus"></i> Join Event</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div id="maLoading" style="text-align:center;padding:4rem 0;">
+                <div class="spinner" style="margin:0 auto 0.75rem;width:32px;height:32px;border:3px solid var(--border-color);border-top-color:var(--primary-color);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+                <p style="color:var(--text-light);">Loading your activities...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="maEmpty" style="display:none;">
+                <div class="empty-state">
+                    <i class="bi bi-flower2" style="font-size:3rem;color:var(--accent-pink);"></i>
+                    <p style="font-size:1rem;color:var(--text-main);font-weight:500;">You haven't started contributing yet.</p>
+                    <p style="font-size:0.85rem;">Create your first post, join a discussion, or upload your first showcase.</p>
+                    <div style="display:flex;gap:0.75rem;justify-content:center;margin-top:1rem;">
+                        <a href="create-post.html" class="btn"><i class="bi bi-pencil"></i> Create Post</a>
+                        <a href="community.html" class="btn btn-outline"><i class="bi bi-people"></i> Explore Community</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div id="maMain" style="display:none;">
+                <!-- Activity Statistics -->
+                <div class="ma-stats" id="maStats"></div>
+
+                <!-- Reputation Progress -->
+                <div id="maRepSection"></div>
+
+                <!-- Tabs -->
+                <div class="ma-tabs">
+                    <button class="ma-tab active" data-tab="overview"><i class="bi bi-house"></i> Overview</button>
+                    <button class="ma-tab" data-tab="posts"><i class="bi bi-file-text"></i> Posts</button>
+                    <button class="ma-tab" data-tab="discussions"><i class="bi bi-chat-dots"></i> Discussions</button>
+                    <button class="ma-tab" data-tab="showcase-tab"><i class="bi bi-images"></i> Showcase</button>
+                    <button class="ma-tab" data-tab="events"><i class="bi bi-calendar-event"></i> Events</button>
+                    <button class="ma-tab" data-tab="clubs"><i class="bi bi-people"></i> Clubs</button>
+                    <button class="ma-tab" data-tab="saved"><i class="bi bi-bookmark"></i> Saved</button>
+                    <button class="ma-tab" data-tab="achievements"><i class="bi bi-trophy"></i> Achievements</button>
+                </div>
+
+                <div class="ma-content">
+                    <!-- Overview Tab -->
+                    <div class="tab-panel active" id="tab-overview">
+                        <div class="tab-panel-title"><i class="bi bi-clock-history" style="color:var(--accent-pink);"></i> Recent Activity</div>
+                        <div id="maTimeline"></div>
+                        <div class="timeline-load-more" id="tlMore" style="display:none;">
+                            <button class="btn btn-outline btn-sm" onclick="loadTimeline()"><i class="bi bi-arrow-down"></i> Load More</button>
+                        </div>
+
+                        <div class="tab-panel-title" style="margin-top:1.5rem;"><i class="bi bi-bell" style="color:var(--accent-gold);"></i> Recent Notifications</div>
+                        <div id="maNotifications"></div>
+
+                        <div class="tab-panel-title" style="margin-top:1.5rem;"><i class="bi bi-calendar-heart" style="color:var(--accent-green);"></i> Activity Calendar</div>
+                        <div id="maHeatmap"></div>
+
+                        <div class="tab-panel-title" style="margin-top:1.5rem;"><i class="bi bi-graph-up" style="color:var(--accent-purple);"></i> Analytics</div>
+                        <div id="maAnalytics"></div>
+                    </div>
+
+                    <!-- Posts Tab -->
+                    <div class="tab-panel" id="tab-posts">
+                        <div class="tab-panel-title"><i class="bi bi-file-text" style="color:var(--accent-blue);"></i> My Posts <a href="feed.html?mine=1" class="view-all btn btn-sm btn-outline">View All</a></div>
+                        <div id="maPosts" class="content-grid"></div>
+                    </div>
+
+                    <!-- Discussions Tab -->
+                    <div class="tab-panel" id="tab-discussions">
+                        <div class="tab-panel-title"><i class="bi bi-chat-dots" style="color:var(--accent-blue);"></i> My Discussions <a href="discussions.html?mine=1" class="view-all btn btn-sm btn-outline">View All</a></div>
+                        <div id="maDiscussions" class="content-grid"></div>
+                    </div>
+
+                    <!-- Showcase Tab -->
+                    <div class="tab-panel" id="tab-showcase-tab">
+                        <div class="tab-panel-title"><i class="bi bi-images" style="color:var(--accent-pink);"></i> My Showcase <a href="showcase.html?mine=1" class="view-all btn btn-sm btn-outline">View All</a></div>
+                        <div id="maShowcase"></div>
+                    </div>
+
+                    <!-- Events Tab -->
+                    <div class="tab-panel" id="tab-events">
+                        <div class="tab-panel-title"><i class="bi bi-calendar-event" style="color:var(--accent-purple);"></i> My Events</div>
+                        <div class="events-split" id="maEvents"></div>
+                    </div>
+
+                    <!-- Clubs Tab -->
+                    <div class="tab-panel" id="tab-clubs">
+                        <div class="tab-panel-title"><i class="bi bi-people" style="color:var(--accent-teal);"></i> My Clubs <a href="clubs.html" class="view-all btn btn-sm btn-outline">Browse Clubs</a></div>
+                        <div id="maClubs" class="content-grid"></div>
+                    </div>
+
+                    <!-- Saved Tab -->
+                    <div class="tab-panel" id="tab-saved">
+                        <div class="tab-panel-title"><i class="bi bi-bookmark" style="color:var(--accent-gold);"></i> Saved Content</div>
+                        <div id="maSavedPosts" style="margin-bottom:1rem;"><h4 style="font-size:0.88rem;color:var(--text-muted);margin-bottom:0.5rem;">Saved Posts</h4></div>
+                        <div id="maSavedStories" style="margin-bottom:1rem;"><h4 style="font-size:0.88rem;color:var(--text-muted);margin-bottom:0.5rem;">Saved Stories</h4></div>
+                    </div>
+
+                    <!-- Achievements Tab -->
+                    <div class="tab-panel" id="tab-achievements">
+                        <div class="tab-panel-title"><i class="bi bi-trophy" style="color:var(--accent-gold);"></i> Achievements & Badges</div>
+                        <div id="maAchievements" class="ach-grid"></div>
+                    </div>
+                </div>
+
+                <!-- Privacy Settings -->
+                <div style="margin-top:2rem;">
+                    <div class="privacy-section">
+                        <h3><i class="bi bi-shield-lock"></i> Privacy Settings</h3>
+                        <div id="maPrivacy"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/ui.js?v=2.0"></script>
+    <script src="js/shared/cart.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/components/activity-components.js?v=1.0"></script>
+    <script src="js/my-activities.js?v=1.0"></script>
+</body>
+</html>

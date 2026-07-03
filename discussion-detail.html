@@ -65,6 +65,19 @@
         .related-list a { font-size:0.85rem; color:var(--text-main); text-decoration:none; display:block; }
         .related-list a:hover { color:var(--primary-color); }
         @media(max-width:1024px) { .detail-layout { grid-template-columns:1fr; } .detail-sidebar { display:none; } }
+        @media(max-width:640px) {
+            .disc-detail-card { padding:1rem; }
+            .disc-detail-meta h1 { font-size:1.15rem; }
+            .disc-detail-header { flex-direction:column; gap:0.75rem; }
+            .disc-detail-avatar { width:40px; height:40px; }
+            .disc-detail-images img { max-width:100%; max-height:180px; }
+            .disc-detail-footer { flex-direction:column; align-items:flex-start; gap:0.75rem; }
+            .disc-detail-stats { font-size:0.8rem; }
+            .comment-card { grid-template-columns:auto 1fr; padding:0.75rem; }
+            .vote-controls:last-child { display:none; }
+            .reply-box textarea { min-height:80px; font-size:0.85rem; }
+            .section-padding { padding-left:1rem; padding-right:1rem; }
+        }
     </style>
 </head>
 <body>
@@ -83,6 +96,7 @@
                         <h3><i class="bi bi-link-45deg" style="color:var(--primary-color)"></i> Related Discussions</h3>
                         <ul class="related-list" id="relatedList"></ul>
                     </div>
+                    <div id="relatedContent"></div>
                 </div>
             </div>
         </div>

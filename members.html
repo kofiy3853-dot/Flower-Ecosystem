@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover community members on Flower Ecosystem — florists, growers, designers, and flower enthusiasts from around the world.">
+    <title>Members | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* ─── Hero ─────────────────────────────────────── */
+        .mb-hero { position:relative;padding:5rem 0 3rem;margin-top:65px;background:linear-gradient(135deg,#FFF0F5 0%,#FFE4EC 30%,#fdf2f8 60%,white 100%);overflow:hidden; }
+        .mb-hero::before { content:'';position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=1600&auto=format&fit=crop') center/cover;opacity:0.06; }
+        .mb-hero-inner { position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap; }
+        .mb-hero-text { max-width:520px; }
+        .mb-hero-text h1 { font-family:'Playfair Display',serif;font-size:2.4rem;margin-bottom:0.5rem; }
+        .mb-hero-text p { font-size:1.05rem;color:var(--text-light);line-height:1.7;margin-bottom:1.25rem; }
+        .mb-hero-actions { display:flex;gap:0.75rem;flex-wrap:wrap; }
+        .mb-hero-visual { width:280px;height:200px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 8px 32px rgba(216,68,124,0.15); }
+        .mb-hero-visual img { width:100%;height:100%;object-fit:cover; }
+
+        /* ─── Stats ─────────────────────────────────────── */
+        .mb-stats { display:grid;grid-template-columns:repeat(6,1fr);gap:1rem;margin-bottom:2.5rem; }
+        .mb-stat-card { background:var(--bg-white);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:1rem;text-align:center;transition:all 0.2s; }
+        .mb-stat-card:hover { border-color:var(--primary-color);transform:translateY(-2px); }
+        .mb-stat-card .num { font-size:1.5rem;font-weight:700;color:var(--primary-color); }
+        .mb-stat-card .label { font-size:0.75rem;color:var(--text-light);margin-top:0.15rem; }
+
+        /* ─── Search & Filters ──────────────────────────── */
+        .mb-toolbar { display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;margin-bottom:1.5rem; }
+        .mb-search-wrap { display:flex;gap:0.5rem;flex:1;min-width:200px;max-width:400px; }
+        .mb-search-wrap input { flex:1;padding:0.6rem 1rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:0.88rem;background:var(--bg-white);color:var(--text-main); }
+        .mb-search-wrap input:focus { outline:none;border-color:var(--primary-color); }
+        .mb-filter-select { padding:0.55rem 0.75rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:0.82rem;background:var(--bg-white);color:var(--text-main);cursor:pointer; }
+        .mb-filter-select:focus { outline:none;border-color:var(--primary-color); }
+        .mb-sort-tabs { display:flex;gap:0.25rem;background:var(--bg-light);border-radius:var(--radius-sm);padding:0.25rem;width:fit-content; }
+        .mb-sort-tab { padding:0.4rem 0.7rem;border-radius:var(--radius-sm);font-size:0.78rem;cursor:pointer;color:var(--text-light);border:none;background:none;white-space:nowrap; }
+        .mb-sort-tab.active { background:var(--bg-white);color:var(--text-main);box-shadow:var(--shadow-xs); }
+
+        /* ─── Featured Members ──────────────────────────── */
+        .mb-featured-section { margin-bottom:2.5rem; }
+        .mb-featured-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem; }
+        .mb-featured-card { background:var(--bg-white);border:1px solid var(--border-color);border-radius:var(--radius-md);overflow:hidden;transition:all 0.25s;position:relative; }
+        .mb-featured-card:hover { transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--primary-color); }
+        .mb-featured-bg { height:80px;background:linear-gradient(135deg,var(--primary-light),#fce7f3); }
+        .mb-featured-body { padding:0 1.25rem 1.25rem;text-align:center;margin-top:-40px; }
+        .mb-featured-avatar { width:72px;height:72px;border-radius:50%;margin:0 auto 0.75rem;position:relative;display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:var(--primary-color);background:var(--bg-light);overflow:hidden;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.1);cursor:pointer; }
+        .mb-featured-avatar img { width:100%;height:100%;object-fit:cover; }
+        .mb-featured-avatar .mb-card-verified { position:absolute;bottom:-2px;right:-4px;font-size:1rem;color:var(--accent-blue); }
+        .mb-featured-card h3 { font-size:1rem;font-weight:600;margin-bottom:0.2rem; }
+        .mb-featured-stars { font-size:0.82rem;color:var(--accent-gold);margin-bottom:0.35rem; }
+        .mb-featured-meta { display:flex;justify-content:center;gap:0.75rem;font-size:0.78rem;color:var(--text-muted);margin-bottom:0.35rem; }
+        .mb-featured-body p { font-size:0.82rem;color:var(--text-light);line-height:1.5;margin-bottom:0.75rem; }
+        .mb-featured-actions { display:flex;gap:0.5rem;justify-content:center; }
+
+        /* ─── Member Cards ──────────────────────────────── */
+        .mb-count { font-size:0.85rem;color:var(--text-muted);margin-bottom:0.75rem; }
+        .mb-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:2rem; }
+        .mb-card { background:var(--bg-white);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:1.25rem;text-align:center;transition:all 0.25s;display:flex;flex-direction:column;align-items:center;gap:0.3rem; }
+        .mb-card:hover { transform:translateY(-3px);border-color:var(--primary-color);box-shadow:var(--shadow-sm); }
+        .mb-card-avatar { width:64px;height:64px;border-radius:50%;background:var(--primary-light);position:relative;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--primary-color);overflow:hidden;cursor:pointer;flex-shrink:0;margin-bottom:0.25rem; }
+        .mb-card-avatar img { width:100%;height:100%;object-fit:cover; }
+        .mb-card-initial { font-weight:600; }
+        .mb-card-verified { position:absolute;bottom:-2px;right:-2px;font-size:0.9rem;color:var(--accent-blue);background:white;border-radius:50%;line-height:1; }
+        .mb-card-name { font-size:0.92rem;font-weight:600;cursor:pointer; }
+        .mb-card-name:hover { color:var(--primary-color); }
+        .mb-card-role { display:inline-block;font-size:0.68rem;font-weight:600;padding:0.15rem 0.5rem;border-radius:50px;margin-bottom:0.15rem; }
+        .mb-card-location { font-size:0.77rem;color:var(--text-muted); }
+        .mb-card-stats { display:flex;gap:0.5rem;font-size:0.75rem;color:var(--text-muted);margin-bottom:0.2rem; }
+        .mb-card-bio { font-size:0.77rem;color:var(--text-light);line-height:1.4;margin-bottom:0.5rem;max-height:2.8em;overflow:hidden; }
+        .mb-card-actions { display:flex;gap:0.35rem;margin-top:auto;padding-top:0.5rem;width:100%;justify-content:center; }
+        .mb-card-actions .btn { font-size:0.72rem;padding:0.35rem 0.75rem; }
+        .mb-follow-btn { width:32px;height:32px;padding:0 !important;display:flex;align-items:center;justify-content:center;border-radius:50% !important; }
+
+        /* ─── Sidebar Sections ──────────────────────────── */
+        .mb-layout { display:grid;grid-template-columns:1fr 300px;gap:2rem;align-items:start; }
+        .mb-sidebar { display:flex;flex-direction:column;gap:1.25rem; }
+
+        .mb-sidebar-card { background:var(--bg-white);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:1.25rem; }
+        .mb-sidebar-card h3 { font-size:0.9rem;font-weight:600;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.35rem; }
+        .mb-sidebar-card h3 i { color:var(--primary-color); }
+
+        .mb-top-item { display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--border-light);cursor:pointer;transition:all 0.2s; }
+        .mb-top-item:last-child { border-bottom:none; }
+        .mb-top-item:hover { padding-left:0.25rem; }
+        .mb-top-rank { width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;background:var(--bg-light);color:var(--text-light);flex-shrink:0; }
+        .mb-top-rank.gold { background:#fef3c7;color:#d97706; }
+        .mb-top-rank.silver { background:#f1f5f9;color:#64748b; }
+        .mb-top-rank.bronze { background:#fed7aa;color:#c2410c; }
+        .mb-top-avatar { width:32px;height:32px;border-radius:50%;background:var(--bg-light);display:flex;align-items:center;justify-content:center;font-size:0.75rem;overflow:hidden;flex-shrink:0; }
+        .mb-top-avatar img { width:100%;height:100%;object-fit:cover; }
+        .mb-top-name { font-size:0.85rem;font-weight:500; }
+        .mb-top-score { font-size:0.75rem;color:var(--text-muted); }
+
+        .mb-new-item { display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0;border-bottom:1px solid var(--border-light);cursor:pointer; }
+        .mb-new-item:last-child { border-bottom:none; }
+        .mb-new-item:hover { padding-left:0.25rem; }
+        .mb-new-avatar { width:36px;height:36px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:var(--primary-color);overflow:hidden;flex-shrink:0; }
+        .mb-new-avatar img { width:100%;height:100%;object-fit:cover; }
+        .mb-new-avatar span { font-weight:600; }
+        .mb-new-name { font-size:0.85rem;font-weight:500; }
+        .mb-new-time { font-size:0.73rem;color:var(--text-muted); }
+
+        .mb-suggested-item { display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0;border-bottom:1px solid var(--border-light); }
+        .mb-suggested-item:last-child { border-bottom:none; }
+        .mb-suggested-avatar { width:36px;height:36px;border-radius:50%;background:var(--bg-light);display:flex;align-items:center;justify-content:center;font-size:0.85rem;overflow:hidden;flex-shrink:0;cursor:pointer; }
+        .mb-suggested-avatar img { width:100%;height:100%;object-fit:cover; }
+        .mb-suggested-avatar span { font-weight:600;color:var(--text-light); }
+        .mb-suggested-info { flex:1;cursor:pointer; }
+        .mb-suggested-name { font-size:0.85rem;font-weight:500; }
+        .mb-suggested-meta { font-size:0.72rem;color:var(--text-muted); }
+        .mb-suggested-item .btn { font-size:0.75rem;padding:0.25rem 0.55rem;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center; }
+
+        /* ─── CTA ────────────────────────────────────────── */
+        .mb-cta { background:linear-gradient(135deg,var(--primary-color),#e84393);border-radius:var(--radius-lg);padding:2.5rem;text-align:center;color:white;margin-top:2.5rem; }
+        .mb-cta h2 { font-family:'Playfair Display',serif;font-size:1.6rem;margin-bottom:0.5rem; }
+        .mb-cta p { opacity:0.85;margin-bottom:1.25rem; }
+        .mb-cta .btn { background:white;color:var(--primary-color); }
+        .mb-cta .btn:hover { background:#fce7f3; }
+
+        /* ─── Empty State & Pagination ───────────────────── */
+        .mb-empty { grid-column:1/-1;text-align:center;padding:3rem 1rem;color:var(--text-light); }
+        .mb-empty i { font-size:3rem;display:block;margin-bottom:1rem;opacity:0.5; }
+        .pagination { display:flex;justify-content:center;gap:0.25rem;margin-top:1rem; }
+        .page-btn { padding:0.4rem 0.75rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:0.82rem;cursor:pointer;background:var(--bg-white);color:var(--text-main); }
+        .page-btn.active { background:var(--primary-color);color:white;border-color:var(--primary-color); }
+        .page-btn:hover:not(.active) { border-color:var(--primary-color); }
+        .section-skeleton { grid-column:1/-1; }
+
+        @media(max-width:900px) { .mb-layout { grid-template-columns:1fr; } .mb-stats { grid-template-columns:repeat(3,1fr); } .mb-hero-visual { display:none; } }
+        @media(max-width:600px) { .mb-stats { grid-template-columns:repeat(2,1fr); } .mb-hero-text h1 { font-size:1.8rem; } .mb-toolbar { flex-direction:column;align-items:stretch; } .mb-search-wrap { max-width:none; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- ════════════════════ Hero ════════════════════ -->
+    <section class="mb-hero">
+        <div class="container">
+            <div class="mb-hero-inner reveal-up">
+                <div class="mb-hero-text">
+                    <span class="subtitle">COMMUNITY</span>
+                    <h1>Community Members</h1>
+                    <p>Meet florists, flower farmers, gardeners, designers, educators, and flower lovers from around the world.</p>
+                    <div class="mb-hero-actions">
+                        <button class="btn btn-primary" onclick="document.getElementById('mbSearch')?.focus()"><i class="bi bi-search"></i> Find Members</button>
+                        <button class="btn btn-outline" onclick="window.location.href='profile.html'"><i class="bi bi-person"></i> View My Profile</button>
+                    </div>
+                </div>
+                <div class="mb-hero-visual">
+                    <img src="https://images.unsplash.com/photo-1526045612212-70caf35c14df?q=80&w=400&auto=format&fit=crop" alt="Community collage" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-padding" style="padding-top:2rem;">
+        <div class="container">
+            <!-- ════════════════════ Stats ════════════════════ -->
+            <div class="mb-stats reveal-up" id="mbStats"></div>
+
+            <!-- ════════════════════ Featured Members ════════════════════ -->
+            <div class="mb-featured-section reveal-up" id="mbFeaturedSection" style="display:none;">
+                <div class="section-header-flex">
+                    <div><span class="subtitle">HIGHLIGHTED</span><h2>Featured Members</h2></div>
+                </div>
+                <div class="mb-featured-grid" id="mbFeaturedGrid"></div>
+            </div>
+
+            <!-- ════════════════════ Directory ════════════════════ -->
+            <div class="mb-layout">
+                <div class="mb-main">
+                    <div class="mb-toolbar reveal-up">
+                        <div class="mb-search-wrap">
+                            <input type="text" id="mbSearch" placeholder="Search members..." aria-label="Search members">
+                            <button class="btn btn-primary btn-sm" id="mbSearchBtn"><i class="bi bi-search"></i></button>
+                        </div>
+                        <select class="mb-filter-select" id="mbRoleFilter">
+                            <option value="">All Roles</option>
+                            <option value="FLORIST">Florists</option>
+                            <option value="GROWER">Growers</option>
+                            <option value="SELLER">Sellers</option>
+                            <option value="INSTRUCTOR">Instructors</option>
+                            <option value="CUSTOMER">Customers</option>
+                        </select>
+                        <div class="mb-sort-tabs" id="mbSortTabs">
+                            <button class="mb-sort-tab active" data-sort="discussions">Most Active</button>
+                            <button class="mb-sort-tab" data-sort="showcase">Showcase</button>
+                            <button class="mb-sort-tab" data-sort="answers">Q&A</button>
+                            <button class="mb-sort-tab" data-sort="newest">Newest</button>
+                            <button class="mb-sort-tab" data-sort="name">Name</button>
+                        </div>
+                    </div>
+
+                    <div class="mb-count" id="mbCount"></div>
+                    <div class="mb-grid reveal-up" id="mbGrid">
+                        <div class="section-skeleton" style="grid-column:1/-1;"><div class="spinner"></div></div>
+                    </div>
+                    <div class="pagination" id="mbPagination"></div>
+                </div>
+
+                <!-- ════════════════════ Sidebar ════════════════════ -->
+                <div class="mb-sidebar">
+                    <div class="mb-sidebar-card" id="mbTopContributors">
+                        <h3><i class="bi bi-trophy" style="color:var(--accent-gold);"></i> Top Contributors</h3>
+                        <div id="mbTopList"><div class="spinner"></div></div>
+                    </div>
+
+                    <div class="mb-sidebar-card" id="mbNewMembers">
+                        <h3><i class="bi bi-hand-wave"></i> New Members</h3>
+                        <div id="mbNewList"><div class="spinner"></div></div>
+                    </div>
+
+                    <div class="mb-sidebar-card" id="mbSuggestedSection" style="display:none;">
+                        <h3><i class="bi bi-person-plus"></i> Suggested Connections</h3>
+                        <div id="mbSuggestedList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════════════════ CTA ════════════════════ -->
+            <div class="mb-cta reveal-up">
+                <h2>Become a Verified Member</h2>
+                <p>Get the verified badge, showcase your expertise, and connect with more floral professionals.</p>
+                <a href="account.html" class="btn btn-lg"><i class="bi bi-patch-check"></i> Get Verified</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/ui.js?v=2.0"></script>
+    <script src="js/shared/cart.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/components/member-card.js"></script>
+    <script src="js/members.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => initMembersPage());</script>
+</body>
+</html>

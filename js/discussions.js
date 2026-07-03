@@ -1,10 +1,24 @@
-// js/discussions.js
-// Discussion pages — listing, detail, create
+// js/discussions.js — Discussions page (enhanced 3-column layout)
 
 let currentCategory = '';
 let currentSort = 'newest';
+let currentFilter = 'all';
 let currentPage = 1;
 let totalPages = 1;
+
+const CATEGORIES = [
+    { slug: 'flower-care', name: 'Flower Care', icon: '🌹', desc: 'Watering, preservation, maintenance' },
+    { slug: 'flower-farming', name: 'Flower Farming', icon: '🌱', desc: 'Soil, irrigation, harvesting' },
+    { slug: 'floristry', name: 'Floral Design', icon: '💐', desc: 'Bouquets, centerpieces, arrangements' },
+    { slug: 'gardening', name: 'Gardening', icon: '🏡', desc: 'Landscaping, home gardens' },
+    { slug: 'pests-diseases', name: 'Pests & Diseases', icon: '🐛', desc: 'Plant health, treatments' },
+    { slug: 'flower-business', name: 'Flower Business', icon: '💼', desc: 'Pricing, marketing, customer service' },
+    { slug: 'delivery-logistics', name: 'Delivery & Logistics', icon: '🚚', desc: 'Packaging, transportation' },
+    { slug: 'learning-support', name: 'Learning Support', icon: '🎓', desc: 'Courses, assignments, workshops' },
+    { slug: 'beginner-questions', name: 'Beginner Questions', icon: '❓', desc: 'First-time growers and florists' }
+];
+
+// ─── Utilities ─────────────────────────────────────────────────────────
 
 function userLoggedIn() {
     try { return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token'); } catch { return false; }
@@ -27,7 +41,15 @@ function isExpertRole(role) {
     return ['FLORIST', 'INSTRUCTOR', 'ADMIN', 'SUPERADMIN'].includes((role || '').toUpperCase());
 }
 
-// ─── Discussions Listing Page ──────────────────────────────────────────────
+function getReputationLevel(points) {
+    if (points >= 5000) return { icon: '🏆', label: 'Community Leader', color: '#f59e0b' };
+    if (points >= 1500) return { icon: '💐', label: 'Mentor', color: '#ec4899' };
+    if (points >= 500) return { icon: '🌸', label: 'Expert', color: '#8b5cf6' };
+    if (points >= 100) return { icon: '🌿', label: 'Contributor', color: '#10b981' };
+    return { icon: '🌱', label: 'New Member', color: '#6b7280' };
+}
+
+// ─── Init ──────────────────────────────────────────────────────────────
 
 async function initDiscussionsPage() {
     if (!userLoggedIn()) {
@@ -35,33 +57,193 @@ async function initDiscussionsPage() {
         if (myBtn) myBtn.style.display = 'none';
     }
 
-    await loadCategories();
-    await loadDiscussions();
-    loadStats();
-    loadTopContributors();
+    renderCategoryCards();
+    renderSidebarCategories();
+    setupLeftSidebar();
+    setupSortTabs();
+    setupFilterChips();
 
-    document.getElementById('discSearchBtn')?.addEventListener('click', () => {
-        currentPage = 1;
-        loadDiscussions();
-    });
-    document.getElementById('discSearch')?.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            currentPage = 1;
-            loadDiscussions();
+    // Start discussion card
+    const startEl = document.getElementById('startDiscussionCard');
+    if (startEl) startEl.innerHTML = renderStartDiscussionCard();
+
+    // Load tags from API
+    loadPopularTags();
+
+    await Promise.all([
+        loadFeaturedDiscussion(),
+        loadDiscussions(),
+        loadCommunityStats(),
+        loadTopContributors(),
+        loadTrendingTopics(),
+        loadRelatedDiscussions()
+    ]);
+}
+
+async function loadPopularTags() {
+    try {
+        const data = await api.fetchJSON('/api/feed/trending');
+        const el = document.getElementById('popularTags');
+        if (el && data && data.length) {
+            el.innerHTML = data.slice(0, 8).map(t =>
+                `<span class="pop-tag">#${escapeHtml(t.tag || t)} <span class="count">${formatNumber(t.count || 0)}</span></span>`
+            ).join('');
         }
-    });
+    } catch {}
+}
 
-    document.getElementById('categoryTabs')?.addEventListener('click', (e) => {
-        const tab = e.target.closest('.category-tab');
-        if (!tab) return;
-        document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        currentCategory = tab.dataset.slug || '';
-        currentPage = 1;
-        loadDiscussions();
-    });
+// ─── Category Cards ────────────────────────────────────────────────────
 
-    document.getElementById('sortTabs')?.addEventListener('click', (e) => {
+function renderCategoryCards() {
+    const el = document.getElementById('catCards');
+    if (!el) return;
+    el.innerHTML = CATEGORIES.map(c => `
+        <div class="cat-card${currentCategory === c.slug ? ' active' : ''}" data-slug="${c.slug}" onclick="selectCategory('${c.slug}')">
+            <div class="cat-card-icon">${c.icon}</div>
+            <div class="cat-card-name">${c.name}</div>
+        </div>
+    `).join('');
+}
+
+function renderSidebarCategories() {
+    const el = document.getElementById('sidebarCategories');
+    if (!el) return;
+    el.innerHTML = CATEGORIES.map(c => `
+        <div class="disc-cat-item${currentCategory === c.slug ? ' active' : ''}" data-slug="${c.slug}" onclick="selectCategory('${c.slug}')">
+            <span>${c.icon}</span> ${c.name}
+        </div>
+    `).join('');
+
+    // Mobile categories
+    const mobileEl = document.getElementById('mobileCategories');
+    if (mobileEl) {
+        mobileEl.innerHTML = CATEGORIES.map(c => `
+            <span class="filter-chip${currentCategory === c.slug ? ' active' : ''}" data-slug="${c.slug}" onclick="selectCategory('${c.slug}');closeMobileFilter();">
+                ${c.icon} ${c.name}
+            </span>
+        `).join('');
+    }
+}
+
+// ─── Mobile Filter Drawer ──────────────────────────────────────────────
+
+function openMobileFilter() {
+    const drawer = document.getElementById('mobileFilterDrawer');
+    if (drawer) {
+        drawer.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        setupMobileFilterSync();
+    }
+}
+
+function closeMobileFilter() {
+    const drawer = document.getElementById('mobileFilterDrawer');
+    if (drawer) {
+        drawer.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+}
+
+function setupMobileFilterSync() {
+    // Sync mobile sort tabs with main sort
+    document.querySelectorAll('#mobileSortTabs .sort-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.sort === currentSort);
+        tab.onclick = () => {
+            document.querySelectorAll('#mobileSortTabs .sort-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+        };
+    });
+    // Sync mobile filter chips with main chips
+    document.querySelectorAll('#mobileFilterChips .filter-chip').forEach(chip => {
+        chip.classList.toggle('active', chip.dataset.filter === currentFilter);
+        chip.onclick = () => {
+            document.querySelectorAll('#mobileFilterChips .filter-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+        };
+    });
+}
+
+function applyMobileFilters() {
+    // Read mobile sort
+    const activeSort = document.querySelector('#mobileSortTabs .sort-tab.active');
+    if (activeSort) currentSort = activeSort.dataset.sort;
+
+    // Read mobile filter
+    const activeFilter = document.querySelector('#mobileFilterChips .filter-chip.active');
+    if (activeFilter) currentFilter = activeFilter.dataset.filter;
+
+    // Sync main UI
+    document.querySelectorAll('.sort-tab').forEach(t => t.classList.toggle('active', t.dataset.sort === currentSort));
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === currentFilter));
+
+    currentPage = 1;
+    closeMobileFilter();
+    loadDiscussions();
+}
+
+function selectCategory(slug) {
+    currentCategory = currentCategory === slug ? '' : slug;
+    currentFilter = 'all';
+    currentPage = 1;
+    renderCategoryCards();
+    renderSidebarCategories();
+    resetLeftSidebarActive();
+    resetFilterChips();
+    loadDiscussions();
+}
+
+// ─── Left Sidebar Navigation ───────────────────────────────────────────
+
+function setupLeftSidebar() {
+    document.querySelectorAll('.disc-nav-item[data-filter]').forEach(item => {
+        item.addEventListener('click', e => {
+            e.preventDefault();
+            const filter = item.dataset.filter;
+            if (filter === 'my' || filter === 'saved') return; // handled separately
+
+            document.querySelectorAll('.disc-nav-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+
+            currentFilter = filter;
+            currentCategory = '';
+            currentPage = 1;
+            renderCategoryCards();
+            renderSidebarCategories();
+            resetFilterChips();
+            loadDiscussions();
+        });
+    });
+}
+
+function resetLeftSidebarActive() {
+    document.querySelectorAll('.disc-nav-item').forEach(i => i.classList.remove('active'));
+    document.querySelector('.disc-nav-item[data-filter="all"]')?.classList.add('active');
+}
+
+function filterMyDiscussions() {
+    if (!userLoggedIn()) { openAuthModal('login'); return; }
+    document.querySelectorAll('.disc-nav-item').forEach(i => i.classList.remove('active'));
+    document.querySelector('.disc-nav-item[data-filter="my"]')?.classList.add('active');
+    currentFilter = 'my';
+    currentCategory = '';
+    currentPage = 1;
+    loadDiscussions();
+}
+
+function filterSaved() {
+    if (!userLoggedIn()) { openAuthModal('login'); return; }
+    document.querySelectorAll('.disc-nav-item').forEach(i => i.classList.remove('active'));
+    document.querySelector('.disc-nav-item[data-filter="saved"]')?.classList.add('active');
+    currentFilter = 'saved';
+    currentCategory = '';
+    currentPage = 1;
+    loadDiscussions();
+}
+
+// ─── Sort Tabs ─────────────────────────────────────────────────────────
+
+function setupSortTabs() {
+    document.getElementById('sortTabs')?.addEventListener('click', e => {
         const tab = e.target.closest('.sort-tab');
         if (!tab) return;
         document.querySelectorAll('.sort-tab').forEach(t => t.classList.remove('active'));
@@ -72,30 +254,77 @@ async function initDiscussionsPage() {
     });
 }
 
-async function loadCategories() {
-    let categories;
-    try {
-        const res = await fetch('/api/discussions/categories');
-        categories = await res.json();
-    } catch {
-        categories = [];
-    }
-    const tabs = document.getElementById('categoryTabs');
-    if (!tabs) return;
-    tabs.innerHTML = `<button class="category-tab active" data-slug="">All</button>` +
-        categories.map(c => `<button class="category-tab" data-slug="${escapeHtml(c.slug || '')}">${c.icon || ''} ${escapeHtml(c.name)}</button>`).join('');
+// ─── Filter Chips ──────────────────────────────────────────────────────
+
+function setupFilterChips() {
+    document.getElementById('filterChips')?.addEventListener('click', e => {
+        const chip = e.target.closest('.filter-chip');
+        if (!chip) return;
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentFilter = chip.dataset.filter;
+        currentPage = 1;
+        loadDiscussions();
+    });
 }
 
+function resetFilterChips() {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    document.querySelector('.filter-chip[data-filter="all"]')?.classList.add('active');
+}
+
+// ─── Featured Discussion ───────────────────────────────────────────────
+
+async function loadFeaturedDiscussion() {
+    try {
+        const res = await fetch('/api/discussions?sort=popular&limit=1');
+        const data = await res.json();
+        const disc = (data.discussions || [])[0];
+        if (!disc) return;
+
+        const author = disc.author_name || 'Anonymous';
+        const category = disc.category_name || 'General';
+        const replies = disc.reply_count || 0;
+        const views = disc.views || 0;
+
+        document.getElementById('featuredSection').innerHTML = `
+            <div class="featured-disc" onclick="window.location.href='discussion-detail.html?id=${disc.id}'">
+                <div class="featured-badge"><i class="bi bi-star-fill"></i> Featured Discussion</div>
+                <h3>${escapeHtml(disc.title)}</h3>
+                <div class="featured-disc-excerpt">${escapeHtml(disc.excerpt || '')}</div>
+                <div class="featured-disc-meta">
+                    <span><i class="bi bi-person"></i> ${escapeHtml(author)} ${isExpertRole(disc.author_role) ? '<span class="disc-badge expert">Expert</span>' : ''}</span>
+                    <span><i class="bi bi-tag"></i> ${escapeHtml(category)}</span>
+                    <span><i class="bi bi-chat-dots"></i> ${replies} Replies</span>
+                    <span><i class="bi bi-eye"></i> ${formatNumber(views)} Views</span>
+                    <span><i class="bi bi-clock"></i> ${timeAgo(disc.created_at)}</span>
+                </div>
+            </div>`;
+    } catch {}
+}
+
+// ─── Load Discussions ──────────────────────────────────────────────────
+
 async function loadDiscussions() {
-    const searchEl = document.getElementById('discSearch');
+    const searchEl = document.getElementById('heroSearch');
     const search = searchEl ? searchEl.value.trim() : '';
     const params = new URLSearchParams({ sort: currentSort, page: currentPage, limit: 20 });
+
     if (currentCategory) params.set('category', currentCategory);
     if (search) params.set('search', search);
 
+    // Map filter chips to API params
+    if (currentFilter === 'unsolved') params.set('sort', 'unsolved');
+    if (currentFilter === 'solved') params.set('solved', 'true');
+    if (currentFilter === 'my') params.set('my', 'true');
+    if (currentFilter === 'saved') params.set('saved', 'true');
+    if (currentFilter === 'featured') params.set('featured', 'true');
+    if (currentFilter === 'trending') params.set('sort', 'popular');
+    if (currentFilter === 'following') params.set('following', 'true');
+
     let data;
     try {
-        const res = await fetch(`/api/discussions?${params}`);
+        const res = await fetch(`/api/discussions?${params}`, { headers: authHeaders() });
         data = await res.json();
     } catch {
         data = { discussions: [], total: 0, pages: 1 };
@@ -104,41 +333,14 @@ async function loadDiscussions() {
     const list = document.getElementById('discussionList');
     if (!list) return;
     if (!data.discussions || !data.discussions.length) {
-        list.innerHTML = `<div class="empty-state"><i class="bi bi-chat-dots"></i><h3>No discussions found</h3><p>Be the first to start a conversation!</p></div>`;
+        list.innerHTML = `<div class="empty-state"><i class="bi bi-flower1"></i><h3>No discussions yet</h3><p>Be the first to ask a question or start a conversation.</p><a href="create-discussion.html" class="btn btn-primary">Start Discussion</a></div>`;
         document.getElementById('pagination').innerHTML = '';
         return;
     }
 
     totalPages = data.pages || 1;
 
-    list.innerHTML = data.discussions.map(d => `
-        <div class="disc-card${d.is_pinned ? ' pinned' : ''}${d.is_solved ? ' solved' : ''}" onclick="window.location.href='discussion-detail.html?id=${escapeHtml(String(d.id))}'">
-            <div class="disc-avatar">${getAvatarHtml(d.author_avatar, d.author_name)}</div>
-            <div class="disc-body">
-                <div class="disc-title">
-                    ${d.is_pinned ? '<span class="pinned-badge"><i class="bi bi-pin-fill"></i> Pinned</span>' : ''}
-                    ${d.is_solved ? '<span class="solved-badge"><i class="bi bi-check-lg"></i> Solved</span>' : ''}
-                    ${escapeHtml(d.title)}
-                </div>
-                <div class="disc-meta">
-                    by <strong>${escapeHtml(d.author_name || 'Anonymous')}</strong>
-                    ${isExpertRole(d.author_role) ? '<span class="expert-badge">Expert</span>' : ''}
-                    · ${escapeHtml(d.category_name || 'General')}
-                    · ${timeAgo(d.created_at)}
-                </div>
-                <div class="disc-excerpt">${escapeHtml(d.excerpt || '')}</div>
-                <div class="disc-tags">
-                    <span class="disc-tag">${escapeHtml(d.category_name || 'General')}</span>
-                </div>
-            </div>
-            ${d.image ? `<div class="disc-image-preview"><img src="${escapeHtml(d.image)}" alt="" loading="lazy"></div>` : ''}
-            <div class="disc-stats">
-                <div class="disc-stat"><i class="bi bi-arrow-up"></i> ${formatNumber(d.vote_count || 0)}</div>
-                <div class="disc-stat"><i class="bi bi-chat-dots"></i> ${d.reply_count || 0}</div>
-                <div class="disc-stat"><i class="bi bi-eye"></i> ${formatNumber(d.views || 0)}</div>
-            </div>
-        </div>
-    `).join('');
+    list.innerHTML = data.discussions.map(d => renderDiscussionCard(d)).join('');
 
     renderPagination();
 }
@@ -165,37 +367,31 @@ function goToPage(page) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-async function loadStats() {
-    try {
-        const res = await fetch('/api/discussions/stats/overview');
-        const stats = await res.json();
-        document.getElementById('statMembers').textContent = formatNumber(stats.members || 0);
-        document.getElementById('statDiscussions').textContent = formatNumber(stats.discussions || 0);
-        document.getElementById('statReplies').textContent = formatNumber(stats.replies || 0);
-    } catch {}
+// ─── Search ────────────────────────────────────────────────────────────
+
+function searchFromHero() {
+    currentPage = 1;
+    loadDiscussions();
+    // Scroll to results on mobile
+    if (window.innerWidth <= 900) {
+        setTimeout(() => {
+            document.getElementById('discussionList')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
 }
 
-async function loadTopContributors() {
-    try {
-        const res = await fetch('/api/discussions/top/contributors');
-        const contributors = await res.json();
-        const el = document.getElementById('topContributors');
-        if (!contributors.length) {
-            el.innerHTML = '<li style="color:var(--text-muted);font-size:0.85rem;">No contributors yet</li>';
-            return;
-        }
-        el.innerHTML = contributors.slice(0, 5).map((c, i) => `
-            <li>
-                <span class="contributor-rank">${i + 1}</span>
-                <div class="contributor-avatar">${getAvatarHtml(c.profile_image, c.name)}</div>
-                <span>${escapeHtml(c.name)}</span>
-                <span class="contributor-score">${(c.discussions || 0) + (c.replies || 0)} posts</span>
-            </li>
-        `).join('');
-    } catch {}
+// ─── Stats ─────────────────────────────────────────────────────────────
+
+
+
+// ─── Smooth Scroll ─────────────────────────────────────────────────────
+
+function scrollToCategories(e) {
+    e.preventDefault();
+    document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth' });
 }
 
-// ─── Discussion Detail Page ───────────────────────────────────────────────
+// ─── Discussion Detail Page ────────────────────────────────────────────
 
 async function initDiscussionDetail() {
     const params = new URLSearchParams(window.location.search);
@@ -223,11 +419,18 @@ async function initDiscussionDetail() {
 
     const userVote = discussion.userVote;
 
+    // Determine badges
+    const badges = [];
+    if (discussion.is_pinned) badges.push('<span class="disc-badge pinned"><i class="bi bi-pin-fill"></i> Pinned</span>');
+    if (discussion.is_solved) badges.push('<span class="disc-badge solved"><i class="bi bi-check-lg"></i> Solved</span>');
+    if (isExpertRole(discussion.author_role)) badges.push('<span class="disc-badge expert">Expert</span>');
+
     document.getElementById('discussionContent').innerHTML = `
         <div class="disc-detail-card">
             <div class="disc-detail-header">
                 <div class="disc-detail-avatar">${getAvatarHtml(discussion.author_avatar, discussion.author_name)}</div>
                 <div class="disc-detail-meta" style="flex:1;">
+                    <div class="disc-badges" style="margin-bottom:0.5rem;">${badges.join('')}</div>
                     <h1>${escapeHtml(discussion.title)}</h1>
                     <div class="author-info">
                         by <span class="author-name">${escapeHtml(discussion.author_name || 'Anonymous')}</span>
@@ -257,6 +460,7 @@ async function initDiscussionDetail() {
     renderComments(discussion);
     renderReplyBox(discussion);
     loadRelatedDiscussions(discussion.category_slug, discussion.id);
+    loadRelatedContent(discussion);
 }
 
 function renderComments(discussion) {
@@ -272,7 +476,9 @@ function renderComments(discussion) {
         html += '<p style="color:var(--text-light);font-size:0.9rem;margin-bottom:1rem;">No replies yet. Be the first to respond!</p>';
     }
 
-    html += sorted.map(c => `
+    html += sorted.map(c => {
+        const videoHtml = c.video_url ? `<div style="margin-top:0.5rem;"><video controls style="max-width:100%;max-height:300px;border-radius:8px;"><source src="${escapeHtml(c.video_url)}" type="video/mp4"></video></div>` : '';
+        return `
         <div class="comment-card${c.is_best_answer ? ' best-answer' : ''}">
             <div class="comment-avatar">${getAvatarHtml(c.author_avatar, c.author_name)}</div>
             <div class="comment-body">
@@ -283,22 +489,20 @@ function renderComments(discussion) {
                     <span>${timeAgo(c.created_at)}</span>
                 </div>
                 <div class="comment-content">${escapeHtml(c.content)}</div>
+                ${videoHtml}
                 <div class="comment-actions">
-                    <button onclick="voteComment('${c.id}', 'up')" title="Helpful"><i class="bi bi-hand-thumbs-up"></i> Helpful</button>
+                    <button onclick="voteComment('${c.id}', 'up')" title="Helpful"><i class="bi bi-hand-thumbs-up"></i> Helpful (${c.vote_count || 0})</button>
                     ${discussion.author_id === (getCurrentUserId()) || ['ADMIN', 'SUPERADMIN'].includes((getCurrentUserRole() || '').toUpperCase()) ? `<button onclick="markBestAnswer('${discussion.id}', '${c.id}')" title="Mark as best answer"><i class="bi bi-check-circle"></i> Best Answer</button>` : ''}
                     ${c.author_id === getCurrentUserId() || ['ADMIN', 'SUPERADMIN', 'MODERATOR'].includes((getCurrentUserRole() || '').toUpperCase()) ? `<button onclick="deleteComment('${c.id}', '${discussion.id}')" title="Delete"><i class="bi bi-trash"></i></button>` : ''}
                 </div>
             </div>
-            <div class="vote-controls" style="flex-direction:column;">
-                <button class="vote-btn" onclick="voteComment('${c.id}', 'up')" style="width:28px;height:28px;"><i class="bi bi-arrow-up"></i></button>
-                <span class="vote-count" style="font-size:0.8rem;">${c.vote_count || 0}</span>
-                <button class="vote-btn" onclick="voteComment('${c.id}', 'down')" style="width:28px;height:28px;"><i class="bi bi-arrow-down"></i></button>
-            </div>
-        </div>
-    `).join('');
+        </div>`;
+    }).join('');
 
     section.innerHTML = html;
 }
+
+let replyVideoFile = null;
 
 function renderReplyBox(discussion) {
     const section = document.getElementById('commentsSection');
@@ -307,6 +511,13 @@ function renderReplyBox(discussion) {
             <div class="reply-box">
                 <h3 style="font-size:0.95rem;margin-bottom:0.75rem;">Write a Reply</h3>
                 <textarea id="replyContent" placeholder="Share your thoughts or advice..."></textarea>
+                <div style="display:flex;gap:0.5rem;align-items:center;margin-top:0.5rem;">
+                    <label style="display:flex;align-items:center;gap:0.3rem;padding:0.3rem 0.6rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:0.8rem;color:var(--text-light);cursor:pointer;">
+                        <i class="bi bi-camera-video"></i> Add Video
+                        <input type="file" accept="video/*" style="display:none;" onchange="handleReplyVideo(this)">
+                    </label>
+                    <span id="replyVideoName" style="font-size:0.78rem;color:var(--text-muted);"></span>
+                </div>
                 <div class="reply-box-footer">
                     <span style="font-size:0.8rem;color:var(--text-muted);">Be respectful and helpful</span>
                     <button class="btn btn-primary btn-sm" onclick="submitReply('${discussion.id}')">
@@ -322,6 +533,100 @@ function renderReplyBox(discussion) {
             </div>
         `;
     }
+}
+
+function handleReplyVideo(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 50 * 1024 * 1024) { alert('Video must be under 50MB'); input.value = ''; return; }
+    replyVideoFile = file;
+    document.getElementById('replyVideoName').textContent = '📹 ' + file.name;
+}
+
+async function submitReply(discussionId) {
+    const content = document.getElementById('replyContent').value.trim();
+    if (!content && !replyVideoFile) return;
+    try {
+        const formData = new FormData();
+        formData.append('content', content || '');
+        if (replyVideoFile) formData.append('video', replyVideoFile);
+        const token = localStorage.getItem('flower-token');
+        const res = await fetch(`/api/discussions/${discussionId}/comments`, {
+            method: 'POST',
+            headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+            body: formData
+        });
+        if (!res.ok) throw new Error('Failed');
+        window.location.reload();
+    } catch (err) {
+        alert('Failed to post reply. Please try again.');
+    }
+}
+
+// ─── Related Content ───────────────────────────────────────────────────
+
+async function loadRelatedContent(discussion) {
+    // Load related courses and products in the detail page sidebar
+    const relatedEl = document.getElementById('relatedContent');
+    if (!relatedEl) return;
+
+    const categorySlug = discussion.category_slug || '';
+    let html = '';
+
+    // Related courses
+    try {
+        const coursesRes = await fetch('/api/learning/courses?limit=2');
+        const coursesData = await coursesRes.json();
+        const courses = coursesData.courses || coursesData || [];
+        if (courses.length) {
+            html += `<div class="sidebar-card"><h3><i class="bi bi-mortarboard" style="color:var(--accent-blue)"></i> Related Courses</h3>`;
+            html += courses.slice(0, 2).map(c => `
+                <div style="padding:0.4rem 0;border-bottom:1px solid var(--border-light);">
+                    <a href="course-detail.html?id=${c.id}" style="font-size:0.85rem;font-weight:500;color:var(--text-main);text-decoration:none;">${escapeHtml(c.title)}</a>
+                    <div style="font-size:0.75rem;color:var(--text-muted);">${c.students_count || 0} students</div>
+                </div>
+            `).join('');
+            html += `</div>`;
+        }
+    } catch {}
+
+    // Related products
+    try {
+        const prodRes = await fetch('/api/products?limit=3');
+        const prodData = await prodRes.json();
+        const products = prodData.products || prodData || [];
+        if (products.length) {
+            html += `<div class="sidebar-card"><h3><i class="bi bi-bag" style="color:var(--accent-green)"></i> Related Products</h3>`;
+            html += products.slice(0, 3).map(p => `
+                <div style="display:flex;gap:0.5rem;padding:0.4rem 0;border-bottom:1px solid var(--border-light);">
+                    ${p.image_url ? `<img src="${escapeHtml(p.image_url)}" style="width:40px;height:40px;border-radius:4px;object-fit:cover;" alt="">` : ''}
+                    <div>
+                        <a href="product-detail.html?id=${p.id}" style="font-size:0.82rem;font-weight:500;color:var(--text-main);text-decoration:none;">${escapeHtml(p.name)}</a>
+                        <div style="font-size:0.75rem;color:var(--primary-color);font-weight:600;">GHS ${parseFloat(p.price || 0).toFixed(2)}</div>
+                    </div>
+                </div>
+            `).join('');
+            html += `</div>`;
+        }
+    } catch {}
+
+    // Related articles
+    try {
+        const artRes = await fetch('/api/knowledge/flowers?limit=2');
+        const artData = await artRes.json();
+        const articles = artData.flowers || artData || [];
+        if (articles.length) {
+            html += `<div class="sidebar-card"><h3><i class="bi bi-newspaper" style="color:var(--accent-blue)"></i> Related Articles</h3>`;
+            html += articles.slice(0, 2).map(a => `
+                <div style="padding:0.4rem 0;border-bottom:1px solid var(--border-light);">
+                    <a href="flower-knowledge.html?slug=${escapeHtml(a.slug || a.id)}" style="font-size:0.85rem;font-weight:500;color:var(--text-main);text-decoration:none;">${escapeHtml(a.name || a.title || '')}</a>
+                </div>
+            `).join('');
+            html += `</div>`;
+        }
+    } catch {}
+
+    if (html) relatedEl.innerHTML = html;
 }
 
 async function submitReply(discussionId) {
@@ -405,7 +710,7 @@ async function loadRelatedDiscussions(categorySlug, currentId) {
     } catch {}
 }
 
-// ─── Create Discussion Page ───────────────────────────────────────────────
+// ─── Create Discussion Page ────────────────────────────────────────────
 
 let uploadedFiles = [];
 
@@ -430,6 +735,8 @@ async function initCreateDiscussion() {
     document.getElementById('discTitle').addEventListener('input', (e) => {
         document.getElementById('titleCount').textContent = e.target.value.length;
     });
+
+    setupCategorySuggestion();
 
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('fileInput');
@@ -517,3 +824,65 @@ function removeFile(idx, btn) {
     uploadedFiles.splice(idx, 1);
     btn.parentElement.remove();
 }
+
+// ─── AI Category Suggestion ──────────────────────────────────────────
+
+const CATEGORY_KEYWORDS = {
+    'flower-care': ['watering', 'preservation', 'maintenance', 'wilt', 'droop', 'pruning', 'fertilizer', 'feed', 'nutrient', 'water', 'soil', 'pot', 'repot'],
+    'flower-farming': ['farm', 'farming', 'harvest', 'irrigation', 'crop', 'field', 'greenhouse', 'commercial', 'yield', 'acre', 'planting', 'seed'],
+    'floristry': ['arrangement', 'bouquet', 'centerpiece', 'design', 'floral', 'wreath', 'corsage', 'vase', 'wrapping', 'ribbon'],
+    'gardening': ['garden', 'landscap', 'lawn', 'perennial', 'annual', 'shrub', 'compost', 'mulch', 'bed', 'border'],
+    'pests-diseases': ['pest', 'disease', 'fungus', 'mold', 'mildew', 'aphid', 'bug', 'infest', 'rot', 'blight', 'spot', 'yellow', 'brown'],
+    'flower-business': ['pricing', 'market', 'customer', 'sell', 'profit', 'cost', 'revenue', 'business', 'shop', 'store', 'client', 'invoice'],
+    'delivery-logistics': ['delivery', 'ship', 'packaging', 'transport', 'logistic', 'courier', 'freight', 'shipping', 'box'],
+    'learning-support': ['course', 'assignment', 'workshop', 'class', 'tutorial', 'lesson', 'quiz', 'certificate', 'learn', 'study', 'exam'],
+    'beginner-questions': ['beginner', 'start', 'new', 'first time', 'help', 'basic', 'simple', 'easy', 'introduction', 'tips for']
+};
+
+let suggestionTimeout = null;
+
+function setupCategorySuggestion() {
+    const titleInput = document.getElementById('discTitle');
+    if (!titleInput) return;
+    titleInput.addEventListener('input', () => {
+        clearTimeout(suggestionTimeout);
+        suggestionTimeout = setTimeout(() => suggestCategory(titleInput.value), 400);
+    });
+}
+
+function suggestCategory(title) {
+    const lower = title.toLowerCase();
+    if (!lower) return;
+    let bestCat = null, bestScore = 0;
+    for (const [slug, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+        const score = keywords.reduce((s, kw) => s + (lower.includes(kw) ? 1 : 0), 0);
+        const weight = score / keywords.length;
+        if (weight > bestScore) { bestScore = weight; bestCat = slug; }
+    }
+    if (bestCat && bestScore > 0.02) {
+        const select = document.getElementById('discCategory');
+        if (!select) return;
+        const cat = CATEGORIES.find(c => c.slug === bestCat);
+        if (!cat) return;
+        const existingHint = document.getElementById('categoryHint');
+        if (existingHint) existingHint.remove();
+        const hint = document.createElement('div');
+        hint.id = 'categoryHint';
+        hint.style.cssText = 'margin-top:0.3rem;font-size:0.8rem;color:var(--accent-green);display:flex;align-items:center;gap:0.3rem;animation:fadeIn 0.3s;';
+        hint.innerHTML = `💡 Suggested category: <strong>${cat.icon} ${cat.name}</strong> <button onclick="applySuggestedCategory('${bestCat}')" style="background:var(--accent-green);color:white;border:none;border-radius:4px;padding:0.15rem 0.5rem;font-size:0.7rem;cursor:pointer;margin-left:0.25rem;">Apply</button>`;
+        select.parentElement.appendChild(hint);
+    }
+}
+
+function applySuggestedCategory(slug) {
+    const select = document.getElementById('discCategory');
+    if (!select) return;
+    const idx = CATEGORIES.findIndex(c => c.slug === slug);
+    if (idx >= 0 && select.options[idx + 1]) {
+        select.selectedIndex = idx + 1;
+        const hint = document.getElementById('categoryHint');
+        if (hint) hint.remove();
+    }
+}
+
+

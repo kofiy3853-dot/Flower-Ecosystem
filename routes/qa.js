@@ -7,7 +7,7 @@ router.get('/categories', asyncHandler(async (_, res) => {
         try {
             const r = await pool.query('SELECT * FROM qa.categories ORDER BY sort_order');
             if (r.rows.length) return res.json(r.rows);
-        } catch {}
+        } catch (err) { console.error('QA categories error:', err.message); }
     }
     res.json([
         { id: 1, name: 'Flower Identification', slug: 'flower-identification', icon: '🌹' },

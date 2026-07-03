@@ -60,7 +60,7 @@ router.get('/', asyncHandler(async (req, res) => {
                     (SELECT image_url FROM events.event_speakers WHERE event_id = e.id ORDER BY sort_order LIMIT 1) AS instructor_image
                 FROM events.events e
                 LEFT JOIN (SELECT event_id, COUNT(*) AS reg_count FROM events.event_registrations GROUP BY event_id) rc ON rc.event_id = e.id
-                LEFT JOIN (SELECT event_id, json_agg(json_build_object('name', name, 'title', title, 'photo_url', photo_url) ORDER BY sort_order) AS speakers FROM events.event_speakers GROUP BY event_id) sp ON sp.event_id = e.id
+                LEFT JOIN (SELECT event_id, json_agg(json_build_object('name', name, 'photo_url', photo_url) ORDER BY sort_order) AS speakers FROM events.event_speakers GROUP BY event_id) sp ON sp.event_id = e.id
                 ${where}
                 ORDER BY e.is_featured DESC, ${orderBy}
                 LIMIT $${idx} OFFSET $${idx + 1}`;
@@ -80,7 +80,7 @@ router.get('/featured', asyncHandler(async (_, res) => {
         try {
             const r = await pool.query(`
                 SELECT e.*, COALESCE(rc.reg_count, 0) AS registrations,
-                    (SELECT json_agg(json_build_object('name', name, 'title', title, 'bio', bio, 'photo_url', photo_url))
+                    (SELECT json_agg(json_build_object('name', name, 'bio', bio, 'photo_url', photo_url))
                      FROM events.event_speakers WHERE event_id = e.id) AS speakers
                 FROM events.events e
                 LEFT JOIN (SELECT event_id, COUNT(*) AS reg_count FROM events.event_registrations GROUP BY event_id) rc ON rc.event_id = e.id

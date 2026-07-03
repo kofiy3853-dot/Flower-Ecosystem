@@ -113,44 +113,31 @@
     <script src="js/shared/ui.js?v=2.0"></script>
     <script>
         (() => {
-            const dashData = {
-                inProgress: [
-                    { id: 'c1', title: 'Flower Arrangement Basics', instructor: 'Maria Chen', progress: 70, thumbnail: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=400&auto=format&fit=crop', lessons: 6, completed: 4 },
-                    { id: 'c4', title: 'Flower Care & Preservation', instructor: 'Dr. James Whitfield', progress: 35, thumbnail: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop', lessons: 5, completed: 2 }
-                ],
-                completed: [
-                    { id: 'c2', title: 'Natural vs Artificial Flowers', instructor: 'David Okonkwo', progress: 100, thumbnail: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=400&auto=format&fit=crop', lessons: 4, completed: 4 },
-                ],
-                certificates: [
-                    { id: 'c2', title: 'Natural vs Artificial Flowers', issued: 'June 12, 2026', certId: 'CERT-2026-0042' }
-                ],
-                saved: [
-                    { id: 'c3', title: 'Wedding Floristry Masterclass', instructor: 'Sophie Laurent', thumbnail: 'https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=400&auto=format&fit=crop' },
-                    { id: 'c5', title: 'Floristry Business Startup', instructor: 'Amara Sterling', thumbnail: 'https://images.unsplash.com/photo-1664575602276-acd073f104c1?q=80&w=400&auto=format&fit=crop' }
-                ]
-            };
-
-            document.getElementById('statInProgress').textContent = dashData.inProgress.length;
-            document.getElementById('statCompleted').textContent = dashData.completed.length;
-            document.getElementById('statCertificates').textContent = dashData.certificates.length;
-            document.getElementById('statSaved').textContent = dashData.saved.length;
+            const apiBase = window.location.origin;
+            async function apiFetch(path) {
+                const token = localStorage.getItem('flower-token');
+                const h = { 'Authorization': token ? 'Bearer ' + token : '' };
+                const r = await fetch(apiBase + path, { headers: h });
+                if (!r.ok) return null;
+                return r.json();
+            }
 
             function renderCourseList(arr, containerId, showProgress) {
                 const el = document.getElementById(containerId);
-                if (!arr.length) {
+                if (!arr || !arr.length) {
                     el.innerHTML = '<div class="empty-state"><i class="bi bi-journal"></i><h3>Nothing here yet</h3><p>Enroll in a course to get started!</p><a href="learning.html" class="btn btn-primary" style="margin-top:0.75rem;">Browse Courses</a></div>';
                     return;
                 }
                 el.innerHTML = arr.map(c => `
                     <a href="course-detail.html?id=${c.id}" style="text-decoration:none;color:inherit;display:block;">
                         <div class="course-progress-card">
-                            <img class="thumb" src="${c.thumbnail}" alt="${c.title}" loading="lazy">
+                            <img class="thumb" src="${c.thumbnail || 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=400&auto=format&fit=crop'}" alt="${c.title}" loading="lazy">
                             <div class="info">
                                 <h3>${c.title}</h3>
-                                <div class="meta">${c.instructor} — ${c.completed}/${c.lessons} lessons</div>
+                                <div class="meta">${c.instructor || ''}</div>
                                 ${showProgress ? `
-                                    <div class="progress-text">${c.progress}% complete</div>
-                                    <div class="progress-bar-mini"><div class="fill" style="width:${c.progress}%"></div></div>
+                                    <div class="progress-text">${c.progress || 0}% complete</div>
+                                    <div class="progress-bar-mini"><div class="fill" style="width:${c.progress || 0}%"></div></div>
                                 ` : ''}
                             </div>
                         </div>
@@ -158,40 +145,66 @@
                 ).join('');
             }
 
-            renderCourseList(dashData.inProgress, 'inProgressList', true);
-            renderCourseList(dashData.completed, 'completedList', false);
-
-            const certEl = document.getElementById('certList');
-            if (dashData.certificates.length) {
-                certEl.innerHTML = dashData.certificates.map(c => `
+            function renderCertificates(arr, elId) {
+                const el = document.getElementById(elId);
+                if (!arr || !arr.length) {
+                    el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem 0;color:var(--text-light);"><i class="bi bi-award" style="font-size:2rem;display:block;margin-bottom:0.75rem;"></i><h3>No certificates yet</h3><p>Complete a course to earn your certificate.</p></div>';
+                    return;
+                }
+                el.innerHTML = arr.map(c => `
                     <div class="cert-card">
                         <div class="cert-icon"><i class="bi bi-award-fill"></i></div>
-                        <h4>${c.title}</h4>
-                        <p class="cert-date">Issued ${c.issued} — ID: ${c.certId}</p>
-                        <button class="btn btn-outline btn-sm" style="margin-top:0.75rem;"><i class="bi bi-download"></i> Download PDF</button>
+                        <h4>${c.course_name || c.title}</h4>
+                        <p class="cert-date">Issued ${new Date(c.issued_at || c.created_at).toLocaleDateString()} ${c.cert_id ? '— ID: ' + c.cert_id : ''}</p>
                     </div>`
                 ).join('');
-            } else {
-                certEl.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem 0;color:var(--text-light);"><i class="bi bi-award" style="font-size:2rem;display:block;margin-bottom:0.75rem;"></i><h3>No certificates yet</h3><p>Complete a course to earn your certificate.</p></div>';
             }
 
-            const savedEl = document.getElementById('savedList');
-            if (dashData.saved.length) {
-                savedEl.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;">${
-                    dashData.saved.map(c => `
-                        <a href="course-detail.html?id=${c.id}" style="text-decoration:none;color:inherit;">
-                            <div class="saved-card">
-                                <img src="${c.thumbnail}" alt="${c.title}" loading="lazy">
-                                <div class="body">
-                                    <h4>${c.title}</h4>
-                                    <p>${c.instructor}</p>
-                                </div>
-                            </div>
-                        </a>`
-                    ).join('')
-                }</div>`;
-            } else {
-                savedEl.innerHTML = '<div class="empty-state"><i class="bi bi-bookmark"></i><h3>No saved courses</h3><p>Save courses to access them later.</p></div>';
+            async function loadDashboard() {
+                const [enrolledData, certData] = await Promise.all([
+                    apiFetch('/api/courses/enrolled'),
+                    apiFetch('/api/certificates')
+                ]);
+
+                const courses = enrolledData?.courses || [];
+                const inProgress = courses.filter(c => (c.progress || 0) < 100);
+                const completed = courses.filter(c => (c.progress || 0) >= 100);
+                const certs = certData?.certificates || certData || [];
+
+                document.getElementById('statInProgress').textContent = inProgress.length;
+                document.getElementById('statCompleted').textContent = completed.length;
+                document.getElementById('statCertificates').textContent = certs.length;
+
+                renderCourseList(inProgress, 'inProgressList', true);
+                renderCourseList(completed, 'completedList', false);
+                renderCertificates(certs, 'certList');
+
+                // Saved courses from localStorage + enrolled data
+                const savedIds = JSON.parse(localStorage.getItem('ml-saved') || '[]');
+                document.getElementById('statSaved').textContent = savedIds.length;
+                const savedEl = document.getElementById('savedList');
+                if (savedIds.length) {
+                    const savedCourses = courses.filter(c => savedIds.includes(c.id));
+                    if (savedCourses.length) {
+                        savedEl.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;">${
+                            savedCourses.map(c => `
+                                <a href="course-detail.html?id=${c.id}" style="text-decoration:none;color:inherit;">
+                                    <div class="saved-card">
+                                        <img src="${c.thumbnail || 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=400&auto=format&fit=crop'}" alt="${c.title}" loading="lazy">
+                                        <div class="body">
+                                            <h4>${c.title}</h4>
+                                            <p>${c.instructor || ''}</p>
+                                        </div>
+                                    </div>
+                                </a>`
+                            ).join('')
+                        }</div>`;
+                    } else {
+                        savedEl.innerHTML = '<div class="empty-state"><i class="bi bi-bookmark"></i><h3>Saved courses not enrolled</h3><p>Browse courses and save them to your list.</p></div>';
+                    }
+                } else {
+                    savedEl.innerHTML = '<div class="empty-state"><i class="bi bi-bookmark"></i><h3>No saved courses</h3><p>Save courses to access them later.</p></div>';
+                }
             }
 
             // Tabs
@@ -203,6 +216,8 @@
                     document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
                 });
             });
+
+            loadDashboard();
         })();
     </script>
     <script>

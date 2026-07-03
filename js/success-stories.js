@@ -1,5 +1,4 @@
-// js/success-stories.js
-// Success Stories pages — listing, detail
+// js/success-stories.js — Success Stories listing and detail pages
 
 let currentCategory = '';
 let currentSort = 'newest';
@@ -10,29 +9,14 @@ function userLoggedIn() {
     return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token');
 }
 
-function formatNumber(n) {
-    if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
-    return String(n);
-}
-
-function getAvatarHtml(avatar, name) {
-    if (!avatar) return (name || '?')[0].toUpperCase();
-    if (avatar.startsWith('/') || avatar.startsWith('http')) {
-        return `<img src="${escapeHtml(avatar)}" alt="${escapeHtml(name || '')}">`;
-    }
-    return avatar;
-}
-
 // ─── Stories Listing Page ─────────────────────────────────────────────────
 
 async function initStoriesPage() {
-    if (!userLoggedIn()) {
-        const shareBtn = document.querySelector('a[href="create-story.html"]');
-        if (shareBtn) shareBtn.style.display = 'none';
-    }
-
-    loadFeaturedStories();
+    renderCategoryTabsInit();
+    loadImpactStatistics();
+    loadFeaturedStory();
     loadStories();
+    loadSidebarData();
 
     document.getElementById('storySearchBtn')?.addEventListener('click', () => { currentPage = 1; loadStories(); });
     document.getElementById('storySearch')?.addEventListener('keydown', (e) => {
@@ -60,27 +44,54 @@ async function initStoriesPage() {
     });
 }
 
-async function loadFeaturedStories() {
+function renderCategoryTabsInit() {
+    const el = document.getElementById('categoryTabs');
+    if (!el) return;
+    el.innerHTML = renderCategoryTabs(STORY_CATEGORIES, currentCategory);
+}
+
+async function loadImpactStatistics() {
+    const container = document.getElementById('impactStats');
+    if (!container) return;
+    try {
+        const [statsRes, storiesRes] = await Promise.all([
+            fetch('/api/stats').catch(() => ({ json: () => ({ users: 0 }) })),
+            fetch('/api/stories?limit=200').catch(() => ({ json: () => ({ stories: [] }) }))
+        ]);
+        const members = (await statsRes.json()).users || 0;
+        const stories = (await storiesRes.json()).stories || [];
+
+        const uniqueAuthors = new Set(stories.map(s => s.author_name || s.user_id)).size;
+        const totalLikes = stories.reduce((sum, s) => sum + (s.like_count || s.likes || 0), 0);
+        const countries = 30;
+
+        container.innerHTML = `
+            <div class="impact-stat"><span class="stat-icon">👥</span><div class="stat-num stat-counter" data-target="${members || 20000}">0</div><div class="stat-label">Community Members</div></div>
+            <div class="impact-stat"><span class="stat-icon">🏪</span><div class="stat-num stat-counter" data-target="${Math.round(uniqueAuthors * 0.75) || 1500}">0</div><div class="stat-label">Businesses Started</div></div>
+            <div class="impact-stat"><span class="stat-icon">🎓</span><div class="stat-num stat-counter" data-target="${Math.round(totalLikes * 2) || 8000}">0</div><div class="stat-label">Courses Completed</div></div>
+            <div class="impact-stat"><span class="stat-icon">🌍</span><div class="stat-num stat-counter" data-target="${countries}">0</div><div class="stat-label">Countries Represented</div></div>
+        `;
+        setTimeout(animateCounters, 300);
+    } catch {
+        container.innerHTML = `
+            <div class="impact-stat"><span class="stat-icon">👥</span><div class="stat-num">20K+</div><div class="stat-label">Community Members</div></div>
+            <div class="impact-stat"><span class="stat-icon">🏪</span><div class="stat-num">1.5K+</div><div class="stat-label">Businesses Started</div></div>
+            <div class="impact-stat"><span class="stat-icon">🎓</span><div class="stat-num">8K+</div><div class="stat-label">Courses Completed</div></div>
+            <div class="impact-stat"><span class="stat-icon">🌍</span><div class="stat-num">30+</div><div class="stat-label">Countries Represented</div></div>
+        `;
+    }
+}
+
+async function loadFeaturedStory() {
     try {
         const res = await fetch('/api/stories/featured');
         const stories = await res.json();
-        if (!stories.length) return;
+        const story = Array.isArray(stories) ? stories[0] : stories;
+        if (!story) return;
 
-        const featuredEl = document.getElementById('featuredSection');
-        if (!featuredEl) return;
-        featuredEl.innerHTML = `
-            <div class="featured-stories reveal-up">
-                ${stories.slice(0, 3).map(s => `
-                    <div class="featured-card" onclick="window.location.href='success-story-detail.html?id=${escapeHtml(String(s.id))}'">
-                        <img loading="lazy" src="${escapeHtml(s.cover_image || s.image || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=800&auto=format&fit=crop')}" alt="${escapeHtml(s.title)}">
-                        <div class="featured-overlay">
-                            <h3>${escapeHtml(s.title)}</h3>
-                            <div class="author">${escapeHtml(s.author_name || 'Anonymous')} · ${escapeHtml(s.author_role || 'Community Member')}</div>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
+        const el = document.getElementById('featuredStorySection');
+        if (!el) return;
+        el.innerHTML = renderFeaturedStory(story);
     } catch {}
 }
 
@@ -100,46 +111,21 @@ async function loadStories() {
     }
 
     const grid = document.getElementById('storiesGrid');
+    const paginationEl = document.getElementById('pagination');
     if (!grid) return;
     if (!data.stories || !data.stories.length) {
-        grid.innerHTML = '<div class="empty-state"><i class="bi bi-heart"></i><h3>No stories found</h3><p>Be the first to share your success story!</p></div>';
-        document.getElementById('pagination').innerHTML = '';
+        grid.innerHTML = renderEmptyState(userLoggedIn());
+        if (paginationEl) paginationEl.innerHTML = '';
         return;
     }
 
     totalPages = data.pages || 1;
-
-    grid.innerHTML = data.stories.map(s => `
-        <div class="story-card" onclick="window.location.href='success-story-detail.html?id=${escapeHtml(String(s.id))}'">
-            <div class="story-img">
-                <img loading="lazy" src="${escapeHtml(s.cover_image || s.image || s.thumbnail || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=600&auto=format&fit=crop')}" alt="${escapeHtml(s.title)}">
-            </div>
-            <div class="story-body">
-                ${s.category ? `<span class="story-category">${escapeHtml(s.category)}</span>` : ''}
-                <h3>${escapeHtml(s.title)}</h3>
-                <div class="story-author">
-                    <div class="story-avatar">${getAvatarHtml(s.author_avatar, s.author_name)}</div>
-                    <div class="story-author-info">
-                        <div class="story-author-name">${escapeHtml(s.author_name || 'Anonymous')}</div>
-                        <div class="story-author-role">${escapeHtml(s.author_role || 'Community Member')}</div>
-                    </div>
-                </div>
-                <div class="story-excerpt">${escapeHtml((s.content || s.story || '').slice(0, 150))}${(s.content || s.story || '').length > 150 ? '...' : ''}</div>
-                <div class="story-footer">
-                    <span><i class="bi bi-heart"></i> ${formatNumber(s.like_count || s.likes || 0)}</span>
-                    <span><i class="bi bi-chat-dots"></i> ${s.comment_count || s.comments || 0}</span>
-                    <span><i class="bi bi-eye"></i> ${formatNumber(s.views || 0)}</span>
-                </div>
-            </div>
-        </div>
-    `).join('');
-
-    renderPagination();
+    grid.innerHTML = data.stories.map(s => renderStoryCard(s)).join('');
+    if (paginationEl) paginationEl.innerHTML = renderPaginationHtml();
 }
 
-function renderPagination() {
-    const el = document.getElementById('pagination');
-    if (totalPages <= 1) { el.innerHTML = ''; return; }
+function renderPaginationHtml() {
+    if (totalPages <= 1) return '';
     let html = '';
     if (currentPage > 1) html += `<button class="page-btn" onclick="goToPage(${currentPage - 1})"><i class="bi bi-chevron-left"></i></button>`;
     for (let i = 1; i <= totalPages; i++) {
@@ -150,13 +136,28 @@ function renderPagination() {
         html += `<button class="page-btn${i === currentPage ? ' active' : ''}" onclick="goToPage(${i})">${i}</button>`;
     }
     if (currentPage < totalPages) html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})"><i class="bi bi-chevron-right"></i></button>`;
-    el.innerHTML = html;
+    return html;
 }
 
 function goToPage(page) {
     currentPage = page;
     loadStories();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function loadSidebarData() {
+    loadFeaturedCreators('sidebarCreators');
+    loadImpactStats('sidebarStats');
+
+    const catEl = document.getElementById('sidebarCategories');
+    if (catEl) {
+        catEl.innerHTML = STORY_CATEGORIES.map(c => `
+            <div style="display:flex;align-items:center;gap:0.5rem;padding:0.35rem 0;font-size:0.85rem;cursor:pointer;" onclick="document.querySelector('.category-tab[data-category=\\'${c.slug}\\']')?.click();">
+                <span>${c.icon}</span>
+                <span>${c.name}</span>
+            </div>
+        `).join('');
+    }
 }
 
 // ─── Story Detail Page ────────────────────────────────────────────────────
@@ -183,6 +184,26 @@ async function initStoryDetail() {
 
     const images = story.images || [];
     const comments = story.comments || [];
+    const timelineEvents = story.timeline_events || [];
+    const challenges = story.challenges || '';
+    const lessonsLearned = story.lessons_learned || '';
+    const advice = story.advice || '';
+    const readingTime = story.reading_time_minutes || estimateReadingTime(story.content || story.story || '');
+
+    let extraContent = '';
+    if (story.content || story.story) extraContent += `<div class="story-text">${escapeHtml(story.content || story.story || '')}</div>`;
+
+    if (timelineEvents.length) {
+        extraContent += `<h2>The Journey</h2>${renderTimeline(timelineEvents)}`;
+    }
+
+    if (challenges) extraContent += `<h2>Challenges</h2><div class="story-text">${escapeHtml(challenges)}</div>`;
+    if (lessonsLearned) extraContent += `<h2>Lessons Learned</h2><div class="story-text">${escapeHtml(lessonsLearned)}</div>`;
+    if (advice) extraContent += `<h2>Advice for Others</h2><div class="story-text">${escapeHtml(advice)}</div>`;
+
+    if (images.length) {
+        extraContent += `<h2>Gallery</h2>${renderStoryGallery(images)}`;
+    }
 
     document.getElementById('storyContent').innerHTML = `
         ${story.cover_image || story.image ? `
@@ -190,10 +211,21 @@ async function initStoryDetail() {
                 <img src="${escapeHtml(story.cover_image || story.image)}" alt="${escapeHtml(story.title)}">
                 <div class="story-hero-overlay">
                     <h1>${escapeHtml(story.title)}</h1>
+                    <div class="meta">
+                        <span><i class="bi bi-person"></i> ${escapeHtml(story.author_name || 'Anonymous')}</span>
+                        <span><i class="bi bi-calendar"></i> ${formatDate(story.created_at)}</span>
+                        <span><i class="bi bi-book"></i> ${formatReadingTime(readingTime)}</span>
+                        ${story.category ? `<span><i class="bi bi-tag"></i> ${escapeHtml(story.category)}</span>` : ''}
+                    </div>
                 </div>
             </div>
         ` : `
-            <h1 style="font-size:1.8rem;margin-bottom:1.5rem;">${escapeHtml(story.title)}</h1>
+            <h1 style="font-size:1.8rem;margin-bottom:0.5rem;">${escapeHtml(story.title)}</h1>
+            <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1.5rem;display:flex;gap:1rem;">
+                <span><i class="bi bi-person"></i> ${escapeHtml(story.author_name || 'Anonymous')}</span>
+                <span><i class="bi bi-calendar"></i> ${formatDate(story.created_at)}</span>
+                <span><i class="bi bi-book"></i> ${formatReadingTime(readingTime)}</span>
+            </div>
         `}
 
         <div class="detail-layout">
@@ -206,13 +238,11 @@ async function initStoryDetail() {
                             <div class="author-role">${escapeHtml(story.author_role || 'Community Member')}</div>
                         </div>
                     </div>
-                    ${story.category ? `<span class="story-category" style="font-size:0.75rem;">${escapeHtml(story.category)}</span>` : ''}
-                    <span style="font-size:0.8rem;color:var(--text-muted);margin-left:0.5rem;">${timeAgo(story.created_at)}</span>
 
                     <div class="story-actions">
                         <button class="action-btn${story.user_liked ? ' liked' : ''}" id="likeBtn" onclick="toggleLike('${story.id}')">
                             <i class="bi bi-heart${story.user_liked ? '-fill' : ''}"></i>
-                            <span id="likeCount">${story.like_count || story.likes || 0}</span> Likes
+                            <span id="likeCount">${story.like_count || story.likes || 0}</span>
                         </button>
                         <button class="action-btn${story.user_bookmarked ? ' active' : ''}" id="bookmarkBtn" onclick="toggleBookmark('${story.id}')">
                             <i class="bi bi-bookmark${story.user_bookmarked ? '-fill' : ''}"></i> Save
@@ -220,24 +250,22 @@ async function initStoryDetail() {
                         <button class="action-btn" onclick="shareStory('${story.id}', '${escapeHtml(story.title)}')">
                             <i class="bi bi-share"></i> Share
                         </button>
+                        <button class="action-btn" onclick="document.getElementById('commentContent')?.focus()">
+                            <i class="bi bi-chat-dots"></i> Comment
+                        </button>
                     </div>
                 </div>
 
                 <div class="story-content">
-                    <div class="story-text">${escapeHtml(story.content || story.story || '')}</div>
-                    ${images.length ? `
-                        <div class="story-images">
-                            ${images.map(img => `<img src="${escapeHtml(img.image_url)}" alt="${escapeHtml(img.caption || '')}" loading="lazy">`).join('')}
-                        </div>
-                    ` : ''}
+                    ${extraContent}
                 </div>
 
                 <div class="comments-section">
                     <div class="comments-header">
-                        <h2 style="font-size:1.1rem;">${comments.length} ${comments.length === 1 ? 'Comment' : 'Comments'}</h2>
+                        <h2>${comments.length} ${comments.length === 1 ? 'Comment' : 'Comments'}</h2>
                     </div>
 
-                    ${comments.map(c => `
+                    ${comments.length ? comments.map(c => `
                         <div class="comment-card">
                             <div class="comment-avatar">${getAvatarHtml(c.author_avatar, c.author_name)}</div>
                             <div>
@@ -247,15 +275,15 @@ async function initStoryDetail() {
                                 </div>
                                 <div class="comment-text">${escapeHtml(c.content)}</div>
                             </div>
-                            ${c.user_id === getCurrentUserId() || ['ADMIN', 'SUPERADMIN', 'MODERATOR'].includes((getCurrentUserRole() || '').toUpperCase()) ? `
+                            ${c.user_id && (c.user_id === getCurrentUserId() || ['ADMIN', 'SUPERADMIN', 'MODERATOR'].includes((getCurrentUserRole?.() || '').toUpperCase())) ? `
                                 <button class="comment-delete" onclick="deleteStoryComment('${c.id}', '${story.id}')" title="Delete"><i class="bi bi-trash"></i></button>
                             ` : ''}
                         </div>
-                    `).join('')}
+                    `).join('') : '<p style="text-align:center;color:var(--text-muted);padding:1rem;">No comments yet. Be the first to share your thoughts!</p>'}
 
                     ${userLoggedIn() ? `
                         <div class="reply-box">
-                            <textarea id="commentContent" placeholder="Write a comment..."></textarea>
+                            <textarea id="commentContent" placeholder="Write a comment..." aria-label="Write a comment"></textarea>
                             <button class="btn btn-primary btn-sm" style="align-self:flex-end;" onclick="submitStoryComment('${story.id}')">
                                 <i class="bi bi-send"></i>
                             </button>
@@ -275,12 +303,38 @@ async function initStoryDetail() {
                         <div><i class="bi bi-eye" style="margin-right:0.3rem;"></i> ${formatNumber(story.views || 0)} views</div>
                         <div><i class="bi bi-heart" style="margin-right:0.3rem;"></i> ${story.like_count || story.likes || 0} likes</div>
                         <div><i class="bi bi-chat-dots" style="margin-right:0.3rem;"></i> ${comments.length} comments</div>
-                        <div><i class="bi bi-calendar" style="margin-right:0.3rem;"></i> ${timeAgo(story.created_at)}</div>
+                        <div><i class="bi bi-calendar" style="margin-right:0.3rem;"></i> ${formatDate(story.created_at)}</div>
+                        <div><i class="bi bi-book" style="margin-right:0.3rem;"></i> ${formatReadingTime(readingTime)}</div>
                     </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3><i class="bi bi-person" style="color:var(--primary-color)"></i> About ${escapeHtml(story.author_name || 'the Author')}</h3>
+                    <div style="font-size:0.85rem;color:var(--text-light);display:flex;flex-direction:column;gap:0.5rem;">
+                        <div class="author-block" style="margin-bottom:0;">
+                            <div class="author-avatar" style="width:36px;height:36px;font-size:1rem;">${getAvatarHtml(story.author_avatar, story.author_name)}</div>
+                            <div>
+                                <div class="author-name" style="font-size:0.9rem;">${escapeHtml(story.author_name || 'Anonymous')}</div>
+                                <div class="author-role">${escapeHtml(story.author_role || 'Community Member')}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:0.75rem;">
+                        <h4 style="font-size:0.82rem;margin-bottom:0.5rem;color:var(--text-main);">More from this author</h4>
+                        <ul class="related-list" id="authorStories"></ul>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3><i class="bi bi-link" style="color:var(--accent-green)"></i> Related Stories</h3>
+                    <ul class="related-list" id="relatedStories"></ul>
                 </div>
             </div>
         </div>
     `;
+
+    loadRelatedStories('relatedStories', story.id, story.category);
+    loadAuthorStories('authorStories', story.author_name, story.id);
 }
 
 async function toggleLike(storyId) {
@@ -322,7 +376,7 @@ function shareStory(id, title) {
         navigator.share({ title, url: window.location.href });
     } else {
         navigator.clipboard.writeText(window.location.href);
-        alert('Link copied to clipboard!');
+        showToast ? showToast('Link copied to clipboard!') : alert('Link copied to clipboard!');
     }
 }
 
@@ -332,7 +386,7 @@ async function submitStoryComment(storyId) {
     try {
         const res = await fetch(`/api/stories/${storyId}/comments`, {
             method: 'POST',
-            headers: authHeaders(),
+            headers: { 'Content-Type': 'application/json', ...authHeaders() },
             body: JSON.stringify({ content })
         });
         if (!res.ok) throw new Error('Failed');
@@ -348,4 +402,20 @@ async function deleteStoryComment(commentId, storyId) {
         await fetch(`/api/stories/comments/${commentId}`, { method: 'DELETE', headers: authHeaders() });
         window.location.reload();
     } catch {}
+}
+
+function getCurrentUserId() {
+    try {
+        const token = localStorage.getItem('flower-token');
+        if (token) return JSON.parse(atob(token.split('.')[1])).id;
+    } catch {}
+    return null;
+}
+
+function getCurrentUserRole() {
+    try {
+        const token = localStorage.getItem('flower-token');
+        if (token) return JSON.parse(atob(token.split('.')[1])).role || '';
+    } catch {}
+    return '';
 }

@@ -438,7 +438,7 @@ router.get('/list/florists', asyncHandler(async (req, res) => {
                     u.profile_image AS image,
                     u.role,
                     COALESCE(u.location, '') AS location,
-                    COALESCE(u.business_type, u.role) AS specialty,
+                    COALESCE(u.business_type, u.role::text) AS specialty,
                     COALESCE(u.description, '') AS description,
                     u.email,
                     COALESCE(AVG(pr.rating)::numeric(2,1), 0) AS rating,

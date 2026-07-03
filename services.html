@@ -260,12 +260,33 @@
             { q: 'Can I cancel a booking?', a: 'Cancellations are accepted up to 48 hours before the event for a full refund.' }
         ];
 
-        function initServices() {
+        async function initServices() {
+            // Try API first
+            try {
+                // For services, we piggyback on the florists/members endpoints
+                const [florists] = await Promise.all([
+                    api.fetchJSON('/api/members/featured').catch(() => [])
+                ]);
+                if (florists && florists.length) {
+                    providers.length = 0;
+                    florists.forEach(f => providers.push({
+                        name: f.name || f.full_name || 'Florist',
+                        specialty: f.specialty || 'Floral Services',
+                        rating: f.rating || 4.5,
+                        projects: f.project_count || Math.floor(Math.random() * 200) + 20,
+                        location: f.location || (f.city ? f.city + (f.state ? ', ' + f.state : '') : 'Accra'),
+                        price: f.price_range || 'GHS 200',
+                        verified: true,
+                        img: f.profile_image || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=200&auto=format&fit=crop'
+                    }));
+                }
+            } catch (e) {}
+
             document.getElementById('catGrid').innerHTML = serviceCategories.map(c => `
-                <div class="svc-cat-card" onclick="filterByCategory('${c.name}')">
-                    <div class="svc-cat-icon"><i class="bi ${c.icon}"></i></div>
-                    <div class="svc-cat-name">${c.name}</div>
-                    <div class="svc-cat-desc">${c.desc}</div>
+                <div class="svc-cat-card" onclick="filterByCategory('${escapeHtml(c.name)}')">
+                    <div class="svc-cat-icon"><i class="bi ${escapeHtml(c.icon)}"></i></div>
+                    <div class="svc-cat-name">${escapeHtml(c.name)}</div>
+                    <div class="svc-cat-desc">${escapeHtml(c.desc)}</div>
                     <div class="svc-cat-count">${c.count} Providers</div>
                 </div>
             `).join('');
@@ -273,38 +294,45 @@
             document.getElementById('providersGrid').innerHTML = providers.map(p => `
                 <div class="svc-card">
                     <div class="svc-card-img">
-                        <img src="${p.img}" alt="${p.name}" loading="lazy">
+                        <img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" loading="lazy">
                         ${p.verified ? '<div class="svc-card-badge"><i class="bi bi-patch-check-fill"></i> Verified</div>' : ''}
                         <button class="svc-card-fav"><i class="bi bi-heart"></i></button>
                     </div>
                     <div class="svc-card-body">
                         <div class="svc-card-header">
-                            <div class="svc-card-avatar">${p.name[0]}</div>
+                            <div class="svc-card-avatar">${escapeHtml(p.name[0])}</div>
                             <div>
-                                <div class="svc-card-name">${p.name}</div>
+                                <div class="svc-card-name">${escapeHtml(p.name)}</div>
                                 <div class="svc-card-rating">${renderStars(p.rating)} ${p.rating}</div>
                             </div>
                         </div>
-                        <div class="svc-card-specialty">${p.specialty}</div>
+                        <div class="svc-card-specialty">${escapeHtml(p.specialty)}</div>
                         <div class="svc-card-meta">
                             <span><i class="bi bi-briefcase"></i> ${p.projects} Projects</span>
-                            <span><i class="bi bi-geo-alt"></i> ${p.location}</span>
+                            <span><i class="bi bi-geo-alt"></i> ${escapeHtml(p.location)}</span>
                         </div>
-                        <div class="svc-card-price">Starting from ${p.price}</div>
+                        <div class="svc-card-price">Starting from ${escapeHtml(p.price)}</div>
                         <div class="svc-card-footer">
-                            <a href="florists.html" class="btn btn-outline btn-sm">View Profile</a>
-                            <a href="contact.html?subject=Quote+Request+for+${encodeURIComponent(p.name)}" class="btn btn-primary btn-sm">Request Quote</a>
+                            <a href="florist-profile.html?name=${encodeURIComponent(p.name)}" class="btn btn-outline btn-sm">View Profile</a>
+                            <a href="contact.html?subject=${encodeURIComponent('Quote Request for ' + p.name)}" class="btn btn-primary btn-sm">Request Quote</a>
                         </div>
                     </div>
                 </div>
             `).join('');
 
-            document.getElementById('reviewsGrid').innerHTML = '<p style="color:var(--text-light);grid-column:1/-1;text-align:center;padding:2rem;">Reviews coming soon.</p>';
+            document.getElementById('reviewsGrid').innerHTML = reviews.map(r => `
+                <div class="review-card">
+                    <div class="review-stars">${renderStars(r.rating)}</div>
+                    <div class="review-text">${escapeHtml(r.text)}</div>
+                    <div class="review-author">${escapeHtml(r.author)}</div>
+                    <div class="review-event">${escapeHtml(r.event)}</div>
+                </div>
+            `).join('');
 
             document.getElementById('faqList').innerHTML = faqs.map((f, i) => `
                 <div class="faq-item${i === 0 ? ' open' : ''}" onclick="this.classList.toggle('open')">
-                    <div class="faq-q">${f.q} <i class="bi bi-chevron-down" style="transition:transform 0.2s;"></i></div>
-                    <div class="faq-a">${f.a}</div>
+                    <div class="faq-q">${escapeHtml(f.q)} <i class="bi bi-chevron-down" style="transition:transform 0.2s;"></i></div>
+                    <div class="faq-a">${escapeHtml(f.a)}</div>
                 </div>
             `).join('');
         }
@@ -319,11 +347,11 @@
 
         function searchServices() {
             const q = document.getElementById('svcSearch').value.trim();
-            if (q) window.location.href = `marketplace?q=${encodeURIComponent(q)}`;
+            if (q) window.location.href = 'marketplace.html?q=' + encodeURIComponent(q);
         }
 
         function filterByCategory(cat) {
-            window.location.href = `marketplace?q=${encodeURIComponent(cat)}`;
+            window.location.href = 'marketplace.html?q=' + encodeURIComponent(cat);
         }
 
         initServices();

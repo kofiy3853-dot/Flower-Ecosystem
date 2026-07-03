@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Showcase project detail — floral creation from the Flower Ecosystem community.">
+    <title>Project Detail | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        body { background:#FFF8FB; }
+        .scd-back { display:inline-flex;align-items:center;gap:0.4rem;font-size:0.85rem;color:var(--text-light);margin-bottom:1rem;text-decoration:none; }
+        .scd-back:hover { color:var(--primary-color); }
+        .scd-hero { width:100%; max-height:70vh; overflow:hidden; border-radius:var(--radius-lg); margin-bottom:1.5rem; position:relative; }
+        .scd-hero img { width:100%; display:block; object-fit:cover; }
+        .scd-gallery-thumbs { display:flex; gap:0.5rem; overflow-x:auto; margin-bottom:1.5rem; padding-bottom:0.5rem; }
+        .scd-thumb { width:80px; height:60px; border-radius:6px; overflow:hidden; cursor:pointer; opacity:0.6; transition:all 0.2s; border:2px solid transparent; flex-shrink:0; }
+        .scd-thumb:hover, .scd-thumb.active { opacity:1; border-color:var(--primary-color); }
+        .scd-thumb img { width:100%; height:100%; object-fit:cover; }
+        .scd-layout { display:grid; grid-template-columns:1fr 320px; gap:2rem; }
+        .scd-main { min-width:0; }
+        .scd-sidebar { display:flex; flex-direction:column; gap:1.25rem; }
+        .scd-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; }
+        .scd-title { font-family:'Playfair Display',serif; font-size:1.6rem; margin-bottom:0.3rem; }
+        .scd-meta { display:flex; gap:0.75rem; flex-wrap:wrap; font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem; }
+        .scd-creator { display:flex; align-items:center; gap:0.75rem; margin-bottom:1.25rem; cursor:pointer; }
+        .scd-creator-avatar { width:44px;height:44px;border-radius:50%;background:var(--bg-light);display:flex;align-items:center;justify-content:center;font-size:1.1rem;overflow:hidden;flex-shrink:0; }
+        .scd-creator-avatar img { width:100%;height:100%;object-fit:cover; }
+        .scd-creator-name { font-weight:600; }
+        .scd-creator-role { font-size:0.82rem;color:var(--text-light); }
+        .scd-actions { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.25rem; }
+        .scd-action-btn { display:flex;align-items:center;gap:0.3rem;padding:0.5rem 1rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);background:var(--bg-white);color:var(--text-light);cursor:pointer;font-size:0.85rem;transition:all 0.2s; }
+        .scd-action-btn:hover { border-color:var(--primary-color);color:var(--primary-color); }
+        .scd-action-btn.liked { background:var(--error-color);color:white;border-color:var(--error-color); }
+        .scd-action-btn.saved i { color:var(--primary-color); }
+        .scd-description { font-size:0.95rem;line-height:1.8;color:var(--text-main);white-space:pre-wrap;margin-bottom:1.5rem; }
+        .scd-flowers { display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem; }
+        .scd-flower-tag { display:inline-flex;align-items:center;gap:0.3rem;padding:0.35rem 0.7rem;background:var(--primary-light);border-radius:15px;font-size:0.82rem;color:var(--primary-color); }
+        .scd-tag { display:inline-flex;padding:0.25rem 0.6rem;background:var(--bg-light);border-radius:4px;font-size:0.78rem;color:var(--text-light); }
+        .scd-detail-row { display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border-light);font-size:0.88rem; }
+        .scd-detail-row:last-child { border-bottom:none; }
+        .scd-detail-label { color:var(--text-muted); }
+        .scd-detail-value { font-weight:500; }
+        .scd-comments { background:var(--bg-white);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:1.5rem;margin-top:1.5rem; }
+        .scd-comment { display:grid;grid-template-columns:auto 1fr;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light); }
+        .scd-comment:last-child { border-bottom:none; }
+        .scd-comment-avatar { width:32px;height:32px;border-radius:50%;background:var(--bg-light);display:flex;align-items:center;justify-content:center;font-size:0.8rem;overflow:hidden;flex-shrink:0; }
+        .scd-comment-avatar img { width:100%;height:100%;object-fit:cover; }
+        .scd-comment-name { font-weight:500;font-size:0.85rem; }
+        .scd-comment-time { font-size:0.75rem;color:var(--text-muted); }
+        .scd-comment-text { font-size:0.88rem;margin-top:0.2rem; }
+        .scd-reply-box { display:flex;gap:0.75rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border-light); }
+        .scd-reply-box textarea { flex:1;padding:0.6rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-family:inherit;font-size:0.88rem;resize:none;min-height:60px; }
+        .scd-reply-box textarea:focus { outline:none;border-color:var(--primary-color); }
+        .scd-login-prompt { text-align:center;padding:1rem;color:var(--text-muted);font-size:0.88rem; }
+        .scd-login-prompt a { color:var(--primary-color); }
+        .scd-related-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:1rem; }
+        .scd-related-item { border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;border:1px solid var(--border-color); }
+        .scd-related-item img { width:100%;height:140px;object-fit:cover;display:block; }
+        .scd-related-body { padding:0.5rem 0.75rem 0.75rem; }
+        .scd-related-body h4 { font-size:0.85rem; }
+        .empty-state { text-align:center;padding:3rem 1rem;color:var(--text-light); }
+        .empty-state i { font-size:3rem;display:block;margin-bottom:1rem;opacity:0.5; }
+
+        /* Before & After slider */
+        .ba-container { position:relative;width:100%;overflow:hidden;border-radius:var(--radius-md);user-select:none;cursor:ew-resize;margin-bottom:1.5rem; }
+        .ba-img { position:absolute;inset:0;width:100%;height:100%; }
+        .ba-img img { width:100%;height:100%;object-fit:cover;display:block; }
+        .ba-before { position:relative;z-index:1; }
+        .ba-after { z-index:2;clip-path:inset(0 0 0 50%); }
+        .ba-label { position:absolute;bottom:12px;font-size:0.75rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:4px;text-transform:uppercase;letter-spacing:0.05em; }
+        .ba-label-before { left:12px;background:rgba(0,0,0,0.6);color:white; }
+        .ba-label-after { right:12px;background:rgba(216,68,124,0.85);color:white; }
+        .ba-handle { position:absolute;top:50%;left:50%;z-index:3;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;background:white;border:2px solid var(--primary-color);display:flex;align-items:center;justify-content:center;color:var(--primary-color);box-shadow:0 2px 8px rgba(0,0,0,0.2);pointer-events:none;transition:left 0.05s; }
+        .ba-range { position:absolute;top:0;left:0;width:100%;height:100%;z-index:4;opacity:0;cursor:ew-resize; }
+        .ba-before-cta { text-align:center;margin-bottom:1.5rem; }
+        .ba-before-cta button { padding:0.4rem 1rem;border:1px solid var(--primary-color);border-radius:20px;background:white;color:var(--primary-color);font-size:0.82rem;cursor:pointer; }
+
+        @media(max-width:1024px) { .scd-layout { grid-template-columns:1fr; } .scd-sidebar { display:none; } }
+        @media(max-width:640px) { .scd-title { font-size:1.3rem; } .scd-hero { max-height:50vh; } }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+    <section class="section-padding" style="padding-top:2rem;">
+        <div class="container">
+            <a href="showcase.html" class="scd-back"><i class="bi bi-arrow-left"></i> Back to Showcase</a>
+            <div id="projectContent">
+                <div class="empty-state"><i class="bi bi-hourglass-split"></i><h3>Loading project...</h3></div>
+            </div>
+        </div>
+    </section>
+    <div id="footer-container"></div>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/ui.js?v=2.0"></script>
+    <script src="js/shared/cart.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+    <script src="js/components/showcase-card.js?v=2.0"></script>
+    <script src="js/components/before-after.js"></script>
+    <script src="js/showcase.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', initShowcaseDetail);
+    </script>
+</body>
+</html>

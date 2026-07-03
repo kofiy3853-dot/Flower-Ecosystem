@@ -168,6 +168,19 @@ async function run() {
             }
         }
 
+        // Run posts enhanced schema
+        const postsEnhancedPath = path.join(__dirname, 'sql', 'posts-enhanced.sql');
+        if (fs.existsSync(postsEnhancedPath)) {
+            const postsEnhanced = fs.readFileSync(postsEnhancedPath, 'utf8');
+            console.log('Running posts-enhanced.sql...');
+            try {
+                await client.query(postsEnhanced);
+                console.log('Posts enhanced schema applied.');
+            } catch (e) {
+                console.log('Posts enhanced schema partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
         console.log('Database initialized successfully.');
     } catch (err) {
         console.error('DB init error:', err.message);

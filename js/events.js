@@ -1,12 +1,37 @@
-// js/events.js
-// Events & Workshops pages — listing, detail, calendar
+// js/events.js — Events page (enhanced 3-column layout)
 
 let currentCategory = '';
 let currentSort = 'date';
 let currentView = 'grid';
+let currentFilter = 'all';
 let currentPage = 1;
 let totalPages = 1;
 let calendarMonth, calendarYear;
+let miniCalMonth, miniCalYear;
+let carouselIndex = 0;
+let carouselInterval;
+
+const EVENT_CATEGORIES = [
+    { slug: 'workshop', name: 'Workshops', icon: '✂️' },
+    { slug: 'webinar', name: 'Webinars', icon: '🎥' },
+    { slug: 'floral-design', name: 'Floral Design', icon: '💐' },
+    { slug: 'farming', name: 'Farming', icon: '🌱' },
+    { slug: 'competition', name: 'Competitions', icon: '🏆' },
+    { slug: 'festival', name: 'Festivals', icon: '🎪' },
+    { slug: 'networking', name: 'Networking', icon: '🤝' },
+    { slug: 'learning', name: 'Learning', icon: '🎓' }
+];
+
+// ─── Utilities ─────────────────────────────────────────────────────────
+
+function showToast(msg) {
+    const el = document.getElementById('evtToast');
+    if (!el) { alert(msg); return; }
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._timeout);
+    el._timeout = setTimeout(() => el.classList.remove('show'), 3000);
+}
 
 function userLoggedIn() {
     try { return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token'); } catch { return false; }
@@ -35,110 +60,188 @@ function getEventTypeClass(type) {
     const t = (type || '').toLowerCase();
     if (t.includes('workshop')) return 'workshop';
     if (t.includes('webinar')) return 'webinar';
+    if (t.includes('competition')) return 'competition';
     if (t.includes('exhibition') || t.includes('show')) return 'exhibition';
     return 'workshop';
 }
 
-// ─── Events Listing Page ──────────────────────────────────────────────────
+// ─── Init ──────────────────────────────────────────────────────────────
 
 async function initEventsPage() {
     const now = new Date();
     calendarMonth = now.getMonth() + 1;
     calendarYear = now.getFullYear();
+    miniCalMonth = now.getMonth();
+    miniCalYear = now.getFullYear();
 
-    await loadEventCategories();
-    loadFeaturedEvent();
+    renderCategoryCards();
+    renderMiniCalendar();
+    setupLeftSidebar();
+    setupSortTabs();
+    setupFilterChips();
+    await Promise.all([
+        loadFeaturedCarousel(),
+        loadEvents(),
+        loadSidebarData()
+    ]);
+}
+
+// ─── Category Cards ────────────────────────────────────────────────────
+
+function renderCategoryCards() {
+    const el = document.getElementById('catCards');
+    if (!el) return;
+    el.innerHTML = renderCategoryCards(EVENT_CATEGORIES, currentCategory, 'selectCategory');
+
+    const mobileEl = document.getElementById('mobileCategories');
+    if (mobileEl) {
+        mobileEl.innerHTML = renderMobileCategoryChips(EVENT_CATEGORIES, currentCategory);
+    }
+}
+
+function selectCategory(slug) {
+    currentCategory = currentCategory === slug ? '' : slug;
+    currentPage = 1;
+    renderCategoryCards();
     loadEvents();
+}
 
-    document.getElementById('eventSearchBtn')?.addEventListener('click', () => { currentPage = 1; loadEvents(); });
-    document.getElementById('eventSearch')?.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') { currentPage = 1; loadEvents(); }
+// ─── Left Sidebar Navigation ───────────────────────────────────────────
+
+function setupLeftSidebar() {
+    document.querySelectorAll('.evt-nav-item[data-filter]').forEach(item => {
+        item.addEventListener('click', e => {
+            e.preventDefault();
+            const filter = item.dataset.filter;
+            document.querySelectorAll('.evt-nav-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            currentFilter = filter;
+            currentCategory = '';
+            currentPage = 1;
+            renderCategoryCards();
+            loadEvents();
+        });
     });
+}
 
-    document.getElementById('categoryTabs')?.addEventListener('click', (e) => {
-        const tab = e.target.closest('.category-tab');
-        if (!tab) return;
-        document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        currentCategory = tab.dataset.category || '';
-        currentPage = 1;
-        loadEvents();
-    });
+// ─── Sort & Filter ─────────────────────────────────────────────────────
 
-    document.getElementById('sortTabs')?.addEventListener('click', (e) => {
-        const tab = e.target.closest('.sort-tab');
+function setupSortTabs() {
+    document.getElementById('sortTabs')?.addEventListener('click', e => {
+        const tab = e.target.closest('.evt-sort-tab');
         if (!tab) return;
-        document.querySelectorAll('.sort-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.evt-sort-tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         currentSort = tab.dataset.sort;
         currentPage = 1;
         loadEvents();
     });
+}
 
-    document.querySelectorAll('.view-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentView = btn.dataset.view;
-            if (currentView === 'calendar') {
-                loadCalendar();
-            } else {
-                loadEvents();
-            }
-        });
+function setupFilterChips() {
+    document.getElementById('filterChips')?.addEventListener('click', e => {
+        const chip = e.target.closest('.evt-chip');
+        if (!chip) return;
+        document.querySelectorAll('.evt-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentFilter = chip.dataset.filter;
+        currentPage = 1;
+        loadEvents();
     });
 }
 
-async function loadEventCategories() {
-    let categories;
-    try {
-        const res = await fetch('/api/events/categories');
-        categories = await res.json();
-    } catch {
-        categories = [];
+function setView(view) {
+    currentView = view;
+    document.querySelectorAll('.evt-view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+    if (view === 'calendar') {
+        loadCalendar();
+    } else {
+        loadEvents();
     }
-    const tabs = document.getElementById('categoryTabs');
-    if (!tabs) return;
-    tabs.innerHTML = `<button class="category-tab active" data-category="">All Events</button>` +
-        categories.map(c => `<button class="category-tab" data-category="${escapeHtml(c.name)}">${c.icon || ''} ${escapeHtml(c.name)}</button>`).join('');
 }
 
-async function loadFeaturedEvent() {
-    try {
-        const res = await fetch('/api/events/featured');
-        const event = await res.json();
-        if (!event || !event.id) return;
+// ─── Search ────────────────────────────────────────────────────────────
 
-        document.getElementById('featuredBanner').innerHTML = `
-            <div class="featured-banner reveal-up" onclick="window.location.href='event-detail.html?id=${escapeHtml(String(event.id))}'" style="cursor:pointer;">
-                <img class="featured-img" src="${escapeHtml(event.image_url || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=800&auto=format&fit=crop')}" alt="${escapeHtml(event.title)}">
-                <div class="featured-info">
-                    <div class="featured-badge"><i class="bi bi-star-fill"></i> Featured Event</div>
-                    <h2>${escapeHtml(event.title)}</h2>
-                    <div class="featured-meta">
-                        <span><i class="bi bi-calendar"></i> ${formatDate(event.event_date)}</span>
-                        <span><i class="bi bi-clock"></i> ${formatTime(event.event_date)}</span>
-                        <span><i class="bi bi-geo-alt"></i> ${escapeHtml(event.location || 'Online')}</span>
-                        ${event.speakers ? `<span><i class="bi bi-person"></i> ${(JSON.parse(typeof event.speakers === 'string' ? event.speakers : JSON.stringify(event.speakers))[0] || {}).name || 'TBA'}</span>` : ''}
-                        ${event.max_participants ? `<span><i class="bi bi-people"></i> ${event.registrations || 0}/${event.max_participants} Seats</span>` : ''}
-                    </div>
-                    <div class="featured-desc">${escapeHtml((event.description || '').slice(0, 150))}${(event.description || '').length > 150 ? '...' : ''}</div>
-                    <div class="featured-footer">
-                        <a href="event-detail.html?id=${escapeHtml(String(event.id))}" class="btn btn-primary" onclick="event.stopPropagation();">Register Now →</a>
-                        <span class="event-price${event.price == 0 ? ' free' : ''}" style="font-size:1.1rem;">${event.price == 0 ? 'FREE' : '$' + parseFloat(event.price).toFixed(2)}</span>
-                    </div>
-                </div>
-            </div>
-        `;
+function searchFromHero() {
+    currentPage = 1;
+    loadEvents();
+    if (window.innerWidth <= 900) {
+        setTimeout(() => {
+            document.getElementById('eventsContainer')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
+}
+
+// ─── Featured Carousel ─────────────────────────────────────────────────
+
+async function loadFeaturedCarousel() {
+    try {
+        const data = await api.fetchJSON('/api/events?limit=3&sort=popular&status=upcoming');
+        const events = data.events || [];
+        if (!events.length) return;
+
+        const carousel = document.getElementById('featuredCarousel');
+        const track = document.getElementById('featuredTrack');
+        const dots = document.getElementById('carouselDots');
+
+        track.innerHTML = events.map(e => renderFeaturedBanner(e)).join('');
+
+        dots.innerHTML = events.map((_, i) => `<div class="evt-carousel-dot${i === 0 ? ' active' : ''}" onclick="goToSlide(${i})"></div>`).join('');
+
+        carousel.style.display = 'block';
+        startCarousel(events.length);
     } catch {}
 }
 
+function startCarousel(count) {
+    if (count <= 1) return;
+    clearInterval(carouselInterval);
+    carouselInterval = setInterval(() => carouselNav(1), 5000);
+}
+
+function carouselNav(dir) {
+    const track = document.getElementById('featuredTrack');
+    const dots = document.querySelectorAll('.evt-carousel-dot');
+    const total = dots.length;
+    if (!total) return;
+
+    carouselIndex = (carouselIndex + dir + total) % total;
+    track.style.transform = `translateX(-${carouselIndex * 100}%)`;
+    dots.forEach((d, i) => d.classList.toggle('active', i === carouselIndex));
+
+    clearInterval(carouselInterval);
+    carouselInterval = setInterval(() => carouselNav(1), 5000);
+}
+
+function goToSlide(i) {
+    carouselIndex = i;
+    const track = document.getElementById('featuredTrack');
+    const dots = document.querySelectorAll('.evt-carousel-dot');
+    track.style.transform = `translateX(-${i * 100}%)`;
+    dots.forEach((d, idx) => d.classList.toggle('active', idx === i));
+    clearInterval(carouselInterval);
+    carouselInterval = setInterval(() => carouselNav(1), 5000);
+}
+
+// ─── Load Events ───────────────────────────────────────────────────────
+
 async function loadEvents() {
-    const searchEl = document.getElementById('eventSearch');
+    if (currentView === 'calendar') return loadCalendar();
+
+    const searchEl = document.getElementById('heroSearch');
     const search = searchEl ? searchEl.value.trim() : '';
     const params = new URLSearchParams({ sort: currentSort, page: currentPage, limit: 20 });
+
     if (currentCategory) params.set('category', currentCategory);
     if (search) params.set('search', search);
+
+    // Map filters
+    if (currentFilter === 'free') params.set('type', 'free');
+    if (currentFilter === 'online') params.set('type', 'online');
+    if (currentFilter === 'in-person') params.set('type', 'in-person');
+    if (currentFilter === 'upcoming') params.set('status', 'upcoming');
+    if (currentFilter === 'past') params.set('status', 'past');
+    if (currentFilter === 'this-week' || currentFilter === 'this-month') params.set('status', 'upcoming');
 
     let data;
     try {
@@ -150,64 +253,26 @@ async function loadEvents() {
 
     const container = document.getElementById('eventsContainer');
     if (!container) return;
+
+    totalPages = data.pages || 1;
+
     if (!data.events || !data.events.length) {
         container.innerHTML = '';
         container.className = '';
-        container.innerHTML = '<div class="empty-state"><i class="bi bi-calendar-x"></i><h3>No events found</h3><p>Try selecting a different category or check back later.</p></div>';
+        container.innerHTML = renderEmptyState(currentView);
         document.getElementById('pagination').innerHTML = '';
         return;
     }
 
-    totalPages = data.pages || 1;
-
     if (currentView === 'list') {
-        container.className = 'events-list';
-        container.innerHTML = data.events.map(ev => `
-            <div class="event-list-item" onclick="window.location.href='event-detail.html?id=${escapeHtml(String(ev.id))}'">
-                <div class="event-list-date"><span class="day">${getEventDay(ev.event_date)}</span><span class="month">${getEventMonth(ev.event_date)}</span></div>
-                <div>
-                    <div class="event-category">${escapeHtml(ev.event_category || ev.event_type || '')}</div>
-                    <h3 style="font-size:1rem;margin-bottom:0.25rem;">${escapeHtml(ev.title)}</h3>
-                    <div class="event-meta">
-                        <span><i class="bi bi-geo-alt"></i> ${escapeHtml(ev.location || 'Online')}</span>
-                        <span><i class="bi bi-clock"></i> ${formatTime(ev.event_date)}</span>
-                        ${ev.max_participants ? `<span><i class="bi bi-people"></i> ${(ev.max_participants - (ev.registrations || 0))} spots left</span>` : ''}
-                    </div>
-                </div>
-                <div style="text-align:right;">
-                    <div class="event-price${ev.price == 0 ? ' free' : ''}">${ev.price == 0 ? 'FREE' : '$' + parseFloat(ev.price).toFixed(2)}</div>
-                    <button class="btn btn-primary btn-sm" style="margin-top:0.5rem;">Details →</button>
-                </div>
-            </div>
-        `).join('');
+        container.className = 'evt-list';
+        container.innerHTML = data.events.map(e => renderEventCard(e, 'list')).join('');
     } else {
-        container.className = 'events-grid';
-        container.innerHTML = data.events.map(ev => `
-            <div class="event-card" onclick="window.location.href='event-detail.html?id=${escapeHtml(String(ev.id))}'">
-                <div class="event-img-wrap">
-                    <img loading="lazy" src="${escapeHtml(ev.image_url || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=600&auto=format&fit=crop')}" alt="${escapeHtml(ev.title)}">
-                    <div class="event-date-badge"><span class="day">${getEventDay(ev.event_date)}</span><span class="month">${getEventMonth(ev.event_date)}</span></div>
-                    <div class="event-type-badge">${escapeHtml(ev.event_type || 'Event')}</div>
-                </div>
-                <div class="event-body">
-                    <span class="event-category">${escapeHtml(ev.event_category || '')}</span>
-                    <h3>${escapeHtml(ev.title)}</h3>
-                    <div class="event-meta">
-                        <span><i class="bi bi-geo-alt"></i> ${escapeHtml(ev.location || 'Online')}</span>
-                        <span><i class="bi bi-clock"></i> ${formatTime(ev.event_date)}</span>
-                        ${ev.max_participants ? `<span><i class="bi bi-people"></i> ${ev.max_participants - (ev.registrations || 0)} spots</span>` : ''}
-                    </div>
-                    <div class="event-desc">${escapeHtml((ev.description || '').slice(0, 100))}${(ev.description || '').length > 100 ? '...' : ''}</div>
-                    <div class="event-footer">
-                        <span class="event-price${ev.price == 0 ? ' free' : ''}">${ev.price == 0 ? 'FREE' : '$' + parseFloat(ev.price).toFixed(2)}</span>
-                        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); window.location.href='event-detail.html?id=${escapeHtml(String(ev.id))}'">View Details →</button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
+        container.className = 'evt-grid';
+        container.innerHTML = data.events.map(e => renderEventCard(e, 'grid')).join('');
     }
 
-    renderPagination();
+    document.getElementById('pagination').innerHTML = renderPagination(currentPage, totalPages, 'goToPage');
 }
 
 function renderPagination() {
@@ -232,11 +297,10 @@ function goToPage(page) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ─── Calendar View ────────────────────────────────────────────────────────
+// ─── Calendar View ─────────────────────────────────────────────────────
 
 async function loadCalendar() {
     const container = document.getElementById('eventsContainer');
-    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
     let events = [];
     try {
@@ -244,51 +308,8 @@ async function loadCalendar() {
         events = await res.json();
     } catch {}
 
-    const firstDay = new Date(calendarYear, calendarMonth - 1, 1).getDay();
-    const daysInMonth = new Date(calendarYear, calendarMonth, 0).getDate();
-    const daysInPrev = new Date(calendarYear, calendarMonth - 1, 0).getDate();
-
-    let html = `
-        <div class="calendar-nav">
-            <button onclick="calNav(-1)"><i class="bi bi-chevron-left"></i> Prev</button>
-            <h3>${monthNames[calendarMonth - 1]} ${calendarYear}</h3>
-            <button onclick="calNav(1)">Next <i class="bi bi-chevron-right"></i></button>
-        </div>
-        <div class="calendar-grid">
-            <div class="calendar-header">Sun</div>
-            <div class="calendar-header">Mon</div>
-            <div class="calendar-header">Tue</div>
-            <div class="calendar-header">Wed</div>
-            <div class="calendar-header">Thu</div>
-            <div class="calendar-header">Fri</div>
-            <div class="calendar-header">Sat</div>
-    `;
-
-    for (let i = firstDay - 1; i >= 0; i--) {
-        html += `<div class="calendar-day other-month"><span class="day-num">${daysInPrev - i}</span></div>`;
-    }
-
-    const today = new Date();
-    for (let d = 1; d <= daysInMonth; d++) {
-        const isToday = d === today.getDate() && calendarMonth === today.getMonth() + 1 && calendarYear === today.getFullYear();
-        const dayEvents = events.filter(e => new Date(e.event_date).getDate() === d);
-        html += `<div class="calendar-day${isToday ? ' today' : ''}" style="${isToday ? 'background:var(--primary-light);' : ''}">
-            <span class="day-num" style="${isToday ? 'color:var(--primary-color);font-weight:700;' : ''}">${d}</span>
-            ${dayEvents.map(e => `<div class="calendar-event ${getEventTypeClass(e.event_type)}" onclick="window.location.href='event-detail.html?id=${escapeHtml(String(e.id))}'" title="${escapeHtml(e.title)}">${escapeHtml(e.title)}</div>`).join('')}
-        </div>`;
-    }
-
-    const totalCells = firstDay + daysInMonth;
-    const remaining = 7 - (totalCells % 7);
-    if (remaining < 7) {
-        for (let i = 1; i <= remaining; i++) {
-            html += `<div class="calendar-day other-month"><span class="day-num">${i}</span></div>`;
-        }
-    }
-
-    html += '</div>';
     container.className = '';
-    container.innerHTML = html;
+    container.innerHTML = renderCalendarMonth(calendarMonth, calendarYear, events);
 }
 
 function calNav(delta) {
@@ -298,7 +319,122 @@ function calNav(delta) {
     loadCalendar();
 }
 
-// ─── Event Detail Page ────────────────────────────────────────────────────
+// ─── Mini Calendar ─────────────────────────────────────────────────────
+
+function renderMiniCalendar() {
+    const result = renderMiniCalendar(miniCalMonth, miniCalYear);
+    document.getElementById('miniCalTitle').textContent = result.title;
+    document.getElementById('miniCalGrid').innerHTML = result.html;
+}
+
+function miniCalNav(delta) {
+    miniCalMonth += delta;
+    if (miniCalMonth > 11) { miniCalMonth = 0; miniCalYear++; }
+    if (miniCalMonth < 0) { miniCalMonth = 11; miniCalYear--; }
+    renderMiniCalendar();
+}
+
+// ─── Sidebar Data ──────────────────────────────────────────────────────
+
+async function loadSidebarData() {
+    loadMyUpcoming();
+    loadSuggestedEvents();
+    loadUpcomingWeek('upcomingWeekEvents');
+    loadPopularOrganizers('popularOrganizers');
+    loadRecentlyAdded('recentlyAddedEvents');
+    loadEventStats('eventStatsGrid');
+    loadTrendingLocations('trendingLocations');
+}
+
+function resetFilters() {
+    currentCategory = '';
+    currentFilter = 'all';
+    currentSort = 'date';
+    currentPage = 1;
+    document.querySelectorAll('.evt-nav-item').forEach(i => i.classList.remove('active'));
+    document.querySelector('.evt-nav-item[data-filter="all"]')?.classList.add('active');
+    document.querySelectorAll('.evt-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === 'all'));
+    document.querySelectorAll('.evt-sort-tab').forEach(t => t.classList.toggle('active', t.dataset.sort === 'date'));
+    renderCategoryCards();
+    document.getElementById('heroSearch').value = '';
+    loadEvents();
+}
+
+async function loadMyUpcoming() {
+    if (!userLoggedIn()) {
+        document.getElementById('myUpcomingEvents').innerHTML = '<p style="font-size:0.82rem;color:var(--text-muted);">Sign in to see your events</p>';
+        return;
+    }
+    try {
+        const data = await api.fetchJSON('/api/events/my');
+        const events = Array.isArray(data) ? data : [];
+        if (!events.length) {
+            document.getElementById('myUpcomingEvents').innerHTML = '<p style="font-size:0.82rem;color:var(--text-muted);">No upcoming events</p>';
+            return;
+        }
+        document.getElementById('myUpcomingEvents').innerHTML = events.slice(0, 3).map(e => `
+            <div class="my-event-item" onclick="window.location.href='event-detail.html?id=${e.id}'" style="cursor:pointer;">
+                <div class="my-event-date"><span class="day">${getEventDay(e.event_date)}</span><span class="month">${getEventMonth(e.event_date)}</span></div>
+                <div class="my-event-info">
+                    <h4>${escapeHtml(e.title)}</h4>
+                    <p>${formatTime(e.event_date)} · ${escapeHtml(e.location || 'Online')}</p>
+                </div>
+            </div>
+        `).join('');
+    } catch {}
+}
+
+async function loadSuggestedEvents() {
+    try {
+        const data = await api.fetchJSON('/api/events?limit=3&sort=popular&status=upcoming');
+        const events = data.events || [];
+        if (!events.length) {
+            document.getElementById('suggestedEvents').innerHTML = '<p style="font-size:0.82rem;color:var(--text-muted);">No suggestions yet</p>';
+            return;
+        }
+        document.getElementById('suggestedEvents').innerHTML = events.map(e => `
+            <div class="suggest-event">
+                <h4 onclick="window.location.href='event-detail.html?id=${e.id}'">${escapeHtml(e.title)}</h4>
+                <p>${formatDate(e.event_date)} · ${escapeHtml(e.location || 'Online')} · ${e.price == 0 ? 'Free' : '$' + parseFloat(e.price).toFixed(2)}</p>
+            </div>
+        `).join('');
+    } catch {}
+}
+
+// ─── Mobile Filter Drawer ──────────────────────────────────────────────
+
+function openMobileFilter() {
+    const drawer = document.getElementById('mobileFilterDrawer');
+    if (drawer) {
+        drawer.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeMobileFilter() {
+    const drawer = document.getElementById('mobileFilterDrawer');
+    if (drawer) {
+        drawer.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+}
+
+function applyMobileFilters() {
+    const activeSort = document.querySelector('#mobileSortTabs .evt-sort-tab.active');
+    if (activeSort) currentSort = activeSort.dataset.sort;
+
+    const activeFilter = document.querySelector('#mobileFilterChips .evt-chip.active');
+    if (activeFilter) currentFilter = activeFilter.dataset.filter;
+
+    document.querySelectorAll('.evt-sort-tab').forEach(t => t.classList.toggle('active', t.dataset.sort === currentSort));
+    document.querySelectorAll('.evt-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === currentFilter));
+
+    currentPage = 1;
+    closeMobileFilter();
+    loadEvents();
+}
+
+// ─── Event Detail Page ─────────────────────────────────────────────────
 
 async function initEventDetail() {
     const params = new URLSearchParams(window.location.search);
@@ -383,7 +519,7 @@ async function initEventDetail() {
 
                 ${speakers.length ? `
                 <div class="info-card">
-                    <h2><i class="bi bi-person-video3" style="color:var(--primary-color)"></i> Instructors</h2>
+                    <h2><i class="bi bi-person-video3" style="color:var(--primary-color)"></i> Speakers</h2>
                     ${speakers.map(s => `
                         <div class="speaker-card">
                             <div class="speaker-avatar">${s.photo_url ? `<img src="${escapeHtml(s.photo_url)}" alt="${escapeHtml(s.name)}">` : (s.name || '?')[0].toUpperCase()}</div>

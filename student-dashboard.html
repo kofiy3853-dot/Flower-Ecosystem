@@ -105,10 +105,10 @@
                     </div>
 
                     <div class="sd-stats">
-                        <div class="sd-stat"><div class="icon" style="background:rgba(16,185,129,0.1);color:#10b981;"><i class="bi bi-book"></i></div><div class="num">12</div><div class="label">Courses Enrolled</div></div>
-                        <div class="sd-stat"><div class="icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;"><i class="bi bi-check-circle"></i></div><div class="num">8</div><div class="label">Completed</div></div>
-                        <div class="sd-stat"><div class="icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;"><i class="bi bi-clock"></i></div><div class="num">96h</div><div class="label">Learning Hours</div></div>
-                        <div class="sd-stat"><div class="icon" style="background:rgba(216,68,124,0.1);color:var(--primary-color);"><i class="bi bi-award"></i></div><div class="num">5</div><div class="label">Certificates</div></div>
+                        <div class="sd-stat"><div class="icon" style="background:rgba(16,185,129,0.1);color:#10b981;"><i class="bi bi-book"></i></div><div class="num" id="sdStatEnrolled">0</div><div class="label">Courses Enrolled</div></div>
+                        <div class="sd-stat"><div class="icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;"><i class="bi bi-check-circle"></i></div><div class="num" id="sdStatCompleted">0</div><div class="label">Completed</div></div>
+                        <div class="sd-stat"><div class="icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;"><i class="bi bi-clock"></i></div><div class="num" id="sdStatHours">0h</div><div class="label">Learning Hours</div></div>
+                        <div class="sd-stat"><div class="icon" style="background:rgba(216,68,124,0.1);color:var(--primary-color);"><i class="bi bi-award"></i></div><div class="num" id="sdStatCertificates">0</div><div class="label">Certificates</div></div>
                     </div>
 
                     <div class="sd-stats" style="margin-top:0;">
@@ -251,7 +251,6 @@
             }
             document.getElementById('dashContent').style.display = 'block';
 
-            // Navigation
             document.querySelectorAll('.dash-nav a[data-section]').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -281,146 +280,183 @@
         }
 
         async function loadDashboard() {
-            // Continue Learning
-            const courses = [
-                { name: 'Professional Floral Design', progress: 80, lesson: 'Lesson 16 of 20', img: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=200&auto=format&fit=crop' },
-                { name: 'Flower Farming Basics', progress: 45, lesson: 'Lesson 9 of 20', img: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=200&auto=format&fit=crop' }
-            ];
-            document.getElementById('continueLearning').innerHTML = courses.map(c => `
-                <div class="sd-progress-card">
-                    <div class="sd-progress-img"><img src="${c.img}" alt="${c.name}"></div>
-                    <div class="sd-progress-info">
-                        <h4>${c.name}</h4>
-                        <p>${c.lesson}</p>
-                        <div class="sd-progress-bar"><div class="sd-progress-fill" style="width:${c.progress}%;"></div></div>
-                        <div style="display:flex;justify-content:space-between;margin-top:0.25rem;"><span style="font-size:0.75rem;color:var(--text-light);">${c.progress}% complete</span><a href="course-detail.html" style="font-size:0.8rem;color:var(--primary-color);text-decoration:none;font-weight:500;">Continue →</a></div>
-                    </div>
-                </div>
-            `).join('');
+            const apiBase = window.location.origin;
+            async function apiFetch(path) {
+                const token = localStorage.getItem('flower-token');
+                const r = await fetch(apiBase + path, { headers: { 'Authorization': token ? 'Bearer ' + token : '' } });
+                if (!r.ok) return null;
+                return r.json();
+            }
 
-            // Upcoming Live
-            document.getElementById('upcomingLive').innerHTML = `
-                <div class="sd-progress-card">
-                    <div class="sd-progress-info">
-                        <h4>Advanced Bouquet Design</h4>
-                        <p>Tomorrow, 6:00 PM · Sarah Mensah</p>
-                        <a href="live-classes.html" class="btn btn-primary btn-sm" style="margin-top:0.5rem;">Join Class</a>
+            const [enrolledData, progressData, certsData, workshopsData, liveData, badgesData] = await Promise.all([
+                apiFetch('/api/courses/enrolled'),
+                apiFetch('/api/progress/overview'),
+                apiFetch('/api/certificates'),
+                apiFetch('/api/workshops'),
+                apiFetch('/api/live-classes'),
+                apiFetch('/api/badges')
+            ]);
+
+            const courses = enrolledData?.courses || [];
+            const stats = progressData || {};
+            const certs = certsData?.certificates || certsData || [];
+            const workshops = (workshopsData?.workshops || workshopsData || []).slice(0, 2);
+            const liveClasses = (liveData?.['live-classes'] || liveData || []).slice(0, 2);
+            const badges = badgesData?.badges || badgesData || [];
+
+            const inProgress = courses.filter(c => (c.progress || 0) < 100);
+            const completed = courses.filter(c => (c.progress || 0) >= 100);
+
+            // Stats
+            const statMappings = [
+                { id: 'sdStatEnrolled', val: stats.courses || courses.length },
+                { id: 'sdStatCompleted', val: stats.completed || completed.length },
+                { id: 'sdStatHours', val: (stats.hours || 0) + 'h' },
+                { id: 'sdStatCertificates', val: stats.certificates || certs.length }
+            ];
+            statMappings.forEach(s => { const el = document.getElementById(s.id); if (el && s.val !== undefined) el.textContent = s.val; });
+
+            // Continue Learning
+            const continueEl = document.getElementById('continueLearning');
+            if (inProgress.length) {
+                continueEl.innerHTML = inProgress.slice(0, 3).map(c => `
+                    <div class="sd-progress-card">
+                        <div class="sd-progress-img"><img src="${c.thumbnail || 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=400&auto=format&fit=crop'}" alt="${c.title}"></div>
+                        <div class="sd-progress-info">
+                            <h4>${c.title}</h4>
+                            <p>${c.instructor || ''}</p>
+                            <div class="sd-progress-bar"><div class="sd-progress-fill" style="width:${c.progress || 0}%;"></div></div>
+                            <div style="display:flex;justify-content:space-between;margin-top:0.25rem;"><span style="font-size:0.75rem;color:var(--text-light);">${c.progress || 0}% complete</span><a href="course-detail.html?id=${c.id}" style="font-size:0.8rem;color:var(--primary-color);text-decoration:none;font-weight:500;">Continue →</a></div>
+                        </div>
                     </div>
-                </div>
-            `;
+                `).join('');
+            } else {
+                continueEl.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:1.5rem 0;">No courses in progress. <a href="learning.html">Browse courses</a></p>';
+            }
+
+            // Upcoming Live Classes
+            const liveEl = document.getElementById('upcomingLive');
+            if (liveClasses.length) {
+                liveEl.innerHTML = liveClasses.map(l => `
+                    <div class="sd-progress-card">
+                        <div class="sd-progress-info">
+                            <h4>${l.title}</h4>
+                            <p>${l.scheduled_at ? new Date(l.scheduled_at).toLocaleString() : ''} · ${l.instructor || ''}</p>
+                            <a href="live-classes.html?id=${l.id}" class="btn btn-primary btn-sm" style="margin-top:0.5rem;">Join Class</a>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                liveEl.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:1rem 0;">No upcoming live classes.</p>';
+            }
 
             // Upcoming Workshops
-            document.getElementById('upcomingWorkshops').innerHTML = `
-                <div class="sd-progress-card">
-                    <div class="sd-progress-info">
-                        <h4>Wedding Floral Masterclass</h4>
-                        <p>Saturday, 10:00 AM · Registered</p>
-                        <a href="workshop-detail.html" class="btn btn-outline btn-sm" style="margin-top:0.5rem;">View Details</a>
+            const wsEl = document.getElementById('upcomingWorkshops');
+            if (workshops.length) {
+                wsEl.innerHTML = workshops.map(w => `
+                    <div class="sd-progress-card">
+                        <div class="sd-progress-info">
+                            <h4>${w.title}</h4>
+                            <p>${w.date ? new Date(w.date).toLocaleDateString() : ''} · ${w.seats_left > 0 ? w.seats_left + ' spots left' : 'Full'}</p>
+                            <a href="workshop-detail.html?id=${w.id}" class="btn btn-outline btn-sm" style="margin-top:0.5rem;">View Details</a>
+                        </div>
                     </div>
-                </div>
-            `;
+                `).join('');
+            } else {
+                wsEl.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:1rem 0;">No upcoming workshops.</p>';
+            }
 
             // Achievements
-            const badges = [
-                { icon: '🌱', name: 'Beginner', desc: 'Started learning' },
-                { icon: '📚', name: 'Bookworm', desc: '5 courses done' },
-                { icon: '🔥', name: 'Streak', desc: '7-day streak' },
-                { icon: '🎯', name: 'Quiz Master', desc: '90%+ score' }
-            ];
-            document.getElementById('achievementsGrid').innerHTML = badges.map(b => `
-                <div class="sd-badge">
-                    <div class="icon">${b.icon}</div>
-                    <div class="name">${b.name}</div>
-                    <div class="desc">${b.desc}</div>
-                </div>
-            `).join('');
+            const badgeEl = document.getElementById('achievementsGrid');
+            if (badges.length) {
+                badgeEl.innerHTML = badges.slice(0, 8).map(b => `
+                    <div class="sd-badge">
+                        <div class="icon">${b.icon || b.image_url ? '<img src="' + (b.image_url || '') + '" style="width:32px;height:32px;">' : '🏅'}</div>
+                        <div class="name">${b.name}</div>
+                        <div class="desc">${b.description || ''}</div>
+                    </div>
+                `).join('');
+            } else {
+                badgeEl.innerHTML = '<p style="color:var(--text-light);grid-column:1/-1;text-align:center;padding:1rem 0;">No achievements yet.</p>';
+            }
 
             // Recent Activity
-            document.getElementById('recentActivity').innerHTML = `
-                <div style="flex:1;">
-                    <div style="font-weight:600;font-size:0.95rem;">Completed "Introduction to Roses"</div>
-                    <div style="font-size:0.8rem;color:var(--text-light);">2 hours ago · Certificate earned</div>
-                </div>
-                <a href="course-detail.html" class="btn btn-outline btn-sm">View</a>
-            `;
+            const actEl = document.getElementById('recentActivity');
+            const lastCourse = inProgress[0] || completed[0];
+            if (lastCourse) {
+                const isComplete = (lastCourse.progress || 0) >= 100;
+                actEl.innerHTML = `
+                    <div style="flex:1;">
+                        <div style="font-weight:600;font-size:0.95rem;">${isComplete ? 'Completed' : 'Continuing'} "${lastCourse.title}"</div>
+                        <div style="font-size:0.8rem;color:var(--text-light);">${lastCourse.progress || 0}% complete</div>
+                    </div>
+                    <a href="course-detail.html?id=${lastCourse.id}" class="btn btn-outline btn-sm">View</a>
+                `;
+            } else {
+                actEl.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:1rem 0;">No recent activity.</p>';
+            }
 
             // My Courses
-            document.getElementById('myCoursesList').innerHTML = courses.map(c => `
-                <div class="sd-progress-card">
-                    <div class="sd-progress-img"><img src="${c.img}" alt="${c.name}"></div>
-                    <div class="sd-progress-info">
-                        <h4>${c.name}</h4>
-                        <p>${c.lesson}</p>
-                        <div class="sd-progress-bar"><div class="sd-progress-fill" style="width:${c.progress}%;"></div></div>
+            const coursesEl = document.getElementById('myCoursesList');
+            if (courses.length) {
+                coursesEl.innerHTML = courses.map(c => `
+                    <div class="sd-progress-card">
+                        <div class="sd-progress-img"><img src="${c.thumbnail || 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=400&auto=format&fit=crop'}" alt="${c.title}"></div>
+                        <div class="sd-progress-info">
+                            <h4>${c.title}</h4>
+                            <p>${c.instructor || ''} · ${c.progress || 0}% complete</p>
+                            <div class="sd-progress-bar"><div class="sd-progress-fill" style="width:${c.progress || 0}%;"></div></div>
+                        </div>
                     </div>
-                </div>
-            `).join('');
-
-            // Learning Paths
-            document.getElementById('myPathsList').innerHTML = `
-                <div class="sd-progress-card">
-                    <div class="sd-progress-info">
-                        <h4>Professional Florist</h4>
-                        <p>7 of 10 courses completed</p>
-                        <div class="sd-progress-bar"><div class="sd-progress-fill" style="width:70%;"></div></div>
-                    </div>
-                </div>
-            `;
-
-            // Quizzes
-            document.getElementById('myQuizzesList').innerHTML = `
-                <div class="sd-progress-card">
-                    <div class="sd-progress-info">
-                        <h4>Flower Identification Quiz</h4>
-                        <p>20 Questions · 15 Minutes · Score: 88%</p>
-                        <a href="flower-quiz.html" class="btn btn-primary btn-sm" style="margin-top:0.5rem;">Retake Quiz</a>
-                    </div>
-                </div>
-            `;
+                `).join('');
+            } else {
+                coursesEl.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:2rem 0;">No courses yet. <a href="learning.html">Browse courses</a></p>';
+            }
 
             // Certificates
-            document.getElementById('myCertificatesList').innerHTML = `
-                <div class="sd-progress-card">
-                    <div class="sd-progress-info">
-                        <h4>Professional Floral Design</h4>
-                        <p>Issued July 2026</p>
+            const certEl = document.getElementById('myCertificatesList');
+            if (certs.length) {
+                certEl.innerHTML = certs.map(c => `
+                    <div class="sd-progress-card">
+                        <div class="sd-progress-info">
+                            <h4>${c.course_name || c.title}</h4>
+                            <p>Issued ${c.issued_at ? new Date(c.issued_at).toLocaleDateString() : ''}</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm"><i class="bi bi-download"></i> Download</button>
                     </div>
-                    <button class="btn btn-outline btn-sm"><i class="bi bi-download"></i> Download</button>
-                </div>
-            `;
+                `).join('');
+            } else {
+                certEl.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:2rem 0;">No certificates yet.</p>';
+            }
+
+            // Activity
+            const actList = document.getElementById('myActivityList');
+            const activities = [];
+            if (completed.length) activities.push({ icon: 'bi-check-circle', bg: 'rgba(16,185,129,0.1)', color: '#10b981', text: 'Completed "' + completed[0].title + '"', time: 'Recently' });
+            if (certs.length) activities.push({ icon: 'bi-award', bg: 'rgba(245,158,11,0.1)', color: '#f59e0b', text: 'Earned certificate', time: 'Recently' });
+            if (inProgress.length) activities.push({ icon: 'bi-play-circle', bg: 'rgba(59,130,246,0.1)', color: '#3b82f6', text: 'Continuing "' + inProgress[0].title + '"', time: 'In progress' });
+            if (activities.length) {
+                actList.innerHTML = activities.map(a => `
+                    <div class="sd-activity-item" style="padding:0.75rem 0;">
+                        <div class="sd-activity-icon" style="background:${a.bg};color:${a.color};"><i class="bi ${a.icon}"></i></div>
+                        <div style="flex:1;"><div class="sd-activity-text">${a.text}</div><div class="sd-activity-time">${a.time}</div></div>
+                    </div>
+                `).join('');
+            } else {
+                actList.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:1rem 0;">No activity yet.</p>';
+            }
 
             // Wishlist
             const wishlist = JSON.parse(localStorage.getItem('gallerySaved') || '[]');
             document.getElementById('myWishlistList').innerHTML = wishlist.length ? '<p style="color:var(--text-light);">You have ' + wishlist.length + ' saved items. <a href="favorites.html">View all</a></p>' : '<p style="color:var(--text-light);">No items in wishlist yet.</p>';
 
-            // Activity
-            const activities = [
-                { icon: 'bi-check-circle', bg: 'rgba(16,185,129,0.1)', color: '#10b981', text: 'Completed "Introduction to Roses"', time: '2 hours ago' },
-                { icon: 'bi-award', bg: 'rgba(245,158,11,0.1)', color: '#f59e0b', text: 'Earned certificate for "Flower Care Basics"', time: '1 day ago' },
-                { icon: 'bi-broadcast', bg: 'rgba(231,76,60,0.1)', color: '#e74c3c', text: 'Attended "Bouquet Design Workshop"', time: '3 days ago' }
-            ];
-            document.getElementById('myActivityList').innerHTML = activities.map(a => `
-                <div class="sd-activity-item">
-                    <div class="sd-activity-icon" style="background:${a.bg};color:${a.color};"><i class="bi ${a.icon}"></i></div>
-                    <div style="flex:1;"><div class="sd-activity-text">${a.text}</div><div class="sd-activity-time">${a.time}</div></div>
-                </div>
-            `).join('');
-
-            // Live Classes
-            document.getElementById('myLiveList').innerHTML = `
-                <div class="sd-progress-card">
-                    <div class="sd-progress-info"><h4>Advanced Bouquet Design</h4><p>Tomorrow, 6:00 PM · Sarah Mensah</p></div>
-                    <a href="live-classes.html" class="btn btn-primary btn-sm">Join</a>
-                </div>
-            `;
-
-            // Workshops
-            document.getElementById('myWorkshopsList').innerHTML = `
-                <div class="sd-progress-card">
-                    <div class="sd-progress-info"><h4>Wedding Floral Masterclass</h4><p>Saturday, 10:00 AM · Registered</p></div>
-                    <a href="workshop-detail.html" class="btn btn-outline btn-sm">Details</a>
-                </div>
-            `;
+            // Placeholder sections
+            ['myPathsList', 'myQuizzesList', 'myLiveList', 'myWorkshopsList'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && !el.innerHTML.trim()) {
+                    el.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:2rem 0;">Coming soon.</p>';
+                }
+            });
         }
 
         initDashboard();

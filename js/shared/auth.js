@@ -234,6 +234,24 @@ function afterAuth() {
     closeAuthModal();
     if (typeof updateAccountUI === 'function') updateAccountUI();
 
+    // Merge localStorage cart into server cart after login
+    (async () => {
+        try {
+            const localCart = JSON.parse(localStorage.getItem('flower-cart') || '[]');
+            if (localCart.length) {
+                await Promise.all(localCart.map(item =>
+                    fetch('/api/cart/items', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('flower-token'), 'X-Requested-With': 'XMLHttpRequest' },
+                        body: JSON.stringify({ product_id: item.id, quantity: item.qty || 1 })
+                    }).catch(() => {})
+                ));
+                localStorage.removeItem('flower-cart');
+            }
+        } catch (_) {}
+        if (typeof syncCartFromServer === 'function') syncCartFromServer();
+    })();
+
     const pendingRedirect = sessionStorage.getItem('pending-redirect');
     if (pendingRedirect) {
         sessionStorage.removeItem('pending-redirect');
@@ -249,8 +267,6 @@ function afterAuth() {
     }
 
     const user = getCurrentUser();
-    // role is always lowercased by getCurrentUser()
-    // Backend stores CUSTOMER, SELLER, FLORIST, GROWER, ADMIN, SUPERADMIN
     const role = (user?.role || '').toLowerCase();
     if (['admin', 'superadmin'].includes(role)) {
         window.location.href = 'admin.html';
@@ -260,7 +276,6 @@ function afterAuth() {
         window.location.href = 'seller-dashboard.html';
         return;
     }
-    // buyer / customer / any other role → buyer dashboard
     window.location.href = 'buyer-dashboard.html';
 }
 

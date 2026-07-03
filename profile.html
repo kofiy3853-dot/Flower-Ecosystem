@@ -12,16 +12,11 @@
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
-        .profile-hero {
-            background: linear-gradient(135deg, #fdf2f8, #fce7f3, #f5d0fe);
-            padding: 3rem 0 2rem;
-            margin-top: 65px;
-        }
-        .profile-hero-inner {
-            display: flex;
-            align-items: flex-end;
-            gap: 2rem;
-        }
+        .profile-hero { padding:0;margin-top:65px;position:relative; }
+        .profile-cover-wrap { height:200px;background:linear-gradient(135deg,#fdf2f8,#fce7f3,#f5d0fe);overflow:hidden;position:relative; }
+        .profile-cover-wrap img { width:100%;height:100%;object-fit:cover; }
+        .profile-cover-overlay { position:absolute;inset:0;background:linear-gradient(transparent 50%,rgba(0,0,0,0.3)); }
+        .profile-hero-inner { display:flex;align-items:flex-end;gap:1.5rem;padding:0 1rem 1.25rem;margin-top:-50px;position:relative;z-index:2; }
         .profile-avatar {
             width: 110px;
             height: 110px;
@@ -51,31 +46,23 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-        .profile-joined {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-top: 0.35rem;
-        }
-        .profile-stats-row {
-            display: flex;
-            gap: 2rem;
-            margin-top: 0.75rem;
-        }
-        .profile-stat {
-            font-size: 0.88rem;
-            color: var(--text-main);
-        }
-        .profile-stat strong {
-            color: var(--primary-color);
-        }
-
+        .profile-joined { font-size:0.85rem;color:var(--text-light);margin-top:0.35rem; }
+        .profile-location { font-size:0.82rem;color:var(--text-light);margin:0.15rem 0; }
+        .profile-social { display:flex;gap:0.5rem;margin:0.35rem 0; }
+        .profile-social a { width:30px;height:30px;border-radius:50%;background:var(--bg-light);display:flex;align-items:center;justify-content:center;color:var(--text-light);text-decoration:none;font-size:0.82rem;transition:all 0.2s; }
+        .profile-social a:hover { background:var(--primary-color);color:white; }
+        .profile-stats-row { display:flex;gap:2rem;margin-top:0.75rem; }
+        .profile-stat { font-size:0.88rem;color:var(--text-main); }
+        .profile-stat strong { color:var(--primary-color); }
         .profile-body { padding: 2rem 0 4rem; }
-        .profile-grid {
-            display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 2rem;
-            align-items: start;
-        }
+        .profile-grid { display:grid;grid-template-columns:1fr 320px;gap:2rem;align-items:start; }
+        .ps-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:0.75rem; }
+        .ps-item { border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border-color);cursor:pointer;transition:all 0.2s; }
+        .ps-item:hover { border-color:var(--primary-color);transform:translateY(-2px);box-shadow:var(--shadow-sm); }
+        .ps-item img { width:100%;height:140px;object-fit:cover;display:block; }
+        .ps-item-body { padding:0.5rem; }
+        .ps-item-title { font-size:0.82rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+        .ps-item-meta { font-size:0.72rem;color:var(--text-muted); }
 
         /* Tabs */
         .profile-tabs {
@@ -144,6 +131,7 @@
         .ac-tag.discussion { background: rgba(14,165,233,0.1); color: var(--accent-blue); }
         .ac-tag.question { background: rgba(245,158,11,0.1); color: var(--accent-gold); }
         .ac-tag.story { background: rgba(16,185,129,0.1); color: var(--accent-green); }
+        .ac-tag.showcase { background: rgba(236,72,153,0.1); color: #ec4899; }
         .ac-tag.review { background: rgba(216,68,124,0.1); color: var(--primary-color); }
         .activity-card .ac-excerpt {
             font-size: 0.85rem;
@@ -250,6 +238,9 @@
 
     <!-- Profile Hero -->
     <div class="profile-hero" id="profileHero" style="display:none;">
+        <div class="profile-cover-wrap" id="profileCover">
+            <div class="profile-cover-overlay"></div>
+        </div>
         <div class="container">
             <div class="profile-hero-inner">
                 <div class="profile-avatar" id="profileAvatar"><i class="bi bi-person"></i></div>
@@ -259,6 +250,10 @@
                         <span class="profile-role" id="profileRole">Member</span>
                     </div>
                     <div class="profile-joined" id="profileJoined"></div>
+                    <div class="profile-location" id="profileLocation"></div>
+                    <div class="profile-social" id="profileSocial"></div>
+                    <div id="profileFollowBtn" style="margin:0.35rem 0;"></div>
+                    <div id="profileRep" style="margin:0.25rem 0;display:flex;align-items:center;gap:0.5rem;"></div>
                     <div class="profile-stats-row" id="profileStats"></div>
                 </div>
             </div>
@@ -286,16 +281,20 @@
                 <!-- Main Content -->
                 <div>
                     <div class="profile-tabs">
-                        <button class="profile-tab active" data-tab="discussions">Discussions</button>
+                        <button class="profile-tab active" data-tab="activity">Activity</button>
+                        <button class="profile-tab" data-tab="discussions">Discussions</button>
                         <button class="profile-tab" data-tab="questions">Questions</button>
                         <button class="profile-tab" data-tab="stories">Stories</button>
+                        <button class="profile-tab" data-tab="showcase">Showcase</button>
                         <button class="profile-tab" data-tab="reviews">Reviews</button>
                         <button class="profile-tab" data-tab="settings">Settings</button>
                     </div>
 
-                    <div id="tab-discussions" class="tab-panel active"></div>
+                    <div id="tab-activity" class="tab-panel active"></div>
+                    <div id="tab-discussions" class="tab-panel"></div>
                     <div id="tab-questions" class="tab-panel"></div>
                     <div id="tab-stories" class="tab-panel"></div>
+                    <div id="tab-showcase" class="tab-panel"></div>
                     <div id="tab-reviews" class="tab-panel"></div>
                     <div id="tab-settings" class="tab-panel"></div>
                 </div>
@@ -307,6 +306,11 @@
                         <p id="profileAbout" style="font-size:0.85rem; color:var(--text-light); line-height:1.6;"></p>
                     </div>
 
+                    <div class="sidebar-card" id="profileRepCard" style="display:none;">
+                        <h3><i class="bi bi-graph-up-arrow" style="color:var(--accent-gold);"></i> Reputation</h3>
+                        <div id="profileRepContent"></div>
+                    </div>
+
                     <div class="sidebar-card">
                         <h3><i class="bi bi-award"></i> Badges</h3>
                         <div class="badge-list" id="profileBadges"></div>
@@ -315,6 +319,11 @@
                     <div class="sidebar-card">
                         <h3><i class="bi bi-trophy"></i> Top Contributions</h3>
                         <div id="profileTopContributions"></div>
+                    </div>
+
+                    <div class="sidebar-card" id="profilePortfolioCard" style="display:none;">
+                        <h3><i class="bi bi-images"></i> Latest Projects</h3>
+                        <div id="profilePortfolioGrid"></div>
                     </div>
                 </div>
             </div>
@@ -477,6 +486,28 @@
                 document.getElementById('profileAvatar').innerHTML = '<i class="bi bi-person"></i>';
             }
 
+            // Cover image
+            if (user.cover_image) {
+                document.getElementById('profileCover').innerHTML = '<img src="' + escapeHtml(user.cover_image) + '" alt=""><div class="profile-cover-overlay"></div>';
+            }
+
+            // Location
+            if (user.location || user.city) {
+                document.getElementById('profileLocation').textContent = '📍 ' + (user.city ? escapeHtml(user.city) + (user.location ? ', ' : '') : '') + (user.location ? escapeHtml(user.location) : '');
+            }
+
+            // Social links
+            const socialEl = document.getElementById('profileSocial');
+            const socialLinks = [];
+            if (user.website) socialLinks.push({ url: user.website, icon: 'bi-globe2', label: 'Website' });
+            if (user.social_instagram) socialLinks.push({ url: 'https://instagram.com/' + user.social_instagram, icon: 'bi-instagram', label: 'Instagram' });
+            if (user.social_facebook) socialLinks.push({ url: 'https://facebook.com/' + user.social_facebook, icon: 'bi-facebook', label: 'Facebook' });
+            if (user.social_twitter) socialLinks.push({ url: 'https://twitter.com/' + user.social_twitter, icon: 'bi-twitter-x', label: 'Twitter' });
+            socialEl.innerHTML = socialLinks.map(l => '<a href="' + escapeHtml(l.url) + '" target="_blank" rel="noopener" title="' + escapeHtml(l.label) + '"><i class="bi ' + l.icon + '"></i></a>').join('');
+
+            // Follow button
+            loadFollowButton(user.id);
+
             if (user.description) {
                 document.getElementById('profileAbout').textContent = user.description;
             } else {
@@ -487,10 +518,13 @@
             loadDiscussions(user.id);
             loadBadges(user);
             loadTopContributions(user.id);
+            loadReputation(user.id);
+            loadActivity(user.id);
+            loadPortfolio(user.id);
         }
 
         async function loadStats(userId) {
-            let counts = { discussions: 0, questions: 0, stories: 0, reviews: 0 };
+            let counts = { discussions: 0, questions: 0, stories: 0, reviews: 0, showcase: 0 };
             try {
                 const r = await apiFetch('/api/users/' + userId + '/stats');
                 Object.assign(counts, r);
@@ -499,8 +533,8 @@
             document.getElementById('profileStats').innerHTML = `
                 <div class="profile-stat"><strong>${counts.discussions}</strong> discussions</div>
                 <div class="profile-stat"><strong>${counts.questions}</strong> questions</div>
+                <div class="profile-stat"><strong>${counts.showcase}</strong> showcase</div>
                 <div class="profile-stat"><strong>${counts.stories}</strong> stories</div>
-                <div class="profile-stat"><strong>${counts.reviews}</strong> reviews</div>
             `;
         }
 
@@ -540,6 +574,50 @@
                 : emptyState('bi-heart', 'No stories shared yet.');
         }
 
+        async function loadShowcase(userId) {
+            let items = [];
+            try {
+                const r = await apiFetch('/api/users/' + userId + '/showcase');
+                items = r.showcase || [];
+            } catch {}
+            const el = document.getElementById('tab-showcase');
+            if (!items.length) { el.innerHTML = emptyState('bi-image', 'No showcase projects yet.'); return; }
+            el.innerHTML = '<div class="ps-grid">' + items.map(p => {
+                const img = p.images && p.images.length ? p.images[0] : '';
+                return '<div class="ps-item" onclick="window.location.href=\'showcase-detail.html?id=' + p.id + '\'">' +
+                    (img ? '<img src="' + escapeHtml(img) + '" alt="" loading="lazy">' : '<div style="height:140px;background:var(--bg-light);display:flex;align-items:center;justify-content:center;"><i class="bi bi-flower1" style="font-size:2rem;color:var(--text-muted);"></i></div>') +
+                    '<div class="ps-item-body"><div class="ps-item-title">' + escapeHtml(p.title || '') + '</div>' +
+                    '<div class="ps-item-meta"><i class="bi bi-chat-dots"></i> ' + (p.comment_count || 0) + '</div></div></div>';
+            }).join('') + '</div>';
+        }
+
+        async function loadFollowButton(userId) {
+            const el = document.getElementById('profileFollowBtn');
+            const currentUserId = isLoggedIn() ? (getCurrentUser()?.id || null) : null;
+            if (!currentUserId || currentUserId === userId) { el.innerHTML = ''; return; }
+            try {
+                const r = await apiFetch('/api/users/' + userId + '/follow-check');
+                el.innerHTML = r.following
+                    ? '<button class="btn btn-sm btn-outline" onclick="unfollow(\'' + userId + '\')"><i class="bi bi-person-check"></i> Following</button>'
+                    : '<button class="btn btn-sm btn-primary" onclick="follow(\'' + userId + '\')"><i class="bi bi-person-plus"></i> Follow</button>';
+            } catch { el.innerHTML = ''; }
+        }
+
+        async function follow(userId) {
+            if (!isLoggedIn()) { if (typeof openAuthModal === 'function') openAuthModal('login'); return; }
+            try {
+                await fetch('/api/users/' + userId + '/follow', { method: 'POST', headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') } });
+                loadFollowButton(userId);
+            } catch {}
+        }
+
+        async function unfollow(userId) {
+            try {
+                await fetch('/api/users/' + userId + '/follow', { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') } });
+                loadFollowButton(userId);
+            } catch {}
+        }
+
         async function loadReviews(userId) {
             let items = [];
             try {
@@ -552,21 +630,33 @@
                 : emptyState('bi-star', 'No reviews yet.');
         }
 
-        function loadBadges(user) {
+        function badgeLevelColor(level) {
+            const m = { bronze: '#cd7f32', silver: '#9ca3af', gold: '#f59e0b', platinum: '#a78bfa', diamond: '#06b6d4' };
+            return m[level] || '#9ca3af';
+        }
+
+        async function loadBadges(user) {
             const el = document.getElementById('profileBadges');
-            const badges = [];
-            if (user.role === 'SELLER' || user.role === 'FLORIST') badges.push({ icon: 'bi-shop', label: 'Seller' });
-            if (user.role === 'GROWER') badges.push({ icon: 'bi-flower2', label: 'Grower' });
-            if (user.role === 'ADMIN' || user.role === 'SUPERADMIN') badges.push({ icon: 'bi-shield-check', label: 'Admin' });
-            if (user.role === 'MODERATOR') badges.push({ icon: 'bi-shield', label: 'Moderator' });
+            // Role badges (always shown)
+            const roleBadges = [];
+            if (user.role === 'SELLER' || user.role === 'FLORIST') roleBadges.push({ icon: 'bi-shop', label: 'Seller' });
+            if (user.role === 'GROWER') roleBadges.push({ icon: 'bi-flower2', label: 'Grower' });
+            if (user.role === 'ADMIN' || user.role === 'SUPERADMIN') roleBadges.push({ icon: 'bi-shield-check', label: 'Admin' });
+            if (user.role === 'MODERATOR') roleBadges.push({ icon: 'bi-shield', label: 'Moderator' });
 
-            const created = new Date(user.created_at);
-            const months = (Date.now() - created) / (1000 * 60 * 60 * 24 * 30);
-            if (months > 12) badges.push({ icon: 'bi-calendar-check', label: '1+ Year Member' });
-            if (months > 24) badges.push({ icon: 'bi-gem', label: '2+ Year Member' });
+            // Load earned badges from API
+            let earnedBadges = [];
+            try {
+                earnedBadges = await apiFetch('/api/badges/user/' + user.id) || [];
+            } catch {}
 
-            el.innerHTML = badges.length
-                ? badges.map(b => `<span class="badge-item"><i class="bi ${b.icon}"></i> ${b.label}</span>`).join('')
+            const all = [
+                ...roleBadges.map(b => ({ label: b.label, icon: '<i class="bi ' + b.icon + '"></i>' })),
+                ...earnedBadges.map(b => ({ label: b.name, icon: b.icon || '🏆', color: badgeLevelColor(b.level) }))
+            ];
+
+            el.innerHTML = all.length
+                ? all.map(b => `<span class="badge-item"${b.color ? ' style="border:1px solid ' + b.color + ';background:' + b.color + '10;"' : ''}>${b.icon} ${b.label}</span>`).join('')
                 : '<p style="font-size:0.82rem; color:var(--text-muted);">No badges earned yet.</p>';
         }
 
@@ -594,6 +684,64 @@
             }
         }
 
+        async function loadReputation(userId) {
+            try {
+                const r = await apiFetch('/api/members/' + userId + '/reputation');
+                if (!r) return;
+                const stars = Math.min(5, Math.max(1, Math.ceil(r.level / 5)));
+                document.getElementById('profileRep').innerHTML = '<span class="badge-item" style="font-size:0.78rem;"><i class="bi bi-graph-up-arrow"></i> Lvl ' + r.level + ' ' + escapeHtml(r.title) + '</span><span style="font-size:0.75rem;color:var(--text-muted);"><i class="bi bi-star-fill" style="color:var(--accent-gold);"></i> ' + r.points + ' pts</span>';
+                document.getElementById('profileRepCard').style.display = 'block';
+                document.getElementById('profileRepContent').innerHTML =
+                    '<div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="font-size:0.82rem;">Level ' + r.level + '</span><span style="font-size:0.82rem;color:var(--accent-gold);">' + '★'.repeat(stars) + '☆'.repeat(5 - stars) + '</span></div>' +
+                    '<div style="font-size:1.2rem;font-weight:700;color:var(--primary-color);margin-bottom:0.25rem;">' + formatNumber(r.points) + ' Reputation</div>' +
+                    '<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.5rem;">Top ' + r.percentile + '%</div>' +
+                    '<div style="font-size:0.82rem;color:var(--text-light);">' + escapeHtml(r.title) + '</div>' +
+                    (r.best_answers ? '<div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.25rem;"><i class="bi bi-check-circle" style="color:var(--accent-green);"></i> ' + r.best_answers + ' best answers</div>' : '');
+            } catch {}
+        }
+
+        function renderActivityItem(activity) {
+            const typeColors = { discussion: '#0ea5e9', question: '#f59e0b', story: '#10b981', showcase: '#ec4899' };
+            const typeIcons = { discussion: 'bi-chat-dots', question: 'bi-question-circle', story: 'bi-heart', showcase: 'bi-images' };
+            const typeLabels = { discussion: 'Discussion', question: 'Question', story: 'Story', showcase: 'Showcase' };
+            const links = { discussion: 'discussion-detail.html?id=', question: 'question-detail.html?id=', story: 'success-story-detail.html?id=', showcase: 'showcase-detail.html?id=' };
+            const link = links[activity.type] ? links[activity.type] + (activity.id || '') : '';
+            const color = typeColors[activity.type] || 'var(--text-light)';
+            return '<div class="activity-card" style="padding:0.65rem 1rem;' + (link ? 'cursor:pointer;" onclick="window.location.href=\'' + link + '\'"' : '"') + '>' +
+                '<div class="ac-header"><div class="ac-title" style="font-size:0.85rem;display:flex;align-items:center;gap:0.4rem;">' +
+                '<span style="color:' + color + ';"><i class="bi ' + (typeIcons[activity.type] || 'bi-circle') + '"></i></span> ' +
+                escapeHtml(activity.label || '') +
+                '</div><span class="ac-tag ' + activity.type + '">' + (typeLabels[activity.type] || activity.type) + '</span></div>' +
+                '<div class="ac-meta"><span><i class="bi bi-clock"></i> ' + timeAgo(activity.created_at) + '</span></div></div>';
+        }
+
+        async function loadActivity(userId) {
+            const el = document.getElementById('tab-activity');
+            el.innerHTML = '<p style="font-size:0.85rem;color:var(--text-muted);padding:1rem;">Loading...</p>';
+            try {
+                const r = await apiFetch('/api/members/' + userId + '/activity');
+                if (!r || !r.length) { el.innerHTML = emptyState('bi-clock-history', 'No recent activity.'); return; }
+                el.innerHTML = r.map(a => renderActivityItem(a)).join('');
+            } catch { el.innerHTML = emptyState('bi-clock-history', 'Could not load activity.'); }
+        }
+
+        async function loadPortfolio(userId) {
+            const card = document.getElementById('profilePortfolioCard');
+            const grid = document.getElementById('profilePortfolioGrid');
+            try {
+                const r = await apiFetch('/api/users/' + userId + '/showcase');
+                const items = r.showcase || [];
+                if (!items.length) { card.style.display = 'none'; return; }
+                card.style.display = 'block';
+                grid.innerHTML = '<div class="ps-grid">' + items.slice(0, 3).map(p => {
+                    const img = p.images && p.images.length ? p.images[0] : '';
+                    return '<div class="ps-item" onclick="window.location.href=\'showcase-detail.html?id=' + p.id + '\'">' +
+                        (img ? '<img src="' + escapeHtml(img) + '" alt="" loading="lazy">' : '<div style="height:100px;background:var(--bg-light);display:flex;align-items:center;justify-content:center;"><i class="bi bi-flower1" style="font-size:1.5rem;color:var(--text-muted);"></i></div>') +
+                        '<div class="ps-item-body"><div class="ps-item-title">' + escapeHtml(p.title || '') + '</div></div></div>';
+                }).join('') + '</div>';
+            } catch { card.style.display = 'none'; }
+        }
+
         // Tab switching
         document.querySelectorAll('.profile-tab').forEach(tab => {
             tab.addEventListener('click', () => {
@@ -608,8 +756,10 @@
                 const params = new URLSearchParams(window.location.search);
                 const userId = params.get('id');
                 if (!userId) return;
+                if (tabName === 'activity' && !panel.dataset.loaded) { loadActivity(userId); panel.dataset.loaded = '1'; }
                 if (tabName === 'questions' && !panel.dataset.loaded) { loadQuestions(userId); panel.dataset.loaded = '1'; }
                 if (tabName === 'stories' && !panel.dataset.loaded) { loadStories(userId); panel.dataset.loaded = '1'; }
+                if (tabName === 'showcase' && !panel.dataset.loaded) { loadShowcase(userId); panel.dataset.loaded = '1'; }
                 if (tabName === 'reviews' && !panel.dataset.loaded) { loadReviews(userId); panel.dataset.loaded = '1'; }
                 if (tabName === 'settings' && !panel.dataset.loaded) { loadSettings(); panel.dataset.loaded = '1'; }
             });
@@ -624,11 +774,11 @@
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
                             <div style="margin-bottom:1rem;">
                                 <label style="display:block;font-weight:500;font-size:0.85rem;margin-bottom:0.35rem;">First Name</label>
-                                <input type="text" id="editFirstName" value="${escapeHtml(user.name || '')}" style="width:100%;padding:0.65rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.9rem;">
+                                <input type="text" id="editFirstName" value="${escapeHtml(user.first_name || user.name || '')}" style="width:100%;padding:0.65rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.9rem;">
                             </div>
                             <div style="margin-bottom:1rem;">
                                 <label style="display:block;font-weight:500;font-size:0.85rem;margin-bottom:0.35rem;">Last Name</label>
-                                <input type="text" id="editLastName" value="${escapeHtml(user.lastName || '')}" style="width:100%;padding:0.65rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.9rem;">
+                                <input type="text" id="editLastName" value="${escapeHtml(user.last_name || user.lastName || '')}" style="width:100%;padding:0.65rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.9rem;">
                             </div>
                         </div>
                         <div style="margin-bottom:1rem;">
@@ -661,8 +811,8 @@
             e.preventDefault();
             const msg = document.getElementById('settingsMsg');
             const user = typeof getCurrentUser === 'function' ? getCurrentUser() : {};
-            user.name = document.getElementById('editFirstName').value;
-            user.lastName = document.getElementById('editLastName').value;
+            user.first_name = document.getElementById('editFirstName').value;
+            user.last_name = document.getElementById('editLastName').value;
             localStorage.setItem('flower-auth', JSON.stringify(user));
             msg.textContent = 'Profile updated successfully!';
             msg.style.color = '#10b981';

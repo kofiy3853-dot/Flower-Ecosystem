@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Community Feed — See the latest posts from flower lovers, florists, growers and businesses.">
+    <title>Community Feed | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* ─── Feed Header ─────────────────────────────────────── */
+        .feed-header { padding: 1.5rem 0 0.5rem; }
+        .feed-header h1 { font-family: var(--font-serif); font-size: 1.6rem; margin-bottom: 0.15rem; }
+        .feed-header p { font-size: 0.9rem; color: var(--text-muted); }
+
+        /* ─── Feed Layout ─────────────────────────────────────── */
+        .feed-layout { display:grid; grid-template-columns:220px 1fr 280px; gap:1.5rem; max-width:1300px; margin:0 auto;padding-top:0.5rem; }
+        .feed-left, .feed-right { position:sticky; top:80px; align-self:start; max-height:calc(100vh - 100px); overflow-y:auto; }
+        .feed-left::-webkit-scrollbar, .feed-right::-webkit-scrollbar { width:4px; }
+        .feed-left::-webkit-scrollbar-thumb, .feed-right::-webkit-scrollbar-thumb { background:var(--border-color); border-radius:2px; }
+        .feed-main { min-width:0; }
+
+        /* ─── Left Sidebar ────────────────────────────────────── */
+        .sidebar-nav { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:0.5rem 0; }
+        .sidebar-nav-item { display:flex; align-items:center; gap:0.75rem; padding:0.55rem 1rem; font-size:0.88rem; color:var(--text-main); text-decoration:none; transition:all 0.15s; border-left:3px solid transparent; }
+        .sidebar-nav-item:hover { background:var(--bg-light); color:var(--primary-color); }
+        .sidebar-nav-item.active { background:var(--primary-light); color:var(--primary-color); font-weight:500; border-left-color:var(--primary-color); }
+        .sidebar-nav-item i { font-size:1.05rem; width:20px; text-align:center; flex-shrink:0; }
+        .sidebar-section { margin-top:1rem;border-top:1px solid var(--border-light);padding-top:0.75rem; }
+        .sidebar-section-title { font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); padding:0 1rem; margin-bottom:0.5rem; }
+        .sidebar-group-item { display:flex; align-items:center; gap:0.6rem; padding:0.4rem 1rem; font-size:0.82rem; color:var(--text-light); text-decoration:none; transition:all 0.15s; cursor:pointer; }
+        .sidebar-group-item:hover { background:var(--bg-light); color:var(--text-main); }
+        .sidebar-group-icon { width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;flex-shrink:0; }
+
+        /* ─── Create Post ─────────────────────────────────────── */
+        .create-post-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1rem 1.25rem; margin-bottom:1.25rem; }
+        .create-post-top { display:flex; gap:0.75rem; align-items:center; margin-bottom:0.75rem; }
+        .create-post-avatar { width:40px; height:40px; border-radius:50%; background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:1rem; color:var(--primary-color); flex-shrink:0; overflow:hidden; font-weight:600; }
+        .create-post-avatar img { width:100%; height:100%; object-fit:cover; }
+        .create-post-input { flex:1; padding:0.6rem 1rem; border:1px solid var(--border-color); border-radius:24px; font-size:0.88rem; color:var(--text-light); background:var(--bg-light); cursor:pointer; transition:all 0.2s; }
+        .create-post-input:hover { border-color:var(--primary-color); background:var(--bg-white); }
+        .create-post-actions { display:flex; justify-content:space-around; padding-top:0.5rem; border-top:1px solid var(--border-light); flex-wrap:wrap; gap:0.25rem; }
+        .create-post-action { display:flex; align-items:center; gap:0.35rem; padding:0.4rem 0.65rem; border-radius:var(--radius-sm); font-size:0.8rem; color:var(--text-light); cursor:pointer; border:none; background:none; transition:all 0.2s; }
+        .create-post-action:hover { background:var(--bg-light); color:var(--text-main); }
+        .create-post-action i { font-size:1.05rem; }
+        .create-post-action.photo i { color:var(--accent-green); }
+        .create-post-action.video i { color:var(--accent-blue); }
+        .create-post-action.showcase i { color:var(--primary-color); }
+        .create-post-action.question i { color:var(--accent-gold); }
+
+        /* ─── Feed Tabs & Filters ─────────────────────────────── */
+        .feed-tabs { display:flex; gap:0.25rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:0.35rem; margin-bottom:1rem; overflow-x:auto; scrollbar-width:none; }
+        .feed-tabs::-webkit-scrollbar { display:none; }
+        .feed-tab { padding:0.45rem 0.9rem; border-radius:var(--radius-sm); font-size:0.82rem; font-weight:500; cursor:pointer; white-space:nowrap; border:none; background:none; color:var(--text-light); transition:all 0.2s; display:flex; align-items:center; gap:0.3rem; }
+        .feed-tab:hover { color:var(--text-main); background:var(--bg-light); }
+        .feed-tab.active { background:var(--primary-color); color:white; }
+        .feed-filters { display:flex; gap:0.4rem; margin-bottom:1rem; overflow-x:auto; scrollbar-width:none; flex-wrap:wrap; }
+        .category-tab { padding:0.3rem 0.75rem; border-radius:16px; font-size:0.78rem; font-weight:500; cursor:pointer; white-space:nowrap; border:1px solid var(--border-color); background:var(--bg-white); color:var(--text-light); transition:all 0.2s; }
+        .category-tab:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .category-tab.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+
+        /* ─── Feed Cards ──────────────────────────────────────── */
+        .feed-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); margin-bottom:1rem; transition:all 0.2s; }
+        .feed-card:hover { box-shadow:var(--shadow-sm); }
+        .feed-card-header { display:flex; align-items:center; gap:0.75rem; padding:1rem 1.25rem 0; }
+        .feed-avatar { width:42px; height:42px; border-radius:50%; background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:1rem; color:var(--primary-color); flex-shrink:0; overflow:hidden; font-weight:600; }
+        .feed-avatar img { width:100%; height:100%; object-fit:cover; }
+        .feed-user-info { flex:1; min-width:0; }
+        .feed-user-name { font-size:0.9rem; font-weight:600; color:var(--text-main); display:flex; align-items:center; gap:0.4rem; }
+        .feed-user-name .verified { color:var(--primary-color); font-size:0.82rem; }
+        .feed-user-name .expert-badge { background:var(--accent-gold); color:white; font-size:0.58rem; padding:0.1rem 0.35rem; border-radius:3px; font-weight:600; }
+        .feed-user-meta { font-size:0.75rem; color:var(--text-muted); display:flex; align-items:center; gap:0.4rem; }
+        .feed-card-menu { background:none; border:none; color:var(--text-muted); cursor:pointer; padding:0.25rem; border-radius:4px; font-size:1.05rem; }
+        .feed-card-menu:hover { background:var(--bg-light); color:var(--text-main); }
+        .feed-card-body { padding:0.75rem 1.25rem; }
+        .feed-card-text { font-size:0.9rem; line-height:1.65; color:var(--text-main); margin-bottom:0.6rem; white-space:pre-wrap; }
+        .feed-card-tags { display:flex; gap:0.35rem; flex-wrap:wrap; margin-bottom:0.5rem; }
+        .feed-tag { font-size:0.78rem; color:var(--primary-color); cursor:pointer; }
+        .feed-tag:hover { text-decoration:underline; }
+        .feed-card-images { display:grid; gap:3px; margin-bottom:0.5rem; }
+        .feed-card-images.single { grid-template-columns:1fr; }
+        .feed-card-images.double { grid-template-columns:1fr 1fr; }
+        .feed-card-images.triple { grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; }
+        .feed-card-images.triple .feed-img:first-child { grid-row:1/3; }
+        .feed-card-images.quad { grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; }
+        .feed-img { width:100%; max-height:500px; object-fit:cover; border-radius:4px; cursor:pointer; background:var(--bg-light); }
+        .feed-card-images.triple .feed-img:first-child { max-height:100%; }
+
+        /* ─── Video Thumbnail ─────────────────────────────────── */
+        .feed-video-wrap { position:relative; cursor:pointer; margin-bottom:0.5rem; }
+        .feed-video-play { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+        .feed-video-play i { font-size:3rem; color:rgba(255,255,255,0.9); filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3)); transition:transform 0.2s; }
+        .feed-video-wrap:hover .feed-video-play i { transform:scale(1.1); }
+
+        /* ─── Post Type Badges ────────────────────────────────── */
+        .marketplace-card { border-left:3px solid var(--accent-green); }
+        .marketplace-badge { display:inline-flex;align-items:center;gap:0.3rem;background:var(--accent-green-light);color:var(--accent-green);font-size:0.68rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:4px;margin-bottom:0.5rem; }
+        .marketplace-product { display:flex;gap:1rem;background:var(--bg-light);border-radius:var(--radius-sm);padding:1rem;margin-top:0.5rem; }
+        .marketplace-product-img { width:90px;height:90px;border-radius:var(--radius-sm);object-fit:cover;flex-shrink:0; }
+        .marketplace-product-info { flex:1; }
+        .marketplace-product-name { font-weight:600;font-size:0.92rem;margin-bottom:0.15rem; }
+        .marketplace-product-price { font-size:1.05rem;font-weight:700;color:var(--primary-color); }
+        .marketplace-product-rating { font-size:0.78rem;color:var(--accent-gold);margin:0.2rem 0; }
+        .marketplace-cta { margin-top:0.5rem; }
+        .learning-card { border-left:3px solid var(--accent-blue); }
+        .learning-badge { display:inline-flex;align-items:center;gap:0.3rem;background:rgba(14,165,233,0.1);color:var(--accent-blue);font-size:0.68rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:4px;margin-bottom:0.5rem; }
+        .learning-achievement { display:flex;gap:1rem;align-items:center;background:var(--bg-light);border-radius:var(--radius-sm);padding:1rem;margin-top:0.5rem; }
+        .learning-achievement-icon { width:48px;height:48px;border-radius:50%;background:rgba(14,165,233,0.1);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0; }
+        .learning-achievement-info h4 { font-size:0.9rem;margin-bottom:0.1rem; }
+        .learning-achievement-info p { font-size:0.8rem;color:var(--text-light); }
+        .event-card-feed { border-left:3px solid var(--accent-gold); }
+        .event-badge { display:inline-flex;align-items:center;gap:0.3rem;background:var(--accent-light);color:var(--accent-gold);font-size:0.68rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:4px;margin-bottom:0.5rem; }
+        .event-details { display:flex;gap:1.25rem;margin-top:0.5rem;flex-wrap:wrap; }
+        .event-detail-item { display:flex;align-items:center;gap:0.35rem;font-size:0.82rem;color:var(--text-light); }
+        .event-detail-item i { color:var(--primary-color); }
+        .event-rsvp { display:flex;gap:0.5rem;margin-top:0.5rem; }
+        .question-card-feed { border-left:3px solid #8b5cf6; }
+        .question-badge { display:inline-flex;align-items:center;gap:0.3rem;background:rgba(139,92,246,0.1);color:#8b5cf6;font-size:0.68rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:4px;margin-bottom:0.5rem; }
+        .poll-card { border-left:3px solid #8b5cf6; }
+        .poll-badge { display:inline-flex;align-items:center;gap:0.3rem;background:rgba(139,92,246,0.1);color:#8b5cf6;font-size:0.68rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:4px;margin-bottom:0.5rem; }
+        .poll-question { font-weight:600;font-size:0.92rem;margin-bottom:0.6rem; }
+        .poll-options { display:flex;flex-direction:column;gap:0.45rem; }
+        .poll-option { position:relative;border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:0.55rem 1rem;cursor:pointer;transition:all 0.2s;overflow:hidden; }
+        .poll-option:hover { border-color:var(--primary-color); }
+        .poll-option.voted { border-color:var(--primary-color); }
+        .poll-option-fill { position:absolute;top:0;left:0;bottom:0;background:var(--primary-light);border-radius:var(--radius-sm);transition:width 0.4s ease;z-index:0; }
+        .poll-option-content { position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center; }
+        .poll-option-label { font-size:0.85rem;font-weight:500; }
+        .poll-option-pct { font-size:0.8rem;font-weight:600;color:var(--primary-color); }
+        .poll-meta { font-size:0.78rem;color:var(--text-muted);margin-top:0.4rem; }
+
+        /* ─── Stats + Actions ─────────────────────────────────── */
+        .feed-card-stats { display:flex;justify-content:space-between;padding:0.4rem 1.25rem;font-size:0.78rem;color:var(--text-muted); }
+        .feed-card-actions { display:flex;border-top:1px solid var(--border-light);padding:0.15rem 0.75rem; }
+        .feed-action-btn { flex:1;display:flex;align-items:center;justify-content:center;gap:0.35rem;padding:0.55rem;border-radius:var(--radius-sm);font-size:0.82rem;color:var(--text-light);cursor:pointer;border:none;background:none;transition:all 0.15s;position:relative; }
+        .feed-action-btn:hover { background:var(--bg-light);color:var(--text-main); }
+        .feed-action-btn.liked { color:var(--primary-color); }
+        .feed-action-btn.liked i { font-weight:bold; }
+        .reaction-picker { position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--bg-white);border:1px solid var(--border-color);border-radius:24px;padding:0.3rem 0.5rem;display:none;gap:0.1rem;box-shadow:var(--shadow-md);z-index:10; }
+        .feed-action-btn:hover .reaction-picker { display:flex; }
+        .reaction-pick { font-size:1.2rem;cursor:pointer;padding:0.2rem;border-radius:50%;transition:transform 0.15s;border:none;background:none; }
+        .reaction-pick:hover { transform:scale(1.3); }
+
+        /* ─── Comments ────────────────────────────────────────── */
+        .feed-comments { padding:0 1.25rem 0.75rem;display:none; }
+        .feed-comments.open { display:block; }
+        .comment-item { display:flex;gap:0.6rem;padding:0.5rem 0; }
+        .comment-avatar { width:30px;height:30px;border-radius:50%;background:var(--bg-light);display:flex;align-items:center;justify-content:center;font-size:0.7rem;flex-shrink:0;overflow:hidden;color:var(--text-muted);font-weight:600; }
+        .comment-avatar img { width:100%;height:100%;object-fit:cover; }
+        .comment-body { flex:1; }
+        .comment-author { font-size:0.8rem;font-weight:600;color:var(--text-main); }
+        .comment-text { font-size:0.82rem;color:var(--text-light);line-height:1.5;margin-top:0.1rem; }
+        .comment-meta { font-size:0.7rem;color:var(--text-muted);margin-top:0.2rem;display:flex;gap:0.6rem; }
+        .comment-meta span { cursor:pointer; }
+        .comment-meta span:hover { color:var(--primary-color); }
+        .comment-input-wrap { display:flex;gap:0.4rem;margin-top:0.5rem;padding-top:0.5rem;border-top:1px solid var(--border-light); }
+        .comment-input { flex:1;padding:0.45rem 0.75rem;border:1px solid var(--border-color);border-radius:20px;font-size:0.82rem;background:var(--bg-light);color:var(--text-main); }
+        .comment-input:focus { outline:none;border-color:var(--primary-color); }
+        .emoji-picker { display:flex;gap:0.2rem;flex-wrap:wrap; }
+        .emoji-opt { transition:transform 0.15s;cursor:pointer; }
+        .emoji-opt:hover { transform:scale(1.3); }
+        @keyframes fadeIn { from { opacity:0;transform:translateY(-8px); } to { opacity:1;transform:translateY(0); } }
+
+        /* ─── Right Sidebar ───────────────────────────────────── */
+        .sidebar-card { background:var(--bg-white);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:1rem 1.25rem;margin-bottom:1rem; }
+        .sidebar-card h3 { font-size:0.85rem;margin-bottom:0.6rem;display:flex;align-items:center;gap:0.35rem; }
+        .trending-tag { display:block;padding:0.3rem 0;font-size:0.82rem;color:var(--text-main);cursor:pointer;transition:color 0.15s; }
+        .trending-tag:hover { color:var(--primary-color); }
+        .trending-tag .tag-count { font-size:0.7rem;color:var(--text-muted);display:block; }
+        .suggested-member { display:flex;align-items:center;gap:0.6rem;padding:0.45rem 0; }
+        .suggested-avatar { width:34px;height:34px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:var(--primary-color);flex-shrink:0;overflow:hidden;font-weight:600; }
+        .suggested-avatar img { width:100%;height:100%;object-fit:cover; }
+        .suggested-info { flex:1;min-width:0; }
+        .suggested-name { font-size:0.82rem;font-weight:500; }
+        .suggested-role { font-size:0.7rem;color:var(--text-muted); }
+        .suggested-follow-btn { font-size:0.72rem;padding:0.25rem 0.65rem;border:1px solid var(--primary-color);color:var(--primary-color);border-radius:16px;background:none;cursor:pointer;font-weight:500;transition:all 0.2s;white-space:nowrap; }
+        .suggested-follow-btn:hover { background:var(--primary-color);color:white; }
+        .upcoming-event { padding:0.4rem 0;border-bottom:1px solid var(--border-light); }
+        .upcoming-event:last-child { border-bottom:none; }
+        .upcoming-event-title { font-size:0.82rem;font-weight:500;cursor:pointer; }
+        .upcoming-event-title:hover { color:var(--primary-color); }
+        .upcoming-event-meta { font-size:0.72rem;color:var(--text-muted);margin-top:0.1rem; }
+
+        /* ─── Create Post Modal ───────────────────────────────── */
+        .modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:none;align-items:center;justify-content:center; }
+        .modal-overlay.open { display:flex; }
+        .modal-content { background:var(--bg-white);border-radius:var(--radius-lg);width:90%;max-width:580px;max-height:90vh;overflow-y:auto; }
+        .modal-header { display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;border-bottom:1px solid var(--border-light); }
+        .modal-header h2 { font-size:1.05rem; }
+        .modal-close { background:none;border:none;font-size:1.25rem;cursor:pointer;color:var(--text-muted);padding:0.25rem; }
+        .modal-close:hover { color:var(--text-main); }
+        .modal-body { padding:1.25rem 1.5rem; }
+        .modal-post-user { display:flex;gap:0.75rem;align-items:center;margin-bottom:1rem; }
+        .modal-title-input { width:100%;padding:0.55rem 0.75rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:0.9rem;background:var(--bg-light);color:var(--text-main);margin-bottom:0.75rem; }
+        .modal-title-input:focus { outline:none;border-color:var(--primary-color); }
+        .modal-textarea { width:100%;min-height:100px;border:none;font-size:0.92rem;line-height:1.6;resize:none;color:var(--text-main);background:transparent;font-family:inherit; }
+        .modal-textarea:focus { outline:none; }
+        .modal-textarea::placeholder { color:var(--text-muted); }
+        .composer-extras { margin-top:0.75rem;display:flex;flex-wrap:wrap;gap:0.5rem; }
+        .composer-extras label { display:flex;align-items:center;gap:0.3rem;padding:0.35rem 0.7rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:0.78rem;color:var(--text-light);cursor:pointer;transition:all 0.2s; }
+        .composer-extras label:hover { border-color:var(--primary-color);color:var(--primary-color); }
+        .composer-extras input[type="file"] { display:none; }
+        .composer-row { display:flex;gap:0.75rem;margin-top:0.75rem;flex-wrap:wrap; }
+        .composer-field { flex:1;min-width:160px; }
+        .composer-field label { display:block;font-size:0.72rem;font-weight:600;color:var(--text-muted);margin-bottom:0.2rem;text-transform:uppercase;letter-spacing:0.04em; }
+        .composer-field input, .composer-field select { width:100%;padding:0.45rem 0.65rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:0.82rem;background:var(--bg-light);color:var(--text-main); }
+        .composer-field select { cursor:pointer; }
+        .modal-footer { display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1.5rem;border-top:1px solid var(--border-light);flex-wrap:wrap;gap:0.5rem; }
+        .modal-tools { display:flex;gap:0.25rem; }
+        .modal-tool { background:none;border:none;font-size:1.1rem;padding:0.35rem;border-radius:var(--radius-sm);cursor:pointer;color:var(--text-muted); }
+        .modal-tool:hover { background:var(--bg-light);color:var(--primary-color); }
+        .modal-actions { display:flex;gap:0.5rem; }
+
+        /* ─── Empty Feed ──────────────────────────────────────── */
+        .empty-feed { text-align:center;padding:3rem 1.5rem; }
+        .empty-feed i { font-size:3.5rem;color:var(--primary-color);opacity:0.4;display:block;margin-bottom:1rem; }
+        .empty-feed h3 { font-family:var(--font-serif);font-size:1.6rem;margin-bottom:0.4rem; }
+        .empty-feed p { color:var(--text-muted);margin-bottom:1.5rem;font-size:0.95rem; }
+        .empty-feed-actions { display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap; }
+
+        /* ─── Loading & End ─────────────────────────────────────── */
+        .feed-loading { text-align:center;padding:2rem;color:var(--text-muted); }
+        .feed-loading .spinner { width:28px;height:28px;border:3px solid var(--border-color);border-top-color:var(--primary-color);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 0.4rem; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        #feedEnd { text-align:center;padding:1.5rem;color:var(--text-muted);font-size:0.88rem; }
+
+        /* ─── Floating FAB (Mobile) ───────────────────────────── */
+        .feed-fab { display:none;position:fixed;bottom:2rem;right:1.5rem;z-index:100;width:56px;height:56px;border-radius:50%;background:var(--primary-color);color:white;border:none;font-size:1.5rem;cursor:pointer;box-shadow:var(--shadow-primary);transition:transform 0.2s,box-shadow 0.2s;align-items:center;justify-content:center; }
+        .feed-fab:hover { transform:scale(1.08);box-shadow:0 12px 32px rgba(255,95,162,0.35); }
+        .feed-fab-label { display:none;position:fixed;bottom:4.5rem;right:1.5rem;background:var(--text-main);color:white;padding:0.4rem 0.75rem;border-radius:6px;font-size:0.78rem;white-space:nowrap;z-index:100;pointer-events:none; }
+        @media(min-width:641px) { .feed-fab-label { display:none !important; } }
+        @media(max-width:640px) { .feed-fab { display:flex; } }
+
+        /* ─── Poll Creator in Modal ───────────────────────────── */
+        #pollCreator { display:none;margin-top:1rem; }
+        #pollCreator input[type="text"] { width:100%;padding:0.45rem 0.65rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:0.85rem;margin-bottom:0.4rem;background:var(--bg-light);color:var(--text-main); }
+        #pollCreator button { font-size:0.78rem;color:var(--primary-color);background:none;border:none;cursor:pointer; }
+
+        /* ─── Responsive ──────────────────────────────────────── */
+        @media(max-width:1200px) { .feed-layout { grid-template-columns:1fr 280px; } .feed-left { display:none; } }
+        @media(max-width:900px) { .feed-layout { grid-template-columns:1fr; } .feed-right { display:none; } }
+        @media(max-width:640px) {
+            .feed-header { padding:1rem 0 0.25rem; }
+            .feed-tabs { border-radius:0;border-left:none;border-right:none; }
+            .feed-tab { font-size:0.75rem;padding:0.4rem 0.65rem; }
+            .feed-filters { padding:0 0.5rem; }
+            .create-post-card { border-radius:0;border-left:none;border-right:none; }
+            .feed-card { border-radius:0;border-left:none;border-right:none; }
+            .feed-card-body { padding:0.5rem 1rem; }
+            .feed-card-header { padding:0.75rem 1rem 0; }
+            .feed-fab { display:flex;width:50px;height:50px;font-size:1.3rem;bottom:1.5rem;right:1rem; }
+            .empty-feed { padding:2rem 1rem; }
+            .empty-feed i { font-size:2.5rem; }
+            .empty-feed h3 { font-size:1.3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- ─── Feed Header ─────────────────────────────────────────────── -->
+    <div class="container">
+        <div class="feed-header">
+            <span class="subtitle">COMMUNITY</span>
+            <h1>Feed</h1>
+            <p>See the latest posts from flower lovers, florists, growers and businesses.</p>
+        </div>
+    </div>
+
+    <!-- ─── Main Feed Layout ────────────────────────────────────────── -->
+    <section class="section-padding" style="padding-top:0.5rem;">
+        <div class="feed-layout">
+
+            <!-- ─── Left Sidebar ─────────────────────────────────────── -->
+            <aside class="feed-left">
+                <nav class="sidebar-nav">
+                    <a class="sidebar-nav-item active" href="feed.html"><i class="bi bi-house-heart"></i> Feed</a>
+                    <a class="sidebar-nav-item" href="discussions.html"><i class="bi bi-chat-dots"></i> Discussions</a>
+                    <a class="sidebar-nav-item" href="clubs.html"><i class="bi bi-people"></i> Clubs</a>
+                    <a class="sidebar-nav-item" href="events.html"><i class="bi bi-calendar-event"></i> Events</a>
+                    <a class="sidebar-nav-item" href="showcase.html"><i class="bi bi-images"></i> Showcase</a>
+                    <a class="sidebar-nav-item" href="success-stories.html"><i class="bi bi-trophy"></i> Success Stories</a>
+                    <a class="sidebar-nav-item" href="questions.html"><i class="bi bi-question-circle"></i> Questions</a>
+                    <a class="sidebar-nav-item" href="favorites.html"><i class="bi bi-bookmark-heart"></i> Saved Posts</a>
+                    <a class="sidebar-nav-item" href="following.html"><i class="bi bi-heart"></i> Following</a>
+                    <a class="sidebar-nav-item" href="profile.html"><i class="bi bi-person-circle"></i> My Profile</a>
+                    <a class="sidebar-nav-item" href="community-settings.html"><i class="bi bi-gear"></i> Community Settings</a>
+
+                    <div class="sidebar-section">
+                        <div class="sidebar-section-title">My Clubs</div>
+                        <div class="sidebar-group">
+                            <div class="sidebar-group-item"><div class="sidebar-group-icon" style="background:rgba(16,185,129,0.1);">&#127801;</div> Rose Growers</div>
+                            <div class="sidebar-group-item"><div class="sidebar-group-icon" style="background:rgba(245,158,11,0.1);">&#128144;</div> Wedding Florists</div>
+                            <div class="sidebar-group-item"><div class="sidebar-group-icon" style="background:rgba(14,165,233,0.1);">&#127795;</div> Indoor Plants</div>
+                            <div style="padding:0.5rem 1rem 0;font-size:0.75rem;"><a href="clubs.html" style="color:var(--primary-color);text-decoration:none;">View All</a></div>
+                        </div>
+                    </div>
+                </nav>
+            </aside>
+
+            <!-- ─── Main Feed ────────────────────────────────────────── -->
+            <main class="feed-main">
+                <div id="createPostContainer"></div>
+
+                <div class="feed-tabs" id="feedTabs">
+                    <button class="feed-tab active" data-tab="for-you"><i class="bi bi-stars"></i> Latest</button>
+                    <button class="feed-tab" data-tab="following"><i class="bi bi-people"></i> Following</button>
+                    <button class="feed-tab" data-tab="trending"><i class="bi bi-fire"></i> Trending</button>
+                    <button class="feed-tab" data-tab="nearby"><i class="bi bi-geo-alt"></i> Nearby</button>
+                    <button class="feed-tab" data-tab="marketplace"><i class="bi bi-bag"></i> Marketplace</button>
+                    <button class="feed-tab" data-tab="learning"><i class="bi bi-mortarboard"></i> Learning</button>
+                </div>
+
+                <div class="feed-filters" id="feedFilters">
+                    <button class="category-tab active" data-filter="latest">Latest</button>
+                    <button class="category-tab" data-filter="popular">Popular</button>
+                    <button class="category-tab" data-filter="photos">Photos</button>
+                    <button class="category-tab" data-filter="videos">Videos</button>
+                    <button class="category-tab" data-filter="questions">Questions</button>
+                    <button class="category-tab" data-filter="marketplace">Marketplace</button>
+                    <button class="category-tab" data-filter="learning">Learning</button>
+                </div>
+
+                <div id="feedContainer"></div>
+
+                <div class="feed-loading" id="feedLoading" style="display:none;">
+                    <div class="spinner"></div>
+                    <p>Loading more posts...</p>
+                </div>
+
+                <div id="feedEnd" style="display:none;">
+                    <i class="bi bi-flower1" style="font-size:1.5rem;display:block;margin-bottom:0.25rem;"></i>
+                    You're all caught up!
+                </div>
+            </main>
+
+            <!-- ─── Right Sidebar ────────────────────────────────────── -->
+            <aside class="feed-right">
+                <div class="sidebar-card">
+                    <h3><i class="bi bi-fire" style="color:var(--accent-gold)"></i> Trending Topics</h3>
+                    <div id="trendingTopics">
+                        <span class="trending-tag">#WeddingFlowers<span class="tag-count">Loading...</span></span>
+                    </div>
+                </div>
+                <div class="sidebar-card">
+                    <h3><i class="bi bi-person-plus" style="color:var(--primary-color)"></i> Suggested People</h3>
+                    <div id="suggestedMembers"></div>
+                </div>
+                <div class="sidebar-card">
+                    <h3><i class="bi bi-calendar-event" style="color:var(--accent-green)"></i> Upcoming Events</h3>
+                    <div id="upcomingEvents"></div>
+                </div>
+            </aside>
+        </div>
+    </section>
+
+    <!-- ─── Create Post Modal ────────────────────────────────────────── -->
+    <div class="modal-overlay" id="createPostModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="postTypeIndicator">Create Post</h2>
+                <button class="modal-close" onclick="closeCreateModal()"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-post-user">
+                    <div class="create-post-avatar" id="modalUserAvatar">?</div>
+                    <div>
+                        <div style="font-weight:600;font-size:0.9rem;" id="modalUserName">You</div>
+                        <select id="postVisibility" style="font-size:0.72rem;border:1px solid var(--border-color);border-radius:4px;padding:0.1rem 0.35rem;background:var(--bg-light);color:var(--text-light);">
+                            <option value="public">&#127758; Public</option>
+                            <option value="followers">&#128101; Followers</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="postTitleGroup">
+                    <input type="text" class="modal-title-input" id="postTitle" placeholder="Add a title..." maxlength="120">
+                </div>
+
+                <textarea class="modal-textarea" id="postContent" placeholder="Share your flowers, thoughts, or ask a question..."></textarea>
+
+                <div id="postImagePreview" style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.5rem;"></div>
+                <div id="postVideoPreview" style="margin-top:0.5rem;"></div>
+
+                <div class="composer-extras">
+                    <label><i class="bi bi-image"></i> Photos<input type="file" accept="image/*" multiple onchange="handlePostImages(this.files)"></label>
+                    <label><i class="bi bi-camera-video"></i> Video<input type="file" accept="video/*" onchange="handlePostVideo(this)"></label>
+                </div>
+
+                <div class="composer-row">
+                    <div class="composer-field">
+                        <label>Category</label>
+                        <select id="postCategory">
+                            <option value="">Select category</option>
+                            <option value="flower-care">Flower Care</option>
+                            <option value="arrangements">Arrangements</option>
+                            <option value="gardening">Gardening</option>
+                            <option value="business">Business</option>
+                            <option value="floristry">Floristry</option>
+                            <option value="general">General</option>
+                        </select>
+                    </div>
+                    <div class="composer-field">
+                        <label>Tags</label>
+                        <input type="text" id="postTags" placeholder="rose, wedding, bouquet">
+                    </div>
+                </div>
+
+                <div class="composer-row" style="margin-top:0.5rem;">
+                    <div class="composer-field">
+                        <label>Location</label>
+                        <input type="text" id="postLocation" placeholder="e.g. Accra, Ghana">
+                    </div>
+                </div>
+
+                <div id="pollCreator">
+                    <input type="text" id="pollQuestionInput" placeholder="Ask a question...">
+                    <div id="pollOptionsList">
+                        <div style="display:flex;gap:0.5rem;"><input type="text" placeholder="Option 1" class="poll-option-input"></div>
+                        <div style="display:flex;gap:0.5rem;"><input type="text" placeholder="Option 2" class="poll-option-input"></div>
+                    </div>
+                    <button onclick="addPollOption()">+ Add Option</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="modal-tools">
+                    <button class="modal-tool" title="Poll" onclick="togglePollCreator()"><i class="bi bi-bar-chart"></i></button>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-outline btn-sm" onclick="saveDraft()">Save Draft</button>
+                    <button class="btn btn-primary btn-sm" id="submitPostBtn" onclick="submitPost()" disabled>Publish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Floating Create Button (Mobile) ──────────────────────────── -->
+    <button class="feed-fab" onclick="openCreateModal()" title="Create Post">+</button>
+    <span class="feed-fab-label">Create Post</span>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/ui.js?v=2.0"></script>
+    <script src="js/shared/cart.js?v=3.0"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/animations.js?v=3.0"></script>
+
+    <script src="js/components/reactions.js?v=1.0"></script>
+    <script src="js/components/comments.js?v=1.0"></script>
+    <script src="js/components/post-card.js?v=1.0"></script>
+    <script src="js/components/create-post.js?v=1.0"></script>
+    <script src="js/feed.js?v=2.0"></script>
+</body>
+</html>
