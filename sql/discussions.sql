@@ -126,3 +126,13 @@ CREATE OR REPLACE TRIGGER trg_discussion_comment_updated
     BEFORE UPDATE ON community.discussion_comments
     FOR EACH ROW
     EXECUTE FUNCTION community.update_discussion_timestamp();
+
+-- Post Views (deduplication for view counting)
+CREATE TABLE IF NOT EXISTS community.post_views (
+    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    post_id     UUID NOT NULL REFERENCES community.posts(id) ON DELETE CASCADE,
+    viewer_id   VARCHAR(255) NOT NULL,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_post_views_post ON community.post_views(post_id);
+CREATE INDEX IF NOT EXISTS idx_post_views_lookup ON community.post_views(post_id, viewer_id, created_at);

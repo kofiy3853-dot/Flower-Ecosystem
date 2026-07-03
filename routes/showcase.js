@@ -80,7 +80,22 @@ router.get('/showcase/:id', asyncHandler(async (req, res) => {
     const { id } = req.params;
     if (await dbAvailable()) {
         try {
-            await pool.query('UPDATE community.posts SET view_count = view_count + 1 WHERE id = $1 AND post_type = $2', [id, 'showcase']);
+            // Deduplicate views: only count once per user/IP per hour
+            const viewerId = await getUser(req);
+            const viewerKey = viewerId ? viewerId.id : (req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown');
+            const viewCheck = await pool.query(
+                `SELECT 1 FROM community.post_views WHERE post_id = $1 AND viewer_id = $2 AND created_at > NOW() - INTERVAL '1 hour'`,
+                [id, String(viewerKey)]
+            );
+            if (!viewCheck.rows.length) {
+                await pool.query('UPDATE community.posts SET view_count = view_count + 1 WHERE id = $1 AND post_type = $2', [id, 'showcase']);
+                try {
+                    await pool.query(
+                        `INSERT INTO community.post_views (post_id, viewer_id) VALUES ($1, $2)`,
+                        [id, String(viewerKey)]
+                    );
+                } catch {}
+            }
             const r = await pool.query(`
                 SELECT p.*, u.first_name, u.last_name, u.profile_image, u.role AS user_role
                 FROM community.posts p JOIN auth.users u ON u.id = p.user_id

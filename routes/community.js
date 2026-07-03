@@ -2,6 +2,7 @@ const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const { pool, JWT_SECRET, upload, asyncHandler, escapeHtml, dbAvailable, readJSON, requireAuth, requireRole, getFileUrl, rateLimiter } = require('./middleware');
+const { checkAndAwardBadges } = require('./badges');
 
 const writeLimiter = rateLimiter(20, 60000);
 
@@ -122,6 +123,9 @@ router.post('/posts', writeLimiter, requireAuth, upload.array('media', 10), asyn
     }
 
     res.status(201).json(r.rows[0]);
+
+    // Check badges async
+    checkAndAwardBadges(req.user.id).catch(() => {});
 }));
 
 function tryParseJSON(val, fallback) {
@@ -302,6 +306,7 @@ router.post('/discussions', requireAuth, upload.array('images', 5), asyncHandler
         }
     }
     res.status(201).json(r.rows[0]);
+    checkAndAwardBadges(req.user.id).catch(() => {});
 }));
 
 router.put('/discussions/:id', requireAuth, asyncHandler(async (req, res) => {
@@ -572,6 +577,7 @@ router.post('/stories', requireAuth, upload.array('images', 5), asyncHandler(asy
         }
     }
     res.status(201).json(r.rows[0]);
+    checkAndAwardBadges(req.user.id).catch(() => {});
 }));
 
 router.put('/stories/:id', requireAuth, asyncHandler(async (req, res) => {

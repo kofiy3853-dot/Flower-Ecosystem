@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const { pool, JWT_SECRET, upload, asyncHandler, escapeHtml, dbAvailable, readJSON, requireAuth, getFileUrl, rateLimiter } = require('./middleware');
+const { checkAndAwardBadges } = require('./badges');
 const path = require('path');
 
 // Stricter rate limit for write operations: 20 per minute per IP
@@ -66,8 +67,6 @@ router.get('/', asyncHandler(async (req, res) => {
                 conditions.push(`p.post_type = 'question'`);
             } else if (filter === 'marketplace') {
                 conditions.push(`p.post_type = 'marketplace'`);
-            } else if (filter === 'questions') {
-                conditions.push(`p.post_type = 'question'`);
             } else if (filter === 'learning') {
                 conditions.push(`p.post_type IN ('learning', 'achievement')`);
             } else if (filter === 'nearby') {
@@ -97,7 +96,8 @@ router.get('/', asyncHandler(async (req, res) => {
                     COALESCE(lc.like_count, 0) AS like_count,
                     COALESCE(cc.comment_count, 0) AS comment_count,
                     (SELECT COUNT(*) FROM community.post_shares WHERE post_id = p.id) AS share_count,
-                    ${userId ? `(SELECT reaction_type FROM community.post_reactions WHERE post_id = p.id AND user_id = $${idx + 2} LIMIT 1) AS user_reaction` : 'NULL AS user_reaction'}
+                    ${userId ? `(SELECT reaction_type FROM community.post_reactions WHERE post_id = p.id AND user_id = $${idx + 2} LIMIT 1) AS user_reaction` : 'NULL AS user_reaction'},
+                    ${userId ? `(SELECT EXISTS(SELECT 1 FROM community.post_saves WHERE post_id = p.id AND user_id = $${idx + 2})) AS user_saved` : 'FALSE AS user_saved'}
                 FROM community.posts p
                 JOIN auth.users u ON u.id = p.user_id
                 LEFT JOIN (SELECT post_id, COUNT(*) AS like_count FROM community.post_likes GROUP BY post_id) lc ON lc.post_id = p.id
@@ -283,6 +283,8 @@ router.post('/', writeLimiter, requireAuth, upload.array('media', 4), asyncHandl
         author_role: u.role,
         images: mediaUrls
     });
+
+    checkAndAwardBadges(req.user.id).catch(() => {});
 }));
 
 // ─── React to Post ─────────────────────────────────────────────────────

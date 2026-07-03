@@ -142,9 +142,11 @@ router.get('/members/:id/activity', asyncHandler(async (req, res) => {
 router.get('/members/:id/reputation', asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.json({ points: 0, level: 1, title: 'Newcomer' });
     try {
-        const qp = await pool.query("SELECT points, questions_asked, answers_given, best_answers FROM qa.user_points WHERE user_id = $1", [req.params.id]);
-        const dr = await pool.query('SELECT COUNT(*)::int AS c FROM community.discussions WHERE user_id = $1', [req.params.id]);
-        const sr = await pool.query('SELECT COUNT(*)::int AS c FROM community.stories WHERE user_id = $1', [req.params.id]);
+        const [qp, dr, sr] = await Promise.all([
+            pool.query("SELECT points, questions_asked, answers_given, best_answers FROM qa.user_points WHERE user_id = $1", [req.params.id]),
+            pool.query('SELECT COUNT(*)::int AS c FROM community.discussions WHERE user_id = $1', [req.params.id]),
+            pool.query('SELECT COUNT(*)::int AS c FROM community.stories WHERE user_id = $1', [req.params.id])
+        ]);
 
         const qaPoints = qp.rows.length ? qp.rows[0].points : 0;
         const discussions = dr.rows[0].c || 0;
@@ -163,14 +165,16 @@ router.get('/members/:id/reputation', asyncHandler(async (req, res) => {
         else if (level >= 3) title = 'Active Member';
 
         // Percentile rank
-        const pr = await pool.query('SELECT COUNT(*)::int AS c FROM auth.users WHERE is_active = true');
+        const [pr, ab] = await Promise.all([
+            pool.query('SELECT COUNT(*)::int AS c FROM auth.users WHERE is_active = true'),
+            pool.query(`
+                SELECT COUNT(*)::int AS c FROM (
+                    SELECT u.id, COALESCE(qp.points,0) + (SELECT COUNT(*)::int FROM community.discussions WHERE user_id = u.id)*5 +
+                        (SELECT COUNT(*)::int FROM community.stories WHERE user_id = u.id)*10 AS score
+                    FROM auth.users u LEFT JOIN qa.user_points qp ON qp.user_id = u.id
+                ) scores WHERE score > $1`, [total])
+        ]);
         const totalUsers = pr.rows[0].c || 1;
-        const ab = await pool.query(`
-            SELECT COUNT(*)::int AS c FROM (
-                SELECT u.id, COALESCE(qp.points,0) + (SELECT COUNT(*)::int FROM community.discussions WHERE user_id = u.id)*5 + 
-                    (SELECT COUNT(*)::int FROM community.stories WHERE user_id = u.id)*10 AS score
-                FROM auth.users u LEFT JOIN qa.user_points qp ON qp.user_id = u.id
-            ) scores WHERE score > $1`, [total]);
         const aboveCount = ab.rows[0].c || 0;
         const pct = Math.round(((totalUsers - aboveCount) / totalUsers) * 100);
 

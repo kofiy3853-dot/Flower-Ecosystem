@@ -116,22 +116,34 @@ router.put('/clubs/:id', requireAuth, asyncHandler(async (req, res) => {
 
 router.post('/clubs/:id/members', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const club = await pool.query('SELECT id FROM community.clubs WHERE id = $1', [req.params.id]);
-    if (!club.rows.length) return res.status(404).json({ error: 'Club not found' });
-    const existing = await pool.query('SELECT id FROM community.club_members WHERE club_id = $1 AND user_id = $2', [req.params.id, req.user.id]);
-    if (existing.rows.length) return res.status(409).json({ error: 'Already a member' });
-    await pool.query('INSERT INTO community.club_members (club_id, user_id, role) VALUES ($1, $2, $3)', [req.params.id, req.user.id, 'member']);
-    await pool.query('UPDATE community.clubs SET member_count = member_count + 1 WHERE id = $1', [req.params.id]);
-    res.status(201).json({ message: 'Joined club' });
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        const club = await client.query('SELECT id FROM community.clubs WHERE id = $1 FOR UPDATE', [req.params.id]);
+        if (!club.rows.length) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'Club not found' }); }
+        const existing = await client.query('SELECT id FROM community.club_members WHERE club_id = $1 AND user_id = $2', [req.params.id, req.user.id]);
+        if (existing.rows.length) { await client.query('ROLLBACK'); return res.status(409).json({ error: 'Already a member' }); }
+        await client.query('INSERT INTO community.club_members (club_id, user_id, role) VALUES ($1, $2, $3)', [req.params.id, req.user.id, 'member']);
+        await client.query('UPDATE community.clubs SET member_count = member_count + 1 WHERE id = $1', [req.params.id]);
+        await client.query('COMMIT');
+        res.status(201).json({ message: 'Joined club' });
+    } catch (err) { await client.query('ROLLBACK'); throw err; } finally { client.release(); }
 }));
 
 router.delete('/clubs/:id/members', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const existing = await pool.query('SELECT id FROM community.club_members WHERE club_id = $1 AND user_id = $2', [req.params.id, req.user.id]);
-    if (!existing.rows.length) return res.status(404).json({ error: 'Not a member' });
-    await pool.query('DELETE FROM community.club_members WHERE id = $1', [existing.rows[0].id]);
-    await pool.query('UPDATE community.clubs SET member_count = GREATEST(member_count - 1, 0) WHERE id = $1', [req.params.id]);
-    res.json({ message: 'Left club' });
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        const club = await client.query('SELECT id FROM community.clubs WHERE id = $1 FOR UPDATE', [req.params.id]);
+        if (!club.rows.length) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'Club not found' }); }
+        const existing = await client.query('SELECT id FROM community.club_members WHERE club_id = $1 AND user_id = $2', [req.params.id, req.user.id]);
+        if (!existing.rows.length) { await client.query('ROLLBACK'); return res.status(404).json({ error: 'Not a member' }); }
+        await client.query('DELETE FROM community.club_members WHERE id = $1', [existing.rows[0].id]);
+        await client.query('UPDATE community.clubs SET member_count = GREATEST(member_count - 1, 0) WHERE id = $1', [req.params.id]);
+        await client.query('COMMIT');
+        res.json({ message: 'Left club' });
+    } catch (err) { await client.query('ROLLBACK'); throw err; } finally { client.release(); }
 }));
 
 // ─── Club posts ────────────────────────────────────────────────────────
