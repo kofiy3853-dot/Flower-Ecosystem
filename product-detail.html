@@ -696,24 +696,28 @@
 
         // ─── Recently Viewed ───────────────────────────────────────────
         function saveRecent(product) {
-            let recent = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
-            recent = recent.filter(r => r.id !== product.id);
-            const img = product.image || (product.images && product.images[0]) || '';
-            recent.unshift({ id: product.id, name: product.name, image: img });
-            recent = recent.slice(0, 6);
-            localStorage.setItem('recentlyViewed', JSON.stringify(recent));
+            try {
+                let recent = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+                recent = recent.filter(r => r.id !== product.id);
+                const img = product.image || (Array.isArray(product.images) && product.images[0]) || '';
+                recent.unshift({ id: product.id, name: product.name, image: img, ts: Date.now() });
+                recent = recent.slice(0, 6);
+                localStorage.setItem('recentlyViewed', JSON.stringify(recent));
+            } catch {}
         }
 
         function loadRecent() {
-            const recent = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
-            if (recent.length < 2) return;
-            document.getElementById('recentSection').style.display = 'block';
-            document.getElementById('recentScroll').innerHTML = recent.map(r => `
-                <a href="product-detail.html?id=${r.id}" class="recent-card">
-                    <img src="${r.image || ''}" alt="${r.name}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 140 140%22><rect fill=%22%23fce7f0%22 width=%22140%22 height=%22140%22/><text x=%2270%22 y=%2280%22 text-anchor=%22middle%22 fill=%22%23d8447c%22 font-size=%2236%22>✿</text></svg>'">
-                    <div class="recent-card-name">${r.name}</div>
-                </a>
-            `).join('');
+            try {
+                const recent = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+                if (recent.length < 2) return;
+                document.getElementById('recentSection').style.display = 'block';
+                document.getElementById('recentScroll').innerHTML = recent.map(r => `
+                    <a href="product-detail.html?id=${escapeHtml(r.id)}" class="recent-card">
+                        <img src="${escapeHtml(r.image || '')}" alt="${escapeHtml(r.name)}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 140 140%22><rect fill=%22%23fce7f0%22 width=%22140%22 height=%22140%22/><text x=%2270%22 y=%2280%22 text-anchor=%22middle%22 fill=%22%23d8447c%22 font-size=%2236%22>✿</text></svg>'">
+                        <div class="recent-card-name">${escapeHtml(r.name)}</div>
+                    </a>
+                `).join('');
+            } catch {}
         }
     </script>
 </body>

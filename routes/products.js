@@ -47,6 +47,7 @@ router.get('/', asyncHandler(async (req, res) => {
                     p.image_url, p.images, p.video_url, p.harvest_date, p.shelf_life_days, p.created_at, p.updated_at,
                     p.seller_id, p.category_id, p.currency,
                     p.size, p.fragrance, p.care_level, p.sunlight, p.water_frequency, p.bloom_season, p.features, p.origin,
+                    p.delivery_time, p.shipping_fee, p.pickup_available,
                     c.name AS category,
                     c.name AS category_name,
                     u.first_name || ' ' || u.last_name AS seller,
@@ -332,7 +333,7 @@ router.delete('/:id', requireSeller, asyncHandler(async (req, res) => {
     if (existing.rows[0].seller_id !== req.user.id && req.user.role !== 'ADMIN') {
         return res.status(403).json({ error: 'Not authorized to delete this product' });
     }
-    await pool.query('UPDATE marketplace.products SET is_active = false WHERE id = $1', [id]);
+    await pool.query('UPDATE marketplace.products SET is_active = false, status = \'deleted\' WHERE id = $1', [id]);
     res.json({ message: 'Product deleted' });
 }));
 
@@ -422,8 +423,20 @@ router.get('/list/florists', asyncHandler(async (_, res) => {
     return queryWithFallback(
         async () => {
             const r = await pool.query(
-                `SELECT DISTINCT ON (u.id) u.id, u.first_name AS name, u.profile_image AS image, u.role
-                 FROM auth.users u WHERE u.role IN ('SELLER', 'FLORIST') AND u.is_active = true ORDER BY u.id, u.first_name`
+                `SELECT u.id,
+                    COALESCE(u.first_name || ' ' || u.last_name, u.first_name) AS name,
+                    u.profile_image AS image,
+                    u.role,
+                    COALESCE(AVG(pr.rating)::numeric(2,1), 4.5) AS rating,
+                    COUNT(DISTINCT pr.id)::int AS reviews,
+                    COUNT(DISTINCT p.id)::int AS product_count
+                 FROM auth.users u
+                 LEFT JOIN marketplace.products p ON p.seller_id = u.id AND p.is_active = true
+                 LEFT JOIN marketplace.product_reviews pr ON pr.product_id = p.id
+                 WHERE u.role IN ('SELLER', 'FLORIST') AND u.is_active = true
+                 GROUP BY u.id
+                 ORDER BY COUNT(DISTINCT pr.id) DESC
+                 LIMIT 20`
             );
             return { florists: r.rows };
         },

@@ -146,7 +146,8 @@ CREATE TABLE IF NOT EXISTS learning.certificates (
     verification_code VARCHAR(50) UNIQUE
 );
 
--- Add verification_code if table existed without it
+-- Add missing columns if table existed without them
+ALTER TABLE learning.certificates ADD COLUMN IF NOT EXISTS title VARCHAR(255);
 ALTER TABLE learning.certificates ADD COLUMN IF NOT EXISTS verification_code VARCHAR(50) UNIQUE;
 
 CREATE INDEX IF NOT EXISTS idx_certificates_user ON learning.certificates(user_id);
@@ -197,16 +198,16 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Seed Quiz Questions
 INSERT INTO learning.quiz_questions (quiz_id, question, options, correct_answer, sort_order) VALUES
-('d1b2c3d4-0001-0000-0000-000000000001', 'Which element of floral design refers to the visual path the eye follows?', ARRAY['Line', 'Form', 'Texture', 'Space'], 0, 1),
-('d1b2c3d4-0001-0000-0000-000000000001', 'What is the recommended stem cutting angle for optimal water absorption?', ARRAY['90 degrees', '45 degrees', '30 degrees', '60 degrees'], 1, 2),
-('d1b2c3d4-0001-0000-0000-000000000001', 'Which flower type is NOT suitable for a hand-tied bouquet?', ARRAY['Roses', 'Tulips', 'Sunflowers', 'Broken-stemmed flowers'], 3, 3),
-('d1b2c3d4-0001-0000-0000-000000000001', 'What does the golden ratio in floral design help achieve?', ARRAY['Color harmony', 'Visual balance', 'Faster arrangement', 'Longer vase life'], 1, 4),
-('d1b2c3d4-0001-0000-0000-000000000001', 'Which tool is essential for removing thorns from rose stems?', ARRAY['Floral shears', 'Stem stripper', 'Ribbon scissors', 'Floral tape'], 1, 5),
-('d1b2c3d4-0002-0000-0000-000000000002', 'Which feature usually indicates a natural flower?', ARRAY['Uniform coloring', 'Irregular petal patterns', 'Wire stems', 'Perfect symmetry'], 1, 1),
-('d1b2c3d4-0002-0000-0000-000000000002', 'What is the most reliable test for identifying silk flowers?', ARRAY['Smell test', 'Burn test for fabric', 'Water test', 'Weight test'], 1, 2),
-('d1b2c3d4-0002-0000-0000-000000000002', 'Preserved flowers are best characterized by:', ARRAY['Artificial appearance', 'Natural look with extended life', 'Synthetic materials', 'No scent'], 1, 3),
-('d1b2c3d4-0003-0000-0000-000000000003', 'What is the primary role of a wedding florist?', ARRAY['Only making bouquets', 'Creating the entire floral experience', 'Just delivering flowers', 'Only doing centerpieces'], 1, 1),
-('d1b2c3d4-0003-0000-0000-000000000003', 'How far in advance should wedding flowers be ordered?', ARRAY['1 week', '2-3 months', '6 months', 'Day before'], 1, 2)
+('d1b2c3d4-0001-0000-0000-000000000001', 'Which element of floral design refers to the visual path the eye follows?', to_jsonb(ARRAY['Line', 'Form', 'Texture', 'Space']), 0, 1),
+('d1b2c3d4-0001-0000-0000-000000000001', 'What is the recommended stem cutting angle for optimal water absorption?', to_jsonb(ARRAY['90 degrees', '45 degrees', '30 degrees', '60 degrees']), 1, 2),
+('d1b2c3d4-0001-0000-0000-000000000001', 'Which flower type is NOT suitable for a hand-tied bouquet?', to_jsonb(ARRAY['Roses', 'Tulips', 'Sunflowers', 'Broken-stemmed flowers']), 3, 3),
+('d1b2c3d4-0001-0000-0000-000000000001', 'What does the golden ratio in floral design help achieve?', to_jsonb(ARRAY['Color harmony', 'Visual balance', 'Faster arrangement', 'Longer vase life']), 1, 4),
+('d1b2c3d4-0001-0000-0000-000000000001', 'Which tool is essential for removing thorns from rose stems?', to_jsonb(ARRAY['Floral shears', 'Stem stripper', 'Ribbon scissors', 'Floral tape']), 1, 5),
+('d1b2c3d4-0002-0000-0000-000000000002', 'Which feature usually indicates a natural flower?', to_jsonb(ARRAY['Uniform coloring', 'Irregular petal patterns', 'Wire stems', 'Perfect symmetry']), 1, 1),
+('d1b2c3d4-0002-0000-0000-000000000002', 'What is the most reliable test for identifying silk flowers?', to_jsonb(ARRAY['Smell test', 'Burn test for fabric', 'Water test', 'Weight test']), 1, 2),
+('d1b2c3d4-0002-0000-0000-000000000002', 'Preserved flowers are best characterized by:', to_jsonb(ARRAY['Artificial appearance', 'Natural look with extended life', 'Synthetic materials', 'No scent']), 1, 3),
+('d1b2c3d4-0003-0000-0000-000000000003', 'What is the primary role of a wedding florist?', to_jsonb(ARRAY['Only making bouquets', 'Creating the entire floral experience', 'Just delivering flowers', 'Only doing centerpieces']), 1, 1),
+('d1b2c3d4-0003-0000-0000-000000000003', 'How far in advance should wedding flowers be ordered?', to_jsonb(ARRAY['1 week', '2-3 months', '6 months', 'Day before']), 1, 2)
 ON CONFLICT DO NOTHING;
 
 -- Seed Discussions

@@ -1,9 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Load stats immediately for faster display
-    loadHeroStats();
+    // Show loading states immediately
+    ['statProducts', 'statSellers', 'statUsers', 'statCategories'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('loading');
+    });
 
-    // Clear product cache on page load to ensure fresh data
-    localStorage.removeItem('fecache_/api/products?limit=8');
+    // Inject skeleton loaders
+    const skeletons = {
+        'categoryGrid': Array(8).fill('<div class="skeleton-box" style="height:200px;border-radius:12px;"></div>').join(''),
+        'featuredProducts': Array(8).fill('<div class="skeleton-box" style="height:350px;border-radius:12px;"></div>').join(''),
+        'articleGrid': Array(3).fill('<div class="skeleton-box" style="height:320px;border-radius:12px;"></div>').join(''),
+        'videoGrid': Array(3).fill('<div class="skeleton-box" style="height:320px;border-radius:12px;"></div>').join(''),
+        'courseGrid': Array(4).fill('<div class="skeleton-box" style="height:280px;border-radius:12px;"></div>').join(''),
+        'floristGrid': Array(4).fill('<div class="skeleton-box" style="height:120px;border-radius:12px;"></div>').join(''),
+        'eventsGrid': Array(3).fill('<div class="skeleton-box" style="height:140px;border-radius:12px;"></div>').join('')
+    };
+    Object.entries(skeletons).forEach(([id, html]) => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = html;
+    });
 
     // Fire all data fetches in parallel — then render
     Promise.all([
@@ -26,44 +41,21 @@ document.addEventListener('DOMContentLoaded', () => {
         renderEvents(events);
     });
 
-    initTabs();
     initNewsletter();
     initRevealAnimations();
 });
 
 // ─── HERO STATS (fast load) ────────────────────────────────────────
-async function loadHeroStats() {
-    // Show loading state
-    ['statProducts', 'statSellers', 'statUsers', 'statCategories'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.add('loading');
-    });
-
-    try {
-        const res = await fetch('/api/stats');
-        if (res.ok) {
-            const stats = await res.json();
-            animateCounter('statProducts', stats.products || 0);
-            animateCounter('statSellers', stats.sellers || 0);
-            animateCounter('statUsers', stats.users || 0);
-            animateCounter('statCategories', stats.categories || 0);
-
-            // Update trust count
-            const trustEl = document.getElementById('trustCount');
-            if (trustEl && stats.users) {
-                trustEl.textContent = stats.users.toLocaleString() + '+';
-            }
-        }
-    } catch {}
-
-    // Update explore stats too
-    updateExploreStats();
-}
-
 function animateCounter(elementId, target) {
     const el = document.getElementById(elementId);
     if (!el) return;
     el.classList.remove('loading');
+    
+    if (target <= 0) {
+        el.textContent = '0';
+        return;
+    }
+    
     const duration = 1000;
     const start = 0;
     const increment = target / (duration / 16);
@@ -78,23 +70,6 @@ function animateCounter(elementId, target) {
             el.textContent = Math.floor(current).toLocaleString();
         }
     }, 16);
-}
-
-async function updateExploreStats() {
-    try {
-        const res = await fetch('/api/stats');
-        if (res.ok) {
-            const stats = await res.json();
-            const el = document.getElementById('exploreStats');
-            if (el) {
-                const map = { products: stats.products, sellers: stats.sellers, users: stats.users, categories: stats.categories };
-                el.querySelectorAll('[data-stat]').forEach(elem => {
-                    const key = elem.dataset.stat;
-                    if (map[key] !== undefined) elem.textContent = map[key].toLocaleString();
-                });
-            }
-        }
-    } catch {}
 }
 
 // ─── CACHED FETCH ────────────────────────────────────────────────────
@@ -133,13 +108,6 @@ function normalizeArray(data, key) {
     return [];
 }
 
-function stars(rating) {
-    const full = Math.floor(rating);
-    const half = rating % 1 >= 0.5 ? 1 : 0;
-    return '<i class="bi bi-star-fill"></i>'.repeat(full) +
-           (half ? '<i class="bi bi-star-half"></i>' : '');
-}
-
 function avatarHTML(name, img, size) {
     const s = size || 80;
     const initials = (name || 'S').charAt(0).toUpperCase();
@@ -161,17 +129,30 @@ function placeholderImg(seed) {
 
 // ─── STATS ──────────────────────────────────────────────────────────
 function renderStats(stats) {
-    if (!stats) return;
+    if (!stats) {
+        ['statProducts', 'statSellers', 'statUsers', 'statCategories'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.classList.remove('loading'); el.textContent = '—'; }
+        });
+        return;
+    }
 
-    // Update hero stats (already loaded by loadHeroStats, but update if different)
-    const statProducts = document.getElementById('statProducts');
-    const statSellers = document.getElementById('statSellers');
-    const statUsers = document.getElementById('statUsers');
-    const statCategories = document.getElementById('statCategories');
-    if (statProducts) statProducts.textContent = (stats.products || 0).toLocaleString();
-    if (statSellers) statSellers.textContent = (stats.sellers || 0).toLocaleString();
-    if (statUsers) statUsers.textContent = (stats.users || 0).toLocaleString();
-    if (statCategories) statCategories.textContent = (stats.categories || 0).toLocaleString();
+    // Update hero stats with animation if they are still in loading state
+    const ids = ['statProducts', 'statSellers', 'statUsers', 'statCategories'];
+    const values = [stats.products || 0, stats.sellers || 0, stats.users || 0, stats.categories || 0];
+    
+    ids.forEach((id, index) => {
+        const el = document.getElementById(id);
+        if (el && el.classList.contains('loading')) {
+            animateCounter(id, values[index]);
+        }
+    });
+
+    // Update trust count
+    const trustEl = document.getElementById('trustCount');
+    if (trustEl && stats.users) {
+        trustEl.textContent = stats.users.toLocaleString() + '+';
+    }
 
     const exploreEl = document.getElementById('exploreStats');
     if (exploreEl) {
@@ -209,20 +190,26 @@ const CATEGORY_TAGLINES = {
 function renderCategories(data) {
     const grid = document.getElementById('categoryGrid');
     if (!grid) return;
+    
+    if (data === null) {
+        grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);grid-column:1/-1;">Could not load categories <button class="btn btn-sm" onclick="location.reload()">Retry</button></p>';
+        return;
+    }
+    
     let cats = normalizeArray(data, 'categories');
-
     if (!cats.length) {
         grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);grid-column:1/-1;">No categories available</p>';
         return;
     }
+    
     grid.innerHTML = cats.map(c => {
         const nameLower = (c.name || '').toLowerCase();
         const slug = CATEGORY_SLUGS[nameLower] || nameLower.replace(/\s+/g, '-');
-        const img = CATEGORY_IMAGES[nameLower] || c.image_url || '';
+        const img = CATEGORY_IMAGES[nameLower] || c.image_url || `https://source.unsplash.com/400x300/?flower,${encodeURIComponent(nameLower)}`;
         const tagline = c.description || CATEGORY_TAGLINES[nameLower] || '';
         return `
             <a href="category-listing.html?cat=${slug}" class="category-card">
-                <div class="category-img"><img loading="lazy" src="${escapeHtml(img)}" alt="${escapeHtml(c.name)}"></div>
+                <div class="category-img"><img loading="lazy" src="${escapeHtml(img)}" alt="${escapeHtml(c.name)}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22><rect fill=%22%23fce7f0%22 width=%22400%22 height=%22300%22/><text x=%22200%22 y=%22160%22 text-anchor=%22middle%22 fill=%22%23d8447c%22 font-size=%2224%22>🌸</text></svg>'"></div>
                 <div class="category-overlay"><h3>${escapeHtml(c.name)}</h3><p>${escapeHtml(tagline)}</p></div>
             </a>`;
     }).join('');
@@ -232,6 +219,12 @@ function renderCategories(data) {
 function renderFeaturedProducts(data) {
     const grid = document.getElementById('featuredProducts');
     if (!grid) return;
+    
+    if (data === null) {
+        grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">Could not load products <button class="btn btn-sm" onclick="location.reload()">Retry</button></p>';
+        return;
+    }
+    
     const items = normalizeArray(data, 'products').slice(0, 8);
     if (!items.length) {
         grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">No products available yet. Check back soon!</p>';
@@ -244,6 +237,12 @@ function renderFeaturedProducts(data) {
 function renderArticles(data) {
     const grid = document.getElementById('articleGrid');
     if (!grid) return;
+    
+    if (data === null) {
+        grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">Could not load articles <button class="btn btn-sm" onclick="location.reload()">Retry</button></p>';
+        return;
+    }
+    
     const items = normalizeArray(data, 'articles').slice(0, 3);
     if (!items.length) {
         grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">No articles available.</p>';
@@ -269,13 +268,19 @@ function renderArticles(data) {
 function renderVideos(data) {
     const grid = document.getElementById('videoGrid');
     if (!grid) return;
+    
+    if (data === null) {
+        grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">Could not load videos <button class="btn btn-sm" onclick="location.reload()">Retry</button></p>';
+        return;
+    }
+    
     const items = normalizeArray(data, 'videos').slice(0, 3);
     if (!items.length) {
         grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">No videos available.</p>';
         return;
     }
     grid.innerHTML = items.map(v => `
-        <div class="article-card">
+        <a href="video-detail.html?id=${encodeURIComponent(v.id)}" class="article-card" style="text-decoration:none;color:inherit;">
             <div style="position:relative;overflow:hidden;">
                 <img src="${v.image || placeholderImg(1)}" alt="${escapeHtml(v.title)}" loading="lazy"
                      style="height:175px;width:100%;object-fit:cover;display:block;">
@@ -294,7 +299,7 @@ function renderVideos(data) {
                     <small style="color:var(--text-muted);"><i class="bi bi-eye"></i> ${(v.views || 0).toLocaleString()} views</small>
                 </div>
             </div>
-        </div>
+        </a>
     `).join('');
 }
 
@@ -302,6 +307,12 @@ function renderVideos(data) {
 function renderCourses(data) {
     const grid = document.getElementById('courseGrid');
     if (!grid) return;
+    
+    if (data === null) {
+        grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">Could not load courses <button class="btn btn-sm" onclick="location.reload()">Retry</button></p>';
+        return;
+    }
+    
     const items = normalizeArray(data, 'courses').slice(0, 4);
     if (!items.length) {
         grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">No courses available.</p>';
@@ -315,7 +326,7 @@ function renderCourses(data) {
                 <h4>${escapeHtml(c.title)}</h4>
                 <p>${escapeHtml(c.instructor || '')}</p>
                 <div style="color:var(--accent-gold);font-size:0.75rem;margin:0.5rem 0;">
-                    ${stars(c.rating || 0)}
+                    ${window.renderStars ? window.renderStars(c.rating || 0) : ''}
                     <span style="color:var(--text-muted);"> (${c.students || 0})</span>
                 </div>
                 <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -331,8 +342,13 @@ function renderCourses(data) {
 function renderFlorists(data) {
     const grid = document.getElementById('floristGrid');
     if (!grid) return;
+    
+    if (data === null) {
+        grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">Could not load sellers <button class="btn btn-sm" onclick="location.reload()">Retry</button></p>';
+        return;
+    }
+    
     let items = normalizeArray(data, 'florists');
-
     if (!items.length) {
         grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">No sellers yet.</p>';
         return;
@@ -340,9 +356,13 @@ function renderFlorists(data) {
     grid.innerHTML = items.slice(0, 4).map(f => `
         <a href="florist-profile.html?id=${f.id}" class="florist-card" style="text-decoration:none;color:inherit;">
             ${avatarHTML(f.name, f.image, 80)}
-            <div class="florist-info">
+            <div class="florist-info" style="width:100%;">
                 <h4>${escapeHtml(f.name)}</h4>
-                <p>${escapeHtml(f.role || f.specialty || 'Seller')}</p>
+                <p style="margin-bottom:0.25rem;">${escapeHtml(f.role || f.specialty || 'Seller')}</p>
+                <div style="color:var(--accent-gold);font-size:0.75rem;margin-bottom:0.5rem;">
+                    ${window.renderStars ? window.renderStars(f.rating || 0) : ''}
+                    <span style="color:var(--text-muted);"> (${f.reviews || 0} reviews)</span>
+                </div>
                 <span style="font-size:0.82rem;color:var(--primary-color);font-weight:500;">View Profile →</span>
             </div>
         </a>
@@ -353,13 +373,27 @@ function renderFlorists(data) {
 function renderEvents(data) {
     const grid = document.getElementById('eventsGrid');
     if (!grid) return;
-    const items = normalizeArray(data, 'events').slice(0, 3);
+    
+    if (data === null) {
+        grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">Could not load events <button class="btn btn-sm" onclick="location.reload()">Retry</button></p>';
+        return;
+    }
+    
+    // Filter out past events
+    const now = new Date();
+    const items = normalizeArray(data, 'events').filter(e => {
+        if (!e.date) return true;
+        const eventDate = new Date(e.date);
+        return isNaN(eventDate) || eventDate >= now;
+    }).slice(0, 3);
+    
     if (!items.length) {
         grid.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;grid-column:1/-1;">No upcoming events.</p>';
         return;
     }
+    
     grid.innerHTML = items.map(e => `
-        <div class="event-card">
+        <a href="event-detail.html?id=${encodeURIComponent(e.id)}" class="event-card" style="text-decoration:none;color:inherit;">
             <div class="event-img-wrap">
                 <img src="${e.image || placeholderImg(3)}" alt="${escapeHtml(e.title)}" loading="lazy">
                 <div class="event-date-badge">
@@ -370,24 +404,17 @@ function renderEvents(data) {
             <div class="event-info">
                 <span class="article-tag">${escapeHtml(e.category || 'Event')}</span>
                 <h4>${escapeHtml(e.title)}</h4>
-                <p><i class="bi bi-geo-alt"></i> ${escapeHtml(e.location || 'Online')}</p>
+                <p style="margin-bottom:0.25rem;"><i class="bi bi-geo-alt"></i> ${escapeHtml(e.location || 'Online')}</p>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.5rem;font-size:0.85rem;">
+                    <strong style="color:var(--primary-color);">${escapeHtml(e.price === 0 || e.price === '0' ? 'Free' : (e.price || ''))}</strong>
+                    <span style="color:var(--text-muted);">${e.spots ? e.spots + ' spots left' : ''}</span>
+                </div>
             </div>
-        </div>
+        </a>
     `).join('');
 }
 
-// ─── TABS ───────────────────────────────────────────────────────────
-function initTabs() {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            btn.classList.add('active');
-            const tab = document.getElementById('tab-' + btn.dataset.tab);
-            if (tab) tab.classList.add('active');
-        });
-    });
-}
+
 
 // ─── NEWSLETTER ─────────────────────────────────────────────────────
 function initNewsletter() {

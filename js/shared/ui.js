@@ -47,7 +47,7 @@ function buildSearchSuggestions(query) {
                 <span class="suggestion-price">${p.currency || 'GHS'} ${Number(p.price || 0).toFixed(2)}</span>
             </a>
         `).join('') +
-        `<a href="marketplace?q=${encodeURIComponent(query)}" class="suggestion-footer">View all results for "${query}"</a>`;
+        `<a href="marketplace.html?q=${encodeURIComponent(query)}" class="suggestion-footer">View all results for "${query}"</a>`;
 
     suggestionsEl.style.display = 'block';
 }
@@ -125,7 +125,7 @@ function initUI() {
             if (searchInput) {
                 const query = searchInput.value.trim();
                 if (query) {
-                    window.location.href = '/marketplace?q=' + encodeURIComponent(query);
+                    window.location.href = 'marketplace.html?q=' + encodeURIComponent(query);
                 } else {
                     searchInput.focus();
                 }
@@ -160,7 +160,7 @@ function initUI() {
             const searchInput = document.getElementById('globalSearchInput');
             if (searchInput && document.activeElement === searchInput) {
                 const query = searchInput.value.trim();
-                if (query) window.location.href = '/marketplace?q=' + encodeURIComponent(query);
+                if (query) window.location.href = 'marketplace.html?q=' + encodeURIComponent(query);
                 return;
             }
         }
@@ -212,3 +212,35 @@ window.addEventListener('load', () => {
         preloader.classList.add('hidden');
     }
 });
+
+// ─── Shared renderStars utility ────────────────────────────────────────────
+window.renderStars = function(rating) {
+    const r = Number(rating) || 0;
+    const full = Math.floor(r);
+    const half = r % 1 >= 0.5;
+    let html = '';
+    for (let i = 0; i < full; i++) html += '<i class="bi bi-star-fill"></i>';
+    if (half) html += '<i class="bi bi-star-half"></i>';
+    for (let i = full + (half ? 1 : 0); i < 5; i++) html += '<i class="bi bi-star"></i>';
+    return html;
+};
+
+// ─── showToast helper (normalises across Toast / showToast implementations) ─
+window.showToast = window.showToast || function(message, type = 'success') {
+    if (typeof Toast !== 'undefined' && typeof Toast[type] === 'function') {
+        Toast[type](message);
+    } else {
+        // Lightweight fallback
+        const el = document.createElement('div');
+        el.textContent = message;
+        el.style.cssText = `
+            position:fixed;bottom:1.5rem;right:1.5rem;z-index:99999;
+            background:${type === 'error' ? '#e53e3e' : '#38a169'};
+            color:#fff;padding:0.75rem 1.25rem;border-radius:8px;
+            box-shadow:0 4px 20px rgba(0,0,0,.15);font-size:0.9rem;
+            animation:fadeInUp .25s ease;
+        `;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 3000);
+    }
+};

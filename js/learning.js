@@ -59,7 +59,7 @@ const LEARNING_CATEGORIES = [
     const catGrid = document.getElementById('categoryGrid');
     if (catGrid) {
         catGrid.innerHTML = LEARNING_CATEGORIES.map(c => `
-            <a href="learning-path.html?id=${c.slug}" class="category-card" style="text-decoration:none;cursor:pointer;">
+            <div data-category="${c.slug}" class="category-card" style="cursor:pointer;">
                 <div class="category-img" style="background:${c.color}15;display:flex;align-items:center;justify-content:center;height:100px;">
                     <i class="bi ${c.icon}" style="font-size:2.5rem;color:${c.color};"></i>
                 </div>
@@ -67,7 +67,7 @@ const LEARNING_CATEGORIES = [
                     <h3>${escapeHtml(c.name)}</h3>
                     <p style="font-size:0.8rem;opacity:0.85;">${escapeHtml(c.desc)}</p>
                 </div>
-            </a>`
+            </div>`
         ).join('');
 
         catGrid.addEventListener('click', (e) => {

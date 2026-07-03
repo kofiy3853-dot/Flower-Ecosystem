@@ -192,13 +192,15 @@
                 opt.querySelector('input').checked = true;
             });
 
-            document.getElementById('submitQuiz').addEventListener('click', () => {
+            document.getElementById('submitQuiz').addEventListener('click', async () => {
                 if (submitted) return;
                 const qs = quiz.questions;
                 let correct = 0;
+                const answers = [];
                 qs.forEach((q, qi) => {
                     const selected = document.querySelector(`input[name="q${qi}"]:checked`);
                     const val = selected ? parseInt(selected.value) : -1;
+                    answers.push(val);
                     const opts = document.querySelectorAll(`.quiz-card[data-qi="${qi}"] .quiz-option`);
                     opts.forEach((el, oi) => {
                         el.classList.remove('selected', 'correct', 'incorrect');
@@ -210,6 +212,13 @@
                 });
                 submitted = true;
                 actionsEl.style.display = 'none';
+
+                try {
+                    await window.api.submitQuiz(quizId, { answers });
+                } catch (e) {
+                    console.error('Failed to submit quiz:', e);
+                }
+
                 resultEl.style.display = '';
 
                 const total = qs.length;

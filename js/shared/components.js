@@ -1,16 +1,17 @@
 // js/shared/components.js
 
 function ProductCard(product) {
+    const _esc = typeof escapeHtml === 'function' ? escapeHtml : (s) => (s||'').toString().replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'})[m]);
     const _noImg = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><rect fill="#fdf6f9" width="300" height="300" rx="12"/><text x="150" y="168" text-anchor="middle" fill="#c50454" font-size="24" font-family="Arial">No Image</text></svg>')}`;
-    const image = product.image || (product.images && product.images[0]) || _noImg;
-    const name = (product.name || 'Untitled Product').replace(/</g, '&lt;');
+    const image = _esc(product.image || (product.images && product.images[0]) || _noImg);
+    const name = _esc(product.name || 'Untitled Product');
     const price = Number(product.price || 0).toFixed(2);
-    const currency = product.currency || 'GHS';
+    const currency = _esc(product.currency || 'GHS');
     const rating = product.rating || 0;
     const reviews = product.reviews || product.review_count || 0;
-    const id = product.id || '';
-    const seller = product.seller || product.seller_name || '';
-    const badge = product.badge || '';
+    const id = _esc(product.id || '');
+    const seller = _esc(product.seller || product.seller_name || '');
+    const badge = _esc(product.badge || '');
     return `
         <div class="product-card">
             <div class="product-img-link">
@@ -39,35 +40,88 @@ function ProductCard(product) {
     `;
 }
 
-// Wishlist toggle — works on any page that loads components.js
+// Wishlist toggle — relies strictly on API when logged in
 document.addEventListener('click', async (e) => {
     const btn = e.target.closest('.wishlist-btn');
     if (!btn) return;
     e.preventDefault();
     e.stopPropagation();
+
+    if (typeof isLoggedIn === 'function' && !isLoggedIn()) {
+        if (typeof showToast === 'function') showToast('Please log in to save favorites.', 'error');
+        return;
+    }
+
     const icon = btn.querySelector('i');
+    const isAdding = icon && icon.classList.contains('bi-heart');
+    
     if (icon) {
         icon.classList.toggle('bi-heart');
         icon.classList.toggle('bi-heart-fill');
     }
+    
     const id = btn.dataset.id;
-    if (id) {
-        let saved; try { saved = JSON.parse(localStorage.getItem('gallerySaved') || '[]'); } catch { saved = []; }
-        const idx = saved.indexOf(id);
-        const isRemoving = idx >= 0;
-        if (isRemoving) saved.splice(idx, 1);
-        else saved.push(id);
-        localStorage.setItem('gallerySaved', JSON.stringify(saved));
-
-        // Sync to server if logged in
-        if (typeof isLoggedIn === 'function' && isLoggedIn() && typeof api !== 'undefined') {
-            try {
-                if (isRemoving) await api.removeFavorite(id);
-                else await api.addFavorite(id);
-            } catch (_) {}
+    if (id && typeof api !== 'undefined') {
+        try {
+            if (isAdding) {
+                await api.addFavorite(id);
+                if (typeof showToast === 'function') showToast('Added to favorites!', 'success');
+            } else {
+                await api.removeFavorite(id);
+                if (typeof showToast === 'function') showToast('Removed from favorites.', 'success');
+            }
+        } catch (err) {
+            // Revert UI on failure
+            if (icon) {
+                icon.classList.toggle('bi-heart');
+                icon.classList.toggle('bi-heart-fill');
+            }
+            if (typeof showToast === 'function') showToast('Failed to update favorites.', 'error');
         }
     }
 });
+
+// Add to cart delegation
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.add-to-cart');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    const { id, name, price, image } = btn.dataset;
+    if (typeof window.cart !== 'undefined' && window.cart.addItem) {
+        window.cart.addItem({ id, name, price, image, quantity: 1 });
+        if (typeof showToast === 'function') showToast('Added to cart', 'success');
+    } else {
+        if (typeof showToast === 'function') showToast('Cart system unavailable', 'error');
+    }
+});
+
+// Sync wishlist state on page load
+async function initWishlistState() {
+    if (typeof isLoggedIn === 'function' && isLoggedIn() && typeof api !== 'undefined' && api.fetchFavorites) {
+        try {
+            const data = await api.fetchFavorites();
+            if (data && data.favorites) {
+                const favSet = new Set(data.favorites.map(f => f.product_id || f.id));
+                document.querySelectorAll('.wishlist-btn').forEach(btn => {
+                    if (favSet.has(btn.dataset.id)) {
+                        const icon = btn.querySelector('i');
+                        if (icon) {
+                            icon.classList.remove('bi-heart');
+                            icon.classList.add('bi-heart-fill');
+                        }
+                    }
+                });
+            }
+        } catch (err) {
+            console.warn('Failed to sync wishlist state', err);
+        }
+    }
+}
+
+// Call initWishlistState slightly after load to ensure products are rendered
+window.addEventListener('load', () => setTimeout(initWishlistState, 500));
 
 /**
  * Loads a component HTML file and injects it into a specified element

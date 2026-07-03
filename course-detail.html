@@ -252,6 +252,34 @@
                 document.getElementById('coursePrice').innerHTML = 'Free';
             }
 
+            const enrollBtn = document.getElementById('enrollBtn');
+            if (enrollBtn) {
+                enrollBtn.addEventListener('click', async () => {
+                    if (!window.auth || !window.auth.isAuthenticated()) {
+                        alert('Please login to enroll in courses.');
+                        window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+                        return;
+                    }
+                    try {
+                        const originalText = enrollBtn.innerHTML;
+                        enrollBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Enrolling...';
+                        enrollBtn.disabled = true;
+                        await window.api.enrollCourse(courseId);
+                        alert('Successfully enrolled in course!');
+                        window.location.href = 'student-dashboard.html?tab=courses';
+                    } catch (err) {
+                        enrollBtn.innerHTML = originalText;
+                        enrollBtn.disabled = false;
+                        if (err.message.includes('Already enrolled')) {
+                            alert('You are already enrolled in this course!');
+                            window.location.href = 'student-dashboard.html?tab=courses';
+                        } else {
+                            alert('Failed to enroll: ' + err.message);
+                        }
+                    }
+                });
+            }
+
             const learnItems = {
                 'c1': ['Select and evaluate fresh flowers', 'Build hand-tied bouquets', 'Apply color theory to arrangements', 'Create stunning centerpieces', 'Understand professional florist tools'],
                 'c2': ['Distinguish natural vs artificial flowers', 'Identify preserved and dried flowers', 'Perform authenticity tests', 'Evaluate flower quality like a pro'],

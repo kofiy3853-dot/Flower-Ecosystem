@@ -184,6 +184,7 @@ const api = {
     fetchLiveClasses() { return apiFetch('/api/live-classes', 'live-classes'); },
     fetchLiveClass(id) { return apiFetch('/api/live-classes/' + encodeURIComponent(id), 'live-classes'); },
     fetchAssignments() { return apiFetch('/api/assignments', 'assignments'); },
+    submitQuiz(id, data) { return apiFetchWithBody('/api/quizzes/' + id + '/submit', 'POST', data); },
     submitAssignment(id, data) { return apiFetchWithBody('/api/assignments/' + id + '/submit', 'POST', data); },
     gradeAssignment(id, data) { return apiFetchWithBody('/api/assignments/' + id + '/grade', 'PUT', data); },
     fetchLearningPaths() { return apiFetch('/api/learning-paths', 'learning-paths'); },

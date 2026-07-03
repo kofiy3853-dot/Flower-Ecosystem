@@ -29,7 +29,7 @@ router.get('/products', requireAuth, asyncHandler(async (req, res) => {
         const r = await pool.query(
             `SELECT p.*, c.name AS category_name FROM marketplace.products p
              LEFT JOIN marketplace.categories c ON c.id = p.category_id
-             WHERE p.seller_id = $1 ORDER BY p.created_at DESC`,
+             WHERE p.seller_id = $1 AND (p.status IS NULL OR p.status != 'deleted') ORDER BY p.created_at DESC`,
             [req.user.id]
         );
         res.json(r.rows);
