@@ -208,36 +208,39 @@ pool.query('SELECT 1')
             if (tableExists.rows[0].exists) {
                 await pool.query("ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS location VARCHAR(255)");
                 await pool.query("ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS description TEXT");
-                const adminExists = await pool.query("SELECT id FROM auth.users WHERE role = 'ADMIN' LIMIT 1");
+                const adminExists = await pool.query("SELECT id, email FROM auth.users WHERE role = 'ADMIN' LIMIT 1");
                 if (!adminExists.rows.length) {
                     const adminPassword = process.env.ADMIN_PASSWORD;
                     if (!adminPassword) {
-                        console.error('Seed skipped: set ADMIN_PASSWORD in your .env to create the default admin account');
+                        console.error('SEED FAILED: ADMIN_PASSWORD env var not set — no admin account created');
+                        console.error('Set ADMIN_PASSWORD in Render dashboard → Environment');
                         return;
                     }
                     if (adminPassword.length < 12) {
-                        console.error('Seed aborted: ADMIN_PASSWORD must be at least 12 characters');
+                        console.error(`SEED FAILED: ADMIN_PASSWORD is ${adminPassword.length} chars (minimum 12)`);
                         return;
                     }
                     const hash = await bcrypt.hash(adminPassword, 12);
                     if (!hash || hash.length < 60) {
-                        console.error('Seed aborted: bcrypt hash failed');
+                        console.error('SEED FAILED: bcrypt hash produced invalid output');
                         return;
                     }
                     await pool.query(
                         "INSERT INTO auth.users (first_name, last_name, email, password_hash, role) VALUES ('Admin', 'User', $1, $2, 'ADMIN')",
                         [ADMIN_EMAIL, hash]
                     );
-                    console.log(`Default admin seeded: ${ADMIN_EMAIL}`);
+                    console.log(`SUCCESS: Admin seeded → ${ADMIN_EMAIL}`);
                 } else {
-                    console.log(`Admin account already exists: ${ADMIN_EMAIL}`);
+                    console.log(`Admin already exists: ${adminExists.rows[0].email} (id: ${adminExists.rows[0].id})`);
                 }
+            } else {
+                console.warn('auth.users table does not exist — run db-init.js first');
             }
         } catch (seedErr) {
             if (seedErr.code === '42P01') {
                 console.warn('auth.users table not found — skipping seed');
             } else {
-                console.error('Seed failed:', seedErr.message);
+                console.error('Seed error:', seedErr.message);
             }
         }
     })
@@ -282,6 +285,23 @@ app.use('/api', require('./routes/clubs'));
 app.use('/api', require('./routes/badges'));
 app.use('/api', require('./routes/members'));
 app.use('/api', require('./routes/my-activities'));
+
+// ─── Debug: check admin seed status ───────────────────────────────────────
+app.get('/api/debug/admin-status', async (req, res) => {
+    try {
+        const r = await pool.query("SELECT id, email, role, is_active, created_at FROM auth.users WHERE role = 'ADMIN' ORDER BY created_at LIMIT 5");
+        const adminPasswordSet = !!process.env.ADMIN_PASSWORD;
+        const adminPasswordLength = (process.env.ADMIN_PASSWORD || '').length;
+        res.json({
+            adminPasswordConfigured: adminPasswordSet,
+            adminPasswordLength,
+            admins: r.rows,
+            message: r.rows.length ? `Found ${r.rows.length} admin(s)` : 'No admin accounts found'
+        });
+    } catch (e) {
+        res.json({ error: e.message, admins: [] });
+    }
+});
 
 // ─── Error handling ────────────────────────────────────────────────────────
 
