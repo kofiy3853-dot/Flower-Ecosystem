@@ -2,7 +2,7 @@
 (function(){
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
-let courses=[],products=[],users=[],orders=[],sellers=[],announcements=[];
+let courses=[],products=[],users=[],orders=[],sellers=[],buyers=[],announcements=[];
 
 // ─── Navigation ──────────────────────────────────────
 function switchSection(name){
@@ -13,6 +13,7 @@ function switchSection(name){
     if(name==='marketplace') renderProducts();
     if(name==='orders') renderOrders();
     if(name==='sellers') renderSellers();
+    if(name==='buyers') renderBuyers();
     if(name==='community') renderCommunity();
     if(name==='events') renderEvents();
     if(name==='articles') renderArticles();
@@ -73,6 +74,7 @@ async function init(){
         api.fetchProducts(),
         api.fetchAdminOrders(),
         api.fetchAdminSellers(),
+        api.fetchAdminBuyers(),
         api.fetchAdminAnalytics(),
         api.fetchAdminAnnouncements(),
         api.fetchEvents(),
@@ -84,10 +86,11 @@ async function init(){
     products=Array.isArray(prodRes)?prodRes:(prodRes.products||[]);
     orders=results[3].status==='fulfilled'?results[3].value:[];
     sellers=results[4].status==='fulfilled'?results[4].value:[];
-    const analytics=results[5].status==='fulfilled'?results[5].value:{};
-    announcements=results[6].status==='fulfilled'?results[6].value||[]:[];
-    const events=results[7].status==='fulfilled'?results[7].value||[]:[];
-    const articles=results[8].status==='fulfilled'?results[8].value||[]:[];
+    buyers=results[5].status==='fulfilled'?results[5].value:[];
+    const analytics=results[6].status==='fulfilled'?results[6].value:{};
+    announcements=results[7].status==='fulfilled'?results[7].value||[]:[];
+    const events=results[8].status==='fulfilled'?results[8].value||[]:[];
+    const articles=results[9].status==='fulfilled'?results[9].value||[]:[];
 
     // Store for sections that need them
     window._admEvents=events;
@@ -355,14 +358,33 @@ function renderSellers(){
         const status=s.is_active?'active':'inactive';
         return `<tr>
             <td style="font-weight:500;">${escapeHtml(s.name||s.first_name||'')}</td>
-            <td>—</td>
-            <td>—</td>
-            <td>—</td>
+            <td>${s.product_count||0}</td>
+            <td>${s.order_count||0}</td>
+            <td style="font-weight:500;">GHS ${(s.revenue||0).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0})}</td>
             <td><i class="bi bi-star-fill" style="color:#f1c40f;font-size:.75rem;"></i> —</td>
             <td><span class="adm-status ${status}">${status}</span></td>
             <td><div class="adm-action-btns">
                 <button title="View"><i class="bi bi-eye"></i></button>
                 <button title="${s.is_active?'Disable':'Enable'}" class="danger" onclick="toggleUser(${s.id})"><i class="bi bi-${s.is_active?'slash-circle':'check-circle'}"></i></button>
+            </div></td>
+        </tr>`;
+    }).join('');
+}
+
+// ─── Buyers ──────────────────────────────────────────
+function renderBuyers(){
+    const body=$('#buyersBody');
+    if(!buyers.length){body.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-light);"><i class="bi bi-exclamation-circle" style="display:block;margin-bottom:.5rem;"></i>No buyers found.</td></tr>';return;}
+    body.innerHTML=buyers.map(b=>{
+        const status=b.is_active?'active':'inactive';
+        return `<tr>
+            <td><div class="adm-user-cell"><div class="adm-user-avatar">${escapeHtml((b.name||b.first_name||'?')[0])}</div>${escapeHtml(b.name||'')}</div></td>
+            <td>${b.order_count||0}</td>
+            <td style="font-weight:500;">GHS ${(b.total_spent||0).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0})}</td>
+            <td>${formatDate(b.created_at)}</td>
+            <td><span class="adm-status ${status}">${status}</span></td>
+            <td><div class="adm-action-btns">
+                <button title="${b.is_active?'Disable':'Enable'}" class="danger" onclick="toggleUser(${b.id})"><i class="bi bi-${b.is_active?'slash-circle':'check-circle'}"></i></button>
             </div></td>
         </tr>`;
     }).join('');

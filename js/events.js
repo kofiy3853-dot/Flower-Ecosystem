@@ -88,14 +88,31 @@ async function initEventsPage() {
 
 // ─── Category Cards ────────────────────────────────────────────────────
 
+function buildCategoryCards(categories, active, callback) {
+    return categories.map(c => {
+        const isActive = active === c.slug;
+        return `<div class="evt-cat-card${isActive ? ' active' : ''}" onclick="${callback}('${c.slug}')">
+            <div class="evt-cat-card-icon">${c.icon}</div>
+            <div class="evt-cat-card-name">${c.name}</div>
+        </div>`;
+    }).join('');
+}
+
+function buildMobileCategoryChips(categories, active) {
+    return categories.map(c => {
+        const isActive = active === c.slug;
+        return `<button class="evt-chip${isActive ? ' active' : ''}" data-category="${c.slug}">${c.icon} ${c.name}</button>`;
+    }).join('');
+}
+
 function renderCategoryCards() {
     const el = document.getElementById('catCards');
     if (!el) return;
-    el.innerHTML = renderCategoryCards(EVENT_CATEGORIES, currentCategory, 'selectCategory');
+    el.innerHTML = buildCategoryCards(EVENT_CATEGORIES, currentCategory, 'selectCategory');
 
     const mobileEl = document.getElementById('mobileCategories');
     if (mobileEl) {
-        mobileEl.innerHTML = renderMobileCategoryChips(EVENT_CATEGORIES, currentCategory);
+        mobileEl.innerHTML = buildMobileCategoryChips(EVENT_CATEGORIES, currentCategory);
     }
 }
 

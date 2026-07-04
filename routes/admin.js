@@ -108,7 +108,43 @@ router.get('/sellers', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (r
         const fallback = readJSON(path.join(__dirname, '..', 'data', 'admin.json'));
         return res.json(fallback.sellerVerifications || []);
     }
-    const r = await pool.query(`SELECT id, first_name || ' ' || last_name AS name, email, role, is_active, created_at FROM auth.users WHERE role IN ('SELLER','FLORIST','GROWER') ORDER BY created_at DESC`);
+    const r = await pool.query(`
+        SELECT u.id, u.first_name || ' ' || u.last_name AS name, u.email, u.role, u.is_active, u.created_at,
+               COALESCE(pc.product_count, 0) AS product_count,
+               COALESCE(oc.order_count, 0) AS order_count,
+               COALESCE(oc.total_revenue, 0) AS revenue
+        FROM auth.users u
+        LEFT JOIN (
+            SELECT seller_id, COUNT(*) AS product_count
+            FROM marketplace.products
+            GROUP BY seller_id
+        ) pc ON pc.seller_id = u.id
+        LEFT JOIN (
+            SELECT seller_id, COUNT(DISTINCT order_id) AS order_count, SUM(unit_price * quantity) AS total_revenue
+            FROM marketplace.order_items
+            GROUP BY seller_id
+        ) oc ON oc.seller_id = u.id
+        WHERE u.role IN ('SELLER','FLORIST','GROWER')
+        ORDER BY u.created_at DESC
+    `);
+    res.json(r.rows);
+}));
+
+router.get('/buyers', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    const r = await pool.query(`
+        SELECT u.id, u.first_name || ' ' || u.last_name AS name, u.email, u.role, u.is_active, u.created_at,
+               COALESCE(oc.order_count, 0) AS order_count,
+               COALESCE(oc.total_spent, 0) AS total_spent
+        FROM auth.users u
+        LEFT JOIN (
+            SELECT o.user_id, COUNT(DISTINCT o.id) AS order_count, SUM(o.total_amount) AS total_spent
+            FROM marketplace.orders o
+            GROUP BY o.user_id
+        ) oc ON oc.user_id = u.id
+        WHERE u.role IN ('CUSTOMER')
+        ORDER BY u.created_at DESC
+    `);
     res.json(r.rows);
 }));
 
