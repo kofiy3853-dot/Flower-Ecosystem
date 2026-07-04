@@ -181,6 +181,19 @@ async function run() {
             }
         }
 
+        // Run community feed tables (saves, reactions, shares, poll votes)
+        const communityFeedPath = path.join(__dirname, 'sql', 'community-feed-tables.sql');
+        if (fs.existsSync(communityFeedPath)) {
+            const communityFeed = fs.readFileSync(communityFeedPath, 'utf8');
+            console.log('Running community-feed-tables.sql...');
+            try {
+                await client.query(communityFeed);
+                console.log('Community feed tables applied.');
+            } catch (e) {
+                console.log('Community feed tables partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
         console.log('Database initialized successfully.');
     } catch (err) {
         console.error('DB init error:', err.message);
