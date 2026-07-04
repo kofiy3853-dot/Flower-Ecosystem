@@ -99,7 +99,10 @@ window.handleError = function(err, context) {
 
 async function apiFetch(url, fallbackKey) {
     try {
-        const res = await fetch(url);
+        const headers = {};
+        const token = localStorage.getItem('flower-token');
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+        const res = await fetch(url, { headers });
         if (res.ok) {
             const data = await res.json();
             return data;
