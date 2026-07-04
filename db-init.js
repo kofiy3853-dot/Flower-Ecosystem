@@ -181,6 +181,19 @@ async function run() {
             }
         }
 
+        // Run events enhanced schema
+        const eventsEnhancedPath = path.join(__dirname, 'sql', 'events-enhanced.sql');
+        if (fs.existsSync(eventsEnhancedPath)) {
+            const eventsEnhanced = fs.readFileSync(eventsEnhancedPath, 'utf8');
+            console.log('Running events-enhanced.sql...');
+            try {
+                await client.query(eventsEnhanced);
+                console.log('Events enhanced schema applied.');
+            } catch (e) {
+                console.log('Events enhanced schema partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
         // Run community feed tables (saves, reactions, shares, poll votes)
         const communityFeedPath = path.join(__dirname, 'sql', 'community-feed-tables.sql');
         if (fs.existsSync(communityFeedPath)) {

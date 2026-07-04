@@ -88,6 +88,7 @@ router.get('/', asyncHandler(async (req, res) => {
             const total = parseInt(countR.rows[0].count, 10);
 
             values.push(lim, offset);
+            if (userId) values.push(userId);
 
             const dataQ = `
                 SELECT p.*,
@@ -292,6 +293,9 @@ router.post('/', writeLimiter, requireAuth, upload.array('media', 4), asyncHandl
 router.post('/:id/react', writeLimiter, requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
     const { id } = req.params;
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+        return res.status(400).json({ error: 'Invalid post ID' });
+    }
     const { reaction } = req.body;
     const validReactions = ['love', 'beautiful', 'great-work', 'helpful', 'congrats'];
     if (!validReactions.includes(reaction)) return res.status(400).json({ error: 'Invalid reaction' });
@@ -368,6 +372,9 @@ router.post('/:id/share', requireAuth, asyncHandler(async (req, res) => {
 router.post('/:id/save', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
     const { id } = req.params;
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+        return res.status(400).json({ error: 'Invalid post ID' });
+    }
     const existing = await pool.query('SELECT id FROM community.post_saves WHERE post_id = $1 AND user_id = $2', [id, req.user.id]);
     if (existing.rows.length) {
         await pool.query('DELETE FROM community.post_saves WHERE post_id = $1 AND user_id = $2', [id, req.user.id]);
