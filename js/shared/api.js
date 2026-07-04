@@ -200,7 +200,21 @@ const api = {
     fetchProgressOverview() { return apiFetch('/api/progress/overview', 'progress'); },
     fetchFavorites() { return apiFetch('/api/buyer/favorites', 'favorites'); },
     addFavorite(productId) { return apiFetchWithBody('/api/buyer/favorites', 'POST', { product_id: productId }); },
-    removeFavorite(productId) { return apiFetchWithBody('/api/buyer/favorites/' + productId, 'DELETE'); }
+    removeFavorite(productId) { return apiFetchWithBody('/api/buyer/favorites/' + productId, 'DELETE'); },
+
+    // ─── Admin ───────────────────────────────────────────
+    fetchAdminUsers() { return fetch('/api/admin/users', { headers: authHeaders() }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
+    updateAdminUserRole(id, role) { return apiFetchWithBody('/api/admin/users/' + id + '/role', 'PUT', { role }); },
+    toggleAdminUserStatus(id) { return apiFetchWithBody('/api/admin/users/' + id + '/status', 'PUT'); },
+    updateAdminUser(id, data) { return apiFetchWithBody('/api/admin/users/' + id, 'PUT', data); },
+    deleteAdminUser(id) { return apiFetchWithBody('/api/admin/users/' + id, 'DELETE'); },
+    fetchAdminOrders() { return fetch('/api/admin/orders', { headers: authHeaders() }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
+    updateAdminOrderStatus(id, status) { return apiFetchWithBody('/api/admin/orders/' + id + '/status', 'PUT', { status }); },
+    fetchAdminSellers() { return fetch('/api/admin/sellers', { headers: authHeaders() }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
+    fetchAdminAnalytics() { return fetch('/api/admin/analytics', { headers: authHeaders() }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
+    fetchAdminAnnouncements() { return fetch('/api/admin/announcements', { headers: authHeaders() }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
+    createAdminAnnouncement(data) { return apiFetchWithBody('/api/admin/announcements', 'POST', data); },
+    approveAdminProduct(id, is_active) { return apiFetchWithBody('/api/admin/products/' + id + '/approve', 'PUT', { is_active }); }
 };
 
 window.api = api;

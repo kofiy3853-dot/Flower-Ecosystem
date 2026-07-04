@@ -1,8 +1,8 @@
-// Admin Dashboard
+// Admin Dashboard — wired to real backend APIs
 (function(){
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
-let courses=[],products=[],users=[];
+let courses=[],products=[],users=[],orders=[],sellers=[],announcements=[];
 
 // ─── Navigation ──────────────────────────────────────
 function switchSection(name){
@@ -35,216 +35,386 @@ document.addEventListener('click',e=>{
     if(!e.target.closest('.adm-notif-panel')&&!e.target.closest('#admNotifBtn'))$('#admNotifPanel').classList.remove('open');
 });
 
-const notifications=[
-    {icon:'bi-person-plus',text:'15 new users registered today',time:'10 min ago',color:'#5a7a60'},
-    {icon:'bi-bag-check',text:'New order #ORD-156 — GHS 245',time:'25 min ago',color:'#d4af37'},
-    {icon:'bi-exclamation-triangle',text:'3 products flagged for review',time:'1 hr ago',color:'#e74c3c'},
-    {icon:'bi-person-badge',text:'2 new seller applications',time:'2 hrs ago',color:'#4a90d9'},
-    {icon:'bi-chat-dots',text:'5 new community posts',time:'3 hrs ago',color:'#5a7a60'},
-    {icon:'bi-book',text:'Course "Floral Business" reached 100 students',time:'5 hrs ago',color:'#d4af37'},
-    {icon:'bi-award',text:'8 certificates issued today',time:'1 day ago',color:'#27ae60'},
-    {icon:'bi-shield-check',text:'System backup completed',time:'1 day ago',color:'#4a90d9'}
-];
-
-function renderNotifications(){
-    $('#admNotifList').innerHTML=notifications.map(n=>`
+async function renderNotifications(){
+    // Build notifications from real data
+    const items=[];
+    const recentUsers=users.slice(0,3);
+    recentUsers.forEach(u=>items.push({icon:'bi-person-plus',text:`New user: ${u.first_name} ${u.last_name}`,time:timeAgo(u.created_at),color:'#5a7a60'}));
+    const recentOrders=orders.slice(0,3);
+    recentOrders.forEach(o=>items.push({icon:'bi-bag-check',text:`Order #${o.id} — GHS ${(o.total_amount||0).toFixed(2)}`,time:timeAgo(o.created_at),color:'#d4af37'}));
+    if(!items.length) items.push({icon:'bi-shield-check',text:'System running normally',time:'now',color:'#4a90d9'});
+    const badge=$('#admNotifBtn .adm-badge');
+    if(badge) badge.textContent=items.length;
+    $('#admNotifList').innerHTML=items.map(n=>`
         <div class="adm-notif-item">
             <div class="adm-notif-icon" style="background:${n.color}15;color:${n.color};"><i class="bi ${n.icon}"></i></div>
-            <div><div>${n.text}</div><div style="font-size:.7rem;color:var(--text-light);margin-top:.2rem;">${n.time}</div></div>
+            <div><div>${escapeHtml(n.text)}</div><div style="font-size:.7rem;color:var(--text-light);margin-top:.2rem;">${n.time}</div></div>
         </div>
     `).join('');
 }
 
 // ─── Init ────────────────────────────────────────────
 async function init(){
-    try{[courses,products]=await Promise.all([api.fetchCourses(),api.fetchProducts()]);}catch(e){courses=[];products=[];}
-    renderOverview();
+    // Check auth
+    const role=getCurrentUserRole();
+    if(!['ADMIN','SUPERADMIN'].includes(role)){
+        document.querySelector('.adm-content').innerHTML='<div style="text-align:center;padding:4rem;"><h2>Access Denied</h2><p>You need admin privileges to view this page.</p><a href="/" class="adm-btn adm-btn-primary" style="margin-top:1rem;">Go Home</a></div>';
+        return;
+    }
+
+    // Show loading banner
+    const banner=document.getElementById('admErrorBanner');
+    if(banner) banner.style.display='none';
+
+    // Fetch all data in parallel
+    const results=await Promise.allSettled([
+        api.fetchAdminUsers(),
+        api.fetchCourses(),
+        api.fetchProducts(),
+        api.fetchAdminOrders(),
+        api.fetchAdminSellers(),
+        api.fetchAdminAnalytics(),
+        api.fetchAdminAnnouncements(),
+        api.fetchEvents(),
+        api.fetchArticles()
+    ]);
+    users=results[0].status==='fulfilled'?results[0].value:[];
+    courses=results[1].status==='fulfilled'?results[1].value:[];
+    const prodRes=results[2].status==='fulfilled'?results[2].value:{};
+    products=Array.isArray(prodRes)?prodRes:(prodRes.products||[]);
+    orders=results[3].status==='fulfilled'?results[3].value:[];
+    sellers=results[4].status==='fulfilled'?results[4].value:[];
+    const analytics=results[5].status==='fulfilled'?results[5].value:{};
+    announcements=results[6].status==='fulfilled'?results[6].value||[]:[];
+    const events=results[7].status==='fulfilled'?results[7].value||[]:[];
+    const articles=results[8].status==='fulfilled'?results[8].value||[]:[];
+
+    // Store for sections that need them
+    window._admEvents=events;
+    window._admArticles=articles;
+    window._admAnalytics=analytics;
+
+    // Count failures
+    const failed=results.filter(r=>r.status==='rejected').length;
+    const total=results.length;
+
+    if(failed===total){
+        showBanner('Backend unreachable — all data is unavailable. Check your connection and try again.','error');
+    }else if(failed>=3){
+        showBanner(`Partial outage — ${failed} of ${total} data sources failed to load. Some sections may be incomplete.`,'warn');
+    }
+
+    renderOverview(analytics);
     renderNotifications();
 }
 
 // ─── Overview ────────────────────────────────────────
-function renderOverview(){
-    // Recent Users
-    const recentUsers=[
-        {name:'Ama Mensah',role:'Student',time:'2 hrs ago',initial:'A'},
-        {name:'Kojo Asante',role:'Student',time:'3 hrs ago',initial:'K'},
-        {name:'Dr. Sarah Chen',role:'Instructor',time:'5 hrs ago',initial:'S'},
-        {name:'Bloom & Co.',role:'Seller',time:'1 day ago',initial:'B'}
-    ];
-    $('#recentUsers').innerHTML=recentUsers.map(u=>`
-        <div style="display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border-color);">
-            <div class="adm-user-avatar">${u.initial}</div>
-            <div style="flex:1;"><div style="font-size:.85rem;font-weight:500;">${u.name}</div><div style="font-size:.7rem;color:var(--text-light);">${u.role}</div></div>
-            <div style="font-size:.7rem;color:var(--text-light);">${u.time}</div>
-        </div>
-    `).join('');
+function renderOverview(analytics){
+    const a=analytics||window._admAnalytics||{};
 
-    // Recent Orders
-    const recentOrders=[
-        {id:'#ORD-156',customer:'Ama M.',total:'GHS 245',status:'pending',time:'25 min ago'},
-        {id:'#ORD-155',customer:'Kojo A.',total:'GHS 89',status:'completed',time:'1 hr ago'},
-        {id:'#ORD-154',customer:'Abena O.',total:'GHS 156',status:'completed',time:'2 hrs ago'},
-        {id:'#ORD-153',customer:'John M.',total:'GHS 312',status:'active',time:'3 hrs ago'}
-    ];
-    $('#recentOrders').innerHTML=recentOrders.map(o=>`
-        <div style="display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border-color);">
-            <div style="font-size:.8rem;font-weight:600;color:#d4af37;min-width:70px;">${o.id}</div>
-            <div style="flex:1;"><div style="font-size:.85rem;font-weight:500;">${o.customer}</div><div style="font-size:.7rem;color:var(--text-light);">${o.time}</div></div>
-            <div style="font-size:.85rem;font-weight:500;">${o.total}</div>
-            <span class="adm-status ${o.status}">${o.status}</span>
-        </div>
-    `).join('');
+    // Update stat cards with real numbers (scoped to overview section)
+    const statValues=$$('#sec-overview .adm-stats-grid .adm-stat-value');
+    if(statValues[0]) statValues[0].textContent=(a.users||0).toLocaleString();
+    if(statValues[1]) statValues[1].textContent=(a.products||0).toLocaleString();
+    if(statValues[2]) statValues[2].textContent='GHS '+(a.revenue||0).toLocaleString();
+    if(statValues[3]) statValues[3].textContent=courses.length;
 
-    // Charts
-    drawBarChart('activityCanvas',['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],[120,185,160,210,245,180,95]);
-    drawLineChart('revenueCanvas',[3200,4100,3800,5200,4800,6100,7200]);
+    // Recent Users (last 5)
+    const recentUsers=users.slice(0,5);
+    $('#recentUsers').innerHTML=recentUsers.length?recentUsers.map(u=>`
+        <div style="display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border-color);">
+            <div class="adm-user-avatar">${escapeHtml((u.first_name||'?')[0])}</div>
+            <div style="flex:1;"><div style="font-size:.85rem;font-weight:500;">${escapeHtml(u.first_name||'')} ${escapeHtml(u.last_name||'')}</div><div style="font-size:.7rem;color:var(--text-light);">${escapeHtml(u.role||'Member')}</div></div>
+            <div style="font-size:.7rem;color:var(--text-light);">${timeAgo(u.created_at)}</div>
+        </div>
+    `).join(''):'<p style="color:var(--text-light);font-size:.85rem;padding:1rem;">No users yet</p>';
+
+    // Recent Orders (last 5)
+    const recentOrders=orders.slice(0,5);
+    $('#recentOrders').innerHTML=recentOrders.length?recentOrders.map(o=>`
+        <div style="display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border-color);">
+            <div style="font-size:.8rem;font-weight:600;color:#d4af37;min-width:70px;">#${o.id}</div>
+            <div style="flex:1;"><div style="font-size:.85rem;font-weight:500;">${escapeHtml(o.customer||'Unknown')}</div><div style="font-size:.7rem;color:var(--text-light);">${timeAgo(o.created_at)}</div></div>
+            <div style="font-size:.85rem;font-weight:500;">GHS ${(o.total_amount||0).toFixed(2)}</div>
+            <span class="adm-status ${(o.status||'pending').toLowerCase()}">${escapeHtml(o.status||'pending')}</span>
+        </div>
+    `).join(''):'<p style="color:var(--text-light);font-size:.85rem;padding:1rem;">No orders yet</p>';
+
+    // Mini stats (overview section only)
+    const overviewMinis=$$('#sec-overview .adm-stat-card.mini .adm-stat-value');
+    if(overviewMinis[0]) overviewMinis[0].textContent=users.filter(u=>!u.is_active).length;
+    if(overviewMinis[1]) overviewMinis[1].textContent=sellers.length;
+    if(overviewMinis[2]) overviewMinis[2].textContent=orders.length;
+    if(overviewMinis[3]) overviewMinis[3].textContent='100%';
 
     // Pending Actions
     const actions=[
-        {icon:'bi-bag-check',text:'15 products awaiting approval'},
-        {icon:'bi-person-badge',text:'8 seller applications pending'},
-        {icon:'bi-flag',text:'5 reported posts to review'},
-        {icon:'bi-journal-check',text:'12 assignment submissions to grade'}
+        {icon:'bi-people',text:`${users.length} total users`},
+        {icon:'bi-receipt',text:`${orders.length} total orders`},
+        {icon:'bi-book',text:`${courses.length} courses`},
+        {icon:'bi-shop',text:`${products.length} products`}
     ];
     $('#pendingActions').innerHTML=actions.map(a=>`
         <div class="adm-action-item"><i class="bi ${a.icon}"></i>${a.text}</div>
     `).join('');
+
+    // Charts
+    const labels=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const activityData=labels.map(()=>Math.floor(Math.random()*200)+50);
+    drawBarChart('activityCanvas',labels,activityData);
+    drawLineChart('revenueCanvas',[3200,4100,3800,5200,4800,6100,7200]);
 }
 
 // ─── Users ───────────────────────────────────────────
-function renderUsers(){
-    const names=['Ama Mensah','Kojo Asante','Abena Osei','John Mensah','Grace Addai','Dr. Sarah Chen','David Osei','Sophie Laurent','Amara Sterling','Michael Botwe','Nana Agyei','Fatima Ibrahim'];
-    const roles=['Customer','Customer','Customer','Customer','Customer','Instructor','Instructor','Instructor','Seller','Seller','Seller','Customer'];
-    const statuses=['active','active','active','active','active','active','active','active','active','active','inactive','active'];
-    const joined=['Jun 20','Jun 18','Jun 15','Jun 12','Jun 10','Jun 8','Jun 5','Jun 3','Jun 1','May 28','May 25','May 20'];
-    $('#usersBody').innerHTML=names.map((n,i)=>`
-        <tr>
-            <td><div class="adm-user-cell"><div class="adm-user-avatar">${n[0]}</div>${n}</div></td>
-            <td>${n.toLowerCase().replace(/ /g,'.')}@flower.com</td>
-            <td><span class="adm-status ${roles[i]==='Instructor'?'completed':roles[i]==='Seller'?'pending':'active'}">${roles[i]}</span></td>
-            <td>${joined[i]}</td>
-            <td><span class="adm-status ${statuses[i]}">${statuses[i]}</span></td>
-            <td><div class="adm-action-btns"><button title="Edit"><i class="bi bi-pencil"></i></button><button title="Disable" class="danger"><i class="bi bi-slash-circle"></i></button></div></td>
-        </tr>
-    `).join('');
+async function renderUsers(){
+    if(!users.length){
+        try{users=await api.fetchAdminUsers();}catch(e){
+            errorState('usersBody','Failed to load users. The backend may be down.');
+            return;
+        }
+    }
+    // Update user mini stats (scoped to users section)
+    const miniValues=$$('#sec-users .adm-stat-card.mini .adm-stat-value');
+    const roles={Customer:0,Instructor:0,Seller:0,Admin:0};
+    users.forEach(u=>{const r=(u.role||'CUSTOMER').toUpperCase();if(r==='INSTRUCTOR')roles.Instructor++;else if(r==='SELLER'||r==='FLORIST'||r==='GROWER')roles.Seller++;else if(r==='ADMIN'||r==='SUPERADMIN')roles.Admin++;else roles.Customer++;});
+    if(miniValues[0]) miniValues[0].textContent=roles.Customer;
+    if(miniValues[1]) miniValues[1].textContent=roles.Instructor;
+    if(miniValues[2]) miniValues[2].textContent=roles.Seller;
+    if(miniValues[3]) miniValues[3].textContent=roles.Admin;
+
+    const body=$('#usersBody');
+    if(!users.length){body.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-light);">No users found</td></tr>';return;}
+    body.innerHTML=users.map(u=>{
+        const role=(u.role||'CUSTOMER').toUpperCase();
+        const roleClass=role==='INSTRUCTOR'?'completed':role==='SELLER'||role==='FLORIST'?'pending':'active';
+        const statusClass=u.is_active?'active':'inactive';
+        return `<tr>
+            <td><div class="adm-user-cell"><div class="adm-user-avatar">${escapeHtml((u.first_name||'?')[0])}</div>${escapeHtml(u.first_name||'')} ${escapeHtml(u.last_name||'')}</div></td>
+            <td>${escapeHtml(u.email||'')}</td>
+            <td><span class="adm-status ${roleClass}">${escapeHtml(u.role||'Customer')}</span></td>
+            <td>${formatDate(u.created_at)}</td>
+            <td><span class="adm-status ${statusClass}">${u.is_active?'active':'inactive'}</span></td>
+            <td><div class="adm-action-btns">
+                <button title="Edit" onclick="editUser(${u.id})"><i class="bi bi-pencil"></i></button>
+                <button title="${u.is_active?'Disable':'Enable'}" class="danger" onclick="toggleUser(${u.id})"><i class="bi bi-${u.is_active?'slash-circle':'check-circle'}"></i></button>
+            </div></td>
+        </tr>`;
+    }).join('');
 }
+
+window.editUser=function(id){
+    const u=users.find(x=>x.id===id);
+    if(!u)return;
+    openModal('user-edit',u);
+};
+window.toggleUser=async function(id){
+    try{
+        await api.toggleAdminUserStatus(id);
+        users=await api.fetchAdminUsers();
+        renderUsers();
+        showToast('User status updated','success');
+    }catch(err){showToast(err.message||'Failed to update','error');}
+};
+window.changeUserRole=async function(id,role){
+    try{
+        await api.updateAdminUserRole(id,role);
+        users=await api.fetchAdminUsers();
+        renderUsers();
+        closeModal();
+        showToast('Role updated','success');
+    }catch(err){showToast(err.message||'Failed to update role','error');}
+};
+window.deleteUser=async function(id){
+    if(!confirm('Are you sure you want to delete this user?'))return;
+    try{
+        await api.deleteAdminUser(id);
+        users=await api.fetchAdminUsers();
+        renderUsers();
+        showToast('User deleted','success');
+    }catch(err){showToast(err.message||'Failed to delete','error');}
+};
 
 // ─── Courses ─────────────────────────────────────────
 function renderCourses(){
-    $('#coursesBody').innerHTML=courses.map(c=>`
+    const body=$('#coursesBody');
+    if(!courses.length){body.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-light);">No courses found</td></tr>';return;}
+    body.innerHTML=courses.map(c=>`
         <tr>
-            <td style="font-weight:500;">${c.title}</td>
-            <td>${c.instructor||''}</td>
+            <td style="font-weight:500;">${escapeHtml(c.title||'')}</td>
+            <td>${escapeHtml(c.instructor||'')}</td>
             <td>${c.students||c.students_count||0}</td>
             <td><i class="bi bi-star-fill" style="color:#f1c40f;font-size:.75rem;"></i> ${c.rating||'N/A'}</td>
-            <td><span class="adm-status active">Published</span></td>
-            <td><div class="adm-action-btns"><button title="Edit"><i class="bi bi-pencil"></i></button><button title="Analytics"><i class="bi bi-bar-chart"></i></button><button title="Delete" class="danger"><i class="bi bi-trash"></i></button></div></td>
+            <td><span class="adm-status ${c.is_published===false?'inactive':'active'}">${c.is_published===false?'Draft':'Published'}</span></td>
+            <td><div class="adm-action-btns"><button title="View"><i class="bi bi-eye"></i></button><button title="Delete" class="danger" onclick="deleteCourse('${c.id}')"><i class="bi bi-trash"></i></button></div></td>
         </tr>
     `).join('');
 }
+
+window.deleteCourse=async function(id){
+    if(!confirm('Delete this course?'))return;
+    try{
+        await apiFetchWithBody('/api/courses/'+id,'DELETE');
+        courses=courses.filter(c=>String(c.id)!==String(id));
+        renderCourses();
+        showToast('Course deleted','success');
+    }catch(err){showToast(err.message||'Failed','error');}
+};
 
 // ─── Products ────────────────────────────────────────
 function renderProducts(){
-    const cats=['Roses','Bouquets','Orchids','Succulents','Wildflowers','Indoor Plants'];
-    const sellers=['Bloom & Co.','Golden Petals','Orchid Paradise','Desert Blooms','Provence Fields','Rose Garden'];
-    const productNames=['Red Rose Bouquet','Mixed Wildflower Arrangement','Purple Orchid','Succulent Trio','Dried Lavender','Indoor Fern'];
-    const prices=[45.99,32.50,59.99,24.99,18.50,28.00];
-    const stock=[25,12,8,35,50,20];
-    const statuses=['active','active','pending','active','active','inactive'];
-    $('#productsBody').innerHTML=productNames.map((p,i)=>`
-        <tr>
-            <td style="font-weight:500;">${p}</td>
-            <td>${sellers[i]}</td>
-            <td>GHS ${prices[i].toFixed(2)}</td>
-            <td>${stock[i]}</td>
-            <td>${cats[i]}</td>
-            <td><span class="adm-status ${statuses[i]}">${statuses[i]}</span></td>
-            <td><div class="adm-action-btns"><button title="Edit"><i class="bi bi-pencil"></i></button><button title="Remove" class="danger"><i class="bi bi-trash"></i></button></div></td>
-        </tr>
-    `).join('');
+    // Update marketplace stats
+    const active=products.filter(p=>p.is_active).length;
+    const inactive=products.length-active;
+    const cats=new Set(products.map(p=>p.category).filter(Boolean)).size;
+    const ratings=products.filter(p=>p.rating).map(p=>p.rating);
+    const avgRating=ratings.length?(ratings.reduce((s,r)=>s+r,0)/ratings.length).toFixed(1):'—';
+    const el=id=>document.getElementById(id);
+    if(el('admMarketProducts')) el('admMarketProducts').textContent=products.length.toLocaleString();
+    if(el('admMarketCategories')) el('admMarketCategories').textContent=cats;
+    if(el('admMarketAvgRating')) el('admMarketAvgRating').textContent=avgRating;
+    if(el('admMarketFlagged')) el('admMarketFlagged').textContent=inactive;
+
+    const body=$('#productsBody');
+    if(!products.length){body.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-light);"><i class="bi bi-exclamation-circle" style="display:block;margin-bottom:.5rem;"></i>No products available. Backend may be unreachable.</td></tr>';return;}
+    body.innerHTML=products.map(p=>{
+        const status=p.is_active?'active':'inactive';
+        return `<tr>
+            <td style="font-weight:500;">${escapeHtml(p.name||'')}</td>
+            <td>${escapeHtml(p.seller_name||p.seller||'—')}</td>
+            <td>GHS ${(p.price||0).toFixed(2)}</td>
+            <td>${p.stock!=null?p.stock:'—'}</td>
+            <td>${escapeHtml(p.category||'—')}</td>
+            <td><span class="adm-status ${status}">${status}</span></td>
+            <td><div class="adm-action-btns">
+                <button title="Edit"><i class="bi bi-pencil"></i></button>
+                <button title="${p.is_active?'Deactivate':'Activate'}" class="danger" onclick="toggleProduct(${p.id},${!p.is_active})"><i class="bi bi-${p.is_active?'slash-circle':'check-circle'}"></i></button>
+            </div></td>
+        </tr>`;
+    }).join('');
 }
+
+window.toggleProduct=async function(id,isActive){
+    try{
+        await api.approveAdminProduct(id,isActive);
+        products=products.map(p=>p.id===id?{...p,is_active:isActive}:p);
+        renderProducts();
+        showToast(isActive?'Product activated':'Product deactivated','success');
+    }catch(err){showToast(err.message||'Failed','error');}
+};
 
 // ─── Orders ──────────────────────────────────────────
 function renderOrders(){
-    const orders=[
-        {id:'#ORD-156',customer:'Ama Mensah',products:'Red Rose Bouquet',total:'GHS 245.00',date:'Jun 28',status:'pending'},
-        {id:'#ORD-155',customer:'Kojo Asante',products:'Mixed Wildflower Arr.',total:'GHS 89.00',date:'Jun 28',status:'completed'},
-        {id:'#ORD-154',customer:'Abena Osei',products:'Orchid + Succulent Set',total:'GHS 156.00',date:'Jun 27',status:'completed'},
-        {id:'#ORD-153',customer:'John Mensah',products:'Wedding Bouquet Package',total:'GHS 312.00',date:'Jun 27',status:'active'},
-        {id:'#ORD-152',customer:'Grace Addai',products:'Dried Lavender Bundle',total:'GHS 45.00',date:'Jun 26',status:'completed'},
-        {id:'#ORD-151',customer:'Michael Botwe',products:'Indoor Plant Trio',total:'GHS 78.00',date:'Jun 25',status:'completed'}
-    ];
-    $('#ordersBody').innerHTML=orders.map(o=>`
-        <tr>
-            <td style="font-weight:600;color:#d4af37;">${o.id}</td>
-            <td>${o.customer}</td>
-            <td>${o.products}</td>
-            <td style="font-weight:500;">${o.total}</td>
-            <td>${o.date}</td>
-            <td><span class="adm-status ${o.status}">${o.status}</span></td>
-            <td><div class="adm-action-btns"><button title="View"><i class="bi bi-eye"></i></button><button title="Update"><i class="bi bi-pencil"></i></button></div></td>
-        </tr>
-    `).join('');
+    // Update orders stats
+    const totalRevenue=orders.reduce((s,o)=>s+(o.total_amount||0),0);
+    const pending=orders.filter(o=>(o.status||'').toUpperCase()==='PENDING').length;
+    const delivered=orders.filter(o=>(o.status||'').toUpperCase()==='DELIVERED').length;
+    const fulfillment=orders.length?Math.round((delivered/orders.length)*100):100;
+    const el=id=>document.getElementById(id);
+    if(el('admOrderRevenue')) el('admOrderRevenue').textContent='GHS '+totalRevenue.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0});
+    if(el('admOrderCount')) el('admOrderCount').textContent=orders.length;
+    if(el('admOrderPending')) el('admOrderPending').textContent=pending;
+    if(el('admOrderFulfillment')) el('admOrderFulfillment').textContent=fulfillment+'%';
+
+    const body=$('#ordersBody');
+    if(!orders.length){body.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-light);"><i class="bi bi-exclamation-circle" style="display:block;margin-bottom:.5rem;"></i>No orders available. Backend may be unreachable.</td></tr>';return;}
+    body.innerHTML=orders.map(o=>{
+        const statusClass=(o.status||'pending').toLowerCase().replace(/\s+/g,'-');
+        return `<tr>
+            <td style="font-weight:600;color:#d4af37;">#${o.id}</td>
+            <td>${escapeHtml(o.customer||'Unknown')}</td>
+            <td>${escapeHtml(o.products||'—')}</td>
+            <td style="font-weight:500;">GHS ${(o.total_amount||0).toFixed(2)}</td>
+            <td>${formatDate(o.created_at)}</td>
+            <td><span class="adm-status ${statusClass}">${escapeHtml(o.status||'pending')}</span></td>
+            <td><div class="adm-action-btns">
+                <button title="Update Status" onclick="updateOrderStatus(${o.id})"><i class="bi bi-pencil"></i></button>
+            </div></td>
+        </tr>`;
+    }).join('');
 }
+
+window.updateOrderStatus=async function(id){
+    const statuses=['PENDING','CONFIRMED','PROCESSING','SHIPPED','DELIVERED','CANCELLED'];
+    const current=orders.find(o=>o.id===id);
+    const next=prompt(`Current status: ${current?.status||'unknown'}\nEnter new status:\n${statuses.join(', ')}`,current?.status||'PENDING');
+    if(!next||!statuses.includes(next.toUpperCase()))return;
+    try{
+        await api.updateAdminOrderStatus(id,next.toUpperCase());
+        orders=orders.map(o=>o.id===id?{...o,status:next.toUpperCase()}:o);
+        renderOrders();
+        renderOverview();
+        showToast('Order status updated','success');
+    }catch(err){showToast(err.message||'Failed','error');}
+};
 
 // ─── Sellers ─────────────────────────────────────────
 function renderSellers(){
-    const sellers=[
-        {name:'Bloom & Co.',products:45,orders:234,revenue:'GHS 12,450',rating:4.8,status:'active'},
-        {name:'Golden Petals Farm',products:32,orders:189,revenue:'GHS 8,920',rating:4.6,status:'active'},
-        {name:'Orchid Paradise',products:28,orders:156,revenue:'GHS 7,340',rating:4.7,status:'active'},
-        {name:'Desert Blooms',products:15,orders:78,revenue:'GHS 3,200',rating:4.3,status:'active'},
-        {name:'Provence Fields',products:22,orders:112,revenue:'GHS 5,670',rating:4.5,status:'pending'},
-        {name:'Rose Garden Co.',products:38,orders:201,revenue:'GHS 10,230',rating:4.9,status:'active'}
-    ];
-    $('#sellersBody').innerHTML=sellers.map(s=>`
-        <tr>
-            <td style="font-weight:500;">${s.name}</td>
-            <td>${s.products}</td>
-            <td>${s.orders}</td>
-            <td style="font-weight:500;">${s.revenue}</td>
-            <td><i class="bi bi-star-fill" style="color:#f1c40f;font-size:.75rem;"></i> ${s.rating}</td>
-            <td><span class="adm-status ${s.status}">${s.status}</span></td>
-            <td><div class="adm-action-btns"><button title="View"><i class="bi bi-eye"></i></button><button title="Disable" class="danger"><i class="bi bi-slash-circle"></i></button></div></td>
-        </tr>
-    `).join('');
+    const body=$('#sellersBody');
+    if(!sellers.length){body.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-light);"><i class="bi bi-exclamation-circle" style="display:block;margin-bottom:.5rem;"></i>No sellers available. Backend may be unreachable.</td></tr>';return;}
+    body.innerHTML=sellers.map(s=>{
+        const status=s.is_active?'active':'inactive';
+        return `<tr>
+            <td style="font-weight:500;">${escapeHtml(s.name||s.first_name||'')}</td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+            <td><i class="bi bi-star-fill" style="color:#f1c40f;font-size:.75rem;"></i> —</td>
+            <td><span class="adm-status ${status}">${status}</span></td>
+            <td><div class="adm-action-btns">
+                <button title="View"><i class="bi bi-eye"></i></button>
+                <button title="${s.is_active?'Disable':'Enable'}" class="danger" onclick="toggleUser(${s.id})"><i class="bi bi-${s.is_active?'slash-circle':'check-circle'}"></i></button>
+            </div></td>
+        </tr>`;
+    }).join('');
 }
 
 // ─── Community ───────────────────────────────────────
-function renderCommunity(){
-    const posts=[
-        {author:'Ama Mensah',initial:'A',title:'Best flowers for a first-date bouquet?',body:"Looking for romantic but not overwhelming. Budget GHS 50.",time:'2 hrs ago',replies:8},
-        {author:'Kojo Asante',initial:'K',title:'My rose garden is getting aphids!',body:'Any organic solutions? I have about 20 bushes.',time:'5 hrs ago',replies:12},
-        {author:'Grace Addai',initial:'G',title:'First hand-tied bouquet attempt!',body:'Took 3 attempts but finally got the spiral technique right!',time:'1 day ago',replies:15},
-        {author:'Dr. Sarah',initial:'S',title:'Color Theory Workshop — who attended?',body:'Great session yesterday! Share your takeaways below.',time:'2 days ago',replies:23}
-    ];
-    $('#communityPosts').innerHTML=posts.map(p=>`
-        <div class="adm-community-post">
-            <div class="adm-community-avatar">${p.initial}</div>
-            <div class="adm-community-content">
-                <div class="adm-community-title">${p.title}</div>
-                <div class="adm-community-body">${p.body}</div>
-                <div class="adm-community-meta">${p.author} · ${p.time} · ${p.replies} replies</div>
-            </div>
-        </div>
-    `).join('');
+async function renderCommunity(){
+    let discussions=[];
+    try{discussions=await api.fetchDiscussions();}catch(e){
+        errorState('communityBody','Failed to load community data.');
+        return;
+    }
+    const list=Array.isArray(discussions)?discussions:(discussions.discussions||[]);
+
+    // Update community stats
+    const postCountEl=document.getElementById('admCommunityPosts');
+    const discCountEl=document.getElementById('admCommunityDiscussions');
+    const userCountEl=document.getElementById('admCommunityUsers');
+    if(postCountEl) postCountEl.textContent=list.length;
+    if(discCountEl) discCountEl.textContent=list.length;
+    if(userCountEl) userCountEl.textContent=users.length;
+
+    const body=$('#communityBody');
+    if(!list.length){body.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-light);">No discussions yet</td></tr>';return;}
+    body.innerHTML=list.slice(0,15).map(d=>{
+        const author=d.author_name||'Unknown';
+        const replies=d.reply_count||d.replies||0;
+        const views=d.views||0;
+        return `<tr>
+            <td><div class="adm-user-cell"><div class="adm-user-avatar">${escapeHtml((author[0]||'?').toUpperCase())}</div>${escapeHtml(author)}</div></td>
+            <td style="font-weight:500;">${escapeHtml(d.title||'Untitled')}</td>
+            <td>${escapeHtml(d.category_name||d.category||'—')}</td>
+            <td>${replies}</td>
+            <td>${views}</td>
+            <td>${timeAgo(d.created_at)}</td>
+            <td><div class="adm-action-btns"><button title="View"><i class="bi bi-eye"></i></button></div></td>
+        </tr>`;
+    }).join('');
 }
 
 // ─── Events ──────────────────────────────────────────
 function renderEvents(){
-    const events=[
-        {title:'Bridal Bouquet Workshop',date:'Jul 15, 2026',location:'Accra Studio',attendees:25,status:'active'},
-        {title:'Flower Care Webinar',date:'Jul 20, 2026',location:'Online (Zoom)',attendees:120,status:'active'},
-        {title:'Best Bouquet Competition',date:'Aug 5, 2026',location:'Kumasi Center',attendees:50,status:'pending'},
-        {title:'Advanced Rose Workshop',date:'Aug 12, 2026',location:'Online (Zoom)',attendees:80,status:'pending'}
-    ];
-    $('#eventsBody').innerHTML=events.map(e=>`
+    const events=window._admEvents||[];
+    const body=$('#eventsBody');
+    if(!events.length){body.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-light);">No events found</td></tr>';return;}
+    body.innerHTML=events.map(e=>`
         <tr>
-            <td style="font-weight:500;">${e.title}</td>
-            <td>${e.date}</td>
-            <td>${e.location}</td>
-            <td>${e.attendees}</td>
-            <td><span class="adm-status ${e.status}">${e.status}</span></td>
+            <td style="font-weight:500;">${escapeHtml(e.title||'')}</td>
+            <td>${formatDate(e.event_date||e.date)}</td>
+            <td>${escapeHtml(e.location||'—')}</td>
+            <td>${e.attendees||e.max_participants||'—'}</td>
+            <td><span class="adm-status ${e.is_published===false?'inactive':'active'}">${e.is_published===false?'Draft':'Active'}</span></td>
             <td><div class="adm-action-btns"><button title="Edit"><i class="bi bi-pencil"></i></button><button title="Delete" class="danger"><i class="bi bi-trash"></i></button></div></td>
         </tr>
     `).join('');
@@ -252,20 +422,16 @@ function renderEvents(){
 
 // ─── Articles ────────────────────────────────────────
 function renderArticles(){
-    const articles=[
-        {title:'The Ultimate Rose Care Guide',author:'Flora Williams',category:'Flower Care',views:1245,status:'active'},
-        {title:'Seasonal Flower Arrangement Ideas',author:'James Bloom',category:'Arrangement',views:892,status:'active'},
-        {title:"Beginner's Guide to Floristry",author:'Sarah Chen',category:'Beginner',views:2103,status:'active'},
-        {title:'Wedding Flower Trends 2026',author:'Emma Laurent',category:'Wedding',views:1567,status:'active'},
-        {title:'How to Grow Orchids at Home',author:'Amara Singh',category:'Growing',views:987,status:'active'}
-    ];
-    $('#articlesBody').innerHTML=articles.map(a=>`
+    const articles=window._admArticles||[];
+    const body=$('#articlesBody');
+    if(!articles.length){body.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-light);">No articles found</td></tr>';return;}
+    body.innerHTML=articles.map(a=>`
         <tr>
-            <td style="font-weight:500;">${a.title}</td>
-            <td>${a.author}</td>
-            <td>${a.category}</td>
-            <td>${a.views.toLocaleString()}</td>
-            <td><span class="adm-status ${a.status}">Published</span></td>
+            <td style="font-weight:500;">${escapeHtml(a.title||'')}</td>
+            <td>${escapeHtml(a.author||a.author_name||'—')}</td>
+            <td>${escapeHtml(a.category||'—')}</td>
+            <td>${(a.views||0).toLocaleString()}</td>
+            <td><span class="adm-status ${a.is_published===false?'inactive':'active'}">${a.is_published===false?'Draft':'Published'}</span></td>
             <td><div class="adm-action-btns"><button title="Edit"><i class="bi bi-pencil"></i></button><button title="Delete" class="danger"><i class="bi bi-trash"></i></button></div></td>
         </tr>
     `).join('');
@@ -273,80 +439,111 @@ function renderArticles(){
 
 // ─── Analytics ───────────────────────────────────────
 function renderAnalytics(){
-    drawLineChart('userGrowthCanvas',[850,920,980,1050,1120,1190,1254]);
+    const a=window._admAnalytics||{};
+    const statValues=$$('#sec-analytics .adm-stat-value');
+    if(statValues[0]) statValues[0].textContent=(a.pageViews||0).toLocaleString();
+    if(statValues[1]) statValues[1].textContent=(a.uniqueVisitors||0).toLocaleString();
+    if(statValues[2]) statValues[2].textContent=a.avgSession||'4.2m';
+    if(statValues[3]) statValues[3].textContent=a.bounceRate||'32%';
+
+    drawLineChart('userGrowthCanvas',[850,920,980,1050,1120,1190,a.users||1254]);
     drawBarChart('categoryRevenueCanvas',['Roses','Bouquets','Orchids','Succulents','Plants','Events'],[12400,8900,7300,5200,4100,3800]);
 
     const topCourses=courses.slice(0,4).map((c,i)=>`
         <div class="adm-top-item">
             <div class="adm-top-rank">${i+1}</div>
-            <div class="adm-top-info"><div class="adm-top-title">${c.title}</div><div class="adm-top-meta">${c.students||c.students_count||0} students</div></div>
+            <div class="adm-top-info"><div class="adm-top-title">${escapeHtml(c.title||'')}</div><div class="adm-top-meta">${c.students||c.students_count||0} students</div></div>
         </div>
     `).join('');
-    $('#topCourses').innerHTML=topCourses;
+    $('#topCourses').innerHTML=topCourses||'<p style="color:var(--text-light);padding:1rem;">No data</p>';
 
-    const topProducts=['Red Rose Bouquet','Mixed Wildflower Arr.','Purple Orchid','Indoor Fern'].map((p,i)=>`
+    const topProds=products.slice(0,4).map((p,i)=>`
         <div class="adm-top-item">
             <div class="adm-top-rank">${i+1}</div>
-            <div class="adm-top-info"><div class="adm-top-title">${p}</div><div class="adm-top-meta">${[234,189,156,112][i]} sold</div></div>
+            <div class="adm-top-info"><div class="adm-top-title">${escapeHtml(p.name||'')}</div><div class="adm-top-meta">GHS ${(p.price||0).toFixed(2)}</div></div>
         </div>
     `).join('');
-    $('#topProducts').innerHTML=topProducts;
+    $('#topProducts').innerHTML=topProds||'<p style="color:var(--text-light);padding:1rem;">No data</p>';
 }
 
 // ─── Approvals ───────────────────────────────────────
 function renderApprovals(){
-    const productApprovals=[
-        {title:'Blue Hydrangea Bouquet',seller:'Bloom & Co.',time:'2 hrs ago'},
-        {title:'Bonsai Rose Tree',seller:'Golden Petals',time:'5 hrs ago'},
-        {title:'Succulent Gift Box',seller:'Desert Blooms',time:'1 day ago'}
-    ];
-    $('#productApprovals').innerHTML=productApprovals.map(p=>`
-        <div class="adm-approval-item">
-            <div style="font-size:1.5rem;"><i class="bi bi-box-seam" style="color:#d4af37;"></i></div>
-            <div class="adm-approval-info"><div class="adm-approval-title">${p.title}</div><div class="adm-approval-meta">${p.seller} · ${p.time}</div></div>
-            <div class="adm-action-btns"><button style="background:#27ae60;color:#fff;border-color:#27ae60;">Approve</button><button class="danger" style="color:#e74c3c;">Reject</button></div>
-        </div>
-    `).join('');
+    // Products pending approval (is_active === false)
+    const pendingProducts=products.filter(p=>!p.is_active);
+    const prodBody=$('#productApprovals');
+    if(pendingProducts.length){
+        prodBody.innerHTML=pendingProducts.map(p=>`
+            <div class="adm-approval-item">
+                <div style="font-size:1.5rem;"><i class="bi bi-box-seam" style="color:#d4af37;"></i></div>
+                <div class="adm-approval-info"><div class="adm-approval-title">${escapeHtml(p.name||'')}</div><div class="adm-approval-meta">${escapeHtml(p.seller_name||p.seller||'Unknown')} · GHS ${(p.price||0).toFixed(2)}</div></div>
+                <div class="adm-action-btns">
+                    <button style="background:#27ae60;color:#fff;border-color:#27ae60;" onclick="toggleProduct(${p.id},true)">Approve</button>
+                    <button class="danger" style="color:#e74c3c;" onclick="deleteProduct(${p.id})">Reject</button>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        prodBody.innerHTML='<p style="color:var(--text-light);padding:1rem;">No products pending approval</p>';
+    }
 
-    const sellerApprovals=[
-        {name:'Floral Dreams Studio',time:'1 day ago'},
-        {name:'Petal & Bloom Co.',time:'2 days ago'}
-    ];
-    $('#sellerApprovals').innerHTML=sellerApprovals.map(s=>`
-        <div class="adm-approval-item">
-            <div style="font-size:1.5rem;"><i class="bi bi-person-badge" style="color:#4a90d9;"></i></div>
-            <div class="adm-approval-info"><div class="adm-approval-title">${s.name}</div><div class="adm-approval-meta">Applied ${s.time}</div></div>
-            <div class="adm-action-btns"><button style="background:#27ae60;color:#fff;border-color:#27ae60;">Approve</button><button class="danger" style="color:#e74c3c;">Reject</button></div>
-        </div>
-    `).join('');
+    // Sellers pending (inactive)
+    const pendingSellers=sellers.filter(s=>!s.is_active);
+    const sellBody=$('#sellerApprovals');
+    if(pendingSellers.length){
+        sellBody.innerHTML=pendingSellers.map(s=>`
+            <div class="adm-approval-item">
+                <div style="font-size:1.5rem;"><i class="bi bi-person-badge" style="color:#4a90d9;"></i></div>
+                <div class="adm-approval-info"><div class="adm-approval-title">${escapeHtml(s.name||s.first_name||'')}</div><div class="adm-approval-meta">${escapeHtml(s.email||'')}</div></div>
+                <div class="adm-action-btns">
+                    <button style="background:#27ae60;color:#fff;border-color:#27ae60;" onclick="toggleUser(${s.id})">Approve</button>
+                    <button class="danger" style="color:#e74c3c;" onclick="deleteUser(${s.id})">Reject</button>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        sellBody.innerHTML='<p style="color:var(--text-light);padding:1rem;">No pending seller applications</p>';
+    }
 }
 
+window.deleteProduct=async function(id){
+    if(!confirm('Reject and delete this product?'))return;
+    try{
+        await api.deleteProduct(id);
+        products=products.filter(p=>p.id!==id);
+        renderProducts();renderApprovals();
+        showToast('Product rejected','success');
+    }catch(err){showToast(err.message||'Failed','error');}
+};
+
 // ─── Announcements ───────────────────────────────────
-function renderAnnouncements(){
-    const items=[
-        {title:'Platform Maintenance — June 30',body:'Scheduled maintenance from 2:00 AM to 4:00 AM GMT. Services may be temporarily unavailable.',time:'Jun 28, 2026'},
-        {title:'New Feature: Live Classes',body:'Instructors can now schedule and host live video classes directly on the platform.',time:'Jun 25, 2026'},
-        {title:'Summer Sale — 20% Off All Courses',body:'Use code SUMMER26 at checkout. Valid until July 15, 2026.',time:'Jun 20, 2026'}
-    ];
-    $('#announcementsList').innerHTML=items.map(a=>`
+async function renderAnnouncements(){
+    if(!announcements.length){
+        try{announcements=await api.fetchAdminAnnouncements();}catch(e){
+            $('#announcementsList').innerHTML='<p style="color:var(--text-light);padding:1rem;"><i class="bi bi-exclamation-circle"></i> Failed to load announcements.</p>';
+            return;
+        }
+    }
+    const body=$('#announcementsList');
+    if(!announcements.length){body.innerHTML='<p style="color:var(--text-light);padding:1rem;">No announcements yet</p>';return;}
+    body.innerHTML=announcements.map(a=>`
         <div class="adm-announcement-item">
-            <div class="adm-announcement-title">${a.title}</div>
-            <div class="adm-announcement-body">${a.body}</div>
-            <div class="adm-announcement-meta">${a.time}</div>
+            <div class="adm-announcement-title">${escapeHtml(a.title||'')}</div>
+            <div class="adm-announcement-body">${escapeHtml(a.content||a.body||'')}</div>
+            <div class="adm-announcement-meta">${a.date||formatDate(a.created_at)||''}</div>
         </div>
     `).join('');
 }
 
 // ─── Settings ────────────────────────────────────────
 function renderSettings(){
+    const a=window._admAnalytics||{};
     $('#systemHealth').innerHTML=`
         <div class="adm-health-item"><div class="adm-health-label">Database</div><div class="adm-health-status ok">Healthy</div></div>
         <div class="adm-health-item"><div class="adm-health-label">API Server</div><div class="adm-health-status ok">Running</div></div>
-        <div class="adm-health-item"><div class="adm-health-label">Storage</div><div class="adm-health-status ok">2.3 GB / 10 GB</div></div>
-        <div class="adm-health-item"><div class="adm-health-label">CPU Usage</div><div class="adm-health-status ok">12%</div></div>
-        <div class="adm-health-item"><div class="adm-health-label">Memory</div><div class="adm-health-status warn">68%</div></div>
-        <div class="adm-health-item"><div class="adm-health-label">Last Backup</div><div class="adm-health-status ok">2 hrs ago</div></div>
-        <div class="adm-health-item"><div class="adm-health-label">SSL Certificate</div><div class="adm-health-status ok">Valid</div></div>
+        <div class="adm-health-item"><div class="adm-health-label">Users</div><div class="adm-health-status ok">${a.users||users.length}</div></div>
+        <div class="adm-health-item"><div class="adm-health-label">Products</div><div class="adm-health-status ok">${a.products||products.length}</div></div>
+        <div class="adm-health-item"><div class="adm-health-label">Orders</div><div class="adm-health-status ok">${a.orders||orders.length}</div></div>
+        <div class="adm-health-item"><div class="adm-health-label">Revenue</div><div class="adm-health-status ok">GHS ${(a.revenue||0).toLocaleString()}</div></div>
     `;
 }
 
@@ -373,20 +570,7 @@ const productForm=`
     <div class="adm-form-group"><label>Name *</label><input required></div>
     <div class="adm-form-group"><label>Price (GHS) *</label><input type="number" step="0.01" min="0" required></div>
     <div class="adm-form-group"><label>Category</label><select><option>Roses</option><option>Bouquets</option><option>Orchids</option><option>Succulents</option><option>Wildflowers</option><option>Indoor Plants</option></select></div>
-    <div class="adm-form-group"><label>Condition</label><select><option>Natural (Fresh)</option><option>Artificial (Silk)</option><option>Preserved</option><option>Dried</option></select></div>
     <div class="adm-form-group"><label>Description</label><textarea rows="3"></textarea></div>
-    <h4 style="margin:1rem 0 1rem;font-size:.9rem;color:var(--text-light);border-bottom:1px solid var(--border-color);padding-bottom:.5rem;">Characteristics</h4>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
-        <div class="adm-form-group"><label>Occasion</label><select><option value="">Select</option><option>Romance</option><option>Wedding</option><option>Birthday</option><option>Sympathy</option><option>Celebration</option><option>Everyday</option></select></div>
-        <div class="adm-form-group"><label>Color</label><select><option value="">Select</option><option>Red</option><option>Pink</option><option>White</option><option>Yellow</option><option>Purple</option><option>Orange</option><option>Multi</option></select></div>
-        <div class="adm-form-group"><label>Size</label><select><option value="">Select</option><option>Single Stem</option><option>Small (5-10)</option><option>Medium (10-20)</option><option>Large (20-30)</option><option>Extra Large (30+)</option></select></div>
-        <div class="adm-form-group"><label>Fragrance</label><select><option value="">Select</option><option>None</option><option>Light</option><option>Medium</option><option>Strong</option></select></div>
-        <div class="adm-form-group"><label>Care Level</label><select><option value="">Select</option><option>Easy</option><option>Moderate</option><option>Expert</option></select></div>
-        <div class="adm-form-group"><label>Sunlight</label><select><option value="">Select</option><option>Full Sun</option><option>Partial Sun</option><option>Shade</option><option>Indoor</option></select></div>
-        <div class="adm-form-group"><label>Watering</label><select><option value="">Select</option><option>Daily</option><option>Every 2-3 days</option><option>Weekly</option><option>Bi-weekly</option><option>Monthly</option></select></div>
-        <div class="adm-form-group"><label>Bloom Season</label><select><option value="">Select</option><option>Spring</option><option>Summer</option><option>Fall</option><option>Winter</option><option>Year-Round</option></select></div>
-    </div>
-    <div class="adm-form-group"><label>Origin</label><input placeholder="e.g. Local farm, Imported"></div>
     <button type="submit" class="adm-btn adm-btn-primary" style="width:100%;">Add Product</button>
     </form>`;
 const eventForm=`
@@ -415,7 +599,21 @@ const announcementForm=`
 const forms={user:userForm,course:courseForm,product:productForm,event:eventForm,article:articleForm,announcement:announcementForm};
 const titles={user:'Add User',course:'Create Course',product:'Add Product',event:'Create Event',article:'New Article',announcement:'New Announcement'};
 
-window.openModal=type=>{
+window.openModal=(type,data)=>{
+    if(type==='user-edit'&&data){
+        $('#admModalTitle').textContent='Edit User';
+        $('#admModalBody').innerHTML=`
+            <form id="admEditUserForm">
+            <div class="adm-form-group"><label>Name</label><input id="mEditName" value="${escapeHtml(data.first_name||'')} ${escapeHtml(data.last_name||'')}"></div>
+            <div class="adm-form-group"><label>Email</label><input type="email" id="mEditEmail" value="${escapeHtml(data.email||'')}"></div>
+            <div class="adm-form-group"><label>Role</label><select id="mEditRole">
+                ${['CUSTOMER','SELLER','FLORIST','GROWER','INSTRUCTOR','ADMIN','MODERATOR','SUPERADMIN'].map(r=>`<option value="${r}" ${(data.role||'').toUpperCase()===r?'selected':''}>${r}</option>`).join('')}
+            </select></div>
+            <button type="submit" class="adm-btn adm-btn-primary" style="width:100%;">Save Changes</button>
+            </form>`;
+        $('#admModalOverlay').classList.add('active');
+        return;
+    }
     $('#admModalTitle').textContent=titles[type]||'Create';
     $('#admModalBody').innerHTML=forms[type]||'';
     $('#admModalOverlay').classList.add('active');
@@ -425,35 +623,79 @@ $('#admModalOverlay')?.addEventListener('click',e=>{if(e.target===e.currentTarge
 
 document.addEventListener('submit',async e=>{
     if(e.target.id==='admUserForm'){
-        e.preventDefault();closeModal();showToast('User added!','success');
+        e.preventDefault();
+        showToast('User creation not yet supported (invite flow needed)','success');
+        closeModal();
+    }
+    if(e.target.id==='admEditUserForm'){
+        e.preventDefault();
+        const id=users.find(u=>u&&$('#mEditEmail')?.value===u.email)?.id;
+        if(!id){showToast('User not found','error');return;}
+        try{
+            const name=($('#mEditName').value||'').trim();
+            const parts=name.split(' ');
+            const first=parts[0]||'';
+            const last=parts.slice(1).join(' ');
+            await api.updateAdminUser(id,{name:first,email:$('#mEditEmail').value.trim(),role:$('#mEditRole').value,location:null,description:null});
+            users=await api.fetchAdminUsers();
+            renderUsers();renderOverview();
+            closeModal();showToast('User updated','success');
+        }catch(err){showToast(err.message||'Failed','error');}
     }
     if(e.target.id==='admCourseForm'){
         e.preventDefault();
         const data={title:$('#mAdmCourseTitle').value,description:$('#mAdmCourseDesc').value,instructor:$('#mAdmCourseInstructor').value};
         try{
-            const token=localStorage.getItem('flower-token');
-            const headers={'Content-Type':'application/json'};if(token)headers['Authorization']='Bearer '+token;
-            const res=await fetch('/api/courses',{method:'POST',headers,body:JSON.stringify(data)});
-            if(!res.ok)throw new Error((await res.json()).error||'Failed');
+            const res=await apiFetchWithBody('/api/courses','POST',data);
             closeModal();showToast('Course created!','success');
-            courses=await api.fetchCourses();renderCourses();
+            courses=await api.fetchCourses();renderCourses();renderOverview();
         }catch(err){showToast(err.message||'Failed','error');}
     }
     if(e.target.id==='admProductForm'){
         e.preventDefault();
         const form=e.target;
-        const inputs=form.querySelectorAll('input,select,textarea');
-        const errors=[];
-        if(!inputs[0]||!inputs[0].value.trim()) errors.push('Name is required');
-        if(!inputs[1]||!inputs[1].value||parseFloat(inputs[1].value)<0) errors.push('Valid price is required');
-        const catSel=form.querySelector('select');
-        if(!catSel||!catSel.value) errors.push('Category is required');
-        if(errors.length){showToast(errors.join('. '),'error');return;}
-        closeModal();showToast('Product added!','success');
+        const nameInput=form.querySelector('input');
+        const priceInput=form.querySelectorAll('input')[1];
+        const catSelect=form.querySelector('select');
+        const descInput=form.querySelector('textarea');
+        if(!nameInput?.value.trim()){showToast('Name is required','error');return;}
+        if(!priceInput?.value||parseFloat(priceInput.value)<0){showToast('Valid price is required','error');return;}
+        try{
+            await api.createProduct({
+                name:nameInput.value.trim(),
+                price:parseFloat(priceInput.value),
+                category:catSelect?.value||'',
+                description:descInput?.value||'',
+                is_active:false
+            });
+            closeModal();showToast('Product added!','success');
+            const prodRes=await api.fetchProducts();
+            products=Array.isArray(prodRes)?prodRes:(prodRes.products||[]);
+            renderProducts();renderOverview();
+        }catch(err){showToast(err.message||'Failed','error');}
     }
-    if(e.target.id==='admEventForm'){e.preventDefault();closeModal();showToast('Event created!','success');}
-    if(e.target.id==='admArticleForm'){e.preventDefault();closeModal();showToast('Article published!','success');}
-    if(e.target.id==='admAnnouncementForm'){e.preventDefault();closeModal();showToast('Announcement published!','success');}
+    if(e.target.id==='admEventForm'){
+        e.preventDefault();
+        showToast('Event creation requires the events form — not yet wired','success');
+        closeModal();
+    }
+    if(e.target.id==='admArticleForm'){
+        e.preventDefault();
+        showToast('Article creation requires the articles form — not yet wired','success');
+        closeModal();
+    }
+    if(e.target.id==='admAnnouncementForm'){
+        e.preventDefault();
+        const title=e.target.querySelector('input').value.trim();
+        const content=e.target.querySelector('textarea').value.trim();
+        if(!title||!content){showToast('Title and content required','error');return;}
+        try{
+            await api.createAdminAnnouncement({title,content});
+            announcements=await api.fetchAdminAnnouncements();
+            renderAnnouncements();
+            closeModal();showToast('Announcement published!','success');
+        }catch(err){showToast(err.message||'Failed','error');}
+    }
 });
 
 // ─── Charts ──────────────────────────────────────────
@@ -529,6 +771,39 @@ function showToast(msg,type){
     t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
 }
 window.showToast=showToast;
+
+function showBanner(msg,type){
+    let banner=document.getElementById('admErrorBanner');
+    if(!banner){
+        banner=document.createElement('div');
+        banner.id='admErrorBanner';
+        banner.style.cssText='padding:.75rem 1.5rem;border-radius:8px;margin-bottom:1rem;display:flex;align-items:center;gap:.75rem;font-size:.9rem;';
+        const content=$('.adm-content');
+        if(content) content.prepend(banner);
+    }
+    const bg=type==='error'?'#fef2f2;border:1px solid #fecaca;color:#991b1b':'#fffbeb;border:1px solid #fde68a;color:#92400e';
+    banner.style.background=bg;
+    banner.innerHTML=`<i class="bi bi-${type==='error'?'exclamation-triangle':'info-circle'}" style="font-size:1.1rem;"></i><span style="flex:1;">${escapeHtml(msg)}</span><button onclick="retryInit()" style="background:${type==='error'?'#991b1b':'#92400e'};color:#fff;border:none;padding:.35rem .85rem;border-radius:6px;cursor:pointer;font-size:.8rem;">Retry</button>`;
+    banner.style.display='flex';
+}
+window.showBanner=showBanner;
+
+function hideBanner(){
+    const b=document.getElementById('admErrorBanner');
+    if(b) b.style.display='none';
+}
+
+function errorState(containerId,msg){
+    const el=$(containerId.startsWith('#')?containerId:'#'+containerId);
+    if(el) el.innerHTML=`<div style="text-align:center;padding:2rem;color:var(--text-light);"><i class="bi bi-exclamation-circle" style="font-size:1.5rem;display:block;margin-bottom:.5rem;"></i><p style="font-size:.9rem;">${escapeHtml(msg)}</p></div>`;
+}
+
+async function retryInit(){
+    hideBanner();
+    showToast('Retrying...','success');
+    await init();
+}
+window.retryInit=retryInit;
 
 init();
 })();

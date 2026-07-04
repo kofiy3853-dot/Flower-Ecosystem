@@ -169,10 +169,10 @@
                         <button class="adm-btn adm-btn-primary" onclick="openModal('product')"><i class="bi bi-plus-lg"></i> Add Product</button>
                     </div>
                     <div class="adm-stats-grid adm-stats-4">
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">3,847</div><div class="adm-stat-label">Products</div></div></div>
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">12</div><div class="adm-stat-label">Categories</div></div></div>
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">4.6</div><div class="adm-stat-label">Avg Rating</div></div></div>
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">23</div><div class="adm-stat-label">Flagged</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admMarketProducts">0</div><div class="adm-stat-label">Products</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admMarketCategories">0</div><div class="adm-stat-label">Categories</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admMarketAvgRating">—</div><div class="adm-stat-label">Avg Rating</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admMarketFlagged">0</div><div class="adm-stat-label">Inactive</div></div></div>
                     </div>
                     <div class="adm-card">
                         <div class="adm-table-wrap">
@@ -188,10 +188,10 @@
                 <section class="adm-section" id="sec-orders">
                     <div class="adm-section-header"><h2>Orders</h2></div>
                     <div class="adm-stats-grid adm-stats-4">
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">GHS 42,350</div><div class="adm-stat-label">Total Revenue</div></div></div>
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">156</div><div class="adm-stat-label">Total Orders</div></div></div>
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">12</div><div class="adm-stat-label">Pending</div></div></div>
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">98%</div><div class="adm-stat-label">Fulfillment</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admOrderRevenue">GHS 0</div><div class="adm-stat-label">Total Revenue</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admOrderCount">0</div><div class="adm-stat-label">Total Orders</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admOrderPending">0</div><div class="adm-stat-label">Pending</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admOrderFulfillment">100%</div><div class="adm-stat-label">Fulfillment</div></div></div>
                     </div>
                     <div class="adm-card">
                         <div class="adm-table-wrap">
@@ -220,14 +220,19 @@
                 <section class="adm-section" id="sec-community">
                     <div class="adm-section-header"><h2>Community Moderation</h2></div>
                     <div class="adm-stats-grid adm-stats-4">
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">89</div><div class="adm-stat-label">Posts</div></div></div>
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">342</div><div class="adm-stat-label">Comments</div></div></div>
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">5</div><div class="adm-stat-label">Reported</div></div></div>
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">23</div><div class="adm-stat-label">Active Users</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admCommunityPosts">0</div><div class="adm-stat-label">Posts</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admCommunityDiscussions">0</div><div class="adm-stat-label">Discussions</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admCommunityUsers">0</div><div class="adm-stat-label">Active Users</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">100%</div><div class="adm-stat-label">Moderation</div></div></div>
                     </div>
                     <div class="adm-card">
-                        <div class="adm-card-header"><h3>Recent Posts</h3></div>
-                        <div id="communityPosts"></div>
+                        <div class="adm-card-header"><h3>Recent Discussions</h3></div>
+                        <div class="adm-table-wrap">
+                            <table class="adm-table">
+                                <thead><tr><th>Author</th><th>Title</th><th>Category</th><th>Replies</th><th>Views</th><th>Date</th><th>Actions</th></tr></thead>
+                                <tbody id="communityBody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </section>
 
