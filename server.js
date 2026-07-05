@@ -289,39 +289,6 @@ app.use('/api', require('./routes/members'));
 app.use('/api/instructor', require('./routes/instructor'));
 app.use('/api', require('./routes/my-activities'));
 
-// ─── Debug: check admin seed status ───────────────────────────────────────
-app.get('/api/debug/admin-status', async (req, res) => {
-    try {
-        const r = await pool.query("SELECT id, email, role, is_active, created_at FROM auth.users WHERE role = 'ADMIN' ORDER BY created_at LIMIT 5");
-        const adminPasswordSet = !!process.env.ADMIN_PASSWORD;
-        const adminPasswordLength = (process.env.ADMIN_PASSWORD || '').length;
-        res.json({
-            adminPasswordConfigured: adminPasswordSet,
-            adminPasswordLength,
-            admins: r.rows,
-            message: r.rows.length ? `Found ${r.rows.length} admin(s)` : 'No admin accounts found'
-        });
-    } catch (e) {
-        res.json({ error: e.message, admins: [] });
-    }
-});
-
-// ─── Temporary: force-reset admin password ────────────────────────────────
-app.get('/api/debug/reset-admin', async (req, res) => {
-    const pw = process.env.ADMIN_PASSWORD;
-    if (!pw) return res.json({ error: 'ADMIN_PASSWORD env var not set' });
-    try {
-        const hash = await bcrypt.hash(pw, 12);
-        const r = await pool.query(
-            "UPDATE auth.users SET password_hash = $1 WHERE role = 'ADMIN' RETURNING id, email",
-            [hash]
-        );
-        res.json({ message: `Reset ${r.rowCount} admin password(s)`, admins: r.rows });
-    } catch (e) {
-        res.json({ error: e.message });
-    }
-});
-
 // ─── Error handling ────────────────────────────────────────────────────────
 
 app.use((req, res) => {

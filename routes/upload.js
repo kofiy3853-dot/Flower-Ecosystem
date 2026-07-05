@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { upload, uploadVideo } = require('./middleware');
+const { upload, uploadVideo, requireAuth } = require('./middleware');
 
-router.post('/', upload.array('images', 10), (req, res) => {
+router.post('/', requireAuth, upload.array('images', 10), (req, res) => {
     try {
         if (!req.files || !req.files.length) return res.status(400).json({ error: 'No files uploaded' });
         const images = req.files.map(f => '/uploads/' + f.filename);
@@ -12,7 +12,7 @@ router.post('/', upload.array('images', 10), (req, res) => {
     }
 });
 
-router.post('/video', uploadVideo.single('video'), (req, res) => {
+router.post('/video', requireAuth, uploadVideo.single('video'), (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: 'No video uploaded' });
         res.json({ url: '/uploads/' + req.file.filename });
