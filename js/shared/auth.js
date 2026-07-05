@@ -154,7 +154,7 @@ function loadAuthModal() {
             </form>
 
             <p class="form-link">Forgot password? <a href="forgot-password.html">Reset here</a></p>
-            <p style="font-size:0.8rem; text-align:center; margin-top:1rem; color:var(--text-light); border-top:1px solid var(--border-color); padding-top:1rem;"><a href="#" id="switchToRegister" style="color:var(--primary-color);">Don't have an account?</a></p>
+            <div class="auth-switch"><a href="#" id="switchToRegister">Don't have an account? Create one</a></div>
         </div>
 
         <div id="register-tab" class="modal-tab-content" role="tabpanel" aria-labelledby="registerTabBtn">
@@ -223,7 +223,7 @@ function loadAuthModal() {
                 <button type="submit" class="btn btn-primary w-100">Create Account</button>
                 <p id="registerApiError" class="error-message" style="text-align:center; margin-top:0.5rem; display:none;"></p>
             </form>
-            <p style="font-size:0.8rem; text-align:center; margin-top:1rem; color:var(--text-light); border-top:1px solid var(--border-color); padding-top:1rem;"><a href="#" id="switchToLogin" style="color:var(--primary-color);">Already have an account?</a></p>
+            <div class="auth-switch"><a href="#" id="switchToLogin">Already have an account? Sign in</a></div>
         </div>
     </div>
 </div>`;
