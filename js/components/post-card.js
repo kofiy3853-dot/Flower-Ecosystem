@@ -57,7 +57,7 @@ function renderStandardCard(post) {
   const text = post.content || post.text || '';
   const images = post.images || post.media_urls || [];
   const tags = post.tags || [];
-  const videoUrl = post.video_url || (post.media_urls && post.media_type === 'video' ? post.media_urls[0] : null);
+  const videoUrl = post.video_url || (post.media_urls && post.media_type && post.media_type.includes('video') ? post.media_urls[0] : null);
   const likeCount = post.like_count || 0;
   const commentCount = post.comment_count || 0;
   const shareCount = post.share_count || 0;

@@ -130,7 +130,7 @@ async function submitPost() {
   if (category) formData.append('category', category);
 
   postImageFiles.forEach(f => formData.append('media', f));
-  if (postVideoFile) formData.append('video', postVideoFile);
+  if (postVideoFile) formData.append('media', postVideoFile);
 
   if (isPoll) {
     const q = document.getElementById('pollQuestionInput').value.trim();
