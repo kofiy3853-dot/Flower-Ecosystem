@@ -908,13 +908,13 @@ router.get('/instructor/analytics', requireInstructor, asyncHandler(async (req, 
         enrollments = parseInt(r.rows[0].count) || 0;
     } catch {}
     try {
-        const r = await pool.query(`SELECT COUNT(*) FILTER (WHERE completed = true) AS completed, COUNT(*) AS total FROM learning.lesson_progress lp JOIN learning.courses c ON c.id = lp.course_id WHERE c.instructor = $1 OR c.instructor = $2`, [req.user.email, req.user.id]);
+        const r = await pool.query(`SELECT COUNT(*) FILTER (WHERE completed = true) AS completed, COUNT(*) AS total FROM learning.progress lp JOIN learning.courses c ON c.id = lp.course_id WHERE c.instructor = $1 OR c.instructor = $2`, [req.user.email, req.user.id]);
         const completed = parseInt(r.rows[0].completed) || 0;
         const total = parseInt(r.rows[0].total) || 1;
         completionRate = Math.round((completed / total) * 100);
     } catch {}
     try {
-        const r = await pool.query(`SELECT ROUND(AVG(score), 1) AS avg_score FROM learning.quiz_submissions qs JOIN learning.courses c ON c.id = qs.course_id WHERE c.instructor = $1 OR c.instructor = $2`, [req.user.email, req.user.id]);
+        const r = await pool.query(`SELECT ROUND(AVG(score), 1) AS avg_score FROM learning.quiz_attempts qa JOIN learning.courses c ON c.id = qa.course_id WHERE c.instructor = $1 OR c.instructor = $2`, [req.user.email, req.user.id]);
         avgQuizScore = parseFloat(r.rows[0].avg_score) || 0;
     } catch {}
     try {

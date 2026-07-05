@@ -200,10 +200,11 @@ router.put('/applications/:id', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler
     } catch (e) { console.error('Application notification error:', e.message); }
 
     // Record review action
+    const actionMap = { approved: 'approve', rejected: 'reject', needs_info: 'request_info', under_review: 'note', pending: 'note' };
     await pool.query(
         `INSERT INTO learning.instructor_reviews (application_id, reviewer_id, action, notes)
          VALUES ($1, $2, $3, $4)`,
-        [req.params.id, req.user.id, status === 'needs_info' ? 'request_info' : status, rejection_reason || admin_notes || null]
+        [req.params.id, req.user.id, actionMap[status] || 'note', rejection_reason || admin_notes || null]
     );
 
     // Audit log

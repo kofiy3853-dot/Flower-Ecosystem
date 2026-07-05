@@ -486,8 +486,8 @@ async function submitApplication() {
             payout_method: $('#payoutMethod').value,
             terms_accepted: $('#agreeTerms').checked,
             content_guidelines: $('#agreeContent').checked,
-            copyright_policy: $('#agreeCommunity').checked,
-            community_standards: $('#agreeQuality').checked
+            community_standards: $('#agreeCommunity').checked,
+            copyright_policy: $('#agreeQuality').checked
         };
 
         const res = await fetch('/api/instructor/apply', {

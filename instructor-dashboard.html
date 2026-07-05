@@ -21,7 +21,7 @@
             <div class="inst-sidebar-header">
                 <div class="inst-avatar" id="instAvatar">S</div>
                 <div class="inst-sidebar-user">
-                    <div class="inst-sidebar-name" id="instName">Dr. Sarah</div>
+                    <div class="inst-sidebar-name" id="instName">Instructor</div>
                     <div class="inst-sidebar-role">Instructor</div>
                 </div>
             </div>
@@ -55,8 +55,8 @@
                     <button class="inst-header-btn" id="notifBtn"><i class="bi bi-bell"></i><span class="inst-badge">0</span></button>
                     <button class="inst-header-btn" id="msgBtn"><i class="bi bi-envelope"></i><span class="inst-badge">0</span></button>
                     <div class="inst-header-profile" id="headerProfile">
-                        <div class="inst-avatar inst-avatar-sm">S</div>
-                        <span>Dr. Sarah</span>
+                        <div class="inst-avatar inst-avatar-sm" id="headerAvatar">I</div>
+                        <span id="headerName">Instructor</span>
                         <i class="bi bi-chevron-down"></i>
                     </div>
                 </div>
@@ -67,7 +67,7 @@
                 <section class="inst-section active" id="sec-overview">
                     <div class="inst-welcome">
                         <div>
-                            <h1>Welcome Back, <span id="welcomeName">Dr. Sarah</span> <i class="bi bi-flower1" style="font-size:1.5rem;color:var(--primary-color);"></i></h1>
+                            <h1>Welcome Back, <span id="welcomeName">Instructor</span> <i class="bi bi-flower1" style="font-size:1.5rem;color:var(--primary-color);"></i></h1>
                             <p>Here's what's happening in your courses today.</p>
                         </div>
                         <div class="inst-welcome-actions">
@@ -79,23 +79,23 @@
                     <div class="inst-stats-grid" id="statsGrid">
                         <div class="inst-stat-card">
                             <div class="inst-stat-icon" style="background:rgba(212,175,55,0.1);color:#d4af37;"><i class="bi bi-people"></i></div>
-                            <div class="inst-stat-info"><div class="inst-stat-value" data-stat="students">1,254</div><div class="inst-stat-label">Total Students</div></div>
-                            <div class="inst-stat-change positive"><i class="bi bi-arrow-up"></i> 12%</div>
+                            <div class="inst-stat-info"><div class="inst-stat-value" data-stat="students">0</div><div class="inst-stat-label">Total Students</div></div>
+                            <div class="inst-stat-change positive"><i class="bi bi-arrow-up"></i> 0%</div>
                         </div>
                         <div class="inst-stat-card">
                             <div class="inst-stat-icon" style="background:rgba(90,122,96,0.1);color:#5a7a60;"><i class="bi bi-book"></i></div>
-                            <div class="inst-stat-info"><div class="inst-stat-value" data-stat="courses">6</div><div class="inst-stat-label">Active Courses</div></div>
-                            <div class="inst-stat-change positive"><i class="bi bi-arrow-up"></i> 2</div>
+                            <div class="inst-stat-info"><div class="inst-stat-value" data-stat="courses">0</div><div class="inst-stat-label">Active Courses</div></div>
+                            <div class="inst-stat-change positive"><i class="bi bi-arrow-up"></i> 0</div>
                         </div>
                         <div class="inst-stat-card">
                             <div class="inst-stat-icon" style="background:rgba(74,144,217,0.1);color:#4a90d9;"><i class="bi bi-trophy"></i></div>
-                            <div class="inst-stat-info"><div class="inst-stat-value" data-stat="completion">92%</div><div class="inst-stat-label">Completion Rate</div></div>
-                            <div class="inst-stat-change positive"><i class="bi bi-arrow-up"></i> 3%</div>
+                            <div class="inst-stat-info"><div class="inst-stat-value" data-stat="completion">0%</div><div class="inst-stat-label">Completion Rate</div></div>
+                            <div class="inst-stat-change positive"><i class="bi bi-arrow-up"></i> 0%</div>
                         </div>
                         <div class="inst-stat-card">
                             <div class="inst-stat-icon" style="background:rgba(172,50,80,0.1);color:#ac3250;"><i class="bi bi-currency-dollar"></i></div>
-                            <div class="inst-stat-info"><div class="inst-stat-value" data-stat="revenue">GHS 8,450</div><div class="inst-stat-label">Monthly Revenue</div></div>
-                            <div class="inst-stat-change positive"><i class="bi bi-arrow-up"></i> 18%</div>
+                            <div class="inst-stat-info"><div class="inst-stat-value" data-stat="revenue">GHS 0</div><div class="inst-stat-label">Monthly Revenue</div></div>
+                            <div class="inst-stat-change positive"><i class="bi bi-arrow-up"></i> 0%</div>
                         </div>
                     </div>
 
@@ -171,9 +171,9 @@
                         <button class="inst-btn inst-btn-primary" onclick="openModal('assignment')"><i class="bi bi-plus-lg"></i> Create Assignment</button>
                     </div>
                     <div class="inst-stats-grid inst-stats-3">
-                        <div class="inst-stat-card mini"><div class="inst-stat-info"><div class="inst-stat-value">12</div><div class="inst-stat-label">Pending Submissions</div></div></div>
-                        <div class="inst-stat-card mini"><div class="inst-stat-info"><div class="inst-stat-value">156</div><div class="inst-stat-label">Graded</div></div></div>
-                        <div class="inst-stat-card mini"><div class="inst-stat-info"><div class="inst-stat-value">8</div><div class="inst-stat-label">New Today</div></div></div>
+                        <div class="inst-stat-card mini"><div class="inst-stat-info"><div class="inst-stat-value" id="pendingSubmissions">0</div><div class="inst-stat-label">Pending Submissions</div></div></div>
+                        <div class="inst-stat-card mini"><div class="inst-stat-info"><div class="inst-stat-value" id="gradedSubmissions">0</div><div class="inst-stat-label">Graded</div></div></div>
+                        <div class="inst-stat-card mini"><div class="inst-stat-info"><div class="inst-stat-value" id="newToday">0</div><div class="inst-stat-label">New Today</div></div></div>
                     </div>
                     <div class="inst-card">
                         <div class="inst-card-header"><h3>Recent Submissions</h3></div>
@@ -283,10 +283,10 @@
                     <div class="inst-section-header"><h2>Settings</h2></div>
                     <div class="inst-card">
                         <div class="inst-settings-form" id="settingsForm">
-                            <div class="inst-form-group"><label>Display Name</label><input type="text" id="settingsName" value="Dr. Sarah"></div>
-                            <div class="inst-form-group"><label>Email</label><input type="email" id="settingsEmail" value="sarah@flower.com"></div>
-                            <div class="inst-form-group"><label>Bio</label><textarea id="settingsBio" rows="3">Professional florist with 15 years of experience in wedding and event design.</textarea></div>
-                            <div class="inst-form-group"><label>Specialty</label><input type="text" id="settingsSpecialty" value="Wedding Floristry, Floral Design"></div>
+                            <div class="inst-form-group"><label>Display Name</label><input type="text" id="settingsName" value=""></div>
+                            <div class="inst-form-group"><label>Email</label><input type="email" id="settingsEmail" value="" readonly></div>
+                            <div class="inst-form-group"><label>Bio</label><textarea id="settingsBio" rows="3" placeholder="Tell students about yourself..."></textarea></div>
+                            <div class="inst-form-group"><label>Specialty</label><input type="text" id="settingsSpecialty" value="" placeholder="e.g. Wedding Floristry, Floral Design"></div>
                             <button class="inst-btn inst-btn-primary" onclick="saveSettings()">Save Changes</button>
                         </div>
                     </div>

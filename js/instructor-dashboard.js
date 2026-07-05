@@ -240,6 +240,28 @@ async function init(){
 
     renderOverview();
     renderNotifications();
+    loadUserProfile();
+}
+
+// ─── Load User Profile ─────────────────────────────────
+async function loadUserProfile(){
+    try{
+        const token=localStorage.getItem('flower-token');
+        const res=await fetch('/api/auth/me',{headers:{'Authorization':'Bearer '+token}});
+        if(!res.ok) return;
+        const user=await res.json();
+        const name=user.name||user.first_name||user.email||'Instructor';
+        const initial=(name[0]||'I').toUpperCase();
+        $('#instName').textContent=name;
+        $('#headerName').textContent=name;
+        $('#welcomeName').textContent=name;
+        $('#headerAvatar').textContent=initial;
+        $('#instAvatar').textContent=initial;
+        $('#settingsName').value=user.name||user.first_name||'';
+        $('#settingsEmail').value=user.email||'';
+        $('#settingsBio').value=user.bio||user.description||'';
+        $('#settingsSpecialty').value=user.specialty||user.expertise||'';
+    }catch{}
 }
 
 // ─── Overview ────────────────────────────────────────
@@ -574,17 +596,16 @@ function renderAnalytics(){
 
 // ─── Settings ────────────────────────────────────────
 window.saveSettings=async()=>{
-    const name=$('#settingsName').value;
+    const displayName=$('#settingsName').value;
     const email=$('#settingsEmail').value;
     const bio=$('#settingsBio').value;
     const specialty=$('#settingsSpecialty').value;
     try{
-        const res=await api.updateProfile({name,email,bio,specialty});
-        if(name){$('#welcomeName').textContent=name;$('#instName').textContent=name;}
+        const res=await api.updateProfile({name:displayName,email,bio,specialty});
+        if(displayName){$('#welcomeName').textContent=displayName;$('#instName').textContent=displayName;$('#headerName').textContent=displayName;}
         showToast('Settings saved!','success');
     }catch(err){
-        if(name){$('#welcomeName').textContent=name;$('#instName').textContent=name;}
-        showToast('Settings saved locally','success');
+        showToast('Failed to save settings: '+(err.message||'Unknown error'),'error');
     }
 };
 
@@ -624,7 +645,6 @@ document.addEventListener('submit',async e=>{
             price:parseFloat($('#mCoursePrice').value)||0
         };
         try{
-            await api.createProduct?null:null;
             const token=localStorage.getItem('flower-token');
             const headers={'Content-Type':'application/json'};
             if(token)headers['Authorization']='Bearer '+token;
