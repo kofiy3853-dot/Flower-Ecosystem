@@ -240,6 +240,28 @@ async function run() {
             console.log('Course seeding skipped:', e.message.split('\n')[0]);
         }
 
+        // Seed learning paths if table is empty
+        try {
+            const lpCount = await client.query('SELECT COUNT(*)::int AS c FROM learning.learning_paths');
+            if (lpCount.rows[0].c === 0) {
+                const lpPath = path.join(__dirname, 'data', 'learning-paths.json');
+                if (fs.existsSync(lpPath)) {
+                    const paths = JSON.parse(fs.readFileSync(lpPath, 'utf8'));
+                    for (const p of paths) {
+                        await client.query(`
+                            INSERT INTO learning.learning_paths (title, slug, description, level, duration_hours, course_count, rating, price, is_published, student_count)
+                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true, 0)
+                            ON CONFLICT DO NOTHING`,
+                            [p.title, p.slug, p.description || '', p.level || 'Beginner', p.duration_hours || 0, p.course_count || 0, p.rating || 0, p.price || 'Free']
+                        );
+                    }
+                    console.log(`Seeded ${paths.length} learning paths with 0 students.`);
+                }
+            }
+        } catch (e) {
+            console.log('Learning path seeding skipped:', e.message.split('\n')[0]);
+        }
+
         // Run community feed tables (saves, reactions, shares, poll votes)
         const communityFeedPath = path.join(__dirname, 'sql', 'community-feed-tables.sql');
         if (fs.existsSync(communityFeedPath)) {
