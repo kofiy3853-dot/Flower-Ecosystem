@@ -218,72 +218,11 @@ async function run() {
             console.log('students_count sync skipped:', e.message.split('\n')[0]);
         }
 
-        // Seed courses if table is empty
-        try {
-            const countResult = await client.query('SELECT COUNT(*)::int AS c FROM learning.courses');
-            if (countResult.rows[0].c === 0) {
-                const coursesPath = path.join(__dirname, 'data', 'courses.json');
-                if (fs.existsSync(coursesPath)) {
-                    const courses = JSON.parse(fs.readFileSync(coursesPath, 'utf8'));
-                    for (const c of courses) {
-                        await client.query(`
-                            INSERT INTO learning.courses (title, description, thumbnail_url, level, instructor, duration_minutes, price, rating, category, is_published, students_count)
-                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, true, 0)
-                            ON CONFLICT DO NOTHING`,
-                            [c.title, c.description || '', c.thumbnail || '', c.level || 'Beginner', c.instructor || '', c.duration || 0, c.price || 0, c.rating || 0, c.category || '']
-                        );
-                    }
-                    console.log(`Seeded ${courses.length} courses with 0 students.`);
-                }
-            }
-        } catch (e) {
-            console.log('Course seeding skipped:', e.message.split('\n')[0]);
-        }
+        // Courses are now created by instructors through the course creation wizard.
+        // No seed data insertion — only real instructor-created courses appear.
 
-        // Seed learning paths if table is empty
-        try {
-            // Ensure table exists
-            await client.query(`
-                CREATE TABLE IF NOT EXISTS learning.learning_paths (
-                    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-                    title VARCHAR(255) NOT NULL,
-                    description TEXT,
-                    slug VARCHAR(255) UNIQUE,
-                    icon VARCHAR(50),
-                    image TEXT,
-                    level VARCHAR(50) DEFAULT 'Beginner',
-                    duration_hours INT DEFAULT 0,
-                    course_count INT DEFAULT 0,
-                    student_count INT DEFAULT 0,
-                    rating DECIMAL(2,1) DEFAULT 0,
-                    price VARCHAR(50) DEFAULT 'Free',
-                    is_published BOOLEAN DEFAULT TRUE,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )`);
-            // Clear any existing Unsplash mockup images
-            try {
-                await client.query("UPDATE learning.learning_paths SET image = null WHERE image LIKE '%unsplash%'");
-            } catch (e) {}
-            const lpCount = await client.query('SELECT COUNT(*)::int AS c FROM learning.learning_paths');
-            if (lpCount.rows[0].c === 0) {
-                const lpPath = path.join(__dirname, 'data', 'learning-paths.json');
-                if (fs.existsSync(lpPath)) {
-                    const paths = JSON.parse(fs.readFileSync(lpPath, 'utf8'));
-                    for (const p of paths) {
-                        await client.query(`
-                            INSERT INTO learning.learning_paths (title, slug, description, level, duration_hours, course_count, rating, price, is_published, student_count, image)
-                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true, 0, $9)
-                            ON CONFLICT DO NOTHING`,
-                            [p.title, p.slug, p.description || '', p.level || 'Beginner', p.duration_hours || 0, p.course_count || 0, p.rating || 0, p.price || 'Free', p.image || null]
-                        );
-                    }
-                    console.log(`Seeded ${paths.length} learning paths with 0 students.`);
-                }
-            }
-        } catch (e) {
-            console.log('Learning path seeding skipped:', e.message.split('\n')[0]);
-        }
+        // Learning paths are now created by admins through the admin dashboard.
+        // No seed data insertion — only real learning paths appear.
 
         // Run community feed tables (saves, reactions, shares, poll votes)
         const communityFeedPath = path.join(__dirname, 'sql', 'community-feed-tables.sql');

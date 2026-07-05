@@ -85,27 +85,9 @@ CREATE INDEX IF NOT EXISTS idx_assignments_status ON learning.assignments(status
 CREATE INDEX IF NOT EXISTS idx_assignments_due ON learning.assignments(due_date);
 
 -- =============================================================================
--- Seed Data
 -- =============================================================================
-
--- Seed workshops
-INSERT INTO learning.workshops (id, title, description, instructor, instructor_title, date, time, duration, location, type, price, seats, seats_left, rating) VALUES
-('a1b2c3d4-0001-0000-0000-000000000001', 'Advanced Wedding Floral Design Masterclass', 'Learn professional wedding floral design techniques through live demonstration and guided practice. Build elegant bridal bouquets, centerpieces, and venue decorations.', 'Sarah Mensah', 'Master Florist', 'Saturday, July 18', '9:00 AM – 1:00 PM', '4 Hours', 'Online (Zoom)', 'online', 'GHS 150', 45, 12, 4.9),
-('a1b2c3d4-0002-0000-0000-000000000002', 'Bouquet Design Fundamentals', 'Master the basics of bouquet design from color theory to wrapping techniques. Perfect for beginners starting their floristry journey.', 'Efua Osei', 'Event Decoration Expert', 'Saturday, July 25', '10:00 AM – 12:00 PM', '2 Hours', 'Online (Zoom)', 'online', 'Free', 60, 28, 4.7),
-('a1b2c3d4-0003-0000-0000-000000000003', 'Sustainable Flower Farming Workshop', 'Learn organic farming techniques for growing cut flowers. Cover soil preparation, planting, pest control, and harvesting.', 'Kwame Asante', 'Flower Farm Expert', 'Saturday, August 1', '8:00 AM – 12:00 PM', '4 Hours', 'Flower Ecosystem Farm, Kumasi', 'physical', 'GHS 200', 20, 8, 4.8),
-('a1b2c3d4-0004-0000-0000-000000000004', 'Floral Photography Workshop', 'Learn to photograph flowers and arrangements for social media and marketing. Master lighting, composition, and editing.', 'Nana Agyeman', 'Floral Photographer', 'Saturday, August 8', '10:00 AM – 1:00 PM', '3 Hours', 'Online (Zoom)', 'online', 'GHS 100', 40, 22, 4.6),
-('a1b2c3d4-0005-0000-0000-000000000005', 'Flower Business Startup Workshop', 'Turn your passion into profit. Learn business planning, pricing strategies, and customer acquisition for your flower business.', 'Kofi Mensah', 'Business Coach', 'Saturday, August 15', '2:00 PM – 5:00 PM', '3 Hours', 'Online (Zoom)', 'online', 'GHS 120', 50, 35, 4.8)
-ON CONFLICT (id) DO NOTHING;
-
--- Seed live classes
-INSERT INTO learning.live_classes (id, title, description, instructor, day, time, duration, level, seats, enrolled, status) VALUES
-('b1b2c3d4-0001-0000-0000-000000000001', 'Floral Design Fundamentals', 'Learn the fundamentals of floral design including color theory, flower selection, and basic arrangement techniques.', 'Sarah Mensah', 'Monday', '6:00 PM', '2 Hours', 'Beginner', 120, 85, 'upcoming'),
-('b1b2c3d4-0002-0000-0000-000000000002', 'Wedding Floristry Masterclass', 'Master wedding floral design from bridal bouquets to venue decoration with hands-on practice.', 'Efua Osei', 'Tuesday', '7:00 PM', '2.5 Hours', 'Intermediate', 80, 72, 'upcoming'),
-('b1b2c3d4-0003-0000-0000-000000000003', 'Indoor Plant Care', 'Everything you need to know about keeping your indoor plants healthy and thriving.', 'Ama Darko', 'Wednesday', '5:00 PM', '1.5 Hours', 'Beginner', 100, 45, 'upcoming'),
-('b1b2c3d4-0004-0000-0000-000000000004', 'Flower Farming Basics', 'Introduction to flower farming including soil prep, planting, and basic care.', 'Kwame Asante', 'Thursday', '6:00 PM', '2 Hours', 'Beginner', 60, 38, 'upcoming'),
-('b1b2c3d4-0005-0000-0000-000000000005', 'Advanced Color Theory', 'Deep dive into color theory for professional floral arrangements and event design.', 'Sarah Mensah', 'Friday', '6:00 PM', '2 Hours', 'Advanced', 50, 48, 'upcoming'),
-('b1b2c3d4-0006-0000-0000-000000000006', 'Floral Photography Workshop', 'Learn to photograph flowers and arrangements for social media and marketing.', 'Nana Agyeman', 'Saturday', '10:00 AM', '3 Hours', 'Intermediate', 40, 22, 'upcoming')
-ON CONFLICT (id) DO NOTHING;
+-- No seed data — workshops and live classes are created by instructors
+-- =============================================================================
 
 -- =============================================================================
 -- Verification
