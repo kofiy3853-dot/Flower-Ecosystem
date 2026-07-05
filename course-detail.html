@@ -235,7 +235,7 @@
             document.getElementById('breadcrumbCourse').textContent = course.title;
             document.getElementById('courseTitle').textContent = course.title;
             document.getElementById('courseRating').textContent = course.rating || '0';
-            document.getElementById('courseReviews').textContent = course.reviews || course.students_count || 0;
+            document.getElementById('courseReviews').textContent = course.reviews || 0;
             document.getElementById('courseStudents').textContent = course.students_count || course.students || 0;
             const dur = course.duration_minutes || course.duration || 0;
             document.getElementById('courseDuration').textContent = Math.floor(dur / 60) + 'h ' + (dur % 60) + 'm';
