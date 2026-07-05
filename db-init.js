@@ -242,6 +242,25 @@ async function run() {
 
         // Seed learning paths if table is empty
         try {
+            // Ensure table exists
+            await client.query(`
+                CREATE TABLE IF NOT EXISTS learning.learning_paths (
+                    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                    title VARCHAR(255) NOT NULL,
+                    description TEXT,
+                    slug VARCHAR(255) UNIQUE,
+                    icon VARCHAR(50),
+                    image TEXT,
+                    level VARCHAR(50) DEFAULT 'Beginner',
+                    duration_hours INT DEFAULT 0,
+                    course_count INT DEFAULT 0,
+                    student_count INT DEFAULT 0,
+                    rating DECIMAL(2,1) DEFAULT 0,
+                    price VARCHAR(50) DEFAULT 'Free',
+                    is_published BOOLEAN DEFAULT TRUE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )`);
             const lpCount = await client.query('SELECT COUNT(*)::int AS c FROM learning.learning_paths');
             if (lpCount.rows[0].c === 0) {
                 const lpPath = path.join(__dirname, 'data', 'learning-paths.json');
