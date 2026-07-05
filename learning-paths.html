@@ -91,7 +91,7 @@
                         slug: p.slug || p.id,
                         title: p.title,
                         desc: p.description || '',
-                        image: p.image || 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=600&auto=format&fit=crop',
+                        image: p.image || '',
                         level: p.level || 'Beginner',
                         courses: p.course_count || 0,
                         hours: p.duration_hours || 0,
@@ -126,7 +126,7 @@
                 <a href="learning-path.html?id=${escapeHtml(p.slug)}" style="text-decoration:none;color:inherit;">
                     <div class="lp-card">
                         <div class="lp-card-banner">
-                            <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)}" loading="lazy">
+                            ${p.image ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)}" loading="lazy">` : `<div style="width:100%;height:100%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:2rem;"><i class="bi bi-signpost"></i></div>`}
                             <div class="lp-card-level level-${p.level.toLowerCase()}">${escapeHtml(p.level)}</div>
                         </div>
                         <div class="lp-card-body">

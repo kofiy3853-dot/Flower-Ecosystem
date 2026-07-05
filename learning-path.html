@@ -193,13 +193,15 @@
                 return;
             }
 
-            const defaultImage = 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=800&auto=format&fit=crop';
-
             document.title = `${path.title} - Flower Ecosystem`;
             document.getElementById('lpBreadcrumb').textContent = path.title;
             document.getElementById('lpTitle').textContent = path.title;
             document.getElementById('lpDesc').textContent = path.description || '';
-            document.getElementById('lpSidebarImg').src = path.image || defaultImage;
+            if (path.image) {
+                document.getElementById('lpSidebarImg').src = path.image;
+            } else {
+                document.getElementById('lpSidebarImg').style.display = 'none';
+            }
             document.getElementById('lpSidebarImg').alt = path.title;
             document.getElementById('lpPrice').textContent = path.price || 'Free';
             document.getElementById('lpCourseCount').textContent = path.course_count || 0;
