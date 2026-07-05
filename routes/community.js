@@ -498,7 +498,9 @@ router.get('/stories', asyncHandler(async (req, res) => {
                 ORDER BY ss.is_featured DESC, ${orderBy}
                 LIMIT $${idx} OFFSET $${idx + 1}`;
             const dataR = await pool.query(dataQ, values);
-            return res.json({ stories: dataR.rows, total, page: pg, limit: lim, pages: Math.ceil(total / lim) });
+            if (dataR.rows.length > 0) {
+                return res.json({ stories: dataR.rows, total, page: pg, limit: lim, pages: Math.ceil(total / lim) });
+            }
         } catch (err) { console.error('Stories query error:', err.message); }
     }
     const fallback = readJSON(path.join(__dirname, '..', 'data', 'community.json'));
