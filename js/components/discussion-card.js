@@ -22,7 +22,7 @@ function renderDiscussionCard(d) {
     <div class="disc-avatar">${avatar ? `<img src="${escapeHtml(avatar)}" alt="">` : initial}</div>
     <div class="disc-body">
       <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.2rem;">
-        <span class="disc-status ${status.class}">${status.icon} ${status.label}</span>
+        <span class="disc-status ${status.class}"><i class="bi ${status.icon}"></i> ${status.label}</span>
         ${d.is_pinned ? '<span class="disc-badge pinned"><i class="bi bi-pin-fill"></i> Pinned</span>' : ''}
         ${d.is_solved ? '<span class="disc-badge solved"><i class="bi bi-check-lg"></i> Solved</span>' : ''}
         ${isExpertRole(d.author_role) ? '<span class="disc-badge expert">Expert</span>' : ''}
@@ -50,16 +50,16 @@ function renderDiscussionCard(d) {
 function getDiscussionStatus(d) {
   if (d.is_closed) return { icon: '🔴', label: 'Closed', class: 'closed' };
   if (d.is_solved) return { icon: '🔵', label: 'Solved', class: 'solved' };
-  if (d.best_answer_id || d.is_answered) return { icon: '🟡', label: 'Answered', class: 'answered' };
-  return { icon: '🟢', label: 'Open', class: 'open' };
+  if (d.best_answer_id || d.is_answered) return { icon: 'bi-check-circle-fill', label: 'Answered', class: 'answered' };
+  return { icon: 'bi-circle', label: 'Open', class: 'open' };
 }
 
 function getRepLevel(points) {
-  if (points >= 5000) return { icon: '🏆', label: 'Community Leader' };
-  if (points >= 1500) return { icon: '💐', label: 'Mentor' };
-  if (points >= 500) return { icon: '🌸', label: 'Expert' };
-  if (points >= 100) return { icon: '🌿', label: 'Contributor' };
-  return { icon: '🌱', label: 'New Member' };
+  if (points >= 5000) return { icon: 'bi-trophy', label: 'Community Leader' };
+  if (points >= 1500) return { icon: 'bi-flower2', label: 'Mentor' };
+  if (points >= 500) return { icon: 'bi-flower1', label: 'Expert' };
+  if (points >= 100) return { icon: 'bi-tree', label: 'Contributor' };
+  return { icon: 'bi-seedling', label: 'New Member' };
 }
 
 // ─── Start Discussion Inline Card ─────────────────────────────

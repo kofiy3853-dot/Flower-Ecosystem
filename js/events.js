@@ -12,14 +12,14 @@ let carouselIndex = 0;
 let carouselInterval;
 
 const EVENT_CATEGORIES = [
-    { slug: 'workshop', name: 'Workshops', icon: '✂️' },
-    { slug: 'webinar', name: 'Webinars', icon: '🎥' },
-    { slug: 'floral-design', name: 'Floral Design', icon: '💐' },
-    { slug: 'farming', name: 'Farming', icon: '🌱' },
-    { slug: 'competition', name: 'Competitions', icon: '🏆' },
-    { slug: 'festival', name: 'Festivals', icon: '🎪' },
-    { slug: 'networking', name: 'Networking', icon: '🤝' },
-    { slug: 'learning', name: 'Learning', icon: '🎓' }
+    { slug: 'workshop', name: 'Workshops', icon: 'bi-scissors' },
+    { slug: 'webinar', name: 'Webinars', icon: 'bi-camera-video' },
+    { slug: 'floral-design', name: 'Floral Design', icon: 'bi-flower1' },
+    { slug: 'farming', name: 'Farming', icon: 'bi-seedling' },
+    { slug: 'competition', name: 'Competitions', icon: 'bi-trophy' },
+    { slug: 'festival', name: 'Festivals', icon: 'bi-ticket' },
+    { slug: 'networking', name: 'Networking', icon: 'bi-people' },
+    { slug: 'learning', name: 'Learning', icon: 'bi-mortarboard' }
 ];
 
 // ─── Utilities ─────────────────────────────────────────────────────────
@@ -92,7 +92,7 @@ function buildCategoryCards(categories, active, callback) {
     return categories.map(c => {
         const isActive = active === c.slug;
         return `<div class="evt-cat-card${isActive ? ' active' : ''}" onclick="${callback}('${c.slug}')">
-            <div class="evt-cat-card-icon">${c.icon}</div>
+            <div class="evt-cat-card-icon"><i class="bi ${c.icon}"></i></div>
             <div class="evt-cat-card-name">${c.name}</div>
         </div>`;
     }).join('');
@@ -101,7 +101,7 @@ function buildCategoryCards(categories, active, callback) {
 function buildMobileCategoryChips(categories, active) {
     return categories.map(c => {
         const isActive = active === c.slug;
-        return `<button class="evt-chip${isActive ? ' active' : ''}" data-category="${c.slug}">${c.icon} ${c.name}</button>`;
+        return `<button class="evt-chip${isActive ? ' active' : ''}" data-category="${c.slug}"><i class="bi ${c.icon}"></i> ${c.name}</button>`;
     }).join('');
 }
 

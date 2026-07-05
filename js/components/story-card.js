@@ -1,14 +1,14 @@
 // components/story-card.js — Card renderer, featured banner, categories, timeline
 
 const STORY_CATEGORIES = [
-  { slug: 'floral-design', name: 'Floral Design', icon: '🌹' },
-  { slug: 'gardening', name: 'Gardening', icon: '🌱' },
-  { slug: 'business', name: 'Business Growth', icon: '🏪' },
-  { slug: 'learning', name: 'Learning Journey', icon: '🎓' },
-  { slug: 'competition', name: 'Competition Winners', icon: '🏆' },
-  { slug: 'wedding', name: 'Wedding Florists', icon: '💐' },
-  { slug: 'community', name: 'Community Impact', icon: '🌍' },
-  { slug: 'career', name: 'Career Growth', icon: '📈' }
+  { slug: 'floral-design', name: 'Floral Design', icon: 'bi-flower1' },
+  { slug: 'gardening', name: 'Gardening', icon: 'bi-seedling' },
+  { slug: 'business', name: 'Business Growth', icon: 'bi-shop' },
+  { slug: 'learning', name: 'Learning Journey', icon: 'bi-mortarboard' },
+  { slug: 'competition', name: 'Competition Winners', icon: 'bi-trophy' },
+  { slug: 'wedding', name: 'Wedding Florists', icon: 'bi-flower2' },
+  { slug: 'community', name: 'Community Impact', icon: 'bi-globe' },
+  { slug: 'career', name: 'Career Growth', icon: 'bi-graph-up' }
 ];
 
 function getAvatarHtml(avatar, name) {
@@ -105,7 +105,7 @@ function renderFeaturedStory(story) {
 function renderCategoryTabs(categories, activeSlug) {
   return categories.map(c => `
     <button class="category-tab${activeSlug === c.slug ? ' active' : ''}" data-category="${c.slug}">
-      ${c.icon} ${c.name}
+      <i class="bi ${c.icon}"></i> ${c.name}
     </button>
   `).join('');
 }

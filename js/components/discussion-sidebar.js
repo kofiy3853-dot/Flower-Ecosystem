@@ -40,7 +40,7 @@ async function loadTopContributors() {
         <div class="contributor-rank">${i + 1}</div>
         <div class="contributor-avatar">${m.profile_image ? `<img src="${escapeHtml(m.profile_image)}" alt="">` : name.charAt(0)}</div>
         <div class="contributor-info">
-          <div class="contributor-name">${escapeHtml(name)} <span style="font-size:0.7rem;">${rep.icon}</span></div>
+          <div class="contributor-name">${escapeHtml(name)} <i class="bi ${rep.icon}" style="font-size:0.7rem;"></i></div>
           <div class="contributor-role">${escapeHtml(role)}</div>
         </div>
         <div class="contributor-score">${formatNumber(score)}</div>
@@ -52,11 +52,11 @@ async function loadTopContributors() {
 }
 
 function getContributorRep(points) {
-  if (points >= 5000) return { icon: '🏆', label: 'Community Leader' };
-  if (points >= 1500) return { icon: '💐', label: 'Mentor' };
-  if (points >= 500) return { icon: '🌸', label: 'Expert' };
-  if (points >= 100) return { icon: '🌿', label: 'Contributor' };
-  return { icon: '🌱', label: 'New Member' };
+  if (points >= 5000) return { icon: 'bi-trophy', label: 'Community Leader' };
+  if (points >= 1500) return { icon: 'bi-flower2', label: 'Mentor' };
+  if (points >= 500) return { icon: 'bi-flower1', label: 'Expert' };
+  if (points >= 100) return { icon: 'bi-tree', label: 'Contributor' };
+  return { icon: 'bi-seedling', label: 'New Member' };
 }
 
 // ─── Community Stats ──────────────────────────────────────────

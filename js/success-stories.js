@@ -153,7 +153,7 @@ async function loadSidebarData() {
     if (catEl) {
         catEl.innerHTML = STORY_CATEGORIES.map(c => `
             <div style="display:flex;align-items:center;gap:0.5rem;padding:0.35rem 0;font-size:0.85rem;cursor:pointer;" onclick="document.querySelector('.category-tab[data-category=\\'${c.slug}\\']')?.click();">
-                <span>${c.icon}</span>
+                <span><i class="bi ${c.icon}"></i></span>
                 <span>${c.name}</span>
             </div>
         `).join('');

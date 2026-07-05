@@ -7,15 +7,15 @@ let currentPage = 1;
 let totalPages = 1;
 
 const CATEGORIES = [
-    { slug: 'flower-care', name: 'Flower Care', icon: '🌹', desc: 'Watering, preservation, maintenance' },
-    { slug: 'flower-farming', name: 'Flower Farming', icon: '🌱', desc: 'Soil, irrigation, harvesting' },
-    { slug: 'floristry', name: 'Floral Design', icon: '💐', desc: 'Bouquets, centerpieces, arrangements' },
-    { slug: 'gardening', name: 'Gardening', icon: '🏡', desc: 'Landscaping, home gardens' },
-    { slug: 'pests-diseases', name: 'Pests & Diseases', icon: '🐛', desc: 'Plant health, treatments' },
-    { slug: 'flower-business', name: 'Flower Business', icon: '💼', desc: 'Pricing, marketing, customer service' },
-    { slug: 'delivery-logistics', name: 'Delivery & Logistics', icon: '🚚', desc: 'Packaging, transportation' },
-    { slug: 'learning-support', name: 'Learning Support', icon: '🎓', desc: 'Courses, assignments, workshops' },
-    { slug: 'beginner-questions', name: 'Beginner Questions', icon: '❓', desc: 'First-time growers and florists' }
+    { slug: 'flower-care', name: 'Flower Care', icon: 'bi-flower1', desc: 'Watering, preservation, maintenance' },
+    { slug: 'flower-farming', name: 'Flower Farming', icon: 'bi-seedling', desc: 'Soil, irrigation, harvesting' },
+    { slug: 'floristry', name: 'Floral Design', icon: 'bi-flower2', desc: 'Bouquets, centerpieces, arrangements' },
+    { slug: 'gardening', name: 'Gardening', icon: 'bi-house-door', desc: 'Landscaping, home gardens' },
+    { slug: 'pests-diseases', name: 'Pests & Diseases', icon: 'bi-bug', desc: 'Plant health, treatments' },
+    { slug: 'flower-business', name: 'Flower Business', icon: 'bi-briefcase', desc: 'Pricing, marketing, customer service' },
+    { slug: 'delivery-logistics', name: 'Delivery & Logistics', icon: 'bi-truck', desc: 'Packaging, transportation' },
+    { slug: 'learning-support', name: 'Learning Support', icon: 'bi-mortarboard', desc: 'Courses, assignments, workshops' },
+    { slug: 'beginner-questions', name: 'Beginner Questions', icon: 'bi-question-circle', desc: 'First-time growers and florists' }
 ];
 
 // ─── Utilities ─────────────────────────────────────────────────────────
@@ -42,11 +42,11 @@ function isExpertRole(role) {
 }
 
 function getReputationLevel(points) {
-    if (points >= 5000) return { icon: '🏆', label: 'Community Leader', color: '#f59e0b' };
-    if (points >= 1500) return { icon: '💐', label: 'Mentor', color: '#ec4899' };
-    if (points >= 500) return { icon: '🌸', label: 'Expert', color: '#8b5cf6' };
-    if (points >= 100) return { icon: '🌿', label: 'Contributor', color: '#10b981' };
-    return { icon: '🌱', label: 'New Member', color: '#6b7280' };
+    if (points >= 5000) return { icon: 'bi-trophy', label: 'Community Leader', color: '#f59e0b' };
+    if (points >= 1500) return { icon: 'bi-flower2', label: 'Mentor', color: '#ec4899' };
+    if (points >= 500) return { icon: 'bi-flower1', label: 'Expert', color: '#8b5cf6' };
+    if (points >= 100) return { icon: 'bi-tree', label: 'Contributor', color: '#10b981' };
+    return { icon: 'bi-seedling', label: 'New Member', color: '#6b7280' };
 }
 
 // ─── Init ──────────────────────────────────────────────────────────────
@@ -99,7 +99,7 @@ function renderCategoryCards() {
     if (!el) return;
     el.innerHTML = CATEGORIES.map(c => `
         <div class="cat-card${currentCategory === c.slug ? ' active' : ''}" data-slug="${c.slug}" onclick="selectCategory('${c.slug}')">
-            <div class="cat-card-icon">${c.icon}</div>
+            <div class="cat-card-icon"><i class="bi ${c.icon}"></i></div>
             <div class="cat-card-name">${c.name}</div>
         </div>
     `).join('');
@@ -110,7 +110,7 @@ function renderSidebarCategories() {
     if (!el) return;
     el.innerHTML = CATEGORIES.map(c => `
         <div class="disc-cat-item${currentCategory === c.slug ? ' active' : ''}" data-slug="${c.slug}" onclick="selectCategory('${c.slug}')">
-            <span>${c.icon}</span> ${c.name}
+            <span><i class="bi ${c.icon}"></i></span> ${c.name}
         </div>
     `).join('');
 
@@ -119,7 +119,7 @@ function renderSidebarCategories() {
     if (mobileEl) {
         mobileEl.innerHTML = CATEGORIES.map(c => `
             <span class="filter-chip${currentCategory === c.slug ? ' active' : ''}" data-slug="${c.slug}" onclick="selectCategory('${c.slug}');closeMobileFilter();">
-                ${c.icon} ${c.name}
+                <i class="bi ${c.icon}"></i> ${c.name}
             </span>
         `).join('');
     }
@@ -727,7 +727,7 @@ async function initCreateDiscussion() {
         categories.forEach(c => {
             const opt = document.createElement('option');
             opt.value = c.id;
-            opt.textContent = `${c.icon || ''} ${c.name}`;
+            opt.textContent = c.name;
             categorySelect.appendChild(opt);
         });
     } catch {}
@@ -869,7 +869,7 @@ function suggestCategory(title) {
         const hint = document.createElement('div');
         hint.id = 'categoryHint';
         hint.style.cssText = 'margin-top:0.3rem;font-size:0.8rem;color:var(--accent-green);display:flex;align-items:center;gap:0.3rem;animation:fadeIn 0.3s;';
-        hint.innerHTML = `💡 Suggested category: <strong>${cat.icon} ${cat.name}</strong> <button onclick="applySuggestedCategory('${bestCat}')" style="background:var(--accent-green);color:white;border:none;border-radius:4px;padding:0.15rem 0.5rem;font-size:0.7rem;cursor:pointer;margin-left:0.25rem;">Apply</button>`;
+        hint.innerHTML = `<i class="bi bi-lightbulb" style="color:#f59e0b;"></i> Suggested category: <strong><i class="bi ${cat.icon}"></i> ${cat.name}</strong> <button onclick="applySuggestedCategory('${bestCat}')" style="background:var(--accent-green);color:white;border:none;border-radius:4px;padding:0.15rem 0.5rem;font-size:0.7rem;cursor:pointer;margin-left:0.25rem;">Apply</button>`;
         select.parentElement.appendChild(hint);
     }
 }

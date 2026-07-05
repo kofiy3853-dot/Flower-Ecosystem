@@ -8,23 +8,23 @@ let currentPage = 1;
 let totalPages = 1;
 
 const LEARNING_CATEGORIES = [
-    { slug: 'floral-design', name: 'Floral Design', icon: '💐', color: '#e74c3c' },
-    { slug: 'flower-farming', name: 'Flower Farming', icon: '🌱', color: '#27ae60' },
-    { slug: 'plant-care', name: 'Plant Care', icon: '🪴', color: '#10b981' },
-    { slug: 'business', name: 'Business', icon: '💼', color: '#8b5cf6' },
-    { slug: 'event-decoration', name: 'Event Decoration', icon: '🎪', color: '#f59e0b' },
-    { slug: 'gardening', name: 'Gardening', icon: '🌿', color: '#3b82f6' },
-    { slug: 'photography', name: 'Photography', icon: '📸', color: '#ec4899' },
-    { slug: 'sustainability', name: 'Sustainability', icon: '🌍', color: '#14b8a6' }
+    { slug: 'floral-design', name: 'Floral Design', icon: 'bi-flower1', color: '#e74c3c' },
+    { slug: 'flower-farming', name: 'Flower Farming', icon: 'bi-seedling', color: '#27ae60' },
+    { slug: 'plant-care', name: 'Plant Care', icon: 'bi-flower3', color: '#10b981' },
+    { slug: 'business', name: 'Business', icon: 'bi-briefcase', color: '#8b5cf6' },
+    { slug: 'event-decoration', name: 'Event Decoration', icon: 'bi-ticket', color: '#f59e0b' },
+    { slug: 'gardening', name: 'Gardening', icon: 'bi-tree', color: '#3b82f6' },
+    { slug: 'photography', name: 'Photography', icon: 'bi-camera', color: '#ec4899' },
+    { slug: 'sustainability', name: 'Sustainability', icon: 'bi-globe', color: '#14b8a6' }
 ];
 
 const LEARNING_PATHS = [
-    { name: 'Beginner Florist', icon: '🌱', color: '#27ae60', courses: 6, hours: 12, desc: 'Start your floristry journey with the fundamentals' },
-    { name: 'Professional Florist', icon: '💐', color: '#e74c3c', courses: 10, hours: 24, desc: 'Master advanced arrangement techniques' },
-    { name: 'Wedding Specialist', icon: '💍', color: '#ec4899', courses: 8, hours: 18, desc: 'Design stunning wedding florals' },
-    { name: 'Flower Farmer', icon: '🌾', color: '#f59e0b', courses: 7, hours: 16, desc: 'Grow and harvest professional flowers' },
-    { name: 'Business Master', icon: '📈', color: '#8b5cf6', courses: 5, hours: 10, desc: 'Build and scale your floral business' },
-    { name: 'Event Decorator', icon: '🎪', color: '#14b8a6', courses: 6, hours: 14, desc: 'Transform spaces with floral design' }
+    { name: 'Beginner Florist', icon: 'bi-seedling', color: '#27ae60', courses: 6, hours: 12, desc: 'Start your floristry journey with the fundamentals' },
+    { name: 'Professional Florist', icon: 'bi-flower1', color: '#e74c3c', courses: 10, hours: 24, desc: 'Master advanced arrangement techniques' },
+    { name: 'Wedding Specialist', icon: 'bi-flower2', color: '#ec4899', courses: 8, hours: 18, desc: 'Design stunning wedding florals' },
+    { name: 'Flower Farmer', icon: 'bi-tree', color: '#f59e0b', courses: 7, hours: 16, desc: 'Grow and harvest professional flowers' },
+    { name: 'Business Master', icon: 'bi-graph-up', color: '#8b5cf6', courses: 5, hours: 10, desc: 'Build and scale your floral business' },
+    { name: 'Event Decorator', icon: 'bi-ticket', color: '#14b8a6', courses: 6, hours: 14, desc: 'Transform spaces with floral design' }
 ];
 
 // ─── Utilities ─────────────────────────────────────────────────────────
@@ -78,7 +78,7 @@ function renderCategoryCards() {
     if (!el) return;
     el.innerHTML = LEARNING_CATEGORIES.map(c => `
         <div class="learn-cat-card${currentCategory === c.slug ? ' active' : ''}" data-slug="${c.slug}" onclick="selectCategory('${c.slug}')">
-            <div class="learn-cat-card-icon" style="background:${c.color}15;">${c.icon}</div>
+            <div class="learn-cat-card-icon" style="background:${c.color}15;"><i class="bi ${c.icon}"></i></div>
             <div class="learn-cat-card-name">${c.name}</div>
         </div>
     `).join('');
@@ -88,7 +88,7 @@ function renderCategoryCards() {
     if (mobileEl) {
         mobileEl.innerHTML = LEARNING_CATEGORIES.map(c => `
             <span class="learn-chip${currentCategory === c.slug ? ' active' : ''}" data-slug="${c.slug}" onclick="selectCategory('${c.slug}');closeMobileFilter();">
-                ${c.icon} ${c.name}
+                <i class="bi ${c.icon}"></i> ${c.name}
             </span>
         `).join('');
     }
@@ -99,7 +99,7 @@ function renderSidebarCategories() {
     if (!el) return;
     el.innerHTML = LEARNING_CATEGORIES.map(c => `
         <div class="learn-cat-item${currentCategory === c.slug ? ' active' : ''}" data-slug="${c.slug}" onclick="selectCategory('${c.slug}')">
-            <div class="learn-cat-icon" style="background:${c.color}15;">${c.icon}</div> ${c.name}
+            <div class="learn-cat-icon" style="background:${c.color}15;"><i class="bi ${c.icon}"></i></div> ${c.name}
         </div>
     `).join('');
 }
@@ -119,7 +119,7 @@ function renderLearningPaths() {
     if (!el) return;
     el.innerHTML = LEARNING_PATHS.map(p => `
         <div class="learn-path-card" onclick="window.location.href='learning-paths.html'">
-            <div class="learn-path-icon" style="background:${p.color}15;">${p.icon}</div>
+            <div class="learn-path-icon" style="background:${p.color}15;"><i class="bi ${p.icon}"></i></div>
             <h3>${p.name}</h3>
             <p>${p.desc}</p>
             <div class="learn-path-meta">

@@ -2,16 +2,16 @@
 
 const SHOWCASE_CATEGORIES = [
   { slug: '', name: 'All Projects' },
-  { slug: 'Bouquets', name: 'Bouquets', icon: '🌹' },
-  { slug: 'Wedding Designs', name: 'Wedding Designs', icon: '💐' },
-  { slug: 'Floral Arrangements', name: 'Floral Arrangements', icon: '🌼' },
-  { slug: 'Gardens', name: 'Gardens', icon: '🌿' },
-  { slug: 'Landscaping', name: 'Landscaping', icon: '🏡' },
-  { slug: 'Indoor Plants', name: 'Indoor Plants', icon: '🪴' },
-  { slug: 'Floral Photography', name: 'Floral Photography', icon: '📸' },
-  { slug: 'Floral Art', name: 'Floral Art', icon: '🎨' },
-  { slug: 'Competition Entries', name: 'Competition Entries', icon: '🏆' },
-  { slug: 'Shop Displays', name: 'Shop Displays', icon: '🏪' }
+  { slug: 'Bouquets', name: 'Bouquets', icon: 'bi-flower1' },
+  { slug: 'Wedding Designs', name: 'Wedding Designs', icon: 'bi-flower2' },
+  { slug: 'Floral Arrangements', name: 'Floral Arrangements', icon: 'bi-flower3' },
+  { slug: 'Gardens', name: 'Gardens', icon: 'bi-tree' },
+  { slug: 'Landscaping', name: 'Landscaping', icon: 'bi-house-door' },
+  { slug: 'Indoor Plants', name: 'Indoor Plants', icon: 'bi-flower1' },
+  { slug: 'Floral Photography', name: 'Floral Photography', icon: 'bi-camera' },
+  { slug: 'Floral Art', name: 'Floral Art', icon: 'bi-palette' },
+  { slug: 'Competition Entries', name: 'Competition Entries', icon: 'bi-trophy' },
+  { slug: 'Shop Displays', name: 'Shop Displays', icon: 'bi-shop' }
 ];
 
 let showcaseSavedIds = new Set(JSON.parse(localStorage.getItem('showcaseSaved') || '[]'));
@@ -45,7 +45,7 @@ function renderShowcaseCategories() {
   const el = document.getElementById('showcaseCategories');
   if (!el) return;
   el.innerHTML = SHOWCASE_CATEGORIES.map(c => `
-    <button class="sc-cat-tab" data-cat="${c.slug}">${c.icon ? c.icon + ' ' : ''}${c.name}</button>
+    <button class="sc-cat-tab" data-cat="${c.slug}">${c.icon ? '<i class="bi ' + c.icon + '"></i> ' : ''}${c.name}</button>
   `).join('');
   el.querySelector('.sc-cat-tab')?.classList.add('active');
   el.addEventListener('click', e => {
