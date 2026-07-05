@@ -30,18 +30,7 @@ router.get('/courses', asyncHandler(async (req, res) => {
 
             values.push(lim);
             values.push(offset);
-            const dataR = await pool.query(`
-                SELECT c.*,
-                       COALESCE(e.enrolled, 0) AS students_count
-                FROM learning.courses c
-                LEFT JOIN (
-                    SELECT course_id, COUNT(*)::int AS enrolled
-                    FROM learning.enrollments
-                    GROUP BY course_id
-                ) e ON e.course_id = c.id
-                ${where}
-                ORDER BY ${orderBy}
-                LIMIT $${idx} OFFSET $${idx + 1}`, values);
+            const dataR = await pool.query(`SELECT * FROM learning.courses ${where} ORDER BY ${orderBy} LIMIT $${idx} OFFSET $${idx + 1}`, values);
 
             return { courses: dataR.rows, total, page: pg, pages: Math.ceil(total / lim) };
         },
@@ -66,16 +55,7 @@ router.get('/courses/enrolled', requireAuth, asyncHandler(async (req, res) => {
 router.get('/courses/:id', asyncHandler(async (req, res) => {
     return queryWithFallback(
         async () => {
-            const course = await pool.query(`
-                SELECT c.*,
-                       COALESCE(e.enrolled, 0) AS students_count
-                FROM learning.courses c
-                LEFT JOIN (
-                    SELECT course_id, COUNT(*)::int AS enrolled
-                    FROM learning.enrollments
-                    GROUP BY course_id
-                ) e ON e.course_id = c.id
-                WHERE c.id = $1`, [req.params.id]);
+            const course = await pool.query('SELECT * FROM learning.courses WHERE id = $1', [req.params.id]);
             if (!course.rows.length) return null;
             const lessons = await pool.query('SELECT * FROM learning.lessons WHERE course_id = $1 ORDER BY sort_order', [req.params.id]);
             return { ...course.rows[0], lessons: lessons.rows };
@@ -156,6 +136,13 @@ router.post('/courses/:id/enroll', requireAuth, asyncHandler(async (req, res) =>
             'INSERT INTO learning.enrollments (user_id, course_id) VALUES ($1, $2) RETURNING *',
             [req.user.id, id]
         );
+        // Sync students_count on courses table
+        try {
+            await pool.query(`
+                UPDATE learning.courses SET students_count = (
+                    SELECT COUNT(*)::int FROM learning.enrollments WHERE course_id = $1
+                ) WHERE id = $1`, [id]);
+        } catch (e) { console.error('students_count sync error:', e.message); }
         // Notify instructor of new enrollment
         try {
             const courseInfo = await pool.query('SELECT instructor, title FROM learning.courses WHERE id = $1', [id]);

@@ -207,6 +207,17 @@ async function run() {
             }
         }
 
+        // Sync students_count for all courses from actual enrollment data
+        try {
+            await client.query(`
+                UPDATE learning.courses SET students_count = (
+                    SELECT COUNT(*)::int FROM learning.enrollments WHERE course_id = learning.courses.id
+                )`);
+            console.log('Synced students_count for all courses.');
+        } catch (e) {
+            console.log('students_count sync skipped:', e.message.split('\n')[0]);
+        }
+
         // Run community feed tables (saves, reactions, shares, poll votes)
         const communityFeedPath = path.join(__dirname, 'sql', 'community-feed-tables.sql');
         if (fs.existsSync(communityFeedPath)) {
