@@ -261,6 +261,10 @@ async function run() {
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )`);
+            // Clear any existing Unsplash mockup images
+            try {
+                await client.query("UPDATE learning.learning_paths SET image = null WHERE image LIKE '%unsplash%'");
+            } catch (e) {}
             const lpCount = await client.query('SELECT COUNT(*)::int AS c FROM learning.learning_paths');
             if (lpCount.rows[0].c === 0) {
                 const lpPath = path.join(__dirname, 'data', 'learning-paths.json');
