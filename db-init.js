@@ -268,10 +268,10 @@ async function run() {
                     const paths = JSON.parse(fs.readFileSync(lpPath, 'utf8'));
                     for (const p of paths) {
                         await client.query(`
-                            INSERT INTO learning.learning_paths (title, slug, description, level, duration_hours, course_count, rating, price, is_published, student_count)
-                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true, 0)
+                            INSERT INTO learning.learning_paths (title, slug, description, level, duration_hours, course_count, rating, price, is_published, student_count, image)
+                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true, 0, $9)
                             ON CONFLICT DO NOTHING`,
-                            [p.title, p.slug, p.description || '', p.level || 'Beginner', p.duration_hours || 0, p.course_count || 0, p.rating || 0, p.price || 'Free']
+                            [p.title, p.slug, p.description || '', p.level || 'Beginner', p.duration_hours || 0, p.course_count || 0, p.rating || 0, p.price || 'Free', p.image || null]
                         );
                     }
                     console.log(`Seeded ${paths.length} learning paths with 0 students.`);

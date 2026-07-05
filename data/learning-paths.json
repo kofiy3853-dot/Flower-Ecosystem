@@ -9,8 +9,7 @@
         "course_count": 4,
         "student_count": 0,
         "rating": 4.8,
-        "price": "Free",
-        "image": "https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=600&auto=format&fit=crop"
+        "price": "Free"
     },
     {
         "id": "c1b2c3d4-0002-0000-0000-000000000002",
@@ -22,8 +21,7 @@
         "course_count": 6,
         "student_count": 0,
         "rating": 4.9,
-        "price": "GHS 450",
-        "image": "https://images.unsplash.com/photo-1519741497674-611481863552?q=600&auto=format&fit=crop"
+        "price": "GHS 450"
     },
     {
         "id": "c1b2c3d4-0003-0000-0000-000000000003",
@@ -35,8 +33,7 @@
         "course_count": 8,
         "student_count": 0,
         "rating": 4.7,
-        "price": "GHS 650",
-        "image": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=600&auto=format&fit=crop"
+        "price": "GHS 650"
     },
     {
         "id": "c1b2c3d4-0004-0000-0000-000000000004",
@@ -48,8 +45,7 @@
         "course_count": 7,
         "student_count": 0,
         "rating": 4.8,
-        "price": "GHS 550",
-        "image": "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=600&auto=format&fit=crop"
+        "price": "GHS 550"
     },
     {
         "id": "c1b2c3d4-0005-0000-0000-000000000005",
@@ -61,7 +57,6 @@
         "course_count": 5,
         "student_count": 0,
         "rating": 4.9,
-        "price": "GHS 400",
-        "image": "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=600&auto=format&fit=crop"
+        "price": "GHS 400"
     }
 ]
