@@ -3,10 +3,16 @@
 -- Execute with: psql -U postgres -d flower_ecosystem -f sql/learning-system-fixes.sql
 -- =============================================================================
 
--- 1. Add missing duration_minutes column to lessons table
-ALTER TABLE learning.lessons ADD COLUMN IF NOT EXISTS duration_minutes INT DEFAULT 0;
+-- 1. Add missing duration_minutes column to lessons table (now in base schema)
+-- ALTER TABLE learning.lessons ADD COLUMN IF NOT EXISTS duration_minutes INT DEFAULT 0;
 
--- 2. Add missing lesson_completions table for tracking which lessons users completed
+-- 2. Add missing columns to courses table (added to base schema)
+ALTER TABLE learning.courses ADD COLUMN IF NOT EXISTS reviews_count INT DEFAULT 0;
+ALTER TABLE learning.courses ADD COLUMN IF NOT EXISTS has_certificate BOOLEAN DEFAULT FALSE;
+ALTER TABLE learning.courses ADD COLUMN IF NOT EXISTS lesson_count INT DEFAULT 0;
+ALTER TABLE learning.courses ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT FALSE;
+
+-- 3. Add missing lesson_completions table for tracking which lessons users completed
 CREATE TABLE IF NOT EXISTS learning.lesson_completions (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id         UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,

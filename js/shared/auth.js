@@ -312,6 +312,52 @@ function handleAuthSubmit(formId, apiFn, getData) {
     });
 }
 
+// ─── Enrollment Check (cached) ─────────────────────────────────────────
+let _enrollmentCache = null;
+let _enrollmentCacheTime = 0;
+const ENROLLMENT_CACHE_TTL = 5 * 60 * 1000;
+
+async function checkEnrollment() {
+    const user = getCurrentUser();
+    if (!user) return false;
+
+    const now = Date.now();
+    if (_enrollmentCache !== null && (now - _enrollmentCacheTime) < ENROLLMENT_CACHE_TTL) {
+        return _enrollmentCache;
+    }
+
+    const cached = sessionStorage.getItem('fe-enrolled');
+    if (cached !== null) {
+        _enrollmentCache = cached === 'true';
+        _enrollmentCacheTime = now;
+        return _enrollmentCache;
+    }
+
+    try {
+        const token = getToken();
+        const res = await fetch('/api/courses/enrolled', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            const courses = data.courses || [];
+            const hasEnrolled = courses.length > 0;
+            _enrollmentCache = hasEnrolled;
+            _enrollmentCacheTime = now;
+            sessionStorage.setItem('fe-enrolled', String(hasEnrolled));
+            return hasEnrolled;
+        }
+    } catch {}
+
+    return false;
+}
+
+function invalidateEnrollmentCache() {
+    _enrollmentCache = null;
+    _enrollmentCacheTime = 0;
+    sessionStorage.removeItem('fe-enrolled');
+}
+
 function updateAccountUI() {
     const btn = document.getElementById('globalAccountLink');
     const signInLink = document.getElementById('headerSignIn');
@@ -367,6 +413,18 @@ function updateAccountUI() {
         const role = (user?.role || '').toLowerCase();
         const isAdmin = ['admin', 'superadmin'].includes(role);
         adminLink.style.display = user && isAdmin ? '' : 'none';
+    }
+
+    // Show student-only learning links if user has enrollments
+    const studentSection = document.getElementById('navStudentSection');
+    if (studentSection) {
+        if (user) {
+            checkEnrollment().then(hasEnrolled => {
+                studentSection.style.display = hasEnrolled ? '' : 'none';
+            });
+        } else {
+            studentSection.style.display = 'none';
+        }
     }
 }
 
@@ -596,6 +654,8 @@ window.afterAuth = afterAuth;
 window.openAuthModal = openAuthModal;
 window.closeAuthModal = closeAuthModal;
 window.updateAccountUI = updateAccountUI;
+window.checkEnrollment = checkEnrollment;
+window.invalidateEnrollmentCache = invalidateEnrollmentCache;
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => { if (shouldInitAuth()) initAuth(); });

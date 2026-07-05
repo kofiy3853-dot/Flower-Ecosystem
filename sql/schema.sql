@@ -245,7 +245,11 @@ CREATE TABLE IF NOT EXISTS learning.courses (
     price           NUMERIC(10,2) DEFAULT 0,
     rating          NUMERIC(2,1) DEFAULT 0,
     students_count  INT DEFAULT 0,
+    reviews_count   INT DEFAULT 0,
     category        VARCHAR(100),
+    has_certificate BOOLEAN DEFAULT FALSE,
+    lesson_count    INT DEFAULT 0,
+    is_featured     BOOLEAN DEFAULT FALSE,
     is_published    BOOLEAN DEFAULT FALSE,
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -259,6 +263,7 @@ CREATE TABLE IF NOT EXISTS learning.lessons (
     title           VARCHAR(255) NOT NULL,
     content         TEXT,
     video_url       TEXT,
+    duration_minutes INT DEFAULT 0,
     sort_order      INT DEFAULT 0
 );
 

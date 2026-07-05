@@ -65,20 +65,99 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
 }));
 
 router.post('/courses', requireInstructor, asyncHandler(async (req, res) => {
-    const { title, description, instructor, level, price, category } = req.body;
-    if (!title) return res.status(400).json({ error: 'Title is required' });
+    const { title, subtitle, description, short_description, instructor, level, price, category,
+            language, learning_outcomes, requirements, target_audience,
+            thumbnail_url, promo_video_url, gallery,
+            is_free, discount_price, enrollment_limit, visibility, has_certificate, status,
+            sections, resources, quiz, assignment } = req.body;
+    if (!title) return res.status(400).json({ error: 'Title is is required' });
     const r = await pool.query(
-        `INSERT INTO learning.courses (title, description, instructor, level, price, category, is_published)
-         VALUES ($1, $2, $3, $4, $5, $6, false) RETURNING *`,
-        [title, description || '', instructor || req.user.email, level || 'Beginner', price || 0, category || '']
+        `INSERT INTO learning.courses (title, subtitle, description, short_description, instructor, level, price, category,
+         language, learning_outcomes, requirements, target_audience,
+         thumbnail_url, promo_video_url, gallery,
+         discount_price, enrollment_limit, visibility, has_certificate, status, is_published)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,false) RETURNING *`,
+        [title, subtitle||null, description||'', short_description||null, instructor||req.user.email, level||'Beginner',
+         is_free ? 0 : (price||0), category||'', language||'English',
+         learning_outcomes||[], requirements||[], target_audience||[],
+         thumbnail_url||null, promo_video_url||null, gallery||[],
+         discount_price||null, enrollment_limit||0, visibility||'public',
+         has_certificate !== false, status||'draft']
     );
+    const courseId = r.rows[0].id;
+
+    // Save curriculum (sections + lessons)
+    if (sections && sections.length) {
+        for (let si = 0; si < sections.length; si++) {
+            const sec = sections[si];
+            const secR = await pool.query(
+                'INSERT INTO learning.course_sections (course_id, title, sort_order) VALUES ($1,$2,$3) RETURNING id',
+                [courseId, sec.title || 'Section ' + (si+1), si]
+            );
+            const sectionId = secR.rows[0].id;
+            if (sec.lessons && sec.lessons.length) {
+                for (let li = 0; li < sec.lessons.length; li++) {
+                    const les = sec.lessons[li];
+                    await pool.query(
+                        `INSERT INTO learning.course_lessons (section_id, course_id, title, type, content, video_url, duration_minutes, sort_order)
+                         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+                        [sectionId, courseId, les.title||'Lesson', les.type||'video', les.content||null,
+                         les.video_url||null, les.duration_minutes||0, li]
+                    );
+                }
+            }
+        }
+        // Update lesson_count
+        const totalLessons = sections.reduce((sum, s) => sum + (s.lessons?.length || 0), 0);
+        await pool.query('UPDATE learning.courses SET lesson_count = $1 WHERE id = $2', [totalLessons, courseId]);
+    }
+
+    // Save resources
+    if (resources && resources.length) {
+        for (let i = 0; i < resources.length; i++) {
+            const r2 = resources[i];
+            await pool.query(
+                'INSERT INTO learning.course_downloadable_resources (course_id, name, file_url, file_type, file_size, sort_order) VALUES ($1,$2,$3,$4,$5,$6)',
+                [courseId, r2.name, r2.file_url, r2.file_type||null, r2.file_size||null, i]
+            );
+        }
+    }
+
+    // Save quiz
+    if (quiz && quiz.questions && quiz.questions.length) {
+        const quizR = await pool.query(
+            'INSERT INTO learning.course_quizzes (course_id, title, passing_score) VALUES ($1,$2,$3) RETURNING id',
+            [courseId, quiz.title||'Course Quiz', quiz.passing_score||70]
+        );
+        const quizId = quizR.rows[0].id;
+        for (let i = 0; i < quiz.questions.length; i++) {
+            const q = quiz.questions[i];
+            await pool.query(
+                'INSERT INTO learning.course_quiz_questions (quiz_id, question, options, correct_answer, sort_order) VALUES ($1,$2,$3,$4,$5)',
+                [quizId, q.question, q.options||[], q.correct_answer||0, i]
+            );
+        }
+    }
+
+    // Save assignment
+    if (assignment && assignment.title) {
+        await pool.query(
+            'INSERT INTO learning.course_assignments (course_id, title, instructions, deadline) VALUES ($1,$2,$3,$4)',
+            [courseId, assignment.title, assignment.instructions||null, assignment.deadline||null]
+        );
+    }
+
     res.status(201).json(r.rows[0]);
 }));
 
 router.put('/courses/:id', requireInstructor, asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { title, description, instructor, level, price, category, is_published } = req.body;
-    
+    const { title, subtitle, description, short_description, instructor, level, price, category,
+            language, learning_outcomes, requirements, target_audience,
+            thumbnail_url, promo_video_url, gallery,
+            discount_price, enrollment_limit, visibility, has_certificate, is_published, status,
+            sections, resources, quiz, assignment } = req.body;
+
     // Verify instructor owns this course
     const ownership = await pool.query(
         'SELECT id, instructor FROM learning.courses WHERE id = $1',
@@ -88,14 +167,101 @@ router.put('/courses/:id', requireInstructor, asyncHandler(async (req, res) => {
     if (ownership.rows[0].instructor !== req.user.email && req.user.role !== 'admin') {
         return res.status(403).json({ error: 'Not authorized to edit this course' });
     }
-    
+
     const r = await pool.query(
-        `UPDATE learning.courses SET title = COALESCE($1, title), description = COALESCE($2, description),
-         instructor = COALESCE($3, instructor), level = COALESCE($4, level), price = COALESCE($5, price),
-         category = COALESCE($6, category), is_published = COALESCE($7, is_published)
-         WHERE id = $8 RETURNING *`,
-        [title, description, instructor, level, price, category, is_published, id]
+        `UPDATE learning.courses SET
+         title = COALESCE($1, title), subtitle = COALESCE($2, subtitle),
+         description = COALESCE($3, description), short_description = COALESCE($4, short_description),
+         instructor = COALESCE($5, instructor), level = COALESCE($6, level),
+         price = COALESCE($7, price), category = COALESCE($8, category),
+         language = COALESCE($9, language),
+         learning_outcomes = COALESCE($10, learning_outcomes),
+         requirements = COALESCE($11, requirements),
+         target_audience = COALESCE($12, target_audience),
+         thumbnail_url = COALESCE($13, thumbnail_url),
+         promo_video_url = COALESCE($14, promo_video_url),
+         gallery = COALESCE($15, gallery),
+         discount_price = COALESCE($16, discount_price),
+         enrollment_limit = COALESCE($17, enrollment_limit),
+         visibility = COALESCE($18, visibility),
+         has_certificate = COALESCE($19, has_certificate),
+         is_published = COALESCE($20, is_published),
+         status = COALESCE($21, status)
+         WHERE id = $22 RETURNING *`,
+        [title, subtitle, description, short_description, instructor, level, price, category,
+         language, learning_outcomes, requirements, target_audience,
+         thumbnail_url, promo_video_url, gallery,
+         discount_price, enrollment_limit, visibility, has_certificate, is_published, status, id]
     );
+
+    // Replace curriculum if provided
+    if (sections) {
+        await pool.query('DELETE FROM learning.course_sections WHERE course_id = $1', [id]);
+        for (let si = 0; si < sections.length; si++) {
+            const sec = sections[si];
+            const secR = await pool.query(
+                'INSERT INTO learning.course_sections (course_id, title, sort_order) VALUES ($1,$2,$3) RETURNING id',
+                [id, sec.title || 'Section ' + (si+1), si]
+            );
+            const sectionId = secR.rows[0].id;
+            if (sec.lessons && sec.lessons.length) {
+                for (let li = 0; li < sec.lessons.length; li++) {
+                    const les = sec.lessons[li];
+                    await pool.query(
+                        `INSERT INTO learning.course_lessons (section_id, course_id, title, type, content, video_url, duration_minutes, sort_order)
+                         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+                        [sectionId, id, les.title||'Lesson', les.type||'video', les.content||null,
+                         les.video_url||null, les.duration_minutes||0, li]
+                    );
+                }
+            }
+        }
+        const totalLessons = sections.reduce((sum, s) => sum + (s.lessons?.length || 0), 0);
+        await pool.query('UPDATE learning.courses SET lesson_count = $1 WHERE id = $2', [totalLessons, id]);
+    }
+
+    // Replace resources if provided
+    if (resources) {
+        await pool.query('DELETE FROM learning.course_downloadable_resources WHERE course_id = $1', [id]);
+        for (let i = 0; i < resources.length; i++) {
+            const r2 = resources[i];
+            await pool.query(
+                'INSERT INTO learning.course_downloadable_resources (course_id, name, file_url, file_type, file_size, sort_order) VALUES ($1,$2,$3,$4,$5,$6)',
+                [id, r2.name, r2.file_url, r2.file_type||null, r2.file_size||null, i]
+            );
+        }
+    }
+
+    // Replace quiz if provided
+    if (quiz) {
+        await pool.query('DELETE FROM learning.course_quizzes WHERE course_id = $1', [id]);
+        if (quiz.questions && quiz.questions.length) {
+            const quizR = await pool.query(
+                'INSERT INTO learning.course_quizzes (course_id, title, passing_score) VALUES ($1,$2,$3) RETURNING id',
+                [id, quiz.title||'Course Quiz', quiz.passing_score||70]
+            );
+            const quizId = quizR.rows[0].id;
+            for (let i = 0; i < quiz.questions.length; i++) {
+                const q = quiz.questions[i];
+                await pool.query(
+                    'INSERT INTO learning.course_quiz_questions (quiz_id, question, options, correct_answer, sort_order) VALUES ($1,$2,$3,$4,$5)',
+                    [quizId, q.question, q.options||[], q.correct_answer||0, i]
+                );
+            }
+        }
+    }
+
+    // Replace assignment if provided
+    if (assignment !== undefined) {
+        await pool.query('DELETE FROM learning.course_assignments WHERE course_id = $1', [id]);
+        if (assignment && assignment.title) {
+            await pool.query(
+                'INSERT INTO learning.course_assignments (course_id, title, instructions, deadline) VALUES ($1,$2,$3,$4)',
+                [id, assignment.title, assignment.instructions||null, assignment.deadline||null]
+            );
+        }
+    }
+
     res.json(r.rows[0]);
 }));
 
@@ -290,7 +456,7 @@ router.post('/quizzes/:id/submit', requireAuth, asyncHandler(async (req, res) =>
 
         let correct = 0;
         quiz.questions.forEach((q, i) => {
-            if (answers[i] === q.correct) correct++;
+            if (answers[i] === q.correct_answer) correct++;
         });
 
         const total = quiz.questions.length;

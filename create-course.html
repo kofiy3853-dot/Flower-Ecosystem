@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create a new course on Flower Ecosystem Learning Center.">
+    <title>Create Course | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="styles/create-course.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div class="cc-layout">
+        <!-- Left Sidebar: Steps -->
+        <aside class="cc-sidebar">
+            <div style="padding:0 1.25rem 1rem;">
+                <h3 style="font-size:1rem;margin-bottom:0.25rem;">Course Builder</h3>
+                <p style="font-size:0.75rem;color:var(--text-muted);">Fill in each step to create your course.</p>
+            </div>
+            <div class="cc-progress">
+                <div class="cc-progress-bar"><div class="cc-progress-fill" id="progressFill" style="width:14.28%;"></div></div>
+                <div class="cc-progress-label" id="progressLabel">Step 1 of 7</div>
+            </div>
+            <ol class="cc-steps" id="stepList">
+                <li class="cc-step active" data-step="1" onclick="goToStep(1)">
+                    <span class="cc-step-num">1</span>
+                    <span class="cc-step-text"><span class="cc-step-title">Course Details</span><span class="cc-step-sub">Basic info</span></span>
+                </li>
+                <li class="cc-step" data-step="2" onclick="goToStep(2)">
+                    <span class="cc-step-num">2</span>
+                    <span class="cc-step-text"><span class="cc-step-title">Curriculum</span><span class="cc-step-sub">Sections & lessons</span></span>
+                </li>
+                <li class="cc-step" data-step="3" onclick="goToStep(3)">
+                    <span class="cc-step-num">3</span>
+                    <span class="cc-step-text"><span class="cc-step-title">Media</span><span class="cc-step-sub">Thumbnail & video</span></span>
+                </li>
+                <li class="cc-step" data-step="4" onclick="goToStep(4)">
+                    <span class="cc-step-num">4</span>
+                    <span class="cc-step-text"><span class="cc-step-title">Resources</span><span class="cc-step-sub">Downloadable files</span></span>
+                </li>
+                <li class="cc-step" data-step="5" onclick="goToStep(5)">
+                    <span class="cc-step-num">5</span>
+                    <span class="cc-step-text"><span class="cc-step-title">Assessments</span><span class="cc-step-sub">Quizzes & assignments</span></span>
+                </li>
+                <li class="cc-step" data-step="6" onclick="goToStep(6)">
+                    <span class="cc-step-num">6</span>
+                    <span class="cc-step-text"><span class="cc-step-title">Pricing</span><span class="cc-step-sub">Free or paid</span></span>
+                </li>
+                <li class="cc-step" data-step="7" onclick="goToStep(7)">
+                    <span class="cc-step-num">7</span>
+                    <span class="cc-step-text"><span class="cc-step-title">Publish</span><span class="cc-step-sub">Review & submit</span></span>
+                </li>
+            </ol>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="cc-main">
+            <!-- Step 1: Course Details -->
+            <div class="cc-step-content active" id="step-1">
+                <div class="cc-step-header">
+                    <h1>Course Details</h1>
+                    <p>Provide the basic information about your course.</p>
+                </div>
+                <div class="cc-field">
+                    <label>Course Title *</label>
+                    <input type="text" class="cc-input" id="ccTitle" placeholder="e.g., Professional Bouquet Design Masterclass" maxlength="200">
+                </div>
+                <div class="cc-field">
+                    <label>Subtitle</label>
+                    <input type="text" class="cc-input" id="ccSubtitle" placeholder="A brief tagline for your course" maxlength="500">
+                </div>
+                <div class="cc-row">
+                    <div class="cc-field">
+                        <label>Category *</label>
+                        <select class="cc-select" id="ccCategory">
+                            <option value="">Select category</option>
+                            <option value="Floral Design">Floral Design</option>
+                            <option value="Flower Farming">Flower Farming</option>
+                            <option value="Plant Care">Plant Care</option>
+                            <option value="Business Skills">Business Skills</option>
+                            <option value="Event Decoration">Event Decoration</option>
+                            <option value="Wedding Floristry">Wedding Floristry</option>
+                            <option value="Gardening">Gardening</option>
+                            <option value="Photography">Photography</option>
+                            <option value="Sustainability">Sustainability</option>
+                        </select>
+                    </div>
+                    <div class="cc-field">
+                        <label>Course Level *</label>
+                        <select class="cc-select" id="ccLevel">
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                            <option value="All Levels">All Levels</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="cc-field">
+                    <label>Language</label>
+                    <select class="cc-select" id="ccLanguage">
+                        <option value="English">English</option>
+                        <option value="French">French</option>
+                        <option value="Spanish">Spanish</option>
+                        <option value="Twi">Twi</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="cc-field">
+                    <label>Short Description *</label>
+                    <textarea class="cc-textarea" id="ccShortDesc" maxlength="200" rows="3" placeholder="A compelling summary that appears in search results (max 200 characters)"></textarea>
+                    <div class="cc-char-count"><span id="ccShortDescCount">0</span>/200</div>
+                </div>
+                <div class="cc-field">
+                    <label>Full Description *</label>
+                    <textarea class="cc-textarea" id="ccFullDesc" rows="6" placeholder="Describe what students will learn, what makes this course unique, and who it's for."></textarea>
+                </div>
+                <div class="cc-field">
+                    <label>Learning Outcomes</label>
+                    <p class="hint">What will students be able to do after completing this course?</p>
+                    <ul class="cc-list" id="ccOutcomes"></ul>
+                    <div class="cc-add-row">
+                        <input type="text" class="cc-input" id="ccOutcomeInput" placeholder="e.g., Create professional bouquets">
+                        <button class="cc-btn cc-btn-outline cc-btn-sm" onclick="addListItem('outcomes')"><i class="bi bi-plus"></i> Add</button>
+                    </div>
+                </div>
+                <div class="cc-field">
+                    <label>Requirements</label>
+                    <p class="hint">What should students know or have before taking this course?</p>
+                    <ul class="cc-list" id="ccRequirements"></ul>
+                    <div class="cc-add-row">
+                        <input type="text" class="cc-input" id="ccRequirementInput" placeholder="e.g., Basic flower knowledge">
+                        <button class="cc-btn cc-btn-outline cc-btn-sm" onclick="addListItem('requirements')"><i class="bi bi-plus"></i> Add</button>
+                    </div>
+                </div>
+                <div class="cc-field">
+                    <label>Target Audience</label>
+                    <p class="hint">Who is this course for?</p>
+                    <div class="cc-checkbox-grid" id="ccAudience">
+                        <label class="cc-checkbox" data-value="Beginners" onclick="toggleCheckbox(this)"><i class="bi bi-circle"></i><i class="bi bi-check-circle-fill"></i> Beginners</label>
+                        <label class="cc-checkbox" data-value="Florists" onclick="toggleCheckbox(this)"><i class="bi bi-circle"></i><i class="bi bi-check-circle-fill"></i> Florists</label>
+                        <label class="cc-checkbox" data-value="Growers" onclick="toggleCheckbox(this)"><i class="bi bi-circle"></i><i class="bi bi-check-circle-fill"></i> Growers</label>
+                        <label class="cc-checkbox" data-value="Students" onclick="toggleCheckbox(this)"><i class="bi bi-circle"></i><i class="bi bi-check-circle-fill"></i> Students</label>
+                        <label class="cc-checkbox" data-value="Event Decorators" onclick="toggleCheckbox(this)"><i class="bi bi-circle"></i><i class="bi bi-check-circle-fill"></i> Event Decorators</label>
+                        <label class="cc-checkbox" data-value="Hobbyists" onclick="toggleCheckbox(this)"><i class="bi bi-circle"></i><i class="bi bi-check-circle-fill"></i> Hobbyists</label>
+                        <label class="cc-checkbox" data-value="Business Owners" onclick="toggleCheckbox(this)"><i class="bi bi-circle"></i><i class="bi bi-check-circle-fill"></i> Business Owners</label>
+                        <label class="cc-checkbox" data-value="Wedding Planners" onclick="toggleCheckbox(this)"><i class="bi bi-circle"></i><i class="bi bi-check-circle-fill"></i> Wedding Planners</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Curriculum -->
+            <div class="cc-step-content" id="step-2">
+                <div class="cc-step-header">
+                    <h1>Curriculum</h1>
+                    <p>Organize your course into sections and lessons.</p>
+                </div>
+                <div id="ccCurriculum"></div>
+                <div class="cc-add-section" onclick="addSection()"><i class="bi bi-plus-circle"></i> Add Section</div>
+            </div>
+
+            <!-- Step 3: Media -->
+            <div class="cc-step-content" id="step-3">
+                <div class="cc-step-header">
+                    <h1>Media</h1>
+                    <p>Upload your course thumbnail and promotional video.</p>
+                </div>
+                <div class="cc-field">
+                    <label>Course Thumbnail *</label>
+                    <p class="hint">Recommended: 1600x900 pixels. This is the first thing students see.</p>
+                    <div class="cc-upload-zone" id="ccThumbZone" onclick="document.getElementById('ccThumbInput').click()">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                        <p>Click or drag to upload thumbnail</p>
+                        <p class="hint">JPG, PNG or WebP. Max 5MB.</p>
+                    </div>
+                    <input type="file" id="ccThumbInput" accept="image/*" style="display:none" onchange="handleThumbUpload(this)">
+                    <div id="ccThumbPreview"></div>
+                </div>
+                <div class="cc-field">
+                    <label>Promo Video</label>
+                    <p class="hint">A short trailer to showcase your course (optional).</p>
+                    <div class="cc-upload-zone" id="ccVideoZone" onclick="document.getElementById('ccVideoInput').click()">
+                        <i class="bi bi-camera-video"></i>
+                        <p>Click or drag to upload promo video</p>
+                        <p class="hint">MP4, WebM. Max 50MB.</p>
+                    </div>
+                    <input type="file" id="ccVideoInput" accept="video/*" style="display:none" onchange="handleVideoUpload(this)">
+                    <div id="ccVideoPreview"></div>
+                </div>
+                <div class="cc-field">
+                    <label>Gallery Images</label>
+                    <p class="hint">Additional promotional images (optional).</p>
+                    <div class="cc-upload-zone" onclick="document.getElementById('ccGalleryInput').click()">
+                        <i class="bi bi-images"></i>
+                        <p>Click to add gallery images</p>
+                    </div>
+                    <input type="file" id="ccGalleryInput" accept="image/*" multiple style="display:none" onchange="handleGalleryUpload(this)">
+                    <div class="cc-gallery" id="ccGallery"></div>
+                </div>
+            </div>
+
+            <!-- Step 4: Resources -->
+            <div class="cc-step-content" id="step-4">
+                <div class="cc-step-header">
+                    <h1>Resources</h1>
+                    <p>Upload downloadable files for your students.</p>
+                </div>
+                <div class="cc-field">
+                    <label>Course Resources</label>
+                    <p class="hint">PDFs, worksheets, templates, checklists, etc.</p>
+                    <div id="ccResources"></div>
+                    <div class="cc-upload-zone" onclick="document.getElementById('ccResourceInput').click()" style="margin-top:0.75rem;">
+                        <i class="bi bi-file-earmark-plus"></i>
+                        <p>Click to upload resources</p>
+                        <p class="hint">PDF, PPT, ZIP, images. Max 20MB each.</p>
+                    </div>
+                    <input type="file" id="ccResourceInput" accept=".pdf,.ppt,.pptx,.zip,.rar,.doc,.docx,.xls,.xlsx,image/*" multiple style="display:none" onchange="handleResourceUpload(this)">
+                </div>
+            </div>
+
+            <!-- Step 5: Assessments -->
+            <div class="cc-step-content" id="step-5">
+                <div class="cc-step-header">
+                    <h1>Assessments</h1>
+                    <p>Create quizzes and assignments to test student knowledge.</p>
+                </div>
+                <div class="cc-field">
+                    <label>Course Quiz</label>
+                    <div style="background:var(--bg-light);border-radius:12px;padding:1.25rem;margin-top:0.5rem;">
+                        <div class="cc-row">
+                            <div class="cc-field" style="margin-bottom:0;">
+                                <label>Quiz Title</label>
+                                <input type="text" class="cc-input" id="ccQuizTitle" placeholder="e.g., Final Knowledge Check">
+                            </div>
+                            <div class="cc-field" style="margin-bottom:0;">
+                                <label>Passing Score (%)</label>
+                                <input type="number" class="cc-input" id="ccQuizPassing" value="70" min="0" max="100">
+                            </div>
+                        </div>
+                        <div id="ccQuizQuestions" style="margin-top:1rem;"></div>
+                        <button class="cc-btn cc-btn-outline cc-btn-sm" onclick="addQuizQuestion()" style="margin-top:0.75rem;"><i class="bi bi-plus"></i> Add Question</button>
+                    </div>
+                </div>
+                <div class="cc-field">
+                    <label>Assignment</label>
+                    <div style="background:var(--bg-light);border-radius:12px;padding:1.25rem;margin-top:0.5rem;">
+                        <div class="cc-field">
+                            <label>Assignment Title</label>
+                            <input type="text" class="cc-input" id="ccAssignmentTitle" placeholder="e.g., Create Your First Bouquet">
+                        </div>
+                        <div class="cc-field">
+                            <label>Instructions</label>
+                            <textarea class="cc-textarea" id="ccAssignmentInstructions" rows="3" placeholder="Describe what students need to submit..."></textarea>
+                        </div>
+                        <div class="cc-field">
+                            <label>Deadline (optional)</label>
+                            <input type="datetime-local" class="cc-input" id="ccAssignmentDeadline">
+                        </div>
+                    </div>
+                </div>
+                <div class="cc-field">
+                    <label>Completion Certificate</label>
+                    <div class="cc-radio-group">
+                        <label class="cc-radio selected" onclick="toggleRadio(this, 'ccCertEnabled', true)"><input type="radio" name="cert" checked><i class="bi bi-award"></i> Enabled</label>
+                        <label class="cc-radio" onclick="toggleRadio(this, 'ccCertEnabled', false)"><input type="radio" name="cert"><i class="bi bi-x-circle"></i> Disabled</label>
+                    </div>
+                    <input type="hidden" id="ccCertEnabled" value="true">
+                </div>
+            </div>
+
+            <!-- Step 6: Pricing -->
+            <div class="cc-step-content" id="step-6">
+                <div class="cc-step-header">
+                    <h1>Pricing</h1>
+                    <p>Set your course price and visibility.</p>
+                </div>
+                <div class="cc-field">
+                    <label>Course Type *</label>
+                    <div class="cc-radio-group">
+                        <label class="cc-radio selected" onclick="togglePricing(this, true)"><input type="radio" name="pricing" checked><i class="bi bi-gift"></i> Free</label>
+                        <label class="cc-radio" onclick="togglePricing(this, false)"><input type="radio" name="pricing"><i class="bi bi-currency-dollar"></i> Paid</label>
+                    </div>
+                    <input type="hidden" id="ccIsFree" value="true">
+                </div>
+                <div id="ccPaidFields" style="display:none;">
+                    <div class="cc-row">
+                        <div class="cc-field">
+                            <label>Price (GHS) *</label>
+                            <input type="number" class="cc-input" id="ccPrice" placeholder="0.00" min="0" step="0.01">
+                        </div>
+                        <div class="cc-field">
+                            <label>Discount Price (GHS)</label>
+                            <input type="number" class="cc-input" id="ccDiscountPrice" placeholder="0.00" min="0" step="0.01">
+                            <p class="hint">Leave empty for no discount.</p>
+                        </div>
+                    </div>
+                    <div class="cc-field">
+                        <label>Enrollment Limit</label>
+                        <input type="number" class="cc-input" id="ccEnrollmentLimit" placeholder="Unlimited" min="0">
+                        <p class="hint">Leave empty or 0 for unlimited enrollment.</p>
+                    </div>
+                </div>
+                <div class="cc-field">
+                    <label>Visibility</label>
+                    <div class="cc-visibility">
+                        <div class="cc-visibility-btn selected" onclick="setVisibility(this, 'public')"><i class="bi bi-globe"></i> Public</div>
+                        <div class="cc-visibility-btn" onclick="setVisibility(this, 'private')"><i class="bi bi-lock"></i> Private</div>
+                        <div class="cc-visibility-btn" onclick="setVisibility(this, 'invite')"><i class="bi bi-envelope"></i> Invite Only</div>
+                    </div>
+                    <input type="hidden" id="ccVisibility" value="public">
+                </div>
+            </div>
+
+            <!-- Step 7: Publish -->
+            <div class="cc-step-content" id="step-7">
+                <div class="cc-step-header">
+                    <h1>Review & Publish</h1>
+                    <p>Review your course before submitting.</p>
+                </div>
+                <div class="cc-field">
+                    <label>Publish Checklist</label>
+                    <ul class="cc-checklist" id="ccChecklist"></ul>
+                </div>
+                <div style="margin-top:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+                    <button class="cc-btn cc-btn-outline" onclick="saveDraft()"><i class="bi bi-save"></i> Save Draft</button>
+                    <button class="cc-btn cc-btn-outline" onclick="previewCourse()"><i class="bi bi-eye"></i> Preview Course</button>
+                    <button class="cc-btn cc-btn-success" onclick="submitForReview()"><i class="bi bi-send"></i> Submit for Review</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar: Summary -->
+        <aside class="cc-right">
+            <div class="cc-summary-title">Course Summary</div>
+            <div class="cc-summary-item"><span>Sections</span><span id="sumSections">0</span></div>
+            <div class="cc-summary-item"><span>Lessons</span><span id="sumLessons">0</span></div>
+            <div class="cc-summary-item"><span>Videos</span><span id="sumVideos">0</span></div>
+            <div class="cc-summary-item"><span>Resources</span><span id="sumResources">0</span></div>
+            <div class="cc-summary-divider"></div>
+            <div class="cc-summary-item"><span>Quiz</span><span id="sumQuiz">No</span></div>
+            <div class="cc-summary-item"><span>Assignment</span><span id="sumAssignment">No</span></div>
+            <div class="cc-summary-item"><span>Certificate</span><span id="sumCert">Yes</span></div>
+            <div class="cc-summary-divider"></div>
+            <div class="cc-summary-item"><span>Price</span><span id="sumPrice">Free</span></div>
+            <div class="cc-summary-item"><span>Visibility</span><span id="sumVisibility">Public</span></div>
+            <div class="cc-summary-divider"></div>
+            <div class="cc-summary-item"><span>Status</span><span id="sumStatus">Draft</span></div>
+        </aside>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="cc-bottom-bar">
+        <div class="cc-bottom-left">
+            <button class="cc-btn cc-btn-outline" id="ccBackBtn" onclick="prevStep()" disabled><i class="bi bi-arrow-left"></i> Back</button>
+        </div>
+        <div class="cc-bottom-right">
+            <button class="cc-btn cc-btn-outline" onclick="saveDraft()"><i class="bi bi-save"></i> Save</button>
+            <button class="cc-btn cc-btn-primary" id="ccNextBtn" onclick="nextStep()">Next <i class="bi bi-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/image-upload.js"></script>
+    <script src="js/create-course.js"></script>
+</body>
+</html>

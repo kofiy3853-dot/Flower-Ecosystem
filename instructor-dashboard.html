@@ -71,7 +71,7 @@
                             <p>Here's what's happening in your courses today.</p>
                         </div>
                         <div class="inst-welcome-actions">
-                            <button class="inst-btn inst-btn-primary" onclick="switchSection('courses');openCreateCourse()"><i class="bi bi-plus-lg"></i> Create Course</button>
+                            <button class="inst-btn inst-btn-primary" onclick="window.location.href='create-course.html'"><i class="bi bi-plus-lg"></i> Create Course</button>
                             <button class="inst-btn inst-btn-outline" onclick="switchSection('live-classes')"><i class="bi bi-camera-video"></i> Start Live Class</button>
                         </div>
                     </div>
@@ -126,7 +126,7 @@
                     <div class="inst-card">
                         <div class="inst-card-header"><h3>Quick Actions</h3></div>
                         <div class="inst-quick-actions" id="quickActions">
-                            <button class="inst-quick-btn" onclick="switchSection('courses');openCreateCourse()"><i class="bi bi-plus-circle"></i><span>Create Course</span></button>
+                            <button class="inst-quick-btn" onclick="window.location.href='create-course.html'"><i class="bi bi-plus-circle"></i><span>Create Course</span></button>
                             <button class="inst-quick-btn" onclick="switchSection('resources')"><i class="bi bi-upload"></i><span>Upload Lesson</span></button>
                             <button class="inst-quick-btn" onclick="switchSection('live-classes')"><i class="bi bi-camera-video"></i><span>Start Live Class</span></button>
                             <button class="inst-quick-btn" onclick="switchSection('assignments')"><i class="bi bi-journal-plus"></i><span>Create Quiz</span></button>
@@ -140,7 +140,7 @@
                 <section class="inst-section" id="sec-courses">
                     <div class="inst-section-header">
                         <h2>My Courses</h2>
-                        <button class="inst-btn inst-btn-primary" onclick="openCreateCourse()"><i class="bi bi-plus-lg"></i> Create New Course</button>
+                        <button class="inst-btn inst-btn-primary" onclick="window.location.href='create-course.html'"><i class="bi bi-plus-lg"></i> Create New Course</button>
                     </div>
                     <div class="inst-courses-grid" id="coursesGrid"></div>
                 </section>

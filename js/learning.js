@@ -253,13 +253,13 @@ async function loadCourses() {
     container.innerHTML = courses.map(c => {
         const title = c.title || c.name || 'Untitled';
         const instructor = c.instructor || c.author_name || 'Instructor';
-        const thumbnail = c.thumbnail || c.thumbnail_url || c.image_url || c.image || '';
+        const thumbnail = c.thumbnail_url || c.thumbnail || c.image_url || c.image || '';
         const rating = c.rating || 4.5;
-        const students = c.students || c.students_count || 0;
+        const students = c.students_count || c.students || 0;
         const price = c.price || 0;
         const level = c.level || 'All Levels';
-        const duration = c.duration || c.total_minutes || 0;
-        const lessons = c.lessons || c.lesson_count || c.modules || 0;
+        const duration = c.duration_minutes || c.duration || 0;
+        const lessons = c.lesson_count || c.lessons || c.modules || 0;
         const progress = c.progress || 0;
 
         return `
@@ -367,7 +367,7 @@ async function loadContinueLearning() {
             const progress = c.progress || 0;
             return `
             <div class="my-course-item" onclick="window.location.href='course-detail.html?id=${c.id}'">
-                <div class="my-course-thumb">${c.thumbnail ? `<img src="${escapeHtml(c.thumbnail)}" alt="">` : '📚'}</div>
+                <div class="my-course-thumb">${c.thumbnail_url || c.thumbnail ? `<img src="${escapeHtml(c.thumbnail_url || c.thumbnail)}" alt="">` : '📚'}</div>
                 <div class="my-course-info">
                     <h4>${escapeHtml(c.title || c.name || 'Course')}</h4>
                     <p>${escapeHtml(c.instructor || 'Instructor')}</p>

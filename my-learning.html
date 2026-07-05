@@ -131,7 +131,7 @@
                 el.innerHTML = arr.map(c => `
                     <a href="course-detail.html?id=${c.id}" style="text-decoration:none;color:inherit;display:block;">
                         <div class="course-progress-card">
-                            <img class="thumb" src="${c.thumbnail || 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=400&auto=format&fit=crop'}" alt="${c.title}" loading="lazy">
+                            <img class="thumb" src="${c.thumbnail_url || c.thumbnail || 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=400&auto=format&fit=crop'}" alt="${c.title}" loading="lazy">
                             <div class="info">
                                 <h3>${c.title}</h3>
                                 <div class="meta">${c.instructor || ''}</div>
@@ -195,7 +195,7 @@
                             savedCourses.map(c => `
                                 <a href="course-detail.html?id=${c.id}" style="text-decoration:none;color:inherit;">
                                     <div class="saved-card">
-                                        <img src="${c.thumbnail || 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=400&auto=format&fit=crop'}" alt="${c.title}" loading="lazy">
+                                        <img src="${c.thumbnail_url || c.thumbnail || 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=400&auto=format&fit=crop'}" alt="${c.title}" loading="lazy">
                                         <div class="body">
                                             <h4>${c.title}</h4>
                                             <p>${c.instructor || ''}</p>

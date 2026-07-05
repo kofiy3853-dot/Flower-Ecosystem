@@ -32,16 +32,6 @@
         .sd-progress-info p{font-size:0.8rem;color:var(--text-light);}
         .sd-progress-bar{background:var(--border-color);border-radius:6px;height:6px;overflow:hidden;margin-top:0.5rem;}
         .sd-progress-fill{height:100%;background:var(--primary-color);border-radius:6px;}
-        .sd-badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.75rem;}
-        .sd-badge{text-align:center;background:white;border:1px solid var(--border-color);border-radius:12px;padding:1rem;}
-        .sd-badge .icon{font-size:2rem;margin-bottom:0.5rem;}
-        .sd-badge .name{font-size:0.82rem;font-weight:600;}
-        .sd-badge .desc{font-size:0.72rem;color:var(--text-light);}
-        .sd-activity-item{display:flex;gap:0.75rem;padding:0.75rem 0;border-bottom:1px solid var(--border-light);}
-        .sd-activity-item:last-child{border-bottom:none;}
-        .sd-activity-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;}
-        .sd-activity-text{font-size:0.88rem;}
-        .sd-activity-time{font-size:0.75rem;color:var(--text-light);}
         .sd-calendar{background:white;border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;}
         .sd-calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
         .sd-calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0.25rem;text-align:center;font-size:0.82rem;}
@@ -70,13 +60,15 @@
             <ul class="dash-nav">
                 <li><a href="#dashboard" class="active" data-section="dashboard"><i class="bi bi-house"></i> Dashboard</a></li>
                 <li><a href="#courses" data-section="courses"><i class="bi bi-book"></i> My Courses</a></li>
-                <li><a href="#paths" data-section="paths"><i class="bi bi-signpost"></i> Learning Paths</a></li>
-                <li><a href="#live" data-section="live"><i class="bi bi-broadcast"></i> Live Classes</a></li>
-                <li><a href="#workshops" data-section="workshops"><i class="bi bi-tools"></i> Workshops</a></li>
-                <li><a href="#quizzes" data-section="quizzes"><i class="bi bi-question-circle"></i> Quizzes</a></li>
+                <li><a href="#continue" data-section="continue"><i class="bi bi-play-circle"></i> Continue Learning</a></li>
+                <li><a href="#paths" data-section="paths"><i class="bi bi-signpost"></i> My Learning Paths</a></li>
+                <li><a href="#assignments" data-section="assignments"><i class="bi bi-file-check"></i> My Assignments</a></li>
+                <li><a href="#quizzes" data-section="quizzes"><i class="bi bi-question-circle"></i> My Quizzes</a></li>
+                <li><a href="#live" data-section="live"><i class="bi bi-broadcast"></i> My Live Classes</a></li>
+                <li><a href="#workshops" data-section="workshops"><i class="bi bi-tools"></i> My Workshops</a></li>
                 <li><a href="#certificates" data-section="certificates"><i class="bi bi-award"></i> Certificates</a></li>
-                <li><a href="#wishlist" data-section="wishlist"><i class="bi bi-heart"></i> Wishlist</a></li>
-                <li><a href="#activity" data-section="activity"><i class="bi bi-clock-history"></i> Activity</a></li>
+                <li><a href="#calendar" data-section="calendar"><i class="bi bi-calendar3"></i> Calendar</a></li>
+                <li><a href="#downloads" data-section="downloads"><i class="bi bi-download"></i> Downloads</a></li>
                 <li><a href="#settings" data-section="settings"><i class="bi bi-gear"></i> Settings</a></li>
                 <li style="margin-top:1rem;border-top:1px solid var(--border-color);padding-top:0.75rem;"><a href="#" id="sdLogout" style="color:var(--error-color);"><i class="bi bi-box-arrow-left"></i> Sign Out</a></li>
             </ul>
@@ -109,13 +101,6 @@
                         <div class="sd-stat"><div class="icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;"><i class="bi bi-check-circle"></i></div><div class="num" id="sdStatCompleted">0</div><div class="label">Completed</div></div>
                         <div class="sd-stat"><div class="icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;"><i class="bi bi-clock"></i></div><div class="num" id="sdStatHours">0h</div><div class="label">Learning Hours</div></div>
                         <div class="sd-stat"><div class="icon" style="background:rgba(216,68,124,0.1);color:var(--primary-color);"><i class="bi bi-award"></i></div><div class="num" id="sdStatCertificates">0</div><div class="label">Certificates</div></div>
-                    </div>
-
-                    <div class="sd-stats" style="margin-top:0;">
-                        <div class="sd-stat"><div class="icon" style="background:rgba(139,92,246,0.1);color:#8b5cf6;"><i class="bi bi-pencil-square"></i></div><div class="num">18</div><div class="label">Assignments Done</div></div>
-                        <div class="sd-stat"><div class="icon" style="background:rgba(20,184,166,0.1);color:#14b8a6;"><i class="bi bi-calendar-check"></i></div><div class="num">92%</div><div class="label">Attendance</div></div>
-                        <div class="sd-stat"><div class="icon" style="background:rgba(239,68,68,0.1);color:#ef4444;"><i class="bi bi-fire"></i></div><div class="num">16 Days</div><div class="label">Learning Streak</div></div>
-                        <div class="sd-stat"><div class="icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;"><i class="bi bi-bar-chart"></i></div><div class="num">88%</div><div class="label">Avg Quiz Score</div></div>
                     </div>
 
                     <div class="sd-section">
@@ -155,16 +140,6 @@
                             <div id="upcomingWorkshops"></div>
                         </div>
                     </div>
-
-                    <div class="sd-section">
-                        <h3><i class="bi bi-award" style="color:#f59e0b;"></i> Achievements</h3>
-                        <div class="sd-badge-grid" id="achievementsGrid"></div>
-                    </div>
-
-                    <div class="sd-section">
-                        <h3><i class="bi bi-clock-history" style="color:var(--primary-color);"></i> Recent Activity</h3>
-                        <div class="sd-progress-card" id="recentActivity"></div>
-                    </div>
                 </div>
 
                 <!-- My Courses -->
@@ -173,30 +148,42 @@
                     <div id="myCoursesList"></div>
                 </div>
 
-                <!-- Learning Paths -->
+                <!-- Continue Learning -->
+                <div id="section-continue" class="section" style="display:none;">
+                    <h1 style="margin-bottom:1.5rem;">Continue Learning</h1>
+                    <div id="continueLearningList"></div>
+                </div>
+
+                <!-- My Learning Paths -->
                 <div id="section-paths" class="section" style="display:none;">
-                    <h1 style="margin-bottom:1.5rem;">Learning Paths</h1>
+                    <h1 style="margin-bottom:1.5rem;">My Learning Paths</h1>
                     <div id="myPathsList"></div>
                 </div>
 
-                <!-- Live Classes -->
+                <!-- My Assignments -->
+                <div id="section-assignments" class="section" style="display:none;">
+                    <h1 style="margin-bottom:1.5rem;">My Assignments</h1>
+                    <div id="myAssignmentsList"></div>
+                </div>
+
+                <!-- My Quizzes -->
+                <div id="section-quizzes" class="section" style="display:none;">
+                    <h1 style="margin-bottom:1.5rem;">My Quizzes</h1>
+                    <div id="myQuizzesList"></div>
+                </div>
+
+                <!-- My Live Classes -->
                 <div id="section-live" class="section" style="display:none;">
-                    <h1 style="margin-bottom:1.5rem;">Live Classes</h1>
+                    <h1 style="margin-bottom:1.5rem;">My Live Classes</h1>
                     <a href="live-classes.html" class="btn btn-primary" style="margin-bottom:1.5rem;">Browse All Classes</a>
                     <div id="myLiveList"></div>
                 </div>
 
-                <!-- Workshops -->
+                <!-- My Workshops -->
                 <div id="section-workshops" class="section" style="display:none;">
-                    <h1 style="margin-bottom:1.5rem;">Workshops</h1>
+                    <h1 style="margin-bottom:1.5rem;">My Workshops</h1>
                     <a href="learning.html" class="btn btn-primary" style="margin-bottom:1.5rem;">Browse Workshops</a>
                     <div id="myWorkshopsList"></div>
-                </div>
-
-                <!-- Quizzes -->
-                <div id="section-quizzes" class="section" style="display:none;">
-                    <h1 style="margin-bottom:1.5rem;">My Quizzes</h1>
-                    <div id="myQuizzesList"></div>
                 </div>
 
                 <!-- Certificates -->
@@ -205,16 +192,16 @@
                     <div id="myCertificatesList"></div>
                 </div>
 
-                <!-- Wishlist -->
-                <div id="section-wishlist" class="section" style="display:none;">
-                    <h1 style="margin-bottom:1.5rem;">Wishlist</h1>
-                    <div id="myWishlistList"></div>
+                <!-- Calendar -->
+                <div id="section-calendar" class="section" style="display:none;">
+                    <h1 style="margin-bottom:1.5rem;">Calendar</h1>
+                    <div class="sd-calendar" id="dashboardCalendar"></div>
                 </div>
 
-                <!-- Activity -->
-                <div id="section-activity" class="section" style="display:none;">
-                    <h1 style="margin-bottom:1.5rem;">Activity</h1>
-                    <div id="myActivityList"></div>
+                <!-- Downloads -->
+                <div id="section-downloads" class="section" style="display:none;">
+                    <h1 style="margin-bottom:1.5rem;">Downloads</h1>
+                    <div id="myDownloadsList"></div>
                 </div>
 
                 <!-- Settings -->
@@ -242,8 +229,6 @@
     <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
     <script>
-        const savedCourses = JSON.parse(localStorage.getItem('lp-saved') || '[]');
-
         function initDashboard() {
             if (!localStorage.getItem('flower-token')) {
                 document.getElementById('loginPrompt').style.display = 'block';
@@ -288,21 +273,19 @@
                 return r.json();
             }
 
-            const [enrolledData, progressData, certsData, workshopsData, liveData, badgesData] = await Promise.all([
+            const [enrolledData, progressData, certsData, workshopsData, liveData] = await Promise.all([
                 apiFetch('/api/courses/enrolled'),
                 apiFetch('/api/progress/overview'),
                 apiFetch('/api/certificates'),
                 apiFetch('/api/workshops'),
-                apiFetch('/api/live-classes'),
-                apiFetch('/api/badges')
+                apiFetch('/api/live-classes')
             ]);
 
             const courses = enrolledData?.courses || [];
             const stats = progressData || {};
             const certs = certsData?.certificates || certsData || [];
-            const workshops = (workshopsData?.workshops || workshopsData || []).slice(0, 2);
-            const liveClasses = (liveData?.['live-classes'] || liveData || []).slice(0, 2);
-            const badges = badgesData?.badges || badgesData || [];
+            const workshops = (workshopsData?.workshops || workshopsData || []);
+            const liveClasses = (liveData?.['live-classes'] || liveData || []);
 
             const inProgress = courses.filter(c => (c.progress || 0) < 100);
             const completed = courses.filter(c => (c.progress || 0) >= 100);
@@ -316,145 +299,177 @@
             ];
             statMappings.forEach(s => { const el = document.getElementById(s.id); if (el && s.val !== undefined) el.textContent = s.val; });
 
-            // Continue Learning
-            const continueEl = document.getElementById('continueLearning');
-            if (inProgress.length) {
-                continueEl.innerHTML = inProgress.slice(0, 3).map(c => `
+            // Helper: render course card
+            function courseCard(c, showProgress) {
+                const fallbackImg = 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=400&auto=format&fit=crop';
+                return `
                     <div class="sd-progress-card">
-                        <div class="sd-progress-img"><img src="${c.thumbnail || 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=400&auto=format&fit=crop'}" alt="${c.title}"></div>
+                        <div class="sd-progress-img"><img src="${c.thumbnail_url || c.thumbnail || fallbackImg}" alt="${c.title}"></div>
                         <div class="sd-progress-info">
                             <h4>${c.title}</h4>
-                            <p>${c.instructor || ''}</p>
-                            <div class="sd-progress-bar"><div class="sd-progress-fill" style="width:${c.progress || 0}%;"></div></div>
-                            <div style="display:flex;justify-content:space-between;margin-top:0.25rem;"><span style="font-size:0.75rem;color:var(--text-light);">${c.progress || 0}% complete</span><a href="course-detail.html?id=${c.id}" style="font-size:0.8rem;color:var(--primary-color);text-decoration:none;font-weight:500;">Continue →</a></div>
+                            <p>${c.instructor || ''}${showProgress ? ' · ' + (c.progress || 0) + '% complete' : ''}</p>
+                            ${showProgress ? `<div class="sd-progress-bar"><div class="sd-progress-fill" style="width:${c.progress || 0}%;"></div></div>` : ''}
                         </div>
-                    </div>
-                `).join('');
-            } else {
-                continueEl.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:1.5rem 0;">No courses in progress. <a href="learning.html">Browse courses</a></p>';
+                    </div>`;
             }
 
-            // Upcoming Live Classes
-            const liveEl = document.getElementById('upcomingLive');
-            if (liveClasses.length) {
-                liveEl.innerHTML = liveClasses.map(l => `
-                    <div class="sd-progress-card">
-                        <div class="sd-progress-info">
-                            <h4>${l.title}</h4>
-                            <p>${l.scheduled_at ? new Date(l.scheduled_at).toLocaleString() : ''} · ${l.instructor || ''}</p>
-                            <a href="live-classes.html?id=${l.id}" class="btn btn-primary btn-sm" style="margin-top:0.5rem;">Join Class</a>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                liveEl.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:1rem 0;">No upcoming live classes.</p>';
+            function emptyState(msg, linkText, linkHref) {
+                return `<p style="color:var(--text-light);text-align:center;padding:2rem 0;">${msg}${linkText ? ` <a href="${linkHref}">${linkText}</a>` : ''}</p>`;
             }
 
-            // Upcoming Workshops
-            const wsEl = document.getElementById('upcomingWorkshops');
-            if (workshops.length) {
-                wsEl.innerHTML = workshops.map(w => `
-                    <div class="sd-progress-card">
-                        <div class="sd-progress-info">
-                            <h4>${w.title}</h4>
-                            <p>${w.date ? new Date(w.date).toLocaleDateString() : ''} · ${w.seats_left > 0 ? w.seats_left + ' spots left' : 'Full'}</p>
-                            <a href="workshop-detail.html?id=${w.id}" class="btn btn-outline btn-sm" style="margin-top:0.5rem;">View Details</a>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                wsEl.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:1rem 0;">No upcoming workshops.</p>';
-            }
+            // Continue Learning (overview + dedicated section)
+            const continueHtml = inProgress.length
+                ? inProgress.map(c => courseCard(c, true)).join('')
+                : emptyState('No courses in progress.', 'Browse courses', 'learning.html');
 
-            // Achievements
-            const badgeEl = document.getElementById('achievementsGrid');
-            if (badges.length) {
-                badgeEl.innerHTML = badges.slice(0, 8).map(b => `
-                    <div class="sd-badge">
-                        <div class="icon">${b.icon || b.image_url ? '<img src="' + (b.image_url || '') + '" style="width:32px;height:32px;">' : '🏅'}</div>
-                        <div class="name">${b.name}</div>
-                        <div class="desc">${b.description || ''}</div>
-                    </div>
-                `).join('');
-            } else {
-                badgeEl.innerHTML = '<p style="color:var(--text-light);grid-column:1/-1;text-align:center;padding:1rem 0;">No achievements yet.</p>';
-            }
+            const continueEl = document.getElementById('continueLearning');
+            if (continueEl) continueEl.innerHTML = inProgress.length ? inProgress.slice(0, 3).map(c => courseCard(c, true)).join('') : emptyState('No courses in progress.', 'Browse courses', 'learning.html');
 
-            // Recent Activity
-            const actEl = document.getElementById('recentActivity');
-            const lastCourse = inProgress[0] || completed[0];
-            if (lastCourse) {
-                const isComplete = (lastCourse.progress || 0) >= 100;
-                actEl.innerHTML = `
-                    <div style="flex:1;">
-                        <div style="font-weight:600;font-size:0.95rem;">${isComplete ? 'Completed' : 'Continuing'} "${lastCourse.title}"</div>
-                        <div style="font-size:0.8rem;color:var(--text-light);">${lastCourse.progress || 0}% complete</div>
-                    </div>
-                    <a href="course-detail.html?id=${lastCourse.id}" class="btn btn-outline btn-sm">View</a>
-                `;
-            } else {
-                actEl.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:1rem 0;">No recent activity.</p>';
-            }
+            const continueListEl = document.getElementById('continueLearningList');
+            if (continueListEl) continueListEl.innerHTML = continueHtml;
 
             // My Courses
             const coursesEl = document.getElementById('myCoursesList');
-            if (courses.length) {
-                coursesEl.innerHTML = courses.map(c => `
-                    <div class="sd-progress-card">
-                        <div class="sd-progress-img"><img src="${c.thumbnail || 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?q=80&w=400&auto=format&fit=crop'}" alt="${c.title}"></div>
-                        <div class="sd-progress-info">
-                            <h4>${c.title}</h4>
-                            <p>${c.instructor || ''} · ${c.progress || 0}% complete</p>
-                            <div class="sd-progress-bar"><div class="sd-progress-fill" style="width:${c.progress || 0}%;"></div></div>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                coursesEl.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:2rem 0;">No courses yet. <a href="learning.html">Browse courses</a></p>';
-            }
+            if (coursesEl) coursesEl.innerHTML = courses.length ? courses.map(c => courseCard(c, true)).join('') : emptyState('No courses yet.', 'Browse courses', 'learning.html');
 
             // Certificates
             const certEl = document.getElementById('myCertificatesList');
-            if (certs.length) {
-                certEl.innerHTML = certs.map(c => `
-                    <div class="sd-progress-card">
-                        <div class="sd-progress-info">
-                            <h4>${c.course_name || c.title}</h4>
-                            <p>Issued ${c.issued_at ? new Date(c.issued_at).toLocaleDateString() : ''}</p>
+            if (certEl) {
+                if (certs.length) {
+                    certEl.innerHTML = certs.map(c => `
+                        <div class="sd-progress-card">
+                            <div class="sd-progress-info">
+                                <h4>${c.course_name || c.title}</h4>
+                                <p>Issued ${c.issued_at ? new Date(c.issued_at).toLocaleDateString() : ''}</p>
+                            </div>
+                            <button class="btn btn-outline btn-sm"><i class="bi bi-download"></i> Download</button>
                         </div>
-                        <button class="btn btn-outline btn-sm"><i class="bi bi-download"></i> Download</button>
-                    </div>
-                `).join('');
-            } else {
-                certEl.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:2rem 0;">No certificates yet.</p>';
+                    `).join('');
+                } else {
+                    certEl.innerHTML = emptyState('No certificates yet.');
+                }
             }
 
-            // Activity
-            const actList = document.getElementById('myActivityList');
-            const activities = [];
-            if (completed.length) activities.push({ icon: 'bi-check-circle', bg: 'rgba(16,185,129,0.1)', color: '#10b981', text: 'Completed "' + completed[0].title + '"', time: 'Recently' });
-            if (certs.length) activities.push({ icon: 'bi-award', bg: 'rgba(245,158,11,0.1)', color: '#f59e0b', text: 'Earned certificate', time: 'Recently' });
-            if (inProgress.length) activities.push({ icon: 'bi-play-circle', bg: 'rgba(59,130,246,0.1)', color: '#3b82f6', text: 'Continuing "' + inProgress[0].title + '"', time: 'In progress' });
-            if (activities.length) {
-                actList.innerHTML = activities.map(a => `
-                    <div class="sd-activity-item" style="padding:0.75rem 0;">
-                        <div class="sd-activity-icon" style="background:${a.bg};color:${a.color};"><i class="bi ${a.icon}"></i></div>
-                        <div style="flex:1;"><div class="sd-activity-text">${a.text}</div><div class="sd-activity-time">${a.time}</div></div>
-                    </div>
-                `).join('');
-            } else {
-                actList.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:1rem 0;">No activity yet.</p>';
+            // Upcoming Live Classes (overview)
+            const liveEl = document.getElementById('upcomingLive');
+            if (liveEl) {
+                const upcoming = liveClasses.slice(0, 2);
+                if (upcoming.length) {
+                    liveEl.innerHTML = upcoming.map(l => `
+                        <div class="sd-progress-card">
+                            <div class="sd-progress-info">
+                                <h4>${l.title}</h4>
+                                <p>${l.scheduled_at ? new Date(l.scheduled_at).toLocaleString() : ''} · ${l.instructor || ''}</p>
+                                <a href="live-classes.html?id=${l.id}" class="btn btn-primary btn-sm" style="margin-top:0.5rem;">Join Class</a>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    liveEl.innerHTML = emptyState('No upcoming live classes.');
+                }
             }
 
-            // Wishlist
-            const wishlist = JSON.parse(localStorage.getItem('gallerySaved') || '[]');
-            document.getElementById('myWishlistList').innerHTML = wishlist.length ? '<p style="color:var(--text-light);">You have ' + wishlist.length + ' saved items. <a href="favorites.html">View all</a></p>' : '<p style="color:var(--text-light);">No items in wishlist yet.</p>';
+            // My Live Classes (full list)
+            const liveListEl = document.getElementById('myLiveList');
+            if (liveListEl) {
+                if (liveClasses.length) {
+                    liveListEl.innerHTML = liveClasses.map(l => `
+                        <div class="sd-progress-card">
+                            <div class="sd-progress-info">
+                                <h4>${l.title}</h4>
+                                <p>${l.day || ''} ${l.time || ''} · ${l.instructor || ''} · ${l.duration || ''}</p>
+                                <a href="live-classes.html?id=${l.id}" class="btn btn-outline btn-sm" style="margin-top:0.5rem;">View Details</a>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    liveListEl.innerHTML = emptyState('No live classes yet.', 'Browse classes', 'live-classes.html');
+                }
+            }
+
+            // Upcoming Workshops (overview)
+            const wsEl = document.getElementById('upcomingWorkshops');
+            if (wsEl) {
+                const upcomingWs = workshops.slice(0, 2);
+                if (upcomingWs.length) {
+                    wsEl.innerHTML = upcomingWs.map(w => `
+                        <div class="sd-progress-card">
+                            <div class="sd-progress-info">
+                                <h4>${w.title}</h4>
+                                <p>${w.date || ''} · ${w.seats_left > 0 ? w.seats_left + ' spots left' : 'Full'}</p>
+                                <a href="workshop-detail.html?id=${w.id}" class="btn btn-outline btn-sm" style="margin-top:0.5rem;">View Details</a>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    wsEl.innerHTML = emptyState('No upcoming workshops.');
+                }
+            }
+
+            // My Workshops (full list)
+            const wsListEl = document.getElementById('myWorkshopsList');
+            if (wsListEl) {
+                if (workshops.length) {
+                    wsListEl.innerHTML = workshops.map(w => `
+                        <div class="sd-progress-card">
+                            <div class="sd-progress-info">
+                                <h4>${w.title}</h4>
+                                <p>${w.date || ''} · ${w.instructor || ''} · ${w.duration || ''}</p>
+                                <a href="workshop-detail.html?id=${w.id}" class="btn btn-outline btn-sm" style="margin-top:0.5rem;">View Details</a>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    wsListEl.innerHTML = emptyState('No workshops yet.', 'Browse workshops', 'workshop-detail.html');
+                }
+            }
+
+            // Calendar
+            const calEl = document.getElementById('dashboardCalendar');
+            if (calEl) {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = now.getMonth();
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const today = now.getDate();
+                const monthName = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+                // Collect event days from live classes and workshops
+                const eventDays = new Set();
+                liveClasses.forEach(l => {
+                    if (l.scheduled_at) {
+                        const d = new Date(l.scheduled_at);
+                        if (d.getMonth() === month && d.getFullYear() === year) eventDays.add(d.getDate());
+                    }
+                });
+                workshops.forEach(w => {
+                    if (w.date) {
+                        const d = new Date(w.date);
+                        if (d.getMonth() === month && d.getFullYear() === year) eventDays.add(d.getDate());
+                    }
+                });
+
+                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                let grid = `<div class="sd-calendar-header"><button class="btn btn-outline btn-sm" disabled><i class="bi bi-chevron-left"></i></button><strong>${monthName}</strong><button class="btn btn-outline btn-sm" disabled><i class="bi bi-chevron-right"></i></button></div>`;
+                grid += '<div class="sd-calendar-grid">';
+                dayNames.forEach(d => { grid += `<div class="sd-calendar-day header">${d}</div>`; });
+                for (let i = 0; i < firstDay; i++) grid += '<div class="sd-calendar-day"></div>';
+                for (let d = 1; d <= daysInMonth; d++) {
+                    const classes = ['sd-calendar-day'];
+                    if (d === today) classes.push('today');
+                    if (eventDays.has(d)) classes.push('has-event');
+                    grid += `<div class="${classes.join(' ')}">${d}</div>`;
+                }
+                grid += '</div>';
+                calEl.innerHTML = grid;
+            }
 
             // Placeholder sections
-            ['myPathsList', 'myQuizzesList', 'myLiveList', 'myWorkshopsList'].forEach(id => {
+            ['myPathsList', 'myAssignmentsList', 'myQuizzesList', 'myDownloadsList'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el && !el.innerHTML.trim()) {
-                    el.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:2rem 0;">Coming soon.</p>';
+                    el.innerHTML = emptyState('Coming soon.');
                 }
             });
         }
