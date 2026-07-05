@@ -282,8 +282,7 @@ async function loadCourses() {
                     ${escapeHtml(instructor)}
                 </div>
                 <div class="learn-card-rating">
-                    <span class="stars">${renderStars(rating)}</span>
-                    <strong>${Number(rating).toFixed(1)}</strong>
+                    ${rating > 0 ? `<span class="stars">${renderStars(rating)}</span><strong>${Number(rating).toFixed(1)}</strong>` : ''}
                     <span class="count">(${formatNumber(students)} students)</span>
                 </div>
                 <div class="learn-card-meta">

@@ -234,7 +234,7 @@
             document.title = `${course.title} - Flower Ecosystem`;
             document.getElementById('breadcrumbCourse').textContent = course.title;
             document.getElementById('courseTitle').textContent = course.title;
-            document.getElementById('courseRating').textContent = course.rating || '0';
+            document.getElementById('courseRating').textContent = (course.rating || 0) > 0 ? course.rating : 'New';
             document.getElementById('courseReviews').textContent = course.reviews_count || course.reviews || 0;
             document.getElementById('courseStudents').textContent = course.students_count || course.students || 0;
             const dur = course.duration_minutes || course.duration || 0;
@@ -313,7 +313,7 @@
                     <div>
                         <h4 style="margin-bottom:0.25rem;">${course.instructor}</h4>
                         <div style="font-size:0.85rem;color:var(--primary-color);margin-bottom:0.5rem;">${course.instructorTitle || 'Expert Instructor'}</div>
-                        <div style="color:#f59e0b;font-size:0.85rem;margin-bottom:0.5rem;"><i class="bi bi-star-fill"></i> ${course.rating} <span style="color:var(--text-light);">Rating</span></div>
+                        ${(course.rating || 0) > 0 ? `<div style="color:#f59e0b;font-size:0.85rem;margin-bottom:0.5rem;"><i class="bi bi-star-fill"></i> ${course.rating} <span style="color:var(--text-light);">Rating</span></div>` : ''}
                         <p style="font-size:0.9rem;color:var(--text-light);line-height:1.6;">${course.instructorBio || 'Experienced professional sharing knowledge and expertise with learners.'}</p>
                     </div>
                 </div>
@@ -487,7 +487,7 @@
                             </a>
                             <p class="product-seller">${escapeHtml(c.instructor || '')}</p>
                             <div class="product-rating" style="margin:0.25rem 0;">
-                                ${'<i class="bi bi-star-fill" style="color:#f1c40f;font-size:0.8rem;"></i>'.repeat(Math.floor(Number(c.rating) || 0))}
+                                ${(c.rating || 0) > 0 ? '<i class="bi bi-star-fill" style="color:#f1c40f;font-size:0.8rem;"></i>'.repeat(Math.floor(Number(c.rating))) : ''}
                                 <span style="font-size:0.8rem;color:var(--text-light);">(${c.students_count || c.students || 0} students)</span>
                             </div>
                             <div class="product-footer">

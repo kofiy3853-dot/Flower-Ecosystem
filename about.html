@@ -91,10 +91,10 @@
             </div>
 
             <div class="stats-row reveal-up" style="margin-bottom:4rem;">
-                <div class="stat-item"><div class="stat-num">89K</div><div class="stat-label">Community Members</div></div>
-                <div class="stat-item"><div class="stat-num">40+</div><div class="stat-label">Countries</div></div>
-                <div class="stat-item"><div class="stat-num">12K+</div><div class="stat-label">Products Listed</div></div>
-                <div class="stat-item"><div class="stat-num">500+</div><div class="stat-label">Events Hosted</div></div>
+                <div class="stat-item"><div class="stat-num" id="aboutMembers">0</div><div class="stat-label">Community Members</div></div>
+                <div class="stat-item"><div class="stat-num" id="aboutCountries">1</div><div class="stat-label">Countries</div></div>
+                <div class="stat-item"><div class="stat-num" id="aboutProducts">0</div><div class="stat-label">Products Listed</div></div>
+                <div class="stat-item"><div class="stat-num" id="aboutEvents">0</div><div class="stat-label">Events Hosted</div></div>
             </div>
         </div>
     </section>
@@ -217,7 +217,7 @@
     <section class="section-padding">
         <div class="container">
             <div class="cta-banner reveal-up">
-                <h2>Ready to Join 89,000+ Flower Lovers?</h2>
+                <h2>Ready to Join Our Growing Community?</h2>
                 <p>Whether you're here to buy, sell, learn, or connect — there's a place for you in our community.</p>
                 <div style="display:flex;gap:0.75rem;justify-content:center;">
                     <a href="javascript:void(0)" onclick="sessionStorage.setItem('pending-auth','register');if(typeof openAuthModal==='function')openAuthModal('register');else window.location.href='index.html';" class="btn" style="background:white;color:var(--primary-color);font-weight:600;">Get Started Free</a>
@@ -236,5 +236,13 @@
     <script src="js/shared/cart.js?v=3.0"></script>
     <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
+    <script>
+        fetch('/api/stats').then(r => r.json()).then(s => {
+            document.getElementById('aboutMembers').textContent = s.users || 0;
+            document.getElementById('aboutProducts').textContent = s.products || 0;
+            document.getElementById('aboutEvents').textContent = '0';
+            document.getElementById('aboutCountries').textContent = '1';
+        }).catch(() => {});
+    </script>
 </body>
 </html>

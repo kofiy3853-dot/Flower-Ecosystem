@@ -213,7 +213,7 @@
                 <span><i class="bi bi-clock"></i> ${path.duration_hours || 0} Hours</span>
                 <span><i class="bi bi-award"></i> Certificate</span>
                 <span><i class="bi bi-people"></i> ${(path.student_count || 0).toLocaleString()} Students</span>
-                <span><i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${path.rating || '0'}</span>
+                ${(path.rating || 0) > 0 ? `<span><i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${path.rating}</span>` : ''}
                 <span><i class="bi bi-bar-chart"></i> ${path.level || 'Beginner'}</span>
             `;
 

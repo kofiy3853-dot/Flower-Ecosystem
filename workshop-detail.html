@@ -216,7 +216,7 @@
                 <span><i class="bi bi-geo-alt"></i> ${ws.location}</span>
                 <span><i class="bi bi-award"></i> Certificate</span>
                 <span><i class="bi bi-people"></i> ${ws.seats} Seats</span>
-                <span><i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${ws.rating}</span>
+                ${(ws.rating || 0) > 0 ? `<span><i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${ws.rating}</span>` : ''}
             `;
 
             document.getElementById('wsOutcomes').innerHTML = ws.outcomes.map(o =>
@@ -247,7 +247,7 @@
                 <div style="flex:1;">
                     <h4>${escapeHtml(ws.instructor)}</h4>
                     <div class="title">${escapeHtml(ws.instructorTitle)}</div>
-                    <div style="color:#f59e0b;font-size:0.85rem;margin-bottom:0.5rem;"><i class="bi bi-star-fill"></i> ${ws.rating} <span style="color:var(--text-light);">Rating</span></div>
+                    ${(ws.rating || 0) > 0 ? `<div style="color:#f59e0b;font-size:0.85rem;margin-bottom:0.5rem;"><i class="bi bi-star-fill"></i> ${ws.rating} <span style="color:var(--text-light);">Rating</span></div>` : ''}
                     <div style="display:flex;gap:1.25rem;font-size:0.85rem;color:var(--text-light);margin-bottom:0.75rem;">
                         <span><i class="bi bi-book"></i> ${ws.instructorCourses || 12} Courses</span>
                         <span><i class="bi bi-people"></i> ${(ws.instructorStudents || 3200).toLocaleString()} Students</span>

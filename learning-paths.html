@@ -136,7 +136,7 @@
                                 <span><i class="bi bi-book"></i> ${p.courses} Courses</span>
                                 <span><i class="bi bi-clock"></i> ${p.hours}h</span>
                                 <span><i class="bi bi-people"></i> ${p.students.toLocaleString()}</span>
-                                <span><i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${p.rating}</span>
+                                ${p.rating > 0 ? `<span><i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${p.rating}</span>` : ''}
                             </div>
                             <div class="lp-card-skills">
                                 ${(p.skills || []).slice(0, 4).map(s => `<span class="lp-skill">${escapeHtml(s)}</span>`).join('')}

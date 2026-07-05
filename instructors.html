@@ -222,7 +222,7 @@
                         </div>
                         <div class="inst-card-name">${escapeHtml(f.name)}</div>
                         <div class="inst-card-title">${escapeHtml(f.title)}</div>
-                        <div class="inst-card-rating"><i class="bi bi-star-fill"></i> ${f.rating} <span style="color:var(--text-light);">Rating</span></div>
+                        ${f.rating > 0 ? `<div class="inst-card-rating"><i class="bi bi-star-fill"></i> ${f.rating} <span style="color:var(--text-light);">Rating</span></div>` : ''}
                         <div class="inst-card-meta">
                             <span><i class="bi bi-book"></i> ${f.courses} Courses</span>
                             <span><i class="bi bi-people"></i> ${f.students.toLocaleString()} Students</span>
