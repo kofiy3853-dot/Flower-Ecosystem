@@ -274,6 +274,14 @@ function afterAuth() {
         window.location.href = 'admin.html';
         return;
     }
+    if (['instructor'].includes(role)) {
+        window.location.href = 'instructor-dashboard.html';
+        return;
+    }
+    if (['student'].includes(role)) {
+        window.location.href = 'student-dashboard.html';
+        return;
+    }
     if (['seller', 'florist', 'grower'].includes(role)) {
         window.location.href = 'seller-dashboard.html';
         return;
@@ -330,6 +338,8 @@ function updateAccountUI() {
                 e.preventDefault();
                 const role = (user.role || '').toLowerCase();
                 if (['admin', 'superadmin'].includes(role)) window.location.href = 'admin.html';
+                else if (['instructor'].includes(role)) window.location.href = 'instructor-dashboard.html';
+                else if (['student'].includes(role)) window.location.href = 'student-dashboard.html';
                 else if (['seller', 'florist', 'grower'].includes(role)) window.location.href = 'seller-dashboard.html';
                 else window.location.href = 'buyer-dashboard.html';
             };
@@ -445,6 +455,10 @@ function initAuth() {
                 const role = (user?.role || '').toLowerCase();
                 if (['admin', 'superadmin'].includes(role)) {
                     window.location.href = 'admin.html';
+                } else if (['instructor'].includes(role)) {
+                    window.location.href = 'instructor-dashboard.html';
+                } else if (['student'].includes(role)) {
+                    window.location.href = 'student-dashboard.html';
                 } else if (['seller', 'florist', 'grower'].includes(role)) {
                     window.location.href = 'seller-dashboard.html';
                 } else {
@@ -564,6 +578,8 @@ function handleHeaderAccountClick() {
     if (user) {
         const role = (user.role || '').toLowerCase();
         if (['admin', 'superadmin'].includes(role)) window.location.href = 'admin.html';
+        else if (['instructor'].includes(role)) window.location.href = 'instructor-dashboard.html';
+        else if (['student'].includes(role)) window.location.href = 'student-dashboard.html';
         else if (['seller', 'florist', 'grower'].includes(role)) window.location.href = 'seller-dashboard.html';
         else window.location.href = 'buyer-dashboard.html';
     } else {
