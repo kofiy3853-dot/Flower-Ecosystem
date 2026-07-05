@@ -469,8 +469,8 @@ function renderAnalytics(){
     if(statValues[2]) statValues[2].textContent=a.avgSession||'4.2m';
     if(statValues[3]) statValues[3].textContent=a.bounceRate||'32%';
 
-    drawLineChart('userGrowthCanvas',[850,920,980,1050,1120,1190,a.users||1254]);
-    drawBarChart('categoryRevenueCanvas',['Roses','Bouquets','Orchids','Succulents','Plants','Events'],[12400,8900,7300,5200,4100,3800]);
+    drawLineChart('userGrowthCanvas',[a.users||0]);
+    drawBarChart('categoryRevenueCanvas',['No Data'],[0]);
 
     const topCourses=courses.slice(0,4).map((c,i)=>`
         <div class="adm-top-item">
