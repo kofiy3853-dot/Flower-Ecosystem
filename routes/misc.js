@@ -208,8 +208,8 @@ router.post('/reviews/:id/helpful', requireAuth, asyncHandler(async (req, res) =
 }));
 
 router.get('/stats', asyncHandler(async (_, res) => {
-    if (!(await dbAvailable())) return res.json({ products: 0, sellers: 0, categories: 0, users: 0, students: 0, lessons: 0, courses: 0, instructors: 0 });
-    const [products, sellers, categories, users, students, lessons, courses, instructors] = await Promise.all([
+    if (!(await dbAvailable())) return res.json({ products: 0, sellers: 0, categories: 0, users: 0, students: 0, lessons: 0, courses: 0, instructors: 0, avg_rating: 0 });
+    const [products, sellers, categories, users, students, lessons, courses, instructors, avgRating] = await Promise.all([
         pool.query('SELECT COUNT(*)::int AS count FROM marketplace.products WHERE is_active = true'),
         pool.query("SELECT COUNT(DISTINCT id)::int AS count FROM auth.users WHERE role IN ('SELLER','FLORIST') AND is_active = true"),
         pool.query('SELECT COUNT(*)::int AS count FROM marketplace.categories'),
@@ -217,7 +217,8 @@ router.get('/stats', asyncHandler(async (_, res) => {
         pool.query('SELECT COUNT(*)::int AS count FROM learning.enrollments'),
         pool.query('SELECT COUNT(*)::int AS count FROM learning.lessons'),
         pool.query('SELECT COUNT(*)::int AS count FROM learning.courses WHERE is_published = true'),
-        pool.query("SELECT COUNT(DISTINCT instructor)::int AS count FROM learning.courses WHERE is_published = true")
+        pool.query("SELECT COUNT(DISTINCT instructor)::int AS count FROM learning.courses WHERE is_published = true"),
+        pool.query('SELECT ROUND(AVG(rating), 1) AS avg FROM learning.courses WHERE is_published = true AND rating > 0')
     ]);
     res.json({
         products: products.rows[0].count,
@@ -227,7 +228,8 @@ router.get('/stats', asyncHandler(async (_, res) => {
         students: students.rows[0].count,
         lessons: lessons.rows[0].count,
         courses: courses.rows[0].count,
-        instructors: instructors.rows[0].count
+        instructors: instructors.rows[0].count,
+        avg_rating: parseFloat(avgRating.rows[0].avg) || 0
     });
 }));
 
