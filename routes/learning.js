@@ -623,12 +623,15 @@ router.get('/learning-paths/:id', asyncHandler(async (req, res) => {
         async () => {
             const r = await pool.query('SELECT * FROM learning.learning_paths WHERE id = $1 OR slug = $1', [req.params.id]);
             if (!r.rows.length) return null;
-            const courses = await pool.query(
-                `SELECT c.*, lp.sort_order FROM learning.learning_path_courses lp
-                 JOIN learning.courses c ON c.id = lp.course_id
-                 WHERE lp.path_id = $1 ORDER BY lp.sort_order`,
-                [r.rows[0].id]
-            );
+            let courses = { rows: [] };
+            try {
+                courses = await pool.query(
+                    `SELECT c.*, lp.sort_order FROM learning.learning_path_courses lp
+                     JOIN learning.courses c ON c.id = lp.course_id
+                     WHERE lp.path_id = $1 ORDER BY lp.sort_order`,
+                    [r.rows[0].id]
+                );
+            } catch (e) {}
             return { ...r.rows[0], courses: courses.rows };
         },
         'learning-paths', res, false,
