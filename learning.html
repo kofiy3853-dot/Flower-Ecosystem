@@ -244,10 +244,10 @@
                     <a href="#courses" class="btn btn-outline" onclick="scrollToCourses(event)">Browse Courses</a>
                 </div>
                 <div class="learn-stats">
-                    <div class="learn-stat"><strong>5,000+</strong><span>Students</span></div>
-                    <div class="learn-stat"><strong>120+</strong><span>Lessons</span></div>
-                    <div class="learn-stat"><strong>25+</strong><span>Courses</span></div>
-                    <div class="learn-stat"><strong>15+</strong><span>Instructors</span></div>
+                    <div class="learn-stat"><strong id="statStudents">0</strong><span>Students</span></div>
+                    <div class="learn-stat"><strong id="statLessons">0</strong><span>Lessons</span></div>
+                    <div class="learn-stat"><strong id="statCourses">0</strong><span>Courses</span></div>
+                    <div class="learn-stat"><strong id="statInstructors">0</strong><span>Instructors</span></div>
                 </div>
             </div>
         </div>
@@ -476,6 +476,12 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             initLearningPage();
+            fetch('/api/stats').then(r => r.json()).then(s => {
+                document.getElementById('statStudents').textContent = s.students || 0;
+                document.getElementById('statLessons').textContent = s.lessons || 0;
+                document.getElementById('statCourses').textContent = s.courses || 0;
+                document.getElementById('statInstructors').textContent = s.instructors || 0;
+            }).catch(() => {});
         });
     </script>
 </body>
