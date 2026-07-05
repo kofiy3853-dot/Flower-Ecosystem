@@ -221,6 +221,20 @@ async function run() {
         // Courses are now created by instructors through the course creation wizard.
         // No seed data insertion — only real instructor-created courses appear.
 
+        // Clean up any leftover seed data (one-time migration)
+        try {
+            await client.query("DELETE FROM learning.live_classes");
+            await client.query("DELETE FROM learning.workshops");
+            await client.query("DELETE FROM learning.courses WHERE instructor NOT LIKE '%@%'");
+            await client.query("DELETE FROM learning.learning_paths");
+            await client.query("DELETE FROM learning.quizzes WHERE course_id NOT IN (SELECT id FROM learning.courses)");
+            await client.query("DELETE FROM learning.discussions WHERE user_id IS NULL");
+            await client.query("DELETE FROM learning.resources");
+            console.log('Seed data cleanup complete.');
+        } catch (e) {
+            console.log('Seed cleanup skipped:', e.message.split('\n')[0]);
+        }
+
         // Learning paths are now created by admins through the admin dashboard.
         // No seed data insertion — only real learning paths appear.
 
