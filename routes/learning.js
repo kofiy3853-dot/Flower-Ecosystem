@@ -623,7 +623,11 @@ router.get('/learning-paths/:id', asyncHandler(async (req, res) => {
         return res.status(503).json({ error: 'Database unavailable' });
     }
     try {
-        const r = await pool.query('SELECT * FROM learning.learning_paths WHERE id = $1 OR slug = $1', [req.params.id]);
+        const param = req.params.id;
+        const r = await pool.query(
+            'SELECT * FROM learning.learning_paths WHERE slug = $1 OR id::text = $1',
+            [param]
+        );
         if (!r.rows.length) {
             return res.status(404).json({ error: 'Learning path not found' });
         }
