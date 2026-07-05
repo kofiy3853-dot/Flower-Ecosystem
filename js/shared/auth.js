@@ -191,6 +191,8 @@ function loadAuthModal() {
                         <option value="buyer">Buyer</option>
                         <option value="seller">Seller/Florist</option>
                         <option value="grower">Grower</option>
+                        <option value="instructor">Instructor</option>
+                        <option value="student">Student</option>
                     </select>
                     <span class="error-message" id="registerRoleError" aria-live="polite"></span>
                 </div>
