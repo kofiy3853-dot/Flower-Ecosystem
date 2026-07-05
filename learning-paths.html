@@ -58,9 +58,9 @@
             </div>
             <div class="lp-list-stats">
                 <div class="lp-list-stat"><strong id="statPaths">0</strong><span>Learning Paths</span></div>
-                <div class="lp-list-stat"><strong>32+</strong><span>Courses Included</span></div>
-                <div class="lp-list-stat"><strong>12,500+</strong><span>Students Enrolled</span></div>
-                <div class="lp-list-stat"><strong>4.8</strong><span>Average Rating</span></div>
+                <div class="lp-list-stat"><strong id="statCourses">0</strong><span>Courses Included</span></div>
+                <div class="lp-list-stat"><strong id="statStudents">0</strong><span>Students Enrolled</span></div>
+                <div class="lp-list-stat"><strong id="statRating">0</strong><span>Average Rating</span></div>
             </div>
         </div>
     </section>
@@ -109,7 +109,15 @@
                 }
             } catch (e) {}
 
+            // Calculate real stats from API data
+            const totalCourses = pathsData.reduce((sum, p) => sum + (p.courses || 0), 0);
+            const totalStudents = pathsData.reduce((sum, p) => sum + (p.students || 0), 0);
+            const avgRating = pathsData.length ? (pathsData.reduce((sum, p) => sum + (p.rating || 0), 0) / pathsData.length).toFixed(1) : '0';
+
             document.getElementById('statPaths').textContent = pathsData.length;
+            document.getElementById('statCourses').textContent = totalCourses;
+            document.getElementById('statStudents').textContent = totalStudents.toLocaleString();
+            document.getElementById('statRating').textContent = avgRating;
             renderPaths(pathsData);
         }
 
