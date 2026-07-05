@@ -74,9 +74,9 @@
             </div>
             <div class="inst-stats">
                 <div class="inst-stat"><strong id="statInstructors">0</strong><span>Instructors</span></div>
-                <div class="inst-stat"><strong>320+</strong><span>Courses</span></div>
-                <div class="inst-stat"><strong>12,500+</strong><span>Students</span></div>
-                <div class="inst-stat"><strong>4.9</strong><span>Avg Rating</span></div>
+                <div class="inst-stat"><strong id="statCourses">0</strong><span>Courses</span></div>
+                <div class="inst-stat"><strong id="statStudents">0</strong><span>Students</span></div>
+                <div class="inst-stat"><strong id="statRating">0</strong><span>Avg Rating</span></div>
             </div>
         </div>
     </section>
@@ -161,6 +161,14 @@
             document.getElementById('statInstructors').textContent = allInstructors.length;
             filtered = [...allInstructors];
             renderInstructors();
+
+            // Load platform stats
+            try {
+                const stats = await fetch('/api/stats').then(r => r.json());
+                document.getElementById('statCourses').textContent = stats.courses || 0;
+                document.getElementById('statStudents').textContent = (stats.students || 0).toLocaleString();
+                document.getElementById('statRating').textContent = '4.9';
+            } catch {}
         }
 
         function filterExpertise(el, exp) {
