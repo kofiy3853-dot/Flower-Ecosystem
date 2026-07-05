@@ -729,4 +729,98 @@ router.get('/progress/overview', requireAuth, asyncHandler(async (req, res) => {
     }
 }));
 
+// ─── Instructor Dashboard Endpoints ───────────────────────────────────────
+
+router.get('/instructor/courses', requireInstructor, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    const r = await pool.query(
+        `SELECT c.*, COALESCE(e.enrolled, 0) AS enrolled_count
+         FROM learning.courses c
+         LEFT JOIN (SELECT course_id, COUNT(*) AS enrolled FROM learning.enrollments GROUP BY course_id) e ON e.course_id = c.id
+         WHERE c.instructor = $1 OR c.instructor = $2
+         ORDER BY c.created_at DESC`,
+        [req.user.email, req.user.id]
+    );
+    res.json(r.rows);
+}));
+
+router.get('/instructor/students', requireInstructor, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    const r = await pool.query(
+        `SELECT DISTINCT u.id, u.first_name, u.last_name, u.email, u.profile_image, u.created_at,
+                c.title AS course_title, c.id AS course_id,
+                ep.completed_lessons, ep.total_lessons,
+                CASE WHEN ep.completed_lessons >= ep.total_lessons AND ep.total_lessons > 0 THEN 'completed' ELSE 'active' END AS status
+         FROM learning.enrollments en
+         JOIN auth.users u ON u.id = en.user_id
+         JOIN learning.courses c ON c.id = en.course_id
+         LEFT JOIN LATERAL (
+             SELECT COUNT(*) FILTER (WHERE completed = true) AS completed_lessons,
+                    (SELECT COUNT(*) FROM learning.lessons WHERE course_id = c.id) AS total_lessons
+             FROM learning.lesson_progress WHERE user_id = en.user_id AND course_id = c.id
+         ) ep ON true
+         WHERE c.instructor = $1 OR c.instructor = $2
+         ORDER BY u.created_at DESC`,
+        [req.user.email, req.user.id]
+    );
+    res.json(r.rows);
+}));
+
+router.get('/instructor/assignments', requireInstructor, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    const r = await pool.query(
+        `SELECT a.*, u.first_name || ' ' || u.last_name AS student_name, c.title AS course_title
+         FROM learning.assignments a
+         JOIN auth.users u ON u.id = a.user_id
+         JOIN learning.courses c ON c.id = a.course_id
+         WHERE c.instructor = $1 OR c.instructor = $2
+         ORDER BY a.submitted_at DESC NULLS LAST, a.created_at DESC`,
+        [req.user.email, req.user.id]
+    );
+    res.json(r.rows);
+}));
+
+router.get('/instructor/live-classes', requireInstructor, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    const r = await pool.query(
+        `SELECT * FROM learning.live_classes
+         WHERE instructor = $1 OR instructor = $2
+         ORDER BY day DESC, time DESC`,
+        [req.user.email, req.user.id]
+    );
+    res.json(r.rows);
+}));
+
+router.get('/instructor/certificates', requireInstructor, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    const r = await pool.query(
+        `SELECT cert.*, u.first_name || ' ' || u.last_name AS student_name, c.title AS course_title
+         FROM learning.certificates cert
+         JOIN auth.users u ON u.id = cert.user_id
+         JOIN learning.courses c ON c.id = cert.course_id
+         WHERE c.instructor = $1 OR c.instructor = $2
+         ORDER BY cert.created_at DESC`,
+        [req.user.email, req.user.id]
+    );
+    res.json(r.rows);
+}));
+
+router.get('/instructor/analytics', requireInstructor, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json({ enrollments: 0, completionRate: 0, avgQuizScore: 0, revenue: 0 });
+    const [enrollRes, completionRes, quizRes, revenueRes] = await Promise.all([
+        pool.query(`SELECT COUNT(*) FROM learning.enrollments en JOIN learning.courses c ON c.id = en.course_id WHERE c.instructor = $1 OR c.instructor = $2`, [req.user.email, req.user.id]),
+        pool.query(`SELECT COUNT(*) FILTER (WHERE completed = true) AS completed, COUNT(*) AS total FROM learning.lesson_progress lp JOIN learning.courses c ON c.id = lp.course_id WHERE c.instructor = $1 OR c.instructor = $2`, [req.user.email, req.user.id]),
+        pool.query(`SELECT ROUND(AVG(score), 1) AS avg_score FROM learning.quiz_submissions qs JOIN learning.courses c ON c.id = qs.course_id WHERE c.instructor = $1 OR c.instructor = $2`, [req.user.email, req.user.id]),
+        pool.query(`SELECT COALESCE(SUM(c.price), 0) AS revenue FROM learning.enrollments en JOIN learning.courses c ON c.id = en.course_id WHERE c.instructor = $1 OR c.instructor = $2`, [req.user.email, req.user.id])
+    ]);
+    const completed = parseInt(completionRes.rows[0].completed) || 0;
+    const total = parseInt(completionRes.rows[0].total) || 1;
+    res.json({
+        enrollments: parseInt(enrollRes.rows[0].count) || 0,
+        completionRate: Math.round((completed / total) * 100) || 0,
+        avgQuizScore: parseFloat(quizRes.rows[0].avg_score) || 0,
+        revenue: parseFloat(revenueRes.rows[0].revenue) || 0
+    });
+}));
+
 module.exports = router;

@@ -218,7 +218,15 @@ const api = {
     fetchAdminAnalytics() { return fetch('/api/admin/analytics', { headers: authHeaders() }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
     fetchAdminAnnouncements() { return fetch('/api/admin/announcements', { headers: authHeaders() }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
     createAdminAnnouncement(data) { return apiFetchWithBody('/api/admin/announcements', 'POST', data); },
-    approveAdminProduct(id, is_active) { return apiFetchWithBody('/api/admin/products/' + id + '/approve', 'PUT', { is_active }); }
+    approveAdminProduct(id, is_active) { return apiFetchWithBody('/api/admin/products/' + id + '/approve', 'PUT', { is_active }); },
+
+    // ─── Instructor ─────────────────────────────────────────
+    fetchInstructorCourses() { return apiFetchWithBody('/api/courses/instructor/courses', 'GET'); },
+    fetchInstructorStudents() { return apiFetchWithBody('/api/courses/instructor/students', 'GET'); },
+    fetchInstructorAssignments() { return apiFetchWithBody('/api/courses/instructor/assignments', 'GET'); },
+    fetchInstructorLiveClasses() { return apiFetchWithBody('/api/courses/instructor/live-classes', 'GET'); },
+    fetchInstructorCertificates() { return apiFetchWithBody('/api/courses/instructor/certificates', 'GET'); },
+    fetchInstructorAnalytics() { return apiFetchWithBody('/api/courses/instructor/analytics', 'GET'); }
 };
 
 window.api = api;
