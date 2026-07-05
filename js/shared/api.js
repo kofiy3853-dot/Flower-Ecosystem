@@ -221,12 +221,12 @@ const api = {
     approveAdminProduct(id, is_active) { return apiFetchWithBody('/api/admin/products/' + id + '/approve', 'PUT', { is_active }); },
 
     // ─── Instructor ─────────────────────────────────────────
-    fetchInstructorCourses() { return apiFetchWithBody('/api/courses/instructor/courses', 'GET'); },
-    fetchInstructorStudents() { return apiFetchWithBody('/api/courses/instructor/students', 'GET'); },
-    fetchInstructorAssignments() { return apiFetchWithBody('/api/courses/instructor/assignments', 'GET'); },
-    fetchInstructorLiveClasses() { return apiFetchWithBody('/api/courses/instructor/live-classes', 'GET'); },
-    fetchInstructorCertificates() { return apiFetchWithBody('/api/courses/instructor/certificates', 'GET'); },
-    fetchInstructorAnalytics() { return apiFetchWithBody('/api/courses/instructor/analytics', 'GET'); }
+    fetchInstructorCourses() { return apiFetchWithBody('/api/instructor/courses', 'GET'); },
+    fetchInstructorStudents() { return apiFetchWithBody('/api/instructor/students', 'GET'); },
+    fetchInstructorAssignments() { return apiFetchWithBody('/api/instructor/assignments', 'GET'); },
+    fetchInstructorLiveClasses() { return apiFetchWithBody('/api/instructor/live-classes', 'GET'); },
+    fetchInstructorCertificates() { return apiFetchWithBody('/api/instructor/certificates', 'GET'); },
+    fetchInstructorAnalytics() { return apiFetchWithBody('/api/instructor/analytics', 'GET'); }
 };
 
 window.api = api;
