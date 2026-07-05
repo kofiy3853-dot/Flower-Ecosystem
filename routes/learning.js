@@ -634,7 +634,7 @@ router.get('/learning-paths/:id', asyncHandler(async (req, res) => {
         return res.json({ ...r.rows[0], courses: [] });
     } catch (err) {
         console.error('Learning path detail error:', err.message);
-        return res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: 'Failed to load learning path' });
     }
 }));
 
