@@ -297,6 +297,16 @@
         </div>
     </div>
 
+    <!-- ===== FEATURED CATEGORIES ===== -->
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container">
+            <h2 style="margin-bottom:1rem;">Featured Categories</h2>
+            <div class="category-grid" id="marketplaceCategories">
+                <p style="color:var(--text-light);grid-column:1/-1;">Loading categories...</p>
+            </div>
+        </div>
+    </section>
+
     <!-- ===== FEATURED COLLECTIONS ===== -->
     <section class="section-padding" style="padding-top:0;">
         <div class="container">
@@ -412,6 +422,25 @@
             loadFiltersFromURL();
             loadSellers();
             loadRecentlyViewed();
+            loadMarketplaceCategories();
+        }
+
+        async function loadMarketplaceCategories() {
+            try {
+                const data = await fetch('/api/products/list/categories').then(r => r.json());
+                const cats = data.categories || data || [];
+                const grid = document.getElementById('marketplaceCategories');
+                if (!cats.length) { grid.innerHTML = '<p style="color:var(--text-light);grid-column:1/-1;">No categories yet</p>'; return; }
+                const colors = ['#e74c3c', '#27ae60', '#8b5cf6', '#f59e0b', '#3b82f6', '#ec4899'];
+                const icons = ['bi-flower1', 'bi-tree', 'bi-flower3', 'bi-sun', 'bi-moisture', 'bi-stars'];
+                grid.innerHTML = cats.map((c, i) => `
+                    <a href="marketplace.html?category=${encodeURIComponent(c.slug || c.name)}" class="category-card" style="text-decoration:none;color:inherit;">
+                        <div class="category-icon" style="background:${colors[i % colors.length]}15;color:${colors[i % colors.length]};"><i class="bi ${icons[i % icons.length]}"></i></div>
+                        <h4>${escapeHtml(c.name)}</h4>
+                        <p>${c.product_count || 0} products</p>
+                    </a>
+                `).join('');
+            } catch { }
         }
 
         async function loadUserFavorites() {
