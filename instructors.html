@@ -137,39 +137,27 @@
             'photography': ['Floral Photographer', 'Content Creator', 'Visual Artist']
         };
 
-        const instructorsData = [
-            { name: 'Sarah Mensah', title: 'Master Florist', bio: 'Award-winning florist with 15 years of experience in luxury wedding arrangements and event design.', expertise: 'floral-design', courses: 18, students: 4200, experience: 15, rating: 4.9, skills: ['Wedding Design', 'Luxury Bouquets', 'Color Theory', 'Event Styling'], verified: true, img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=200&auto=format&fit=crop' },
-            { name: 'Kwame Asante', title: 'Flower Farm Expert', bio: 'Agricultural specialist focused on sustainable flower farming and greenhouse management in tropical climates.', expertise: 'flower-farming', courses: 12, students: 2800, experience: 20, rating: 4.8, skills: ['Soil Science', 'Greenhouse', 'Pest Control', 'Harvesting'], verified: true, img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=200&auto=format&fit=crop' },
-            { name: 'Ama Darko', title: 'Plant Care Specialist', bio: 'Passionate about indoor gardening and helping people create green spaces in their homes and offices.', expertise: 'plant-care', courses: 8, students: 3100, experience: 10, rating: 4.7, skills: ['Indoor Plants', 'Propagation', 'Plant Health', 'Terrariums'], verified: true, img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=200&auto=format&fit=crop' },
-            { name: 'Kofi Mensah', title: 'Business Coach', bio: 'Former flower shop owner turned business consultant. Helps florists build profitable businesses.', expertise: 'business', courses: 6, students: 1900, experience: 12, rating: 4.9, skills: ['Business Planning', 'Pricing', 'Marketing', 'Finance'], verified: true, img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=200&auto=format&fit=crop' },
-            { name: 'Efua Osei', title: 'Event Decoration Expert', bio: 'Specializes in transforming venues with stunning floral installations for weddings and corporate events.', expertise: 'event-decoration', courses: 10, students: 2400, experience: 14, rating: 4.8, skills: ['Wedding Decor', 'Corporate Events', 'Venue Styling', 'Installations'], verified: true, img: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?q=200&auto=format&fit=crop' },
-            { name: 'Nana Agyeman', title: 'Floral Photographer', bio: 'Professional photographer specializing in floral product photography and social media content creation.', expertise: 'photography', courses: 5, students: 1500, experience: 8, rating: 4.6, skills: ['Product Photography', 'Social Media', 'Lighting', 'Branding'], verified: true, img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=200&auto=format&fit=crop' },
-            { name: 'Akua Boateng', title: 'Sustainable Florist', bio: 'Pioneering eco-friendly floristry practices and teaching sustainable approaches to floral design.', expertise: 'floral-design', courses: 7, students: 1800, experience: 9, rating: 4.7, skills: ['Eco-Friendly', 'Organic', 'Sustainable Design', 'Local Sourcing'], verified: true, img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=200&auto=format&fit=crop' },
-            { name: 'Yaw Frimpong', title: 'Landscape Designer', bio: 'Creates beautiful outdoor spaces combining floral design with landscape architecture principles.', expertise: 'plant-care', courses: 9, students: 2100, experience: 16, rating: 4.8, skills: ['Landscape Design', 'Garden Planning', 'Outdoor Plants', 'Hardscaping'], verified: true, img: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=200&auto=format&fit=crop' }
-        ];
-
         async function initInstructors() {
-            // Use built-in data + any from API
             let apiInstructors = [];
             try {
                 const data = await fetch('/api/products/list/florists').then(r => r.json());
                 apiInstructors = (data.florists || data || []).map(f => ({
                     name: f.name,
                     title: f.role || 'Instructor',
-                    bio: 'Expert florist sharing knowledge and experience with learners.',
-                    expertise: 'floral-design',
-                    courses: Math.floor(Math.random() * 10) + 3,
-                    students: Math.floor(Math.random() * 3000) + 500,
-                    experience: Math.floor(Math.random() * 15) + 5,
-                    rating: (4.5 + Math.random() * 0.5).toFixed(1),
-                    skills: ['Floral Design', 'Bouquets', 'Event Styling'],
-                    verified: true,
+                    bio: f.bio || 'Expert florist sharing knowledge and experience with learners.',
+                    expertise: f.expertise || 'floral-design',
+                    courses: f.course_count || 0,
+                    students: f.student_count || 0,
+                    experience: f.experience_years || 0,
+                    rating: Number(f.rating) || 0,
+                    skills: f.skills || [],
+                    verified: f.is_verified || false,
                     id: f.id,
-                    img: f.image
+                    img: f.image || f.profile_image
                 }));
             } catch {}
 
-            allInstructors = [...instructorsData, ...apiInstructors];
+            allInstructors = apiInstructors;
             document.getElementById('statInstructors').textContent = allInstructors.length;
             filtered = [...allInstructors];
             renderInstructors();

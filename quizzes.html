@@ -103,62 +103,7 @@
     <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/api.js?v=4.0"></script>
     <script>
-        const quizzes = [
-            { id: 'q1', title: 'Flower Identification', course: 'Introduction to Flowers', questions: 20, time: 15, difficulty: 'Beginner', icon: 'bi-flower1', students: 1250, score: null,
-              data: [
-                { q: 'Which flower is known as the "Queen of Flowers"?', opts: ['Rose', 'Tulip', 'Orchid', 'Lily'], correct: 0 },
-                { q: 'What is the most popular color for roses?', opts: ['Yellow', 'Red', 'Pink', 'White'], correct: 1 },
-                { q: 'Sunflowers turn to face which direction?', opts: ['West', 'North', 'East (toward the sun)', 'South'], correct: 2 },
-                { q: 'Which flower symbolizes purity?', opts: ['Rose', 'Daisy', 'Tulip', 'Orchid'], correct: 1 },
-                { q: 'What is the national flower of Ghana?', opts: ['Rose', 'Sunflower', 'Yellow Trumpet', 'Orchid'], correct: 2 }
-              ]
-            },
-            { id: 'q2', title: 'Floral Design Basics', course: 'Professional Floral Design', questions: 15, time: 20, difficulty: 'Intermediate', icon: 'bi-palette', students: 980, score: null,
-              data: [
-                { q: 'What is the primary rule of floral arrangement?', opts: ['Symmetry', 'Balance', 'Color matching', 'Size variation'], correct: 1 },
-                { q: 'Which tool is essential for cutting stems?', opts: ['Knife', 'Scissors', 'Pruning shears', 'Wire cutters'], correct: 2 },
-                { q: 'What is the focal point in an arrangement?', opts: ['The largest flower', 'The center of attention', 'The tallest element', 'The greenery'], correct: 1 },
-                { q: 'What does "odd number rule" refer to?', opts: ['Using odd colors', 'Odd number of stems', 'Odd number of vases', 'Odd angles'], correct: 1 },
-                { q: 'What is the best water temperature for most flowers?', opts: ['Ice cold', 'Room temperature', 'Lukewarm', 'Hot'], correct: 2 }
-              ]
-            },
-            { id: 'q3', title: 'Wedding Floristry', course: 'Wedding Floral Design', questions: 25, time: 30, difficulty: 'Advanced', icon: 'bi-ring', students: 750, score: null,
-              data: [
-                { q: 'What is a bridal bouquet style that hangs downward?', opts: ['Nosegay', 'Cascade', 'Round', 'Posy'], correct: 1 },
-                { q: 'How many boutonnieres are typically needed for a wedding?', opts: ['1-2', '3-5', '5-8', '10+'], correct: 2 },
-                { q: 'What is the most popular flower for weddings?', opts: ['Tulip', 'Rose', 'Peony', 'Hydrangea'], correct: 1 },
-                { q: 'When should wedding flowers be delivered?', opts: ['1 week before', 'Day before', 'Morning of the wedding', '2 hours before ceremony'], correct: 2 },
-                { q: 'What is a "throwing bouquet"?', opts: ['The bridesmaid bouquet', 'A smaller bouquet tossed to single guests', 'The centerpiece', 'A practice bouquet'], correct: 1 }
-              ]
-            },
-            { id: 'q4', title: 'Flower Care & Handling', course: 'Flower Care Basics', questions: 18, time: 15, difficulty: 'Beginner', icon: 'bi-droplet', students: 1100, score: null,
-              data: [
-                { q: 'How should you cut flower stems?', opts: ['Straight across', 'At a 45-degree angle', 'Diagonally up', 'Ragged tear'], correct: 1 },
-                { q: 'How often should you change flower water?', opts: ['Every day', 'Every 2-3 days', 'Once a week', 'Never'], correct: 1 },
-                { q: 'Which flowers are toxic to cats?', opts: ['Sunflowers', 'Roses', 'Lilies', 'Daisies'], correct: 2 },
-                { q: 'What is the best storage temperature for most cut flowers?', opts: ['32-34°F (0-1°C)', '45-50°F (7-10°C)', '60-65°F (15-18°C)', 'Room temperature'], correct: 1 },
-                { q: 'What causes flowers to wilt faster?', opts: ['Cold water', 'Warm water', 'Bacteria in the water', 'Direct sunlight'], correct: 2 }
-              ]
-            },
-            { id: 'q5', title: 'Flower Farming Basics', course: 'Flower Farming', questions: 20, time: 25, difficulty: 'Intermediate', icon: 'bi-tree', students: 620, score: null,
-              data: [
-                { q: 'What pH level do most flowers prefer?', opts: ['5.0-6.0', '6.0-7.0', '7.0-8.0', '8.0-9.0'], correct: 1 },
-                { q: 'What is the best time to harvest roses?', opts: ['Morning', 'Noon', 'Evening', 'Night'], correct: 0 },
-                { q: 'Which soil type is best for flower farming?', opts: ['Clay', 'Sandy', 'Loamy', 'Rocky'], correct: 2 },
-                { q: 'How deep should tulip bulbs be planted?', opts: ['1 inch', '3 inches', '6 inches', '12 inches'], correct: 2 },
-                { q: 'What is deadheading?', opts: ['Watering plants', 'Removing spent blooms', 'Planting seeds', 'Adding fertilizer'], correct: 1 }
-              ]
-            },
-            { id: 'q6', title: 'Floral Business', course: 'Flower Business Management', questions: 22, time: 20, difficulty: 'Intermediate', icon: 'bi-shop', students: 480, score: null,
-              data: [
-                { q: 'What is the typical markup for fresh flowers?', opts: ['50-100%', '100-200%', '200-400%', '400-600%'], correct: 2 },
-                { q: 'What is the most important factor in flower shop location?', opts: ['Rent cost', 'Foot traffic', 'Parking', 'Size'], correct: 1 },
-                { q: 'How many days of inventory should a flower shop carry?', opts: ['1-2 days', '3-4 days', '5-7 days', '1-2 weeks'], correct: 0 },
-                { q: 'What percentage of revenue should go to marketing?', opts: ['1-3%', '5-10%', '15-20%', '25-30%'], correct: 1 },
-                { q: 'What is the average flower shop profit margin?', opts: ['5-10%', '10-15%', '15-25%', '30-40%'], correct: 2 }
-              ]
-            }
-        ];
+        let quizzes = [];
 
         let currentQuiz = null;
         let currentQuestion = 0;
@@ -171,6 +116,30 @@
                 sessionStorage.setItem('pending-redirect', 'quizzes.html');
                 openAuthModal('login');
                 return;
+            }
+
+            // Fetch quizzes from API
+            try {
+                const apiData = await api.fetchJSON('/api/quizzes');
+                if (apiData && apiData.length) {
+                    quizzes = apiData.map(q => ({
+                        id: q.id,
+                        title: q.title || 'Quiz',
+                        course: q.course_title || q.course || '',
+                        questions: q.question_count || (q.questions ? q.questions.length : 0),
+                        time: q.time_minutes || 15,
+                        difficulty: q.difficulty || 'Beginner',
+                        icon: q.icon || 'bi-question-circle',
+                        students: q.student_count || 0,
+                        score: null,
+                        data: (q.questions || []).map(qq => ({
+                            q: qq.question || qq.text || '',
+                            opts: qq.options || [],
+                            correct: qq.correct_answer || qq.correct || 0
+                        }))
+                    }));
+                }
+            } catch (e) {}
             }
             // Fetch quizzes from API
             try {

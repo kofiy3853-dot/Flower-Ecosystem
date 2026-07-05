@@ -234,23 +234,9 @@
             { name: 'Plant Consultation', icon: 'bi bi-leaf', desc: 'Care advice and plant selection', count: 0 }
         ];
 
-        const providers = [
-            { name: 'Bloom Events', specialty: 'Wedding Specialist', rating: 4.9, projects: 120, location: 'Accra', price: 'GHS 500', verified: true, img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=200&auto=format&fit=crop' },
-            { name: 'Garden Pro', specialty: 'Landscaping Expert', rating: 4.8, projects: 85, location: 'Kumasi', price: 'GHS 300', verified: true, img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=200&auto=format&fit=crop' },
-            { name: 'Petal Studio', specialty: 'Floral Designer', rating: 4.7, projects: 95, location: 'Accra', price: 'GHS 250', verified: true, img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=200&auto=format&fit=crop' },
-            { name: 'Earth & Bloom', specialty: 'Eco-Friendly Florist', rating: 4.9, projects: 67, location: 'Cape Coast', price: 'GHS 200', verified: true, img: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?q=200&auto=format&fit=crop' },
-            { name: 'Event Masters', specialty: 'Event Decoration', rating: 4.6, projects: 150, location: 'Tema', price: 'GHS 400', verified: true, img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=200&auto=format&fit=crop' },
-            { name: 'Green Thumb', specialty: 'Garden Maintenance', rating: 4.8, projects: 200, location: 'Accra', price: 'GHS 150', verified: true, img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=200&auto=format&fit=crop' }
-        ];
+        const providers = [];
 
-        const reviews = [
-            { rating: 5, text: 'Bloom Events made our wedding absolutely magical. The floral arrangements were beyond our expectations!', author: 'Sarah & John', event: 'Wedding' },
-            { rating: 5, text: 'Garden Pro transformed our backyard into a stunning garden. Professional and timely service.', author: 'Kwame A.', event: 'Landscaping' },
-            { rating: 4, text: 'Beautiful corporate flowers delivered weekly. Our office has never looked better!', author: 'Tech Solutions Ltd', event: 'Corporate' },
-            { rating: 5, text: 'Petal Studio created the most amazing birthday surprise for my wife. Highly recommended!', author: 'Michael O.', event: 'Birthday' },
-            { rating: 5, text: 'Earth & Bloom provided eco-friendly arrangements that were both beautiful and sustainable.', author: 'Ama K.', event: 'Custom Bouquet' },
-            { rating: 4, text: 'Professional sympathy arrangements delivered with care and respect. Thank you.', author: 'The Mensah Family', event: 'Sympathy' }
-        ];
+        const reviews = [];
 
         const faqs = [
             { q: 'How do I book a service?', a: 'Browse services, view provider profiles, and either book directly or submit a quote request. The provider will confirm within 24 hours.' },
@@ -263,7 +249,6 @@
         async function initServices() {
             // Try API first
             try {
-                // For services, we piggyback on the florists/members endpoints
                 const [florists] = await Promise.all([
                     api.fetchJSON('/api/members/featured').catch(() => [])
                 ]);
@@ -272,12 +257,12 @@
                     florists.forEach(f => providers.push({
                         name: f.name || f.full_name || 'Florist',
                         specialty: f.specialty || 'Floral Services',
-                        rating: f.rating || 4.5,
-                        projects: f.project_count || Math.floor(Math.random() * 200) + 20,
-                        location: f.location || (f.city ? f.city + (f.state ? ', ' + f.state : '') : 'Accra'),
-                        price: f.price_range || 'GHS 200',
-                        verified: true,
-                        img: f.profile_image || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=200&auto=format&fit=crop'
+                        rating: Number(f.rating) || 0,
+                        projects: f.project_count || 0,
+                        location: f.location || (f.city ? f.city + (f.state ? ', ' + f.state : '') : ''),
+                        price: f.price_range || '',
+                        verified: f.is_verified || false,
+                        img: f.profile_image
                     }));
                 }
             } catch (e) {}
@@ -320,14 +305,16 @@
                 </div>
             `).join('');
 
-            document.getElementById('reviewsGrid').innerHTML = reviews.map(r => `
-                <div class="review-card">
-                    <div class="review-stars">${renderStars(r.rating)}</div>
-                    <div class="review-text">${escapeHtml(r.text)}</div>
-                    <div class="review-author">${escapeHtml(r.author)}</div>
-                    <div class="review-event">${escapeHtml(r.event)}</div>
-                </div>
-            `).join('');
+            document.getElementById('reviewsGrid').innerHTML = reviews.length
+                ? reviews.map(r => `
+                    <div class="review-card">
+                        <div class="review-stars">${renderStars(r.rating)}</div>
+                        <div class="review-text">${escapeHtml(r.text)}</div>
+                        <div class="review-author">${escapeHtml(r.author)}</div>
+                        <div class="review-event">${escapeHtml(r.event)}</div>
+                    </div>
+                `).join('')
+                : '<p style="color:var(--text-light);text-align:center;grid-column:1/-1;padding:2rem;">No reviews yet.</p>';
 
             document.getElementById('faqList').innerHTML = faqs.map((f, i) => `
                 <div class="faq-item${i === 0 ? ' open' : ''}" onclick="this.classList.toggle('open')">

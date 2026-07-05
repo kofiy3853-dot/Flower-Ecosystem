@@ -181,118 +181,23 @@
     <script src="js/shared/animations.js?v=3.0"></script>
     <script src="js/shared/api.js?v=4.0"></script>
     <script>
-        const workshops = {
-            'wedding-masterclass': {
-                title: 'Advanced Wedding Floral Design Masterclass',
-                desc: 'Learn professional wedding floral design techniques through live demonstration and guided practice. Build elegant bridal bouquets, centerpieces, and venue decorations.',
-                overview: 'This intensive workshop covers everything from flower selection to final presentation for wedding events. You\'ll learn industry-standard techniques used by top florists, practice hands-on arrangements, and receive personalized feedback from an experienced master florist.',
-                date: 'Saturday, July 18', time: '9:00 AM – 1:00 PM', duration: '4 Hours',
-                instructor: 'Sarah Mensah', instructorTitle: 'Master Florist', instructorImg: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=200&auto=format&fit=crop',
-                instructorBio: 'Award-winning florist with 15 years of experience in luxury wedding arrangements and event design. Featured in numerous international floral publications.', instructorCourses: 18, instructorStudents: 4200, instructorExperience: 15,
-                location: 'Online (Zoom)', type: 'online',
-                price: 'GHS 150', seats: 45, seatsLeft: 12, rating: 4.9,
-                outcomes: ['Create professional bridal bouquets', 'Design floral centerpieces for receptions', 'Select the right flowers for each wedding element', 'Price wedding floral services accurately', 'Package and present bouquets professionally'],
-                agenda: [
-                    { time: '09:00', title: 'Welcome & Introduction', desc: 'Meet your instructor and overview of the session' },
-                    { time: '09:20', title: 'Flower Selection for Weddings', desc: 'Choosing blooms by season, color, and meaning' },
-                    { time: '10:00', title: 'Live Demonstration', desc: 'Watch a master florist create a bridal bouquet step by step' },
-                    { time: '11:00', title: 'Hands-on Practice', desc: 'Create your own arrangement with guided instruction' },
-                    { time: '12:15', title: 'Q&A Session', desc: 'Ask questions and get personalized feedback' },
-                    { time: '12:45', title: 'Certificate & Closing', desc: 'Receive your certificate and workshop resources' }
-                ],
-                materialsOnline: ['Laptop or tablet', 'Stable internet connection', 'Notebook for notes', 'Optional: practice flowers for hands-on section'],
-                materialsPhysical: ['Floral scissors', 'Ribbon and wrapping', 'Floral foam', 'Practice flowers', 'Vase or container'],
-                faqs: [
-                    { q: 'Will I receive a certificate?', a: 'Yes, all participants who attend the full session receive a digital certificate of completion.' },
-                    { q: 'Can beginners join?', a: 'This workshop is designed for intermediate learners, but ambitious beginners are welcome to join.' },
-                    { q: 'Will the session be recorded?', a: 'Yes, the recording will be available to all registered participants within 24 hours after the workshop.' },
-                    { q: 'What if I miss the live session?', a: 'You can watch the recording and still receive your certificate by completing the follow-up exercise.' }
-                ],
-                reviews: [
-                    { name: 'Ama K.', rating: 5, text: 'Sarah explained everything so clearly. I made my first professional bouquet!', course: 'Wedding Masterclass' },
-                    { name: 'Kofi M.', rating: 5, text: 'Best workshop I\'ve attended. The hands-on practice was invaluable.', course: 'Wedding Masterclass' }
-                ],
-                testimonials: [
-                    { name: 'Esi O.', role: 'Wedding Planner', text: 'After this workshop, I confidently offer floral design as part of my wedding planning packages. My clients love the results.', avatar: 'E' },
-                    { name: 'Kwame A.', role: 'Florist Shop Owner', text: 'Sarah\'s teaching style is incredible. I learned techniques that immediately improved my shop\'s arrangements.', avatar: 'K' },
-                    { name: 'Ama D.', role: 'Event Decorator', text: 'The wedding masterclass gave me the confidence to charge premium prices. My portfolio has transformed completely.', avatar: 'A' }
-                ]
-            },
-            'bouquet-fundamentals': {
-                title: 'Bouquet Design Fundamentals',
-                desc: 'Master the basics of bouquet design from color theory to wrapping techniques. Perfect for beginners starting their floristry journey.',
-                overview: 'This beginner-friendly workshop covers the essential skills every florist needs. Learn to choose flowers, create balanced arrangements, and present them beautifully.',
-                date: 'Saturday, July 25', time: '10:00 AM – 12:00 PM', duration: '2 Hours',
-                instructor: 'Efua Osei', instructorTitle: 'Event Decoration Expert', instructorImg: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?q=200&auto=format&fit=crop',
-                instructorBio: 'Specializes in transforming venues with stunning floral installations for weddings and corporate events. Passionate about teaching beginners.', instructorCourses: 10, instructorStudents: 2400, instructorExperience: 14,
-                location: 'Online (Zoom)', type: 'online',
-                price: 'Free', seats: 60, seatsLeft: 28, rating: 4.7,
-                outcomes: ['Understand color theory for floral design', 'Create a basic hand-tied bouquet', 'Master wrapping and presentation', 'Choose flowers by season and budget'],
-                agenda: [
-                    { time: '10:00', title: 'Introduction to Bouquet Design', desc: 'Overview of styles, tools, and materials' },
-                    { time: '10:20', title: 'Color Theory for Florists', desc: 'How to combine colors harmoniously' },
-                    { time: '10:50', title: 'Live Demo: Hand-Tied Bouquet', desc: 'Step-by-step demonstration' },
-                    { time: '11:15', title: 'Practice & Feedback', desc: 'Create your own bouquet with guidance' },
-                    { time: '11:50', title: 'Wrapping & Presentation', desc: 'Professional finishing techniques' }
-                ],
-                materialsOnline: ['Laptop', 'Internet connection', 'Notebook'],
-                materialsPhysical: ['Scissors', 'Ribbon', '3-5 stems of any flower', 'Wrapping paper'],
-                faqs: [
-                    { q: 'Is this suitable for absolute beginners?', a: 'Yes! This workshop is designed for people with no prior experience.' },
-                    { q: 'Do I need to buy flowers?', a: 'For the online version, no. For in-person, a practice kit is recommended.' }
-                ],
-                reviews: [
-                    { name: 'Esi O.', rating: 5, text: 'Perfect starting point. I now make bouquets for my friends!', course: 'Bouquet Fundamentals' }
-                ],
-                testimonials: [
-                    { name: 'Nana B.', role: 'Home Gardener', text: 'I never thought I could make something this beautiful. The step-by-step approach made it so easy.', avatar: 'N' },
-                    { name: 'Akua S.', role: 'Student', text: 'Efua is an amazing teacher. Patient, clear, and inspiring. I\'m already signed up for her next workshop.', avatar: 'A' }
-                ]
-            },
-            'flower-farming': {
-                title: 'Sustainable Flower Farming Workshop',
-                desc: 'Learn organic farming techniques for growing cut flowers. Cover soil preparation, planting, pest control, and harvesting.',
-                overview: 'Whether you have a backyard or a small farm, this workshop teaches you to grow flowers sustainably. Learn from an experienced farmer who runs a successful organic flower farm.',
-                date: 'Saturday, August 1', time: '8:00 AM – 12:00 PM', duration: '4 Hours',
-                instructor: 'Kwame Asante', instructorTitle: 'Flower Farm Expert', instructorImg: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=200&auto=format&fit=crop',
-                instructorBio: 'Agricultural specialist focused on sustainable flower farming and greenhouse management. Runs a successful organic flower farm in Kumasi.', instructorCourses: 12, instructorStudents: 2800, instructorExperience: 20,
-                location: 'Flower Ecosystem Farm, Kumasi', type: 'physical',
-                price: 'GHS 200', seats: 20, seatsLeft: 8, rating: 4.8,
-                outcomes: ['Prepare soil for flower cultivation', 'Select and propagate flower varieties', 'Manage pests organically', 'Harvest flowers at peak freshness', 'Plan a seasonal planting schedule'],
-                agenda: [
-                    { time: '08:00', title: 'Farm Tour & Welcome', desc: 'Tour the flower farm and meet the team' },
-                    { time: '08:30', title: 'Soil Preparation', desc: 'Hands-on soil testing and amendment' },
-                    { time: '09:30', title: 'Planting Techniques', desc: 'Seed selection and planting methods' },
-                    { time: '10:30', title: 'Pest Management', desc: 'Organic pest control strategies' },
-                    { time: '11:15', title: 'Harvesting & Post-Harvest', desc: 'When and how to harvest for maximum freshness' }
-                ],
-                materialsOnline: [],
-                materialsPhysical: ['Sun hat', 'Closed shoes', 'Notebook', 'Water bottle', 'Gloves (optional)'],
-                faqs: [
-                    { q: 'Is this held outdoors?', a: 'Yes, the workshop takes place on our flower farm. Dress appropriately for outdoor activity.' },
-                    { q: 'What should I wear?', a: 'Comfortable clothes that can get dirty, closed-toe shoes, and sun protection.' }
-                ],
-                reviews: [
-                    { name: 'Nana A.', rating: 5, text: 'Incredible hands-on experience. I started my own flower farm after this.', course: 'Flower Farming' }
-                ],
-                testimonials: [
-                    { name: 'Kofi F.', role: 'Aspiring Farmer', text: 'Kwame knows everything about flower farming. The farm visit was eye-opening and practical.', avatar: 'K' },
-                    { name: 'Efua M.', role: 'Agricultural Student', text: 'Best practical learning experience I\'ve had. The organic pest control techniques really work.', avatar: 'E' }
-                ]
-            }
-        };
+        const workshops = {};
 
         async function initWorkshop() {
             const params = new URLSearchParams(window.location.search);
-            const slug = params.get('id') || params.get('workshop') || 'wedding-masterclass';
+            const slug = params.get('id') || params.get('workshop') || '';
 
-            // Try API first — only use hardcoded data if API returns nothing
             let ws = null;
             try {
                 const apiData = await api.fetchWorkshop(slug);
                 if (apiData && apiData.title) ws = apiData;
             } catch (e) {}
-            if (!ws) ws = workshops[slug] || workshops['wedding-masterclass'];
+            if (!ws) ws = workshops[slug];
+
+            if (!ws) {
+                document.getElementById('wsTitle').textContent = 'Workshop not found';
+                return;
+            }
 
             document.title = `${ws.title} - Flower Ecosystem`;
             document.getElementById('wsBreadcrumb').textContent = ws.title;

@@ -124,20 +124,8 @@
     <script src="js/shared/animations.js?v=3.0"></script>
     <script src="js/shared/api.js?v=4.0"></script>
     <script>
-        const liveClasses = [
-            { id: 'lc1', title: 'Floral Design Fundamentals', instructor: 'Sarah Mensah', instructorImg: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=200&auto=format&fit=crop', day: 'Monday', time: '6:00 PM', duration: '2 Hours', level: 'Beginner', seats: 120, enrolled: 85, status: 'upcoming', img: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=400&auto=format&fit=crop', description: 'Learn the fundamentals of floral design including color theory, flower selection, and basic arrangement techniques.' },
-            { id: 'lc2', title: 'Wedding Floristry Masterclass', instructor: 'Efua Osei', instructorImg: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?q=200&auto=format&fit=crop', day: 'Tuesday', time: '7:00 PM', duration: '2.5 Hours', level: 'Intermediate', seats: 80, enrolled: 72, status: 'upcoming', img: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=400&auto=format&fit=crop', description: 'Master wedding floral design from bridal bouquets to venue decoration with hands-on practice.' },
-            { id: 'lc3', title: 'Indoor Plant Care', instructor: 'Ama Darko', instructorImg: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=200&auto=format&fit=crop', day: 'Wednesday', time: '5:00 PM', duration: '1.5 Hours', level: 'Beginner', seats: 100, enrolled: 45, status: 'upcoming', img: 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=400&auto=format&fit=crop', description: 'Everything you need to know about keeping your indoor plants healthy and thriving.' },
-            { id: 'lc4', title: 'Flower Farming Basics', instructor: 'Kwame Asante', instructorImg: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=200&auto=format&fit=crop', day: 'Thursday', time: '6:00 PM', duration: '2 Hours', level: 'Beginner', seats: 60, enrolled: 38, status: 'upcoming', img: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=400&auto=format&fit=crop', description: 'Introduction to flower farming including soil prep, planting, and basic care.' },
-            { id: 'lc5', title: 'Advanced Color Theory', instructor: 'Sarah Mensah', instructorImg: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=200&auto=format&fit=crop', day: 'Friday', time: '6:00 PM', duration: '2 Hours', level: 'Advanced', seats: 50, enrolled: 48, status: 'upcoming', img: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop', description: 'Deep dive into color theory for professional floral arrangements and event design.' },
-            { id: 'lc6', title: 'Floral Photography Workshop', instructor: 'Nana Agyeman', instructorImg: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=200&auto=format&fit=crop', day: 'Saturday', time: '10:00 AM', duration: '3 Hours', level: 'Intermediate', seats: 40, enrolled: 22, status: 'upcoming', img: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop', description: 'Learn to photograph flowers and arrangements for social media and marketing.' }
-        ];
-
-        const recordings = [
-            { title: 'Bouquet Design Workshop', instructor: 'Sarah Mensah', date: 'July 8, 2026', duration: '2h 15m', img: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=200&auto=format&fit=crop' },
-            { title: 'Summer Flower Care', instructor: 'Ama Darko', date: 'July 5, 2026', duration: '1h 30m', img: 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=200&auto=format&fit=crop' },
-            { title: 'Wedding Planning Session', instructor: 'Efua Osei', date: 'July 3, 2026', duration: '2h 45m', img: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=200&auto=format&fit=crop' }
-        ];
+        const liveClasses = [];
+        const recordings = [];
 
         const faqs = [
             { q: 'How do I join a live class?', a: 'Click "Join Now" on any upcoming class. You\'ll be directed to the class room where you can see the instructor\'s video, slides, and chat with other students.' },
@@ -222,18 +210,20 @@
             }).join('');
 
             // Recordings
-            document.getElementById('recordingsList').innerHTML = recordings.map(r => `
-                <div class="recording-card">
-                    <div class="recording-thumb">
-                        <img src="${escapeHtml(r.img)}" alt="${escapeHtml(r.title)}" loading="lazy">
+            document.getElementById('recordingsList').innerHTML = recordings.length
+                ? recordings.map(r => `
+                    <div class="recording-card">
+                        <div class="recording-thumb">
+                            <img src="${escapeHtml(r.img)}" alt="${escapeHtml(r.title)}" loading="lazy">
+                        </div>
+                        <div class="recording-info">
+                            <h4>${escapeHtml(r.title)}</h4>
+                            <p>${escapeHtml(r.instructor)} · ${r.date} · ${r.duration}</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm"><i class="bi bi-play-circle"></i> Watch</button>
                     </div>
-                    <div class="recording-info">
-                        <h4>${escapeHtml(r.title)}</h4>
-                        <p>${escapeHtml(r.instructor)} · ${r.date} · ${r.duration}</p>
-                    </div>
-                    <button class="btn btn-outline btn-sm"><i class="bi bi-play-circle"></i> Watch</button>
-                </div>
-            `).join('');
+                `).join('')
+                : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No recordings available yet.</p>';
 
             // FAQ
             document.getElementById('liveFaq').innerHTML = faqs.map((f, i) => `
