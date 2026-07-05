@@ -649,19 +649,22 @@ router.post('/live-classes/:id/register', requireAuth, asyncHandler(async (req, 
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
     const { id } = req.params;
     try {
-        const lc = await pool.query('SELECT id, seats, instructor_id FROM learning.live_classes WHERE id = $1', [id]);
+        const lc = await pool.query('SELECT id, seats, instructor FROM learning.live_classes WHERE id = $1', [id]);
         if (!lc.rows.length) return res.status(404).json({ error: 'Class not found' });
         await pool.query('UPDATE learning.live_classes SET enrolled = enrolled + 1 WHERE id = $1', [id]);
         // Notify instructor of new registration
         try {
-            const classInfo = await pool.query('SELECT title, instructor_id FROM learning.live_classes WHERE id = $1', [id]);
+            const classInfo = await pool.query('SELECT title, instructor FROM learning.live_classes WHERE id = $1', [id]);
             const studentInfo = await pool.query('SELECT first_name FROM auth.users WHERE id = $1', [req.user.id]);
-            if (classInfo.rows.length && classInfo.rows[0].instructor_id) {
+            if (classInfo.rows.length && classInfo.rows[0].instructor) {
+                const instName = classInfo.rows[0].instructor;
                 const studentName = studentInfo.rows[0]?.first_name || 'A student';
-                if (classInfo.rows[0].instructor_id !== req.user.id) {
+                // Find instructor by name or email
+                const instUser = await pool.query('SELECT id FROM auth.users WHERE email = $1 OR id::text = $1 OR (first_name || \' \' || last_name) = $1', [instName]);
+                if (instUser.rows.length && instUser.rows[0].id !== req.user.id) {
                     await pool.query(
                         'INSERT INTO platform.notifications (user_id, type, title, message, link) VALUES ($1, $2, $3, $4, $5)',
-                        [classInfo.rows[0].instructor_id, 'live_class', 'New Class Registration', `${studentName} registered for "${classInfo.rows[0].title || 'your live class'}"`, '/instructor-dashboard']
+                        [instUser.rows[0].id, 'live_class', 'New Class Registration', `${studentName} registered for "${classInfo.rows[0].title || 'your live class'}"`, '/instructor-dashboard']
                     );
                 }
             }

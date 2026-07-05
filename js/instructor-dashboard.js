@@ -291,7 +291,7 @@ function renderOverview(){
     `).join(''):'<p style="color:var(--text-light);font-size:.85rem;padding:1rem;">No upcoming classes</p>';
 
     // Performance chart
-    const perfData=courses.map(c=>c.enrolled_count||c.students||c.students_count||0);
+    const perfData=courses.map(c=>Number(c.enrolled_count||c.students||c.students_count)||0);
     drawBarChart('perfCanvas',courses.map(c=>(c.title||'').slice(0,12)),perfData.length?perfData:[0]);
 }
 
@@ -645,7 +645,8 @@ function drawBarChart(canvasId,labels,data){
     const w=canvas.width=canvas.parentElement.clientWidth;
     const h=canvas.height;
     ctx.clearRect(0,0,w,h);
-    const max=Math.max(...data)*1.1||1;
+    const safeData=data.map(v=>Number.isFinite(v)?v:0);
+    const max=Math.max(...safeData)*1.1||1;
     const barW=Math.min(40,(w-60)/(labels.length*1.5));
     const startX=40;const chartH=h-40;
     ctx.strokeStyle='#e5e7eb';ctx.lineWidth=1;
@@ -656,7 +657,7 @@ function drawBarChart(canvasId,labels,data){
         ctx.fillText(Math.round(max*(1-i/4)),startX-8,y+4);
     }
     const gap=(w-startX-20)/labels.length;
-    data.forEach((v,i)=>{
+    safeData.forEach((v,i)=>{
         const x=startX+i*gap+gap/2-barW/2;
         const barH=(v/max)*chartH;
         const grad=ctx.createLinearGradient(x,20+chartH-barH,x,20+chartH);
@@ -675,11 +676,12 @@ function drawLineChart(canvasId,data){
     const w=canvas.width=canvas.parentElement.clientWidth;
     const h=canvas.height;
     ctx.clearRect(0,0,w,h);
-    const max=Math.max(...data)*1.1||1;
-    const min=Math.min(...data)*0.9||0;
+    const safeData=data.map(v=>Number.isFinite(v)?v:0);
+    const max=Math.max(...safeData)*1.1||1;
+    const min=Math.min(...safeData)*0.9||0;
     const range=max-min||1;
     const chartH=h-40;const startX=40;
-    const stepX=(w-startX-20)/(data.length-1)||1;
+    const stepX=(w-startX-20)/(safeData.length-1)||1;
     ctx.strokeStyle='#e5e7eb';ctx.lineWidth=1;
     for(let i=0;i<=4;i++){
         const y=20+chartH*(i/4);
@@ -688,16 +690,16 @@ function drawLineChart(canvasId,data){
         ctx.fillText(Math.round(max-range*(i/4)),startX-8,y+4);
     }
     ctx.beginPath();
-    data.forEach((v,i)=>{
+    safeData.forEach((v,i)=>{
         const x=startX+i*stepX;const y=20+chartH*(1-(v-min)/range);
         i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
     });
     ctx.strokeStyle='#d4af37';ctx.lineWidth=2.5;ctx.stroke();
     const grad=ctx.createLinearGradient(0,20,0,20+chartH);
     grad.addColorStop(0,'rgba(212,175,55,0.2)');grad.addColorStop(1,'rgba(212,175,55,0)');
-    ctx.lineTo(startX+(data.length-1)*stepX,20+chartH);ctx.lineTo(startX,20+chartH);ctx.closePath();
+    ctx.lineTo(startX+(safeData.length-1)*stepX,20+chartH);ctx.lineTo(startX,20+chartH);ctx.closePath();
     ctx.fillStyle=grad;ctx.fill();
-    data.forEach((v,i)=>{
+    safeData.forEach((v,i)=>{
         const x=startX+i*stepX;const y=20+chartH*(1-(v-min)/range);
         ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle='#d4af37';ctx.fill();
         ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
@@ -722,7 +724,7 @@ window.addEventListener('resize',()=>{
         if(active&&active.id==='sec-overview'){
             const perfCanvas=$('#perfCanvas');
             if(perfCanvas){
-                const data=courses.map(c=>c.enrolled_count||c.students||c.students_count||0);
+                const data=courses.map(c=>Number(c.enrolled_count||c.students||c.students_count)||0);
                 drawBarChart('perfCanvas',courses.map(c=>c.title?.slice(0,12)||''),data.length?data:[0]);
             }
         }
