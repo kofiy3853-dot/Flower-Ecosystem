@@ -472,15 +472,18 @@ async function submitApplication() {
             gov_id_url: govIdUrl,
             selfie_url: selfieUrl,
             website: $('#website').value.trim(),
-            business_website: '',
+            business_website: $('#businessWebsite').value.trim(),
             portfolio_url: $('#portfolioUrl').value.trim(),
             social_links: {
                 instagram: $('#socialIg').value.trim(),
-                youtube: $('#socialYt').value.trim()
+                facebook: $('#socialFb').value.trim(),
+                youtube: $('#socialYt').value.trim(),
+                twitter: $('#socialTw').value.trim()
             },
             bank_account_name: $('#bankName').value.trim(),
             bank_name: $('#bankInstitution').value.trim(),
             bank_account_number: $('#bankAcct').value.trim(),
+            bank_routing: $('#bankRouting').value.trim(),
             mobile_money_number: $('#momoNumber').value.trim(),
             tax_id: $('#taxId').value.trim(),
             payout_method: $('#payoutMethod').value,
