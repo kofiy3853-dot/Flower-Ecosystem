@@ -7,9 +7,10 @@
         "level": "Beginner",
         "duration_hours": 16,
         "course_count": 4,
-        "student_count": 2850,
+        "student_count": 0,
         "rating": 4.8,
-        "price": "Free"
+        "price": "Free",
+        "image": "https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=600&auto=format&fit=crop"
     },
     {
         "id": "c1b2c3d4-0002-0000-0000-000000000002",
@@ -19,9 +20,10 @@
         "level": "Intermediate",
         "duration_hours": 32,
         "course_count": 6,
-        "student_count": 4850,
+        "student_count": 0,
         "rating": 4.9,
-        "price": "GHS 450"
+        "price": "GHS 450",
+        "image": "https://images.unsplash.com/photo-1519741497674-611481863552?q=600&auto=format&fit=crop"
     },
     {
         "id": "c1b2c3d4-0003-0000-0000-000000000003",
@@ -31,9 +33,10 @@
         "level": "Intermediate",
         "duration_hours": 48,
         "course_count": 8,
-        "student_count": 1920,
+        "student_count": 0,
         "rating": 4.7,
-        "price": "GHS 650"
+        "price": "GHS 650",
+        "image": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=600&auto=format&fit=crop"
     },
     {
         "id": "c1b2c3d4-0004-0000-0000-000000000004",
@@ -43,9 +46,10 @@
         "level": "Intermediate",
         "duration_hours": 36,
         "course_count": 7,
-        "student_count": 3200,
+        "student_count": 0,
         "rating": 4.8,
-        "price": "GHS 550"
+        "price": "GHS 550",
+        "image": "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=600&auto=format&fit=crop"
     },
     {
         "id": "c1b2c3d4-0005-0000-0000-000000000005",
@@ -55,8 +59,9 @@
         "level": "Advanced",
         "duration_hours": 24,
         "course_count": 5,
-        "student_count": 2100,
+        "student_count": 0,
         "rating": 4.9,
-        "price": "GHS 400"
+        "price": "GHS 400",
+        "image": "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=600&auto=format&fit=crop"
     }
 ]
