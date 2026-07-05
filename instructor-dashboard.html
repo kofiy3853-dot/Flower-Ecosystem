@@ -52,8 +52,8 @@
                     <input type="search" placeholder="Search courses, students..." id="instSearch">
                 </div>
                 <div class="inst-header-actions">
-                    <button class="inst-header-btn" id="notifBtn"><i class="bi bi-bell"></i><span class="inst-badge">5</span></button>
-                    <button class="inst-header-btn"><i class="bi bi-envelope"></i><span class="inst-badge">3</span></button>
+                    <button class="inst-header-btn" id="notifBtn"><i class="bi bi-bell"></i><span class="inst-badge">0</span></button>
+                    <button class="inst-header-btn" id="msgBtn"><i class="bi bi-envelope"></i><span class="inst-badge">0</span></button>
                     <div class="inst-header-profile" id="headerProfile">
                         <div class="inst-avatar inst-avatar-sm">S</div>
                         <span>Dr. Sarah</span>
@@ -310,6 +310,12 @@
     <div class="inst-notif-panel" id="notifPanel">
         <div class="inst-notif-header"><h4>Notifications</h4><button class="inst-btn inst-btn-sm" onclick="clearNotifications()">Mark all read</button></div>
         <div class="inst-notif-list" id="notifList"></div>
+    </div>
+
+    <!-- Messages Panel -->
+    <div class="inst-notif-panel inst-msg-panel" id="msgPanel" style="right:70px;">
+        <div class="inst-notif-header"><h4>Messages</h4></div>
+        <div class="inst-notif-list" id="msgList"></div>
     </div>
 
     <div id="footer-container"></div>

@@ -4,6 +4,7 @@ const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 
 let courses=[], lessons=[], quizzes=[], studentsData=[], assignments=[], liveClasses=[], certificates=[], analytics={};
+let notificationsData=[], conversationsData=[];
 let calDate = new Date();
 
 // ─── Navigation ──────────────────────────────────────
@@ -31,15 +32,51 @@ document.addEventListener('click',e=>{
 });
 
 // ─── Notifications ───────────────────────────────────
-$('#notifBtn')?.addEventListener('click',()=>$('#notifPanel').classList.toggle('open'));
+$('#notifBtn')?.addEventListener('click',()=>{
+    const panel=$('#notifPanel');
+    panel.classList.toggle('open');
+    if(panel.classList.contains('open')) renderNotifications();
+});
 document.addEventListener('click',e=>{
     if(!e.target.closest('.inst-notif-panel')&&!e.target.closest('#notifBtn')){
         $('#notifPanel').classList.remove('open');
     }
+    if(!e.target.closest('.inst-msg-panel')&&!e.target.closest('#msgBtn')){
+        $('#msgPanel').classList.remove('open');
+    }
 });
 
+const iconColorMap={'green':'39,174,96','gold':'212,175,55','red':'231,76,60','blue':'74,144,217','orange':'251,146,60'};
+const txtColorMap={'green':'#27ae60','gold':'#d4af37','red':'#e74c3c','blue':'#4a90d9','orange':'#ea580c'};
+
 async function renderNotifications(){
+    // Merge API notifications with derived local items
     const items=[];
+    const typeIconMap={
+        enrollment:'bi-person-plus',quiz:'bi-pencil-square',assignment:'bi-journal-check',
+        certificate:'bi-award',message:'bi-envelope',course:'bi-book',live_class:'bi-camera-video-fill',
+        comment:'bi-chat-dots',like:'bi-heart',follow:'bi-person-plus',system:'bi-gear',default:'bi-bell'
+    };
+    const typeColorMap={
+        enrollment:'green',quiz:'blue',assignment:'gold',certificate:'green',message:'blue',
+        course:'blue',live_class:'red',comment:'green',like:'red',follow:'green',system:'blue',default:'blue'
+    };
+
+    // API notifications (most recent first, up to 20)
+    (notificationsData||[]).slice(0,20).forEach(n=>{
+        items.push({
+            icon:typeIconMap[n.type]||typeIconMap.default,
+            text:n.title||n.message||'Notification',
+            detail:n.message||'',
+            time:n.created_at?timeAgo(n.created_at):'',
+            color:typeColorMap[n.type]||typeColorMap.default,
+            id:n.id,
+            isRead:n.is_read,
+            link:n.link||null
+        });
+    });
+
+    // Derived items from local data (always show)
     const pendingCount=assignments.filter(a=>a.status==='pending').length;
     const activeStudents=studentsData.filter(s=>s.status==='active').length;
     const recentCerts=certificates.filter(c=>{
@@ -56,18 +93,95 @@ async function renderNotifications(){
     if(courses.length) items.push({icon:'bi-book',text:`${courses.length} course${courses.length>1?'s':''} published`,time:'now',color:'blue'});
     if(!items.length) items.push({icon:'bi-shield-check',text:'System running normally',time:'now',color:'blue'});
 
+    const unreadCount=(notificationsData||[]).filter(n=>!n.is_read).length;
     const badge=$('#notifBtn .inst-badge');
-    if(badge) badge.textContent=items.length;
-    $('#notifList').innerHTML=items.map(n=>`
-        <div class="inst-notif-item">
-            <div class="inst-notif-icon" style="background:rgba(${n.color==='green'?'39,174,96':n.color==='gold'?'212,175,55':n.color==='red'?'231,76,60':'74,144,217'},.1);color:${n.color==='green'?'#27ae60':n.color==='gold'?'#d4af37':n.color==='red'?'#e74c3c':'#4a90d9'};">
+    if(badge) badge.textContent=unreadCount||items.length;
+    badge.style.display=(unreadCount||items.length)?'':'none';
+
+    $('#notifList').innerHTML=items.slice(0,15).map(n=>`
+        <div class="inst-notif-item${n.isRead===false?' unread':''}" ${n.id?`data-notif-id="${n.id}"`:''} ${n.link?`style="cursor:pointer;" onclick="window.open('${n.link}','_self')"`:''}>
+            <div class="inst-notif-icon" style="background:rgba(${iconColorMap[n.color]||iconColorMap.blue},.1);color:${txtColorMap[n.color]||txtColorMap.blue};">
                 <i class="bi ${n.icon}"></i>
             </div>
-            <div><div>${escapeHtml(n.text)}</div><div style="font-size:.7rem;color:var(--text-light);margin-top:.2rem;">${n.time}</div></div>
+            <div><div>${escapeHtml(n.text)}</div>${n.detail?`<div style="font-size:.7rem;color:var(--text-light);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;">${escapeHtml(n.detail)}</div>`:''}<div style="font-size:.7rem;color:var(--text-light);margin-top:.2rem;">${n.time}</div></div>
         </div>
     `).join('');
 }
-window.clearNotifications=()=>{$('#notifPanel').classList.remove('open');};
+window.clearNotifications=async()=>{
+    try{await api.markAllRead();notificationsData.forEach(n=>n.is_read=true);}catch{}
+    renderNotifications();
+};
+
+// ─── Messages ─────────────────────────────────────────
+$('#msgBtn')?.addEventListener('click',()=>{
+    const panel=$('#msgPanel');
+    panel.classList.toggle('open');
+    if(panel.classList.contains('open')) renderMessages();
+});
+async function renderMessages(){
+    const unreadTotal=(conversationsData||[]).reduce((s,c)=>s+(parseInt(c.unread_count)||0),0);
+    const badge=$('#msgBtn .inst-badge');
+    if(badge) badge.textContent=unreadTotal||conversationsData.length;
+    badge.style.display=(unreadTotal||conversationsData.length)?'':'none';
+
+    const list=$('#msgList');
+    if(!conversationsData||!conversationsData.length){
+        list.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text-light);font-size:.85rem;"><i class="bi bi-envelope" style="font-size:1.5rem;display:block;margin-bottom:.5rem;"></i>No messages yet</div>';
+        return;
+    }
+    list.innerHTML=conversationsData.slice(0,10).map(c=>`
+        <div class="inst-notif-item" style="cursor:pointer;" onclick="openConversation('${c.id}','${escapeHtml(c.other_name||'User')}')">
+            <div class="inst-notif-icon" style="background:rgba(74,144,217,.1);color:#4a90d9;">
+                <i class="bi bi-person-circle"></i>
+            </div>
+            <div style="flex:1;min-width:0;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-weight:500;font-size:.85rem;">${escapeHtml(c.other_name||'User')}</span>
+                    ${c.unread_count>0?`<span style="background:var(--primary-color);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:600;">${c.unread_count}</span>`:''}
+                </div>
+                <div style="font-size:.8rem;color:var(--text-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(c.last_message||'No messages')}</div>
+                <div style="font-size:.7rem;color:var(--text-light);margin-top:.15rem;">${c.last_message_at?timeAgo(c.last_message_at):''}</div>
+            </div>
+        </div>
+    `).join('');
+}
+window.openConversation=async(id,name)=>{
+    $('#msgPanel').classList.remove('open');
+    try{
+        const msgs=await api.fetchMessages(id);
+        const msgsHtml=(Array.isArray(msgs)?msgs:[]).map(m=>`
+            <div style="margin-bottom:.75rem;${m.sender_id==getCurrentUserId()?'text-align:right;':''}">
+                <div style="display:inline-block;max-width:80%;padding:.5rem .75rem;border-radius:12px;font-size:.85rem;${m.sender_id==getCurrentUserId()?'background:var(--primary-color);color:#fff;border-bottom-right-radius:4px;':'background:var(--bg-main);border-bottom-left-radius:4px;'}">${escapeHtml(m.content||'')}</div>
+                <div style="font-size:.65rem;color:var(--text-light);margin-top:.2rem;">${m.created_at?timeAgo(m.created_at):''}</div>
+            </div>
+        `).join('');
+        $('#modalTitle').textContent=`Messages — ${name}`;
+        $('#modalBody').innerHTML=`
+            <div id="convMessages" style="max-height:300px;overflow-y:auto;padding:.5rem 0;">${msgsHtml||'<p style="text-align:center;color:var(--text-light);">No messages yet</p>'}</div>
+            <form id="sendMsgForm" style="display:flex;gap:.5rem;margin-top:.75rem;">
+                <input id="msgInput" type="text" placeholder="Type a message..." style="flex:1;padding:.5rem .75rem;border:1px solid var(--border-color);border-radius:8px;font-size:.85rem;" required>
+                <button type="submit" class="inst-btn inst-btn-primary"><i class="bi bi-send"></i></button>
+            </form>`;
+        $('#modalOverlay').classList.add('active');
+        const convEl=$('#convMessages');
+        if(convEl) convEl.scrollTop=convEl.scrollHeight;
+        document.getElementById('sendMsgForm').addEventListener('submit',async e=>{
+            e.preventDefault();
+            const input=$('#msgInput');
+            const content=input.value.trim();
+            if(!content)return;
+            try{
+                await api.sendMessage(id,content);
+                input.value='';
+                const newMsg=document.createElement('div');
+                newMsg.style.cssText='margin-bottom:.75rem;text-align:right;';
+                newMsg.innerHTML=`<div style="display:inline-block;max-width:80%;padding:.5rem .75rem;border-radius:12px;font-size:.85rem;background:var(--primary-color);color:#fff;border-bottom-right-radius:4px;">${escapeHtml(content)}</div><div style="font-size:.65rem;color:var(--text-light);margin-top:.2rem;">just now</div>`;
+                convEl.appendChild(newMsg);
+                convEl.scrollTop=convEl.scrollHeight;
+            }catch(err){showToast('Failed to send','error');}
+        });
+    }catch(err){showToast('Failed to load messages','error');}
+};
 
 // ─── Init ────────────────────────────────────────────
 async function init(){
@@ -105,7 +219,9 @@ async function init(){
         api.fetchInstructorAssignments(),
         api.fetchInstructorLiveClasses(),
         api.fetchInstructorCertificates(),
-        api.fetchInstructorAnalytics()
+        api.fetchInstructorAnalytics(),
+        api.fetchNotifications(),
+        api.fetchConversations()
     ]);
     courses=results[0].status==='fulfilled'?results[0].value:[];
     lessons=results[1].status==='fulfilled'?results[1].value:[];
@@ -115,6 +231,8 @@ async function init(){
     liveClasses=results[5].status==='fulfilled'?results[5].value:[];
     certificates=results[6].status==='fulfilled'?results[6].value:[];
     analytics=results[7].status==='fulfilled'?results[7].value:{};
+    notificationsData=results[8].status==='fulfilled'?results[8].value:[];
+    conversationsData=results[9].status==='fulfilled'?results[9].value:[];
 
     const failed=results.filter(r=>r.status==='rejected').length;
     if(failed===results.length) showToast('Backend unreachable','error');

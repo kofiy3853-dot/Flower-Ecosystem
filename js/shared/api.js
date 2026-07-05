@@ -232,7 +232,19 @@ const api = {
     updateInstructorApplication(id, data) { return apiFetchWithBody('/api/instructor/applications/' + id, 'PUT', data); },
     fetchInstructorLevels() { return apiFetchWithBody('/api/instructor/levels', 'GET'); },
     updateInstructorLevel(userId, data) { return apiFetchWithBody('/api/instructor/levels/' + userId, 'PUT', data); },
-    fetchInstructorStats() { return apiFetchWithBody('/api/instructor/stats', 'GET'); }
+    fetchInstructorStats() { return apiFetchWithBody('/api/instructor/stats', 'GET'); },
+
+    // ─── Notifications ────────────────────────────────────
+    fetchNotifications() { return apiFetchWithBody('/api/notifications', 'GET'); },
+    fetchUnreadCount() { return apiFetchWithBody('/api/notifications/unread-count', 'GET'); },
+    markAllRead() { return apiFetchWithBody('/api/notifications/read', 'PUT'); },
+    markRead(id) { return apiFetchWithBody('/api/notifications/' + id + '/read', 'PUT'); },
+
+    // ─── Messages ──────────────────────────────────────────
+    fetchConversations() { return apiFetchWithBody('/api/notifications/conversations', 'GET'); },
+    createConversation(userId) { return apiFetchWithBody('/api/notifications/conversations', 'POST', { user_id: userId }); },
+    fetchMessages(conversationId) { return apiFetchWithBody('/api/notifications/' + conversationId, 'GET'); },
+    sendMessage(conversationId, content) { return apiFetchWithBody('/api/notifications/' + conversationId, 'POST', { content }); }
 };
 
 window.api = api;

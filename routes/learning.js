@@ -136,6 +136,23 @@ router.post('/courses/:id/enroll', requireAuth, asyncHandler(async (req, res) =>
             'INSERT INTO learning.enrollments (user_id, course_id) VALUES ($1, $2) RETURNING *',
             [req.user.id, id]
         );
+        // Notify instructor of new enrollment
+        try {
+            const courseInfo = await pool.query('SELECT instructor, title FROM learning.courses WHERE id = $1', [id]);
+            const studentInfo = await pool.query('SELECT first_name FROM auth.users WHERE id = $1', [req.user.id]);
+            if (courseInfo.rows.length) {
+                const inst = courseInfo.rows[0];
+                const studentName = studentInfo.rows[0]?.first_name || 'A student';
+                // Find instructor user_id by email or id
+                const instUser = await pool.query('SELECT id FROM auth.users WHERE email = $1 OR id::text = $2', [inst.instructor, inst.instructor]);
+                if (instUser.rows.length && instUser.rows[0].id !== req.user.id) {
+                    await pool.query(
+                        'INSERT INTO platform.notifications (user_id, type, title, message, link) VALUES ($1, $2, $3, $4, $5)',
+                        [instUser.rows[0].id, 'enrollment', 'New Enrollment', `${studentName} enrolled in "${inst.title || 'your course'}"`, '/instructor-dashboard']
+                    );
+                }
+            }
+        } catch (e) { console.error('Enrollment notification error:', e.message); }
         res.status(201).json(r.rows[0]);
     } catch (dbErr) {
         if (dbErr.code === '23505') {
@@ -236,6 +253,26 @@ router.post('/quizzes/:id/submit', requireAuth, asyncHandler(async (req, res) =>
              RETURNING *`,
             [req.user.id, id, JSON.stringify(answers), score]
         );
+
+        // Notify instructor of quiz completion
+        try {
+            const quizInfo = await pool.query('SELECT title, course_id FROM learning.quizzes WHERE id = $1', [id]);
+            if (quizInfo.rows.length && quizInfo.rows[0].course_id) {
+                const courseInfo = await pool.query('SELECT instructor, title FROM learning.courses WHERE id = $1', [quizInfo.rows[0].course_id]);
+                const studentInfo = await pool.query('SELECT first_name FROM auth.users WHERE id = $1', [req.user.id]);
+                if (courseInfo.rows.length) {
+                    const inst = courseInfo.rows[0];
+                    const studentName = studentInfo.rows[0]?.first_name || 'A student';
+                    const instUser = await pool.query('SELECT id FROM auth.users WHERE email = $1 OR id::text = $2', [inst.instructor, inst.instructor]);
+                    if (instUser.rows.length && instUser.rows[0].id !== req.user.id) {
+                        await pool.query(
+                            'INSERT INTO platform.notifications (user_id, type, title, message, link) VALUES ($1, $2, $3, $4, $5)',
+                            [instUser.rows[0].id, 'quiz', 'Quiz Completed', `${studentName} scored ${score}% on "${quizInfo.rows[0].title || 'a quiz'}" in "${inst.title || 'your course'}"`, '/instructor-dashboard']
+                        );
+                    }
+                }
+            }
+        } catch (e) { console.error('Quiz notification error:', e.message); }
 
         res.json({ score, correct, total, attempt: r.rows[0] });
     } catch (err) {
@@ -538,6 +575,25 @@ router.post('/assignments/:id/submit', requireAuth, asyncHandler(async (req, res
             [file_url, notes, id, req.user.id]
         );
         if (!r.rows.length) return res.status(404).json({ error: 'Assignment not found' });
+        // Notify instructor of assignment submission
+        try {
+            const asgnInfo = await pool.query('SELECT title, course_id FROM learning.assignments WHERE id = $1', [id]);
+            if (asgnInfo.rows.length && asgnInfo.rows[0].course_id) {
+                const courseInfo = await pool.query('SELECT instructor, title FROM learning.courses WHERE id = $1', [asgnInfo.rows[0].course_id]);
+                const studentInfo = await pool.query('SELECT first_name FROM auth.users WHERE id = $1', [req.user.id]);
+                if (courseInfo.rows.length) {
+                    const inst = courseInfo.rows[0];
+                    const studentName = studentInfo.rows[0]?.first_name || 'A student';
+                    const instUser = await pool.query('SELECT id FROM auth.users WHERE email = $1 OR id::text = $2', [inst.instructor, inst.instructor]);
+                    if (instUser.rows.length && instUser.rows[0].id !== req.user.id) {
+                        await pool.query(
+                            'INSERT INTO platform.notifications (user_id, type, title, message, link) VALUES ($1, $2, $3, $4, $5)',
+                            [instUser.rows[0].id, 'assignment', 'Assignment Submitted', `${studentName} submitted "${asgnInfo.rows[0].title || 'an assignment'}" for "${inst.title || 'your course'}"`, '/instructor-dashboard']
+                        );
+                    }
+                }
+            }
+        } catch (e) { console.error('Assignment notification error:', e.message); }
         res.json(r.rows[0]);
     } catch (err) {
         res.json({ id, status: 'submitted' });
@@ -593,9 +649,23 @@ router.post('/live-classes/:id/register', requireAuth, asyncHandler(async (req, 
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
     const { id } = req.params;
     try {
-        const lc = await pool.query('SELECT id, seats FROM learning.live_classes WHERE id = $1', [id]);
+        const lc = await pool.query('SELECT id, seats, instructor_id FROM learning.live_classes WHERE id = $1', [id]);
         if (!lc.rows.length) return res.status(404).json({ error: 'Class not found' });
         await pool.query('UPDATE learning.live_classes SET enrolled = enrolled + 1 WHERE id = $1', [id]);
+        // Notify instructor of new registration
+        try {
+            const classInfo = await pool.query('SELECT title, instructor_id FROM learning.live_classes WHERE id = $1', [id]);
+            const studentInfo = await pool.query('SELECT first_name FROM auth.users WHERE id = $1', [req.user.id]);
+            if (classInfo.rows.length && classInfo.rows[0].instructor_id) {
+                const studentName = studentInfo.rows[0]?.first_name || 'A student';
+                if (classInfo.rows[0].instructor_id !== req.user.id) {
+                    await pool.query(
+                        'INSERT INTO platform.notifications (user_id, type, title, message, link) VALUES ($1, $2, $3, $4, $5)',
+                        [classInfo.rows[0].instructor_id, 'live_class', 'New Class Registration', `${studentName} registered for "${classInfo.rows[0].title || 'your live class'}"`, '/instructor-dashboard']
+                    );
+                }
+            }
+        } catch (e) { console.error('Live class notification error:', e.message); }
         res.json({ message: 'Registration successful' });
     } catch (err) {
         res.json({ message: 'Registration confirmed' });

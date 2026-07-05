@@ -181,6 +181,24 @@ router.put('/applications/:id', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler
         );
     }
 
+    // Notify applicant of status change
+    try {
+        const statusMessages = {
+            approved: 'Your instructor application has been approved! Welcome to the team.',
+            rejected: 'Your instructor application was not approved.' + (rejection_reason ? ` Reason: ${rejection_reason}` : ''),
+            needs_info: 'Your instructor application needs more information.' + (rejection_reason ? ` Details: ${rejection_reason}` : ''),
+            under_review: 'Your instructor application is now under review.'
+        };
+        const msg = statusMessages[status];
+        if (msg && app.user_id) {
+            const link = status === 'approved' ? '/instructor-dashboard' : '/instructor-apply.html';
+            await pool.query(
+                'INSERT INTO platform.notifications (user_id, type, title, message, link) VALUES ($1, $2, $3, $4, $5)',
+                [app.user_id, 'system', 'Application Update', msg, link]
+            );
+        }
+    } catch (e) { console.error('Application notification error:', e.message); }
+
     // Record review action
     await pool.query(
         `INSERT INTO learning.instructor_reviews (application_id, reviewer_id, action, notes)
