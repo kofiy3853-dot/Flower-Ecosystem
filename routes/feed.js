@@ -108,103 +108,113 @@ router.get('/', asyncHandler(async (req, res) => {
                 LIMIT $${idx} OFFSET $${idx + 1}`;
 
             const dataR = await pool.query(dataQ, values);
+            const postIds = dataR.rows.map(p => p.id);
 
-            // Enrich posts with images, poll options, product info, etc.
-            const posts = await Promise.all(dataR.rows.map(async (p) => {
+            if (!postIds.length) {
+                return res.json({ posts: [], total, page: pg, limit: lim, pages: Math.ceil(total / lim) });
+            }
+
+            // Batch fetch all media
+            const mediaR = await pool.query(
+                'SELECT post_id, url FROM community.post_media WHERE post_id = ANY($1) ORDER BY sort_order', [postIds]
+            );
+            const mediaMap = {};
+            mediaR.rows.forEach(r => {
+                if (!mediaMap[r.post_id]) mediaMap[r.post_id] = [];
+                mediaMap[r.post_id].push(r.url);
+            });
+
+            // Batch fetch all poll votes
+            const pollPostIds = dataR.rows.filter(p => p.post_type === 'poll').map(p => p.id);
+            const pollVotesMap = {};
+            const userVotesMap = {};
+            if (pollPostIds.length) {
+                const pvR = await pool.query(
+                    'SELECT post_id, option_index, COUNT(*)::int AS cnt FROM community.poll_votes WHERE post_id = ANY($1) GROUP BY post_id, option_index', [pollPostIds]
+                );
+                pvR.rows.forEach(r => {
+                    if (!pollVotesMap[r.post_id]) pollVotesMap[r.post_id] = {};
+                    pollVotesMap[r.post_id][r.option_index] = r.cnt;
+                });
+                if (userId) {
+                    const uvR = await pool.query(
+                        'SELECT post_id, option_index FROM community.poll_votes WHERE post_id = ANY($1) AND user_id = $2', [pollPostIds, userId]
+                    );
+                    uvR.rows.forEach(r => { userVotesMap[r.post_id] = r.option_index; });
+                }
+            }
+
+            // Batch fetch all comments (top 2 per post)
+            const commentsR = await pool.query(
+                `SELECT c.*, u.first_name || ' ' || u.last_name AS author_name, u.profile_image AS author_avatar,
+                        ROW_NUMBER() OVER (PARTITION BY c.post_id ORDER BY c.created_at DESC) AS rn
+                 FROM community.comments c JOIN auth.users u ON u.id = c.user_id
+                 WHERE c.post_id = ANY($1)`, [postIds]
+            );
+            const commentsMap = {};
+            commentsR.rows.forEach(r => {
+                if (r.rn <= 2) {
+                    if (!commentsMap[r.post_id]) commentsMap[r.post_id] = [];
+                    commentsMap[r.post_id].push(r);
+                }
+            });
+
+            // Batch fetch related entities
+            const eventIds = [...new Set(dataR.rows.filter(p => p.event_id).map(p => p.event_id))];
+            const productIds = [...new Set(dataR.rows.filter(p => p.product_id).map(p => p.product_id))];
+            const courseIds = [...new Set(dataR.rows.filter(p => p.course_id).map(p => p.course_id))];
+
+            const [eventsR, productsR, coursesR] = await Promise.all([
+                eventIds.length ? pool.query('SELECT id, title, event_date, event_time, location, price, image_url, max_participants FROM events.events WHERE id = ANY($1)', [eventIds]) : { rows: [] },
+                productIds.length ? pool.query('SELECT id, name, price, image_url, rating FROM marketplace.products WHERE id = ANY($1)', [productIds]) : { rows: [] },
+                courseIds.length ? pool.query('SELECT id, title, image_url, rating, students_count FROM learning.courses WHERE id = ANY($1)', [courseIds]) : { rows: [] }
+            ]);
+
+            const eventsMap = {}; eventsR.rows.forEach(r => { eventsMap[r.id] = r; });
+            const productsMap = {}; productsR.rows.forEach(r => { productsMap[r.id] = r; });
+            const coursesMap = {}; coursesR.rows.forEach(r => { coursesMap[r.id] = r; });
+
+            // Assemble enriched posts
+            const posts = dataR.rows.map(p => {
                 const enriched = { ...p };
 
                 // Media
-                if (p.media_urls && p.media_urls.length) {
-                    enriched.images = p.media_urls;
-                } else {
-                    const imgs = await pool.query(
-                        'SELECT url FROM community.post_media WHERE post_id = $1 ORDER BY sort_order', [p.id]
-                    );
-                    enriched.images = imgs.rows.map(i => i.url);
-                }
+                enriched.images = p.media_urls?.length ? p.media_urls : (mediaMap[p.id] || []);
 
-                // Poll options
+                // Poll
                 if (p.post_type === 'poll' && p.poll_options) {
-                    enriched.poll_options = await Promise.all(
-                        (Array.isArray(p.poll_options) ? p.poll_options : []).map(async (opt, i) => {
-                            const v = await pool.query(
-                                'SELECT COUNT(*) AS cnt FROM community.poll_votes WHERE post_id = $1 AND option_index = $2', [p.id, i]
-                            );
-                            return { text: opt, votes: parseInt(v.rows[0].cnt) || 0 };
-                        })
-                    );
-                    const tv = await pool.query('SELECT COUNT(*) AS cnt FROM community.poll_votes WHERE post_id = $1', [p.id]);
-                    enriched.total_votes = parseInt(tv.rows[0].cnt) || 0;
-                    if (userId) {
-                        const uv = await pool.query(
-                            'SELECT option_index FROM community.poll_votes WHERE post_id = $1 AND user_id = $2', [p.id, userId]
-                        );
-                        enriched.user_vote = uv.rows.length ? uv.rows[0].option_index : null;
-                    }
+                    const opts = Array.isArray(p.poll_options) ? p.poll_options : [];
+                    enriched.poll_options = opts.map((opt, i) => ({ text: opt, votes: (pollVotesMap[p.id] || {})[i] || 0 }));
+                    enriched.total_votes = Object.values(pollVotesMap[p.id] || {}).reduce((a, b) => a + b, 0);
+                    enriched.user_vote = userVotesMap[p.id] ?? null;
                 }
 
-                // Recent comments (top 2)
-                const comments = await pool.query(
-                    `SELECT c.*, u.first_name || ' ' || u.last_name AS author_name, u.profile_image AS author_avatar
-                     FROM community.comments c JOIN auth.users u ON u.id = c.user_id
-                     WHERE c.post_id = $1
-                     ORDER BY c.created_at DESC LIMIT 2`, [p.id]
-                );
-                enriched.recent_comments = comments.rows;
+                // Comments
+                enriched.recent_comments = commentsMap[p.id] || [];
 
-                // Workshop info
-                if (p.post_type === 'workshop' && p.event_id) {
-                    try {
-                        const ws = await pool.query(
-                            'SELECT id, title, event_date, event_time, location, price, image_url, max_participants FROM events.events WHERE id = $1', [p.event_id]
-                        );
-                        if (ws.rows.length) {
-                            enriched.workshop = ws.rows[0];
-                            enriched.event_title = ws.rows[0].title;
-                            enriched.event_date = ws.rows[0].event_date;
-                            enriched.event_time = ws.rows[0].event_time;
-                            enriched.event_location = ws.rows[0].location;
-                        }
-                    } catch (err) { console.error('Feed workshop enrichment error:', err.message); }
+                // Entity enrichment
+                if (p.post_type === 'workshop' && p.event_id && eventsMap[p.event_id]) {
+                    enriched.workshop = eventsMap[p.event_id];
+                    enriched.event_title = eventsMap[p.event_id].title;
+                    enriched.event_date = eventsMap[p.event_id].event_date;
+                    enriched.event_time = eventsMap[p.event_id].event_time;
+                    enriched.event_location = eventsMap[p.event_id].location;
                 }
-
-                // Marketplace product info
-                if (p.post_type === 'marketplace' && p.product_id) {
-                    try {
-                        const prod = await pool.query(
-                            'SELECT id, name, price, image_url, rating FROM marketplace.products WHERE id = $1', [p.product_id]
-                        );
-                        if (prod.rows.length) enriched.product = prod.rows[0];
-                    } catch (err) { console.error('Feed product enrichment error:', err.message); }
+                if (p.post_type === 'marketplace' && p.product_id && productsMap[p.product_id]) {
+                    enriched.product = productsMap[p.product_id];
                 }
-
-                // Course / Learning info
-                if ((p.post_type === 'learning' || p.post_type === 'achievement') && p.course_id) {
-                    try {
-                        const cr = await pool.query(
-                            'SELECT id, title, image_url, rating, students_count FROM learning.courses WHERE id = $1', [p.course_id]
-                        );
-                        if (cr.rows.length) enriched.course = cr.rows[0];
-                    } catch (err) { console.error('Feed course enrichment error:', err.message); }
+                if ((p.post_type === 'learning' || p.post_type === 'achievement') && p.course_id && coursesMap[p.course_id]) {
+                    enriched.course = coursesMap[p.course_id];
                 }
-
-                // Event info
-                if (p.post_type === 'event' && p.event_id) {
-                    try {
-                        const ev = await pool.query(
-                            'SELECT id, title, event_date, event_time, location, image_url FROM events.events WHERE id = $1', [p.event_id]
-                        );
-                        if (ev.rows.length) {
-                            enriched.event_title = ev.rows[0].title;
-                            enriched.event_date = ev.rows[0].event_date;
-                            enriched.event_time = ev.rows[0].event_time;
-                            enriched.event_location = ev.rows[0].location;
-                        }
-                    } catch (err) { console.error('Feed event enrichment error:', err.message); }
+                if (p.post_type === 'event' && p.event_id && eventsMap[p.event_id]) {
+                    enriched.event_title = eventsMap[p.event_id].title;
+                    enriched.event_date = eventsMap[p.event_id].event_date;
+                    enriched.event_time = eventsMap[p.event_id].event_time;
+                    enriched.event_location = eventsMap[p.event_id].location;
                 }
 
                 return enriched;
-            }));
+            });
 
             return res.json({ posts, total, page: pg, limit: lim, pages: Math.ceil(total / lim) });
         } catch (err) {
