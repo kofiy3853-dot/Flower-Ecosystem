@@ -217,7 +217,7 @@ router.get('/stats', asyncHandler(async (_, res) => {
         pool.query('SELECT COUNT(*)::int AS count FROM learning.enrollments'),
         pool.query('SELECT COUNT(*)::int AS count FROM learning.lessons'),
         pool.query('SELECT COUNT(*)::int AS count FROM learning.courses WHERE is_published = true'),
-        pool.query("SELECT COUNT(DISTINCT instructor)::int AS count FROM learning.courses WHERE is_published = true"),
+        pool.query("SELECT COUNT(*)::int AS count FROM auth.users WHERE role = 'INSTRUCTOR' AND is_active = true"),
         pool.query('SELECT ROUND(AVG(rating), 1) AS avg FROM learning.courses WHERE is_published = true AND rating > 0')
     ]);
     res.json({

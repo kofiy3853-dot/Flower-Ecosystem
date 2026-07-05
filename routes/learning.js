@@ -1090,4 +1090,37 @@ router.get('/instructor/analytics', requireInstructor, asyncHandler(async (req, 
     res.json({ enrollments, completionRate, avgQuizScore, revenue });
 }));
 
+// ─── Public Instructors List ─────────────────────────────
+router.get('/instructors', asyncHandler(async (_, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    try {
+        const r = await pool.query(`
+            SELECT u.id, u.first_name, u.last_name, u.email, u.profile_image,
+                   COUNT(DISTINCT c.id) AS course_count,
+                   COALESCE(SUM(c.students_count), 0) AS student_count
+            FROM auth.users u
+            LEFT JOIN learning.courses c ON c.instructor = u.email AND c.is_published = true
+            WHERE u.role = 'INSTRUCTOR' AND u.is_active = true
+            GROUP BY u.id, u.first_name, u.last_name, u.email, u.profile_image
+            ORDER BY course_count DESC
+        `);
+        res.json(r.rows.map(u => ({
+            id: u.id,
+            name: [u.first_name, u.last_name].filter(Boolean).join(' ') || 'Instructor',
+            email: u.email,
+            title: 'Instructor',
+            courses: parseInt(u.course_count) || 0,
+            students: parseInt(u.student_count) || 0,
+            image: u.profile_image || null,
+            bio: 'Expert florist sharing knowledge and experience with learners.',
+            rating: 0,
+            skills: [],
+            verified: false
+        })));
+    } catch (err) {
+        console.error('Instructors list error:', err.message);
+        res.json([]);
+    }
+}));
+
 module.exports = router;

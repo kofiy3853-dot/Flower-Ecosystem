@@ -140,18 +140,18 @@
         async function initInstructors() {
             let apiInstructors = [];
             try {
-                const data = await fetch('/api/products/list/florists').then(r => r.json());
-                apiInstructors = (data.florists || data || []).map(f => ({
+                const data = await fetch('/api/learning/instructors').then(r => r.json());
+                apiInstructors = (data || []).map(f => ({
                     name: f.name,
-                    title: f.role || 'Instructor',
+                    title: f.title || 'Instructor',
                     bio: f.bio || 'Expert florist sharing knowledge and experience with learners.',
                     expertise: f.expertise || 'floral-design',
-                    courses: f.course_count || 0,
-                    students: f.student_count || 0,
+                    courses: f.courses || 0,
+                    students: f.students || 0,
                     experience: f.experience_years || 0,
                     rating: Number(f.rating) || 0,
                     skills: f.skills || [],
-                    verified: f.is_verified || false,
+                    verified: f.verified || false,
                     id: f.id,
                     img: f.image || f.profile_image
                 }));
