@@ -8,7 +8,8 @@ router.post('/', requireAuth, upload.array('images', 10), (req, res) => {
         const images = req.files.map(f => '/uploads/' + f.filename);
         res.json({ images });
     } catch (err) {
-        res.status(500).json({ error: 'Upload failed: ' + err.message });
+        console.error('Upload error:', err.message);
+        res.status(500).json({ error: 'Upload failed' });
     }
 });
 
@@ -17,7 +18,8 @@ router.post('/video', requireAuth, uploadVideo.single('video'), (req, res) => {
         if (!req.file) return res.status(400).json({ error: 'No video uploaded' });
         res.json({ url: '/uploads/' + req.file.filename });
     } catch (err) {
-        res.status(500).json({ error: 'Video upload failed: ' + err.message });
+        console.error('Video upload error:', err.message);
+        res.status(500).json({ error: 'Video upload failed' });
     }
 });
 

@@ -98,14 +98,16 @@ async function renderNotifications(){
     if(badge) badge.textContent=unreadCount||items.length;
     badge.style.display=(unreadCount||items.length)?'':'none';
 
-    $('#notifList').innerHTML=items.slice(0,15).map(n=>`
-        <div class="inst-notif-item${n.isRead===false?' unread':''}" ${n.id?`data-notif-id="${n.id}"`:''} ${n.link?`style="cursor:pointer;" onclick="window.open('${n.link}','_self')"`:''}>
+    $('#notifList').innerHTML=items.slice(0,15).map(n=>{
+        const safeLink=n.link?(n.link.startsWith('/')||n.link.startsWith('http')?n.link.replace(/[<>"'`]/g,''):''):'';
+        return `
+        <div class="inst-notif-item${n.isRead===false?' unread':''}" ${n.id?`data-notif-id="${n.id}"`:''} ${safeLink?`style="cursor:pointer;" onclick="window.open('${safeLink}','_self')"`:''}>
             <div class="inst-notif-icon" style="background:rgba(${iconColorMap[n.color]||iconColorMap.blue},.1);color:${txtColorMap[n.color]||txtColorMap.blue};">
                 <i class="bi ${n.icon}"></i>
             </div>
             <div><div>${escapeHtml(n.text)}</div>${n.detail?`<div style="font-size:.7rem;color:var(--text-light);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;">${escapeHtml(n.detail)}</div>`:''}<div style="font-size:.7rem;color:var(--text-light);margin-top:.2rem;">${n.time}</div></div>
         </div>
-    `).join('');
+    `}).join('');
 }
 window.clearNotifications=async()=>{
     try{await api.markAllRead();notificationsData.forEach(n=>n.is_read=true);}catch{}

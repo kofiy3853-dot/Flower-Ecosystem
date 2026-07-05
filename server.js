@@ -44,6 +44,7 @@ app.use(require('cors')({
     credentials: true
 }));
 
+app.set('trust proxy', 1);
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: false }));
 

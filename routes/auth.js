@@ -75,7 +75,7 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
         console.error('Email verification token error:', e.message);
     }
 
-    res.status(201).json({ token, verificationToken, user: { id: user.id, name: user.first_name, email: user.email, role: user.role, profile_image } });
+    res.status(201).json({ token, user: { id: user.id, name: user.first_name, email: user.email, role: user.role, profile_image } });
 }));
 
 router.post('/logout', requireAuth, asyncHandler(async (req, res) => {

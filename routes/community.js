@@ -321,7 +321,7 @@ router.put('/discussions/:id', requireAuth, asyncHandler(async (req, res) => {
             category_id = COALESCE($3, category_id), is_pinned = COALESCE($4, is_pinned),
             is_solved = COALESCE($5, is_solved), best_answer_id = COALESCE($6, best_answer_id)
          WHERE id = $7 RETURNING *`,
-        [title, content, category_id, is_pinned, is_solved, best_answer_id, id]
+        [title ? escapeHtml(title).slice(0, 255) : null, content ? escapeHtml(content).slice(0, 10000) : null, category_id, is_pinned, is_solved, best_answer_id, id]
     );
     if (best_answer_id) {
         await pool.query('UPDATE community.discussion_comments SET is_best_answer = false WHERE discussion_id = $1', [id]);
@@ -592,7 +592,7 @@ router.put('/stories/:id', requireAuth, asyncHandler(async (req, res) => {
     const r = await pool.query(
         `UPDATE community.success_stories SET title = COALESCE($1, title), content = COALESCE($2, content),
             category = COALESCE($3, category), is_featured = COALESCE($4, is_featured)
-         WHERE id = $5 RETURNING *`, [title, content, category, is_featured, id]);
+         WHERE id = $5 RETURNING *`, [title ? escapeHtml(title).slice(0, 255) : null, content ? escapeHtml(content).slice(0, 10000) : null, category, is_featured, id]);
     res.json(r.rows[0]);
 }));
 
