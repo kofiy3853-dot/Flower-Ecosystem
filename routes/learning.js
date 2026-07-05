@@ -619,15 +619,19 @@ router.get('/learning-paths', asyncHandler(async (_, res) => {
 }));
 
 router.get('/learning-paths/:id', asyncHandler(async (req, res) => {
-    return queryWithFallback(
-        async () => {
-            const r = await pool.query('SELECT * FROM learning.learning_paths WHERE id = $1 OR slug = $1', [req.params.id]);
-            if (!r.rows.length) return null;
-            return { ...r.rows[0], courses: [] };
-        },
-        'learning-paths', res, false,
-        (data) => data.find(p => p.id === req.params.id || p.slug === req.params.id) || null
-    );
+    if (!(await dbAvailable())) {
+        return res.status(503).json({ error: 'Database unavailable' });
+    }
+    try {
+        const r = await pool.query('SELECT * FROM learning.learning_paths WHERE id = $1 OR slug = $1', [req.params.id]);
+        if (!r.rows.length) {
+            return res.status(404).json({ error: 'Learning path not found' });
+        }
+        return res.json({ ...r.rows[0], courses: [] });
+    } catch (err) {
+        console.error('Learning path detail error:', err.message);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
 }));
 
 // ─── Workshop Registration ────────────────────────────
