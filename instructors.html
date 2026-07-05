@@ -140,7 +140,7 @@
         async function initInstructors() {
             let apiInstructors = [];
             try {
-                const data = await fetch('/api/learning/instructors').then(r => r.json());
+                const data = await fetch('/api/instructors').then(r => r.json());
                 apiInstructors = (data || []).map(f => ({
                     name: f.name,
                     title: f.title || 'Instructor',
