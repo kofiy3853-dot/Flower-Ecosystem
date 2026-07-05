@@ -316,6 +316,7 @@ CREATE TABLE IF NOT EXISTS learning.certificates (
     user_id         UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     course_id       UUID NOT NULL REFERENCES learning.courses(id) ON DELETE CASCADE,
     issued_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id, course_id)
 );
 

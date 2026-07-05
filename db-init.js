@@ -194,6 +194,19 @@ async function run() {
             }
         }
 
+        // Run instructor applications migration
+        const instructorAppsPath = path.join(__dirname, 'migrations', '010_instructor_applications.sql');
+        if (fs.existsSync(instructorAppsPath)) {
+            const instructorApps = fs.readFileSync(instructorAppsPath, 'utf8');
+            console.log('Running 010_instructor_applications.sql...');
+            try {
+                await client.query(instructorApps);
+                console.log('010_instructor_applications.sql applied.');
+            } catch (e) {
+                console.log('010_instructor_applications.sql partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
         // Run community feed tables (saves, reactions, shares, poll votes)
         const communityFeedPath = path.join(__dirname, 'sql', 'community-feed-tables.sql');
         if (fs.existsSync(communityFeedPath)) {

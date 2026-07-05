@@ -881,7 +881,7 @@ router.get('/instructor/certificates', requireInstructor, asyncHandler(async (re
              JOIN auth.users u ON u.id = cert.user_id
              JOIN learning.courses c ON c.id = cert.course_id
              WHERE c.instructor = $1 OR c.instructor = $2
-             ORDER BY cert.created_at DESC`,
+             ORDER BY cert.issued_at DESC`,
             [req.user.email, req.user.id]
         );
         res.json(r.rows);

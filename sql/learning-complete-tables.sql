@@ -143,12 +143,14 @@ CREATE TABLE IF NOT EXISTS learning.certificates (
     title           VARCHAR(255) NOT NULL,
     issued_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     certificate_url TEXT,
-    verification_code VARCHAR(50) UNIQUE
+    verification_code VARCHAR(50) UNIQUE,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Add missing columns if table existed without them
 ALTER TABLE learning.certificates ADD COLUMN IF NOT EXISTS title VARCHAR(255);
 ALTER TABLE learning.certificates ADD COLUMN IF NOT EXISTS verification_code VARCHAR(50) UNIQUE;
+ALTER TABLE learning.certificates ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 CREATE INDEX IF NOT EXISTS idx_certificates_user ON learning.certificates(user_id);
 CREATE INDEX IF NOT EXISTS idx_certificates_code ON learning.certificates(verification_code);
