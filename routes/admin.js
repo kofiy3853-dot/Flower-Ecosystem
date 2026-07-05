@@ -62,6 +62,33 @@ router.delete('/users/:id', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(asy
     res.json({ success: true });
 }));
 
+// ─── Admin: Get User Activity ────────────────────────────
+router.get('/users/:id/activity', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id } = req.params;
+
+    const user = await pool.query('SELECT id, first_name, last_name, email, role, created_at FROM auth.users WHERE id = $1', [id]);
+    if (!user.rows.length) return res.status(404).json({ error: 'User not found' });
+
+    const [enrollments, orders, posts, discussions, certificates] = await Promise.all([
+        pool.query(`SELECT e.*, c.title AS course_title FROM learning.enrollments e
+            LEFT JOIN learning.courses c ON c.id = e.course_id WHERE e.user_id = $1 ORDER BY e.enrolled_at DESC LIMIT 10`, [id]).catch(() => ({ rows: [] })),
+        pool.query(`SELECT * FROM marketplace.orders WHERE buyer_id = $1 ORDER BY created_at DESC LIMIT 10`, [id]).catch(() => ({ rows: [] })),
+        pool.query(`SELECT * FROM platform.posts WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10`, [id]).catch(() => ({ rows: [] })),
+        pool.query(`SELECT * FROM platform.discussions WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10`, [id]).catch(() => ({ rows: [] })),
+        pool.query(`SELECT * FROM learning.certificates WHERE user_id = $1 ORDER BY issued_at DESC`, [id]).catch(() => ({ rows: [] }))
+    ]);
+
+    res.json({
+        user: user.rows[0],
+        enrollments: enrollments.rows,
+        orders: orders.rows,
+        posts: posts.rows,
+        discussions: discussions.rows,
+        certificates: certificates.rows
+    });
+}));
+
 router.put('/products/:id/approve', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
     const { id } = req.params;
