@@ -42,6 +42,7 @@
                 <div class="adm-nav-group">SYSTEM</div>
                 <a class="adm-nav-item" data-section="analytics"><i class="bi bi-bar-chart-line"></i><span>Analytics</span></a>
                 <a class="adm-nav-item" data-section="approvals"><i class="bi bi-check2-square"></i><span>Approvals</span></a>
+                <a class="adm-nav-item" data-section="instructors"><i class="bi bi-person-video3"></i><span>Instructors</span></a>
                 <a class="adm-nav-item" data-section="announcements"><i class="bi bi-megaphone"></i><span>Announcements</span></a>
                 <a class="adm-nav-item" data-section="settings"><i class="bi bi-gear"></i><span>Settings</span></a>
                 <div style="border-top:1px solid rgba(255,255,255,.08);margin-top:.5rem;padding-top:.5rem;">
@@ -323,6 +324,30 @@
                         <div class="adm-card-header"><h3>Seller Applications</h3></div>
                         <div id="sellerApprovals"></div>
                     </div>
+                </section>
+
+                <!-- Instructor Applications Section -->
+                <section class="adm-section" id="sec-instructors">
+                    <div class="adm-section-header"><h2>Instructor Applications</h2></div>
+                    <div class="adm-stats-grid adm-stats-4" id="instructorStats"></div>
+                    <div class="adm-card" style="margin-bottom:1rem;">
+                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+                            <button class="adm-btn adm-btn-sm adm-btn-primary inst-filter-btn active" data-status="">All</button>
+                            <button class="adm-btn adm-btn-sm inst-filter-btn" data-status="pending">Pending</button>
+                            <button class="adm-btn adm-btn-sm inst-filter-btn" data-status="under_review">Under Review</button>
+                            <button class="adm-btn adm-btn-sm inst-filter-btn" data-status="approved">Approved</button>
+                            <button class="adm-btn adm-btn-sm inst-filter-btn" data-status="rejected">Rejected</button>
+                            <button class="adm-btn adm-btn-sm inst-filter-btn" data-status="needs_info">Needs Info</button>
+                        </div>
+                        <div class="adm-table-wrap">
+                            <table class="adm-table">
+                                <thead><tr><th>Applicant</th><th>Title</th><th>Experience</th><th>Expertise</th><th>Applied</th><th>Status</th><th>Action</th></tr></thead>
+                                <tbody id="instructorAppsBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Application Detail Modal -->
+                    <div class="adm-card" id="instructorAppDetail" style="display:none;"></div>
                 </section>
 
                 <!-- Announcements Section -->

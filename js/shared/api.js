@@ -77,11 +77,6 @@ function authHeaders() {
     return headers;
 }
 
-window.escapeHtml = escapeHtml;
-window.formatDate = formatDate;
-window.formatNumber = formatNumber;
-window.timeAgo = timeAgo;
-window.renderStars = renderStars;
 window.getCurrentUserId = getCurrentUserId;
 window.getCurrentUserRole = getCurrentUserRole;
 window.authHeaders = authHeaders;
@@ -226,7 +221,18 @@ const api = {
     fetchInstructorAssignments() { return apiFetchWithBody('/api/instructor/assignments', 'GET'); },
     fetchInstructorLiveClasses() { return apiFetchWithBody('/api/instructor/live-classes', 'GET'); },
     fetchInstructorCertificates() { return apiFetchWithBody('/api/instructor/certificates', 'GET'); },
-    fetchInstructorAnalytics() { return apiFetchWithBody('/api/instructor/analytics', 'GET'); }
+    fetchInstructorAnalytics() { return apiFetchWithBody('/api/instructor/analytics', 'GET'); },
+
+    // ─── Instructor Application ────────────────────────────
+    submitInstructorApplication(data) { return apiFetchWithBody('/api/instructor/apply', 'POST', data); },
+    fetchMyInstructorApplication() { return apiFetchWithBody('/api/instructor/my-application', 'GET'); },
+    fetchMyInstructorLevel() { return apiFetchWithBody('/api/instructor/my-level', 'GET'); },
+    fetchInstructorApplications(status) { return apiFetchWithBody('/api/instructor/applications' + (status ? '?status=' + status : ''), 'GET'); },
+    fetchInstructorApplicationDetail(id) { return apiFetchWithBody('/api/instructor/applications/' + id, 'GET'); },
+    updateInstructorApplication(id, data) { return apiFetchWithBody('/api/instructor/applications/' + id, 'PUT', data); },
+    fetchInstructorLevels() { return apiFetchWithBody('/api/instructor/levels', 'GET'); },
+    updateInstructorLevel(userId, data) { return apiFetchWithBody('/api/instructor/levels/' + userId, 'PUT', data); },
+    fetchInstructorStats() { return apiFetchWithBody('/api/instructor/stats', 'GET'); }
 };
 
 window.api = api;

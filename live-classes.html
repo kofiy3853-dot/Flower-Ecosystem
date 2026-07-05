@@ -244,12 +244,17 @@
             `).join('');
         }
 
-        function registerClass(id) {
-            if (typeof isLoggedIn === 'function' && isLoggedIn()) {
-                alert('Registration confirmed! You\'ll receive a reminder before the class.');
-            } else {
+        async function registerClass(id) {
+            if (!isLoggedIn()) {
                 sessionStorage.setItem('pending-redirect', 'live-classes.html');
-                if (typeof openAuthModal === 'function') openAuthModal('login');
+                openAuthModal('login');
+                return;
+            }
+            try {
+                await api.registerLiveClass(id);
+                alert('Registration confirmed! You\'ll receive a reminder before the class.');
+            } catch (err) {
+                alert('Registration failed. Please try again.');
             }
         }
 

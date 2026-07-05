@@ -138,6 +138,11 @@
         }
 
         async function initAssignments() {
+            if (!isLoggedIn()) {
+                sessionStorage.setItem('pending-redirect', 'assignments.html');
+                openAuthModal('login');
+                return;
+            }
             // Try API first, fall back to hardcoded data
             try {
                 const apiData = await api.fetchAssignments();
@@ -155,6 +160,10 @@
         }
 
         function submitAssignment(id, fileInput) {
+            if (!isLoggedIn()) {
+                openAuthModal('login');
+                return;
+            }
             if (fileInput && !fileInput.files.length) return;
             const assignment = assignments.find(a => a.id === id);
             if (assignment) {

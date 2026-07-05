@@ -161,6 +161,11 @@
             }
 
             async function loadDashboard() {
+                if (!isLoggedIn()) {
+                    sessionStorage.setItem('pending-redirect', 'my-learning.html');
+                    openAuthModal('login');
+                    return;
+                }
                 const [enrolledData, certData] = await Promise.all([
                     apiFetch('/api/courses/enrolled'),
                     apiFetch('/api/certificates')

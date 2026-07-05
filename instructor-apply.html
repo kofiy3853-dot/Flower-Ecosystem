@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Apply to become an instructor on Flower Ecosystem. Share your floral expertise with thousands of learners.">
+    <title>Become an Instructor | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .apply-hero{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:5rem 0 3rem;color:white;text-align:center;}
+        .apply-hero h1{font-size:clamp(2rem,4vw,2.8rem);margin-bottom:0.5rem;}
+        .apply-hero p{opacity:0.85;font-size:1.05rem;max-width:600px;margin:0 auto;}
+        .apply-progress{display:flex;justify-content:center;margin:2rem 0;flex-wrap:wrap;gap:0.4rem;}
+        .apply-step{display:flex;align-items:center;gap:0.4rem;padding:0.45rem 0.9rem;border-radius:50px;font-size:0.8rem;color:var(--text-light);background:var(--bg-light);transition:all 0.3s;}
+        .apply-step.active{background:var(--primary-color);color:white;font-weight:600;}
+        .apply-step.completed{background:#10b981;color:white;}
+        .apply-step-num{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:600;}
+        .apply-step.active .apply-step-num{background:rgba(255,255,255,0.3);}
+        .apply-card{background:white;border:1px solid var(--border-color);border-radius:16px;padding:2rem;margin-bottom:1.5rem;}
+        .apply-card h2{font-family:'Playfair Display',serif;font-size:1.35rem;margin-bottom:0.5rem;}
+        .apply-card>p{color:var(--text-light);font-size:0.9rem;margin-bottom:1.5rem;}
+        .apply-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+        .apply-full{grid-column:1/-1;}
+        .apply-group{margin-bottom:1rem;}
+        .apply-label{display:block;font-weight:500;font-size:0.88rem;margin-bottom:0.35rem;}
+        .apply-label .req{color:var(--error-color);}
+        .apply-input,.apply-select,.apply-textarea{width:100%;padding:0.7rem 1rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.9rem;font-family:inherit;transition:border-color 0.2s;}
+        .apply-input:focus,.apply-select:focus,.apply-textarea:focus{outline:none;border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(216,68,124,0.1);}
+        .apply-hint{font-size:0.78rem;color:var(--text-light);margin-top:0.25rem;}
+        .apply-tags{display:flex;flex-wrap:wrap;gap:0.5rem;}
+        .apply-tag{padding:0.4rem 0.8rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.85rem;cursor:pointer;transition:all 0.2s;user-select:none;}
+        .apply-tag:hover{border-color:var(--primary-color);}
+        .apply-tag.selected{border-color:var(--primary-color);background:var(--primary-light);color:var(--primary-color);font-weight:500;}
+        .apply-upload{border:2px dashed var(--border-color);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:all 0.2s;}
+        .apply-upload:hover{border-color:var(--primary-color);background:var(--primary-light);}
+        .apply-upload-icon{font-size:2rem;color:var(--text-light);margin-bottom:0.5rem;}
+        .apply-nav{display:flex;justify-content:space-between;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border-color);}
+        .apply-success{text-align:center;padding:3rem;}
+        .apply-success-icon{width:80px;height:80px;border-radius:50%;background:#d4edda;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:2.5rem;color:#155724;}
+        .apply-check{display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0;font-size:0.9rem;cursor:pointer;}
+        .apply-check input{accent-color:var(--primary-color);width:18px;height:18px;}
+        .apply-edu-item,.apply-cert-item{background:var(--bg-light);border:1px solid var(--border-color);border-radius:10px;padding:1rem;margin-bottom:0.75rem;}
+        .apply-edu-item .apply-grid,.apply-cert-item .apply-grid{gap:0.75rem;}
+        .apply-remove-btn{background:none;border:none;color:var(--error-color);cursor:pointer;font-size:0.85rem;padding:0.25rem;}
+        .apply-preview{width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-top:0.5rem;}
+        .apply-status-badge{display:inline-flex;align-items:center;gap:0.3rem;padding:0.3rem 0.8rem;border-radius:50px;font-size:0.8rem;font-weight:500;}
+        .apply-status-badge.pending{background:rgba(212,175,55,0.1);color:#b8941f;}
+        .apply-status-badge.approved{background:rgba(39,174,96,0.1);color:#27ae60;}
+        .apply-status-badge.rejected{background:rgba(231,76,60,0.1);color:#e74c3c;}
+        .apply-status-badge.under_review{background:rgba(74,144,217,0.1);color:#4a90d9;}
+        .apply-status-badge.needs_info{background:rgba(251,146,60,0.1);color:#ea580c;}
+        @media(max-width:768px){.apply-grid{grid-template-columns:1fr;}.apply-progress{gap:0.25rem;}.apply-step{font-size:0.7rem;padding:0.35rem 0.65rem;}}
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="apply-hero">
+        <div class="container">
+            <h1>Become an Instructor</h1>
+            <p>Share your floral expertise with thousands of learners. Apply now and start teaching on Flower Ecosystem.</p>
+        </div>
+    </section>
+
+    <div class="container" style="max-width:800px;">
+        <!-- Status Banner (shown if application exists) -->
+        <div id="statusBanner" style="display:none;"></div>
+
+        <!-- Progress -->
+        <div class="apply-progress" id="applyProgress"></div>
+
+        <!-- Step 1: Basic Information -->
+        <div class="apply-step-content" id="step1">
+            <div class="apply-card">
+                <h2>Basic Information</h2>
+                <p>Tell us about yourself.</p>
+                <div class="apply-grid">
+                    <div class="apply-group">
+                        <label class="apply-label">Full Name <span class="req">*</span></label>
+                        <input type="text" id="fullName" class="apply-input" placeholder="Your full name" required>
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">Email Address <span class="req">*</span></label>
+                        <input type="email" id="email" class="apply-input" placeholder="you@email.com" required>
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">Phone Number</label>
+                        <input type="tel" id="phone" class="apply-input" placeholder="+233 XX XXX XXXX">
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">Country</label>
+                        <input type="text" id="country" class="apply-input" placeholder="e.g. Ghana">
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">City</label>
+                        <input type="text" id="city" class="apply-input" placeholder="e.g. Accra">
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">Languages Spoken</label>
+                        <input type="text" id="languages" class="apply-input" placeholder="e.g. English, Twi (comma separated)">
+                    </div>
+                    <div class="apply-group apply-full">
+                        <label class="apply-label">Profile Photo</label>
+                        <div class="apply-upload" onclick="document.getElementById('profilePhoto').click()">
+                            <div class="apply-upload-icon"><i class="bi bi-camera"></i></div>
+                            <p style="font-size:0.85rem;margin:0;">Click to upload photo</p>
+                        </div>
+                        <input type="file" id="profilePhoto" accept="image/*" style="display:none;" onchange="previewImg(this,'photoPreview')">
+                        <div id="photoPreview"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Professional Information -->
+        <div class="apply-step-content" id="step2" style="display:none;">
+            <div class="apply-card">
+                <h2>Professional Information</h2>
+                <p>Your professional background in floristry or related fields.</p>
+                <div class="apply-grid">
+                    <div class="apply-group">
+                        <label class="apply-label">Professional Title <span class="req">*</span></label>
+                        <select id="profTitle" class="apply-select" required>
+                            <option value="">Select title...</option>
+                            <option>Master Florist</option>
+                            <option>Flower Farmer</option>
+                            <option>Landscape Designer</option>
+                            <option>Horticulturist</option>
+                            <option>Floral Business Consultant</option>
+                            <option>Event Decorator</option>
+                            <option>Plant Specialist</option>
+                            <option>Floral Photographer</option>
+                            <option>Botanist</option>
+                            <option>Greenhouse Expert</option>
+                        </select>
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">Years of Experience <span class="req">*</span></label>
+                        <select id="yearsExp" class="apply-select" required>
+                            <option value="">Select...</option>
+                            <option value="1">Less than 1 year</option>
+                            <option value="2">1-2 years</option>
+                            <option value="3">3-5 years</option>
+                            <option value="7">5-10 years</option>
+                            <option value="12">10-15 years</option>
+                            <option value="20">15+ years</option>
+                        </select>
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">Current Employer</label>
+                        <input type="text" id="employer" class="apply-input" placeholder="Optional">
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">Own Business</label>
+                        <input type="text" id="ownBusiness" class="apply-input" placeholder="e.g. Bloom Garden Florist">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Biography -->
+        <div class="apply-step-content" id="step3" style="display:none;">
+            <div class="apply-card">
+                <h2>Professional Biography</h2>
+                <p>Explain your background, experience, teaching philosophy, and areas of expertise.</p>
+                <div class="apply-group">
+                    <label class="apply-label">Bio <span class="req">*</span></label>
+                    <textarea id="bio" class="apply-textarea" rows="6" placeholder="Example: I have over 12 years of experience in wedding floral design and have trained more than 500 aspiring florists. My teaching philosophy focuses on hands-on practice combined with creative exploration..." required></textarea>
+                    <div class="apply-hint">Minimum 100 characters. This will be visible to students.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Areas of Expertise -->
+        <div class="apply-step-content" id="step4" style="display:none;">
+            <div class="apply-card">
+                <h2>Areas of Expertise</h2>
+                <p>Select all areas you can teach. You need at least one.</p>
+                <div class="apply-tags" id="expertiseTags">
+                    <div class="apply-tag" data-val="Floral Design" onclick="toggleTag(this)">Floral Design</div>
+                    <div class="apply-tag" data-val="Bouquet Making" onclick="toggleTag(this)">Bouquet Making</div>
+                    <div class="apply-tag" data-val="Flower Farming" onclick="toggleTag(this)">Flower Farming</div>
+                    <div class="apply-tag" data-val="Greenhouse Management" onclick="toggleTag(this)">Greenhouse Management</div>
+                    <div class="apply-tag" data-val="Plant Care" onclick="toggleTag(this)">Plant Care</div>
+                    <div class="apply-tag" data-val="Flower Business" onclick="toggleTag(this)">Flower Business</div>
+                    <div class="apply-tag" data-val="Wedding Decoration" onclick="toggleTag(this)">Wedding Decoration</div>
+                    <div class="apply-tag" data-val="Landscape Design" onclick="toggleTag(this)">Landscape Design</div>
+                    <div class="apply-tag" data-val="Indoor Plants" onclick="toggleTag(this)">Indoor Plants</div>
+                    <div class="apply-tag" data-val="Flower Photography" onclick="toggleTag(this)">Flower Photography</div>
+                    <div class="apply-tag" data-val="Event Decoration" onclick="toggleTag(this)">Event Decoration</div>
+                    <div class="apply-tag" data-val="Soil Science" onclick="toggleTag(this)">Soil Science</div>
+                    <div class="apply-tag" data-val="Pest Control" onclick="toggleTag(this)">Pest Control</div>
+                    <div class="apply-tag" data-val="Propagation" onclick="toggleTag(this)">Propagation</div>
+                    <div class="apply-tag" data-val="Color Theory" onclick="toggleTag(this)">Color Theory</div>
+                    <div class="apply-tag" data-val="Sustainability" onclick="toggleTag(this)">Sustainability</div>
+                </div>
+                <div class="apply-hint" id="expertiseHint">Select at least 1 area</div>
+            </div>
+        </div>
+
+        <!-- Step 5: Education & Certifications -->
+        <div class="apply-step-content" id="step5" style="display:none;">
+            <div class="apply-card">
+                <h2>Education & Certifications</h2>
+                <p>Optional but recommended. Add your educational background and any professional certifications.</p>
+                <div class="apply-group">
+                    <label class="apply-label">Education</label>
+                    <div id="educationList"></div>
+                    <button type="button" class="apply-tag" onclick="addEducation()" style="margin-top:0.5rem;"><i class="bi bi-plus"></i> Add Education</button>
+                </div>
+                <div class="apply-group" style="margin-top:1.5rem;">
+                    <label class="apply-label">Professional Certifications</label>
+                    <div id="certList"></div>
+                    <button type="button" class="apply-tag" onclick="addCertification()" style="margin-top:0.5rem;"><i class="bi bi-plus"></i> Add Certification</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 6: Portfolio -->
+        <div class="apply-step-content" id="step6" style="display:none;">
+            <div class="apply-card">
+                <h2>Portfolio</h2>
+                <p>Showcase your best work. Upload 5-10 quality images of your projects, arrangements, or events.</p>
+                <div class="apply-group">
+                    <label class="apply-label">Portfolio Images <span class="req">*</span></label>
+                    <div class="apply-upload" onclick="document.getElementById('portfolioFiles').click()">
+                        <div class="apply-upload-icon"><i class="bi bi-images"></i></div>
+                        <p style="font-size:0.85rem;margin:0;">Click to upload images (min. 5)</p>
+                        <p style="font-size:0.75rem;color:var(--text-light);margin:0.25rem 0 0;">JPG, PNG, WEBP — Max 5MB each</p>
+                    </div>
+                    <input type="file" id="portfolioFiles" accept="image/*" multiple style="display:none;" onchange="handlePortfolioUpload(this)">
+                    <div id="portfolioGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.75rem;margin-top:1rem;"></div>
+                    <div class="apply-hint" id="portfolioHint">0 images uploaded (minimum 5 required)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 7: Teaching Experience & Video -->
+        <div class="apply-step-content" id="step7" style="display:none;">
+            <div class="apply-card">
+                <h2>Teaching Experience & Introduction</h2>
+                <p>Tell us about your teaching background and introduce yourself on video.</p>
+                <div class="apply-grid">
+                    <div class="apply-group apply-full">
+                        <label class="apply-label">Have you taught before? <span class="req">*</span></label>
+                        <select id="hasTaught" class="apply-select" required>
+                            <option value="false">No, this is my first time</option>
+                            <option value="true">Yes, I have teaching experience</option>
+                        </select>
+                    </div>
+                    <div class="apply-group" id="teachFormatGroup" style="display:none;">
+                        <label class="apply-label">Teaching Format</label>
+                        <select id="teachFormat" class="apply-select">
+                            <option value="">Select...</option>
+                            <option value="online">Online only</option>
+                            <option value="in_person">In person only</option>
+                            <option value="both">Both online and in person</option>
+                        </select>
+                    </div>
+                    <div class="apply-group" id="studentsTaughtGroup" style="display:none;">
+                        <label class="apply-label">Number of Students Taught</label>
+                        <input type="number" id="studentsTaught" class="apply-input" min="0" placeholder="e.g. 500">
+                    </div>
+                    <div class="apply-group apply-full" id="prevPlatformsGroup" style="display:none;">
+                        <label class="apply-label">Previous Platforms</label>
+                        <input type="text" id="prevPlatforms" class="apply-input" placeholder="e.g. Udemy, Skillshare, YouTube">
+                    </div>
+                    <div class="apply-group apply-full">
+                        <label class="apply-label">Introduction Video <span class="req">*</span></label>
+                        <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:0.75rem;">Upload a 2-5 minute video introducing yourself, what you'll teach, and why you're qualified.</p>
+                        <div class="apply-upload" onclick="document.getElementById('introVideo').click()">
+                            <div class="apply-upload-icon"><i class="bi bi-camera-video"></i></div>
+                            <p style="font-size:0.85rem;margin:0;">Click to upload video (2-5 min)</p>
+                            <p style="font-size:0.75rem;color:var(--text-light);margin:0.25rem 0 0;">MP4, MOV — Max 50MB</p>
+                        </div>
+                        <input type="file" id="introVideo" accept="video/*" style="display:none;" onchange="handleVideoUpload(this,'videoPreview')">
+                        <div id="videoPreview"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 8: Sample Lesson -->
+        <div class="apply-step-content" id="step8" style="display:none;">
+            <div class="apply-card">
+                <h2>Sample Lesson</h2>
+                <p>Provide a sample lesson to demonstrate your teaching ability. Upload a recorded lesson or provide a detailed lesson outline.</p>
+                <div class="apply-grid">
+                    <div class="apply-group apply-full">
+                        <label class="apply-label">Sample Lesson Video</label>
+                        <div class="apply-upload" onclick="document.getElementById('sampleLesson').click()">
+                            <div class="apply-upload-icon"><i class="bi bi-play-circle"></i></div>
+                            <p style="font-size:0.85rem;margin:0;">Upload a short recorded lesson (optional)</p>
+                        </div>
+                        <input type="file" id="sampleLesson" accept="video/*" style="display:none;" onchange="handleVideoUpload(this,'sampleLessonPreview')">
+                        <div id="sampleLessonPreview"></div>
+                    </div>
+                    <div class="apply-group apply-full">
+                        <label class="apply-label">Lesson Outline <span class="req">*</span></label>
+                        <textarea id="lessonOutline" class="apply-textarea" rows="8" placeholder="Provide a detailed outline of a lesson you would teach. Include:&#10;&#10;Lesson Title:&#10;Learning Objectives:&#10;Topics Covered:&#10;Practical Exercises:&#10;Assessment Method:" required></textarea>
+                        <div class="apply-hint">Describe what your first lesson would look like</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 9: Identity Verification -->
+        <div class="apply-step-content" id="step9" style="display:none;">
+            <div class="apply-card">
+                <h2>Identity Verification</h2>
+                <p>Help us verify your identity to build trust with students.</p>
+                <div class="apply-grid">
+                    <div class="apply-group apply-full">
+                        <label class="apply-label">Government-issued ID <span class="req">*</span></label>
+                        <div class="apply-upload" onclick="document.getElementById('govId').click()">
+                            <div class="apply-upload-icon"><i class="bi bi-person-badge"></i></div>
+                            <p style="font-size:0.85rem;margin:0;">Upload ID (passport, driver's license, or national ID)</p>
+                        </div>
+                        <input type="file" id="govId" accept="image/*" style="display:none;" onchange="previewImg(this,'govIdPreview')">
+                        <div id="govIdPreview"></div>
+                    </div>
+                    <div class="apply-group apply-full">
+                        <label class="apply-label">Selfie Verification</label>
+                        <div class="apply-upload" onclick="document.getElementById('selfie').click()">
+                            <div class="apply-upload-icon"><i class="bi bi-camera"></i></div>
+                            <p style="font-size:0.85rem;margin:0;">Upload a clear selfie (optional but recommended)</p>
+                        </div>
+                        <input type="file" id="selfie" accept="image/*" style="display:none;" onchange="previewImg(this,'selfiePreview')">
+                        <div id="selfiePreview"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 10: Social Links & Banking -->
+        <div class="apply-step-content" id="step10" style="display:none;">
+            <div class="apply-card">
+                <h2>Social Links & Payout Details</h2>
+                <p>Add your professional links and banking information for course payments.</p>
+                <div class="apply-grid">
+                    <div class="apply-group">
+                        <label class="apply-label">Personal Website</label>
+                        <input type="url" id="website" class="apply-input" placeholder="https://yoursite.com">
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">Portfolio URL</label>
+                        <input type="url" id="portfolioUrl" class="apply-input" placeholder="https://portfolio.com">
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">Instagram</label>
+                        <input type="text" id="socialIg" class="apply-input" placeholder="@username">
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">YouTube</label>
+                        <input type="text" id="socialYt" class="apply-input" placeholder="Channel URL">
+                    </div>
+                    <div class="apply-group apply-full" style="margin-top:1rem;">
+                        <label class="apply-label" style="font-size:1rem;">Payout Information</label>
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">Payout Method</label>
+                        <select id="payoutMethod" class="apply-select">
+                            <option value="">Select...</option>
+                            <option value="mobile_money">Mobile Money</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                            <option value="both">Both</option>
+                        </select>
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">Account Holder Name</label>
+                        <input type="text" id="bankName" class="apply-input" placeholder="Full name on account">
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">Mobile Money Number</label>
+                        <input type="text" id="momoNumber" class="apply-input" placeholder="+233 XX XXX XXXX">
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">Bank Name</label>
+                        <input type="text" id="bankInstitution" class="apply-input" placeholder="e.g. GCB Bank">
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">Account Number</label>
+                        <input type="text" id="bankAcct" class="apply-input" placeholder="Account number">
+                    </div>
+                    <div class="apply-group">
+                        <label class="apply-label">Tax ID</label>
+                        <input type="text" id="taxId" class="apply-input" placeholder="Optional">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 11: Review & Submit -->
+        <div class="apply-step-content" id="step11" style="display:none;">
+            <div class="apply-card">
+                <h2>Review & Submit</h2>
+                <p>Review your application before submitting.</p>
+                <div id="reviewSummary"></div>
+                <div style="margin-top:1.5rem;">
+                    <label class="apply-check"><input type="checkbox" id="agreeTerms"> I agree to the <a href="/terms" target="_blank">Instructor Terms</a> and <a href="/privacy" target="_blank">Content Guidelines</a></label>
+                    <label class="apply-check"><input type="checkbox" id="agreeContent"> I agree to the <a href="/terms" target="_blank">Copyright Policy</a></label>
+                    <label class="apply-check"><input type="checkbox" id="agreeCommunity"> I agree to the <a href="/terms" target="_blank">Community Standards</a></label>
+                    <label class="apply-check"><input type="checkbox" id="agreeQuality"> I understand that my courses will be reviewed for quality before publication</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success -->
+        <div class="apply-step-content" id="stepSuccess" style="display:none;">
+            <div class="apply-card">
+                <div class="apply-success">
+                    <div class="apply-success-icon"><i class="bi bi-check-lg"></i></div>
+                    <h2 style="font-family:'Playfair Display',serif;">Application Submitted!</h2>
+                    <p style="color:var(--text-light);max-width:400px;margin:0.5rem auto 1.5rem;">Your instructor application has been submitted successfully. Our team will review it within 2-5 business days.</p>
+                    <p style="font-size:0.9rem;margin-bottom:2rem;">You'll receive an email notification once your application is reviewed.</p>
+                    <a href="/" class="btn btn-primary" style="padding:0.75rem 2rem;">Back to Home</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="apply-nav" id="applyNav">
+            <button class="btn btn-outline" id="prevBtn" onclick="prevStep()" style="display:none;"><i class="bi bi-arrow-left"></i> Previous</button>
+            <div></div>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Next <i class="bi bi-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/instructor-apply.js"></script>
+</body>
+</html>

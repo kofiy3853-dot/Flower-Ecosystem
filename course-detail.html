@@ -255,9 +255,9 @@
             const enrollBtn = document.getElementById('enrollBtn');
             if (enrollBtn) {
                 enrollBtn.addEventListener('click', async () => {
-                    if (!window.auth || !window.auth.isAuthenticated()) {
-                        alert('Please login to enroll in courses.');
-                        window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
+                    if (!isLoggedIn()) {
+                        sessionStorage.setItem('pending-redirect', window.location.href);
+                        openAuthModal('login');
                         return;
                     }
                     try {

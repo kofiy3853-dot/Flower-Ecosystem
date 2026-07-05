@@ -19,6 +19,7 @@ function switchSection(name){
     if(name==='articles') renderArticles();
     if(name==='analytics') renderAnalytics();
     if(name==='approvals') renderApprovals();
+    if(name==='instructors') renderInstructors();
     if(name==='announcements') renderAnnouncements();
     if(name==='settings') renderSettings();
 }
@@ -826,6 +827,124 @@ async function retryInit(){
     await init();
 }
 window.retryInit=retryInit;
+
+// ─── Instructor Applications ───────────────────────────
+let instructorApps=[],instructorAppFilter='';
+
+async function renderInstructors(){
+    // Load stats
+    try{
+        const stats=await api.fetchInstructorStats();
+        $('#instructorStats').innerHTML=`
+            <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">${stats.pending||0}</div><div class="adm-stat-label">Pending</div></div></div>
+            <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">${stats.under_review||0}</div><div class="adm-stat-label">Under Review</div></div></div>
+            <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">${stats.approved||0}</div><div class="adm-stat-label">Approved</div></div></div>
+            <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">${stats.rejected||0}</div><div class="adm-stat-label">Rejected</div></div></div>`;
+    }catch{}
+
+    // Load applications
+    try{
+        instructorApps=await api.fetchInstructorApplications(instructorAppFilter||undefined);
+    }catch{instructorApps=[];}
+
+    const body=$('#instructorAppsBody');
+    if(!instructorApps.length){
+        body.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-light);">No applications found</td></tr>';
+        return;
+    }
+    body.innerHTML=instructorApps.map(a=>{
+        const name=a.full_name||a.first_name||'Unknown';
+        const expertise=Array.isArray(a.expertise)?a.expertise.slice(0,3).join(', '):(a.expertise||'');
+        const statusClass=a.status||'pending';
+        return `<tr>
+            <td><div style="display:flex;align-items:center;gap:.5rem;"><div class="adm-avatar adm-avatar-sm">${name[0]}</div><div><div style="font-weight:500;font-size:.9rem;">${escapeHtml(name)}</div><div style="font-size:.75rem;color:var(--text-light);">${escapeHtml(a.email||'')}</div></div></div></td>
+            <td style="font-size:.85rem;">${escapeHtml(a.professional_title||'')}</td>
+            <td style="font-size:.85rem;">${a.years_experience||0} years</td>
+            <td style="font-size:.85rem;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(expertise)}</td>
+            <td style="font-size:.85rem;">${timeAgo(a.created_at)}</td>
+            <td><span class="adm-status ${statusClass}">${statusClass.replace('_',' ')}</span></td>
+            <td><button class="adm-btn adm-btn-sm adm-btn-primary" onclick="reviewInstructorApp('${a.id}')">Review</button></td>
+        </tr>`;
+    }).join('');
+
+    // Wire filter buttons
+    $$('.inst-filter-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+            $$('.inst-filter-btn').forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+            instructorAppFilter=btn.dataset.status;
+            renderInstructors();
+        });
+    });
+}
+
+window.reviewInstructorApp=async function(id){
+    try{
+        const app=await api.fetchInstructorApplicationDetail(id);
+        const detail=$('#instructorAppDetail');
+        detail.style.display='block';
+        const expertise=Array.isArray(app.expertise)?app.expertise:[];
+        const education=Array.isArray(app.education)?app.education:typeof app.education==='string'?JSON.parse(app.education||'[]'):[];
+        const certs=Array.isArray(app.certifications)?app.certifications:typeof app.certifications==='string'?JSON.parse(app.certifications||'[]'):[];
+        const portfolio=Array.isArray(app.portfolio)?app.portfolio:typeof app.portfolio==='string'?JSON.parse(app.portfolio||'[]'):[];
+
+        detail.innerHTML=`
+        <div class="adm-card-header" style="margin-bottom:1rem;"><h3>Application: ${escapeHtml(app.full_name)}</h3>
+            <button class="adm-btn adm-btn-sm" onclick="document.getElementById('instructorAppDetail').style.display='none'"><i class="bi bi-x-lg"></i> Close</button></div>
+        <div class="adm-grid-2col" style="margin-bottom:1rem;">
+            <div style="padding:1rem;background:var(--bg-main);border-radius:10px;">
+                <h4 style="font-size:.9rem;margin-bottom:.5rem;"><i class="bi bi-person"></i> Basic Info</h4>
+                <p style="font-size:.85rem;"><strong>Name:</strong> ${escapeHtml(app.full_name)}<br>
+                <strong>Email:</strong> ${escapeHtml(app.email)}<br>
+                <strong>Phone:</strong> ${escapeHtml(app.phone||'N/A')}<br>
+                <strong>Location:</strong> ${escapeHtml((app.city||'')+(app.country?', '+app.country:''))}<br>
+                <strong>Languages:</strong> ${(app.languages||[]).join(', ')||'N/A'}</p>
+            </div>
+            <div style="padding:1rem;background:var(--bg-main);border-radius:10px;">
+                <h4 style="font-size:.9rem;margin-bottom:.5rem;"><i class="bi bi-briefcase"></i> Professional</h4>
+                <p style="font-size:.85rem;"><strong>Title:</strong> ${escapeHtml(app.professional_title||'N/A')}<br>
+                <strong>Experience:</strong> ${app.years_experience||0} years<br>
+                <strong>Employer:</strong> ${escapeHtml(app.current_employer||'N/A')}<br>
+                <strong>Business:</strong> ${escapeHtml(app.own_business||'N/A')}</p>
+            </div>
+        </div>
+        <div style="padding:1rem;background:var(--bg-main);border-radius:10px;margin-bottom:1rem;">
+            <h4 style="font-size:.9rem;margin-bottom:.5rem;"><i class="bi bi-journal-text"></i> Bio</h4>
+            <p style="font-size:.85rem;white-space:pre-wrap;">${escapeHtml(app.bio||'')}</p>
+        </div>
+        <div style="padding:1rem;background:var(--bg-main);border-radius:10px;margin-bottom:1rem;">
+            <h4 style="font-size:.9rem;margin-bottom:.5rem;"><i class="bi bi-tags"></i> Expertise</h4>
+            <div style="display:flex;flex-wrap:wrap;gap:.4rem;">${expertise.map(e=>`<span style="padding:.2rem .6rem;background:var(--primary-light);color:var(--primary-color);border-radius:4px;font-size:.8rem;">${escapeHtml(e)}</span>`).join('')}</div>
+        </div>
+        ${app.bio?`<div style="padding:1rem;background:var(--bg-main);border-radius:10px;margin-bottom:1rem;"><h4 style="font-size:.9rem;margin-bottom:.5rem;"><i class="bi bi-journal-text"></i> Teaching Experience</h4><p style="font-size:.85rem;"><strong>Has taught:</strong> ${app.has_taught_before?'Yes':'No'}<br><strong>Format:</strong> ${escapeHtml(app.teaching_format||'N/A')}<br><strong>Students taught:</strong> ${app.students_taught||0}<br><strong>Previous platforms:</strong> ${escapeHtml(app.previous_platforms||'N/A')}</p></div>`:''}
+        ${app.sample_lesson_outline?`<div style="padding:1rem;background:var(--bg-main);border-radius:10px;margin-bottom:1rem;"><h4 style="font-size:.9rem;margin-bottom:.5rem;"><i class="bi bi-easel"></i> Sample Lesson Outline</h4><p style="font-size:.85rem;white-space:pre-wrap;">${escapeHtml(app.sample_lesson_outline)}</p></div>`:''}
+        ${education.length?`<div style="padding:1rem;background:var(--bg-main);border-radius:10px;margin-bottom:1rem;"><h4 style="font-size:.9rem;margin-bottom:.5rem;"><i class="bi bi-mortarboard"></i> Education</h4>${education.map(e=>`<p style="font-size:.85rem;">${escapeHtml(e.qualification||'')} — ${escapeHtml(e.institution||'')} (${escapeHtml(e.year||'')})</p>`).join('')}</div>`:''}
+        ${certs.length?`<div style="padding:1rem;background:var(--bg-main);border-radius:10px;margin-bottom:1rem;"><h4 style="font-size:.9rem;margin-bottom:.5rem;"><i class="bi bi-award"></i> Certifications</h4>${certs.map(c=>`<p style="font-size:.85rem;">${escapeHtml(c.name||'')} — ${escapeHtml(c.issuer||'')} (${escapeHtml(c.year||'')})</p>`).join('')}</div>`:''}
+        ${portfolio.length?`<div style="padding:1rem;background:var(--bg-main);border-radius:10px;margin-bottom:1rem;"><h4 style="font-size:.9rem;margin-bottom:.5rem;"><i class="bi bi-images"></i> Portfolio (${portfolio.length} items)</h4><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.5rem;">${portfolio.map(p=>`<img src="${escapeHtml(p.url||p)}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;" alt="Portfolio">`).join('')}</div></div>`:''}
+        ${app.gov_id_url?`<div style="padding:1rem;background:var(--bg-main);border-radius:10px;margin-bottom:1rem;"><h4 style="font-size:.9rem;margin-bottom:.5rem;"><i class="bi bi-person-badge"></i> ID Verification</h4><img src="${escapeHtml(app.gov_id_url)}" style="max-width:300px;border-radius:8px;" alt="Government ID"></div>`:''}
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border-color);">
+            <button class="adm-btn adm-btn-primary" onclick="updateInstructorApp('${app.id}','approved')"><i class="bi bi-check-lg"></i> Approve</button>
+            <button class="adm-btn" style="background:#4a90d9;color:#fff;" onclick="updateInstructorApp('${app.id}','under_review')"><i class="bi bi-eye"></i> Mark Under Review</button>
+            <button class="adm-btn" style="background:#ea580c;color:#fff;" onclick="updateInstructorApp('${app.id}','needs_info')"><i class="bi bi-info-circle"></i> Request Info</button>
+            <button class="adm-btn adm-btn-danger" onclick="updateInstructorApp('${app.id}','rejected')"><i class="bi bi-x-lg"></i> Reject</button>
+        </div>
+        ${app.reviews&&app.reviews.length?`<div style="margin-top:1rem;"><h4 style="font-size:.9rem;margin-bottom:.5rem;">Review History</h4>${app.reviews.map(r=>`<div style="padding:.5rem;background:var(--bg-main);border-radius:6px;margin-bottom:.4rem;font-size:.8rem;"><strong>${escapeHtml(r.reviewer_name||'Admin')}</strong> — ${r.action} ${timeAgo(r.created_at)}${r.notes?`<br><em>${escapeHtml(r.notes)}</em>`:''}</div>`).join('')}</div>`:''}`;
+
+        detail.scrollIntoView({behavior:'smooth'});
+    }catch(err){showToast('Failed to load application','error');}
+};
+
+window.updateInstructorApp=async function(id,status){
+    let reason=prompt(`Reason for ${status}:`+(status==='rejected'?' (required)':''));
+    if(status==='rejected'&&!reason){alert('Rejection reason is required');return;}
+    if(status==='needs_info'&&!reason){alert('Please provide what info is needed');return;}
+    try{
+        await api.updateInstructorApplication(id,{status,rejection_reason:reason||null,admin_notes:reason||null});
+        showToast(`Application ${status}`,'success');
+        document.getElementById('instructorAppDetail').style.display='none';
+        renderInstructors();
+    }catch(err){showToast(err.message||'Failed','error');}
+};
 
 init();
 })();

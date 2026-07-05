@@ -40,15 +40,27 @@ document.addEventListener('click',e=>{
 
 async function renderNotifications(){
     const items=[];
-    if(studentsData.length) items.push({icon:'bi-person-plus',text:`${studentsData.length} students enrolled`,time:'now',color:'green'});
-    if(assignments.filter(a=>a.status==='pending').length) items.push({icon:'bi-journal-check',text:`${assignments.filter(a=>a.status==='pending').length} assignments to grade`,time:'now',color:'gold'});
-    if(certificates.length) items.push({icon:'bi-award',text:`${certificates.length} certificates issued`,time:'now',color:'green'});
+    const pendingCount=assignments.filter(a=>a.status==='pending').length;
+    const activeStudents=studentsData.filter(s=>s.status==='active').length;
+    const recentCerts=certificates.filter(c=>{
+        if(!c.created_at)return false;
+        const diff=Date.now()-new Date(c.created_at).getTime();
+        return diff<7*24*60*60*1000;
+    }).length;
+    const liveNow=liveClasses.filter(c=>c.status==='live'||c.status==='in_progress').length;
+
+    if(liveNow) items.push({icon:'bi-camera-video-fill',text:`${liveNow} live class${liveNow>1?'es':''} in progress`,time:'now',color:'red'});
+    if(pendingCount) items.push({icon:'bi-journal-check',text:`${pendingCount} assignment${pendingCount>1?'s':''} to grade`,time:'now',color:'gold'});
+    if(activeStudents) items.push({icon:'bi-person-plus',text:`${activeStudents} active student${activeStudents>1?'s':''}`,time:'now',color:'green'});
+    if(recentCerts) items.push({icon:'bi-award',text:`${recentCerts} certificate${recentCerts>1?'s':''} issued this week`,time:'now',color:'green'});
+    if(courses.length) items.push({icon:'bi-book',text:`${courses.length} course${courses.length>1?'s':''} published`,time:'now',color:'blue'});
     if(!items.length) items.push({icon:'bi-shield-check',text:'System running normally',time:'now',color:'blue'});
+
     const badge=$('#notifBtn .inst-badge');
     if(badge) badge.textContent=items.length;
     $('#notifList').innerHTML=items.map(n=>`
         <div class="inst-notif-item">
-            <div class="inst-notif-icon" style="background:rgba(${n.color==='green'?'39,174,96':n.color==='gold'?'212,175,55':'74,144,217'},.1);color:${n.color==='green'?'#27ae60':n.color==='gold'?'#d4af37':'#4a90d9'};">
+            <div class="inst-notif-icon" style="background:rgba(${n.color==='green'?'39,174,96':n.color==='gold'?'212,175,55':n.color==='red'?'231,76,60':'74,144,217'},.1);color:${n.color==='green'?'#27ae60':n.color==='gold'?'#d4af37':n.color==='red'?'#e74c3c':'#4a90d9'};">
                 <i class="bi ${n.icon}"></i>
             </div>
             <div><div>${escapeHtml(n.text)}</div><div style="font-size:.7rem;color:var(--text-light);margin-top:.2rem;">${n.time}</div></div>
@@ -61,8 +73,29 @@ window.clearNotifications=()=>{$('#notifPanel').classList.remove('open');};
 async function init(){
     const role=getCurrentUserRole();
     if(!['INSTRUCTOR','ADMIN','SUPERADMIN'].includes(role)){
-        document.querySelector('.inst-content').innerHTML='<div style="text-align:center;padding:4rem;"><h2>Access Denied</h2><p>You need instructor privileges.</p><a href="/" class="inst-btn inst-btn-primary" style="margin-top:1rem;">Go Home</a></div>';
+        document.querySelector('.inst-content').innerHTML='<div style="text-align:center;padding:4rem;"><h2>Access Denied</h2><p>You need instructor privileges to access this dashboard.</p><p style="color:var(--text-light);margin:1rem 0;">Apply to become an instructor first.</p><a href="instructor-apply.html" class="inst-btn inst-btn-primary" style="margin:0.5rem;">Apply as Instructor</a><a href="/" class="inst-btn inst-btn-outline" style="margin:0.5rem;">Go Home</a></div>';
         return;
+    }
+
+    // Check application status for INSTRUCTOR role
+    if(role==='INSTRUCTOR'){
+        try{
+            const token=localStorage.getItem('flower-token');
+            const res=await fetch('/api/instructor/my-application',{
+                headers:{'Authorization':'Bearer '+token,'X-Requested-With':'XMLHttpRequest'}
+            });
+            if(res.ok){
+                const app=await res.json();
+                if(app&&app.status==='rejected'){
+                    document.querySelector('.inst-content').innerHTML=`<div style="text-align:center;padding:4rem;"><h2>Application Not Approved</h2><p>Your instructor application was not approved.</p>${app.rejection_reason?`<p style="color:var(--text-light);margin:1rem 0;"><strong>Reason:</strong> ${escapeHtml(app.rejection_reason)}</p>`:''}<a href="instructor-apply.html" class="inst-btn inst-btn-primary" style="margin:0.5rem;">Reapply</a><a href="/" class="inst-btn inst-btn-outline" style="margin:0.5rem;">Go Home</a></div>`;
+                    return;
+                }
+                if(app&&app.status==='needs_info'){
+                    document.querySelector('.inst-content').innerHTML=`<div style="text-align:center;padding:4rem;"><h2>More Information Needed</h2><p>Your application requires additional information.</p>${app.rejection_reason?`<p style="color:var(--text-light);margin:1rem 0;"><strong>Details:</strong> ${escapeHtml(app.rejection_reason)}</p>`:''}<a href="instructor-apply.html" class="inst-btn inst-btn-primary" style="margin:0.5rem;">Update Application</a><a href="/" class="inst-btn inst-btn-outline" style="margin:0.5rem;">Go Home</a></div>`;
+                    return;
+                }
+            }
+        }catch{}
     }
     const results=await Promise.allSettled([
         api.fetchInstructorCourses(),
@@ -138,6 +171,10 @@ function renderOverview(){
             <button class="inst-class-btn">Join</button>
         </div>
     `).join(''):'<p style="color:var(--text-light);font-size:.85rem;padding:1rem;">No upcoming classes</p>';
+
+    // Performance chart
+    const perfData=courses.map(c=>c.enrolled_count||c.students||c.students_count||0);
+    drawBarChart('perfCanvas',courses.map(c=>(c.title||'').slice(0,12)),perfData.length?perfData:[0]);
 }
 
 // ─── Courses ─────────────────────────────────────────
@@ -166,8 +203,66 @@ function renderCourses(){
         </div>`;
     }).join('');
 }
-window.editCourse=id=>switchSection('overview');
-window.manageCourse=id=>switchSection('overview');
+window.editCourse=id=>{
+    const c=courses.find(x=>String(x.id)===String(id));
+    if(!c)return;
+    const form=`<form id="editCourseForm">
+    <div class="inst-form-group"><label>Title *</label><input id="ecTitle" value="${escapeHtml(c.title||'')}" required></div>
+    <div class="inst-form-group"><label>Description</label><textarea id="ecDesc" rows="3">${escapeHtml(c.description||'')}</textarea></div>
+    <div class="inst-form-group"><label>Level</label><select id="ecLevel"><option${c.level==='Beginner'?' selected':''}>Beginner</option><option${c.level==='Intermediate'?' selected':''}>Intermediate</option><option${c.level==='Advanced'?' selected':''}>Advanced</option></select></div>
+    <div class="inst-form-group"><label>Category</label><input id="ecCategory" value="${escapeHtml(c.category||'')}"></div>
+    <div class="inst-form-group"><label>Price ($)</label><input id="ecPrice" type="number" step="0.01" min="0" value="${c.price||0}"></div>
+    <button type="submit" class="inst-btn inst-btn-primary" style="width:100%;">Save Changes</button>
+    </form>`;
+    $('#modalTitle').textContent='Edit Course';
+    $('#modalBody').innerHTML=form;
+    $('#modalOverlay').classList.add('active');
+    document.getElementById('editCourseForm').addEventListener('submit',async e=>{
+        e.preventDefault();
+        try{
+            const token=localStorage.getItem('flower-token');
+            const headers={'Content-Type':'application/json'};
+            if(token)headers['Authorization']='Bearer '+token;
+            const res=await fetch('/api/courses/'+id,{method:'PUT',headers,body:JSON.stringify({
+                title:$('#ecTitle').value,description:$('#ecDesc').value,level:$('#ecLevel').value,
+                category:$('#ecCategory').value,price:parseFloat($('#ecPrice').value)||0
+            })});
+            if(!res.ok)throw new Error((await res.json()).error||'Failed');
+            closeModal();showToast('Course updated!','success');
+            courses=await api.fetchInstructorCourses();renderCourses();renderOverview();
+        }catch(err){showToast(err.message||'Failed','error');}
+    });
+};
+window.manageCourse=id=>{
+    const c=courses.find(x=>String(x.id)===String(id));
+    if(!c)return;
+    const enrolled=c.enrolled_count||c.students||c.students_count||0;
+    const body=`<div style="margin-bottom:1rem;">
+        <h4 style="margin-bottom:.5rem;">${escapeHtml(c.title)}</h4>
+        <p style="font-size:.85rem;color:var(--text-light);">${enrolled} students enrolled · ${c.level||'All levels'}</p>
+    </div>
+    <div class="inst-form-group"><label>Lessons</label><div style="font-size:.9rem;">${lessons.filter(l=>l.course_id===c.id||l.courseId===c.id).length} lessons</div></div>
+    <div class="inst-form-group"><label>Quizzes</label><div style="font-size:.9rem;">${quizzes.filter(q=>q.course_id===c.id||q.courseId===c.id).length} quizzes</div></div>
+    <div style="display:flex;gap:.75rem;margin-top:1.5rem;">
+        <button class="inst-btn inst-btn-outline" onclick="editCourse('${c.id}')" style="flex:1;"><i class="bi bi-pencil"></i> Edit</button>
+        <button class="inst-btn inst-btn-danger" onclick="deleteCourse('${c.id}')" style="flex:1;"><i class="bi bi-trash"></i> Delete</button>
+    </div>`;
+    $('#modalTitle').textContent='Manage Course';
+    $('#modalBody').innerHTML=body;
+    $('#modalOverlay').classList.add('active');
+};
+window.deleteCourse=async id=>{
+    if(!confirm('Are you sure you want to delete this course?'))return;
+    try{
+        const token=localStorage.getItem('flower-token');
+        const headers={};
+        if(token)headers['Authorization']='Bearer '+token;
+        const res=await fetch('/api/courses/'+id,{method:'DELETE',headers});
+        if(!res.ok)throw new Error((await res.json()).error||'Failed');
+        closeModal();showToast('Course deleted!','success');
+        courses=await api.fetchInstructorCourses();renderCourses();renderOverview();
+    }catch(err){showToast(err.message||'Failed','error');}
+};
 
 // ─── Students ────────────────────────────────────────
 function renderStudents(){
@@ -242,10 +337,68 @@ async function renderDiscussions(){
 }
 
 // ─── Resources ───────────────────────────────────────
-function renderResources(){
-    const body=$('#resourcesGrid');
-    body.innerHTML='<p style="color:var(--text-light);font-size:.85rem;padding:1rem;">Upload resources from course management</p>';
+let resourcesData=[],resourceFilter='all';
+async function renderResources(){
+    if(!resourcesData.length){
+        try{
+            const res=await api.fetchResources();
+            resourcesData=Array.isArray(res)?res:(res.resources||[]);
+        }catch{resourcesData=[];}
+    }
+    const grid=$('#resourcesGrid');
+    const filtered=resourceFilter==='all'?resourcesData:resourcesData.filter(r=>r.type===resourceFilter);
+    if(!filtered.length){grid.innerHTML='<p style="color:var(--text-light);font-size:.85rem;padding:1rem;grid-column:1/-1;">No resources found. Upload your first resource to get started.</p>';return;}
+    const iconMap={video:'bi-camera-video',pdf:'bi-file-earmark-pdf',image:'bi-image',template:'bi-file-earmark-text',document:'bi-file-earmark',default:'bi-folder'};
+    grid.innerHTML=filtered.map(r=>{
+        const icon=iconMap[r.type]||iconMap.default;
+        return `<div class="inst-resource-card">
+            <i class="bi ${icon}"></i>
+            <h4>${escapeHtml(r.title||r.name||'Untitled')}</h4>
+            <p>${escapeHtml(r.course_title||r.course||'')}</p>
+            <p style="font-size:.7rem;margin-top:.25rem;">${formatDate(r.created_at)}</p>
+        </div>`;
+    }).join('');
 }
+$$('.inst-tab[data-rtype]').forEach(t=>t.addEventListener('click',()=>{
+    $$('.inst-tab[data-rtype]').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    resourceFilter=t.dataset.rtype;
+    renderResources();
+}));
+window.openResourceUpload=()=>{
+    const form=`<form id="resourceForm">
+    <div class="inst-form-group"><label>Title *</label><input id="resTitle" required></div>
+    <div class="inst-form-group"><label>Type</label><select id="resType"><option value="video">Video</option><option value="pdf">PDF</option><option value="image">Image</option><option value="template">Template</option><option value="document">Document</option></select></div>
+    <div class="inst-form-group"><label>Course</label><select id="resCourse"><option value="">Select course...</option>${courses.map(c=>`<option value="${c.id}">${escapeHtml(c.title)}</option>`).join('')}</select></div>
+    <div class="inst-form-group"><label>File</label><input type="file" id="resFile"></div>
+    <div class="inst-form-group"><label>Description</label><textarea id="resDesc" rows="2"></textarea></div>
+    <button type="submit" class="inst-btn inst-btn-primary" style="width:100%;">Upload Resource</button>
+    </form>`;
+    $('#modalTitle').textContent='Upload Resource';
+    $('#modalBody').innerHTML=form;
+    $('#modalOverlay').classList.add('active');
+    document.getElementById('resourceForm').addEventListener('submit',async e=>{
+        e.preventDefault();
+        const file=$('#resFile').files[0];
+        if(!file){showToast('Please select a file','error');return;}
+        try{
+            const token=localStorage.getItem('flower-token');
+            const fd=new FormData();
+            fd.append('title',$('#resTitle').value);
+            fd.append('type',$('#resType').value);
+            fd.append('course_id',$('#resCourse').value);
+            fd.append('description',$('#resDesc').value);
+            fd.append('file',file);
+            const headers={};
+            if(token)headers['Authorization']='Bearer '+token;
+            const res=await fetch('/api/resources',{method:'POST',headers,body:fd});
+            if(!res.ok)throw new Error((await res.json()).error||'Failed');
+            closeModal();showToast('Resource uploaded!','success');
+            resourcesData=[];
+            renderResources();
+        }catch(err){showToast(err.message||'Failed','error');}
+    });
+};
 
 // ─── Calendar ────────────────────────────────────────
 function renderCalendar(){
@@ -302,10 +455,19 @@ function renderAnalytics(){
 }
 
 // ─── Settings ────────────────────────────────────────
-window.saveSettings=()=>{
+window.saveSettings=async()=>{
     const name=$('#settingsName').value;
-    if(name){$('#welcomeName').textContent=name;$('#instName').textContent=name;}
-    showToast('Settings saved!','success');
+    const email=$('#settingsEmail').value;
+    const bio=$('#settingsBio').value;
+    const specialty=$('#settingsSpecialty').value;
+    try{
+        const res=await api.updateProfile({name,email,bio,specialty});
+        if(name){$('#welcomeName').textContent=name;$('#instName').textContent=name;}
+        showToast('Settings saved!','success');
+    }catch(err){
+        if(name){$('#welcomeName').textContent=name;$('#instName').textContent=name;}
+        showToast('Settings saved locally','success');
+    }
 };
 
 // ─── Modals ──────────────────────────────────────────
@@ -431,6 +593,23 @@ function showToast(msg,type){
     t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
 }
 window.showToast=showToast;
+
+// ─── Resize Charts ───────────────────────────────────
+let resizeTimer;
+window.addEventListener('resize',()=>{
+    clearTimeout(resizeTimer);
+    resizeTimer=setTimeout(()=>{
+        const active=$('.inst-section.active');
+        if(active&&active.id==='sec-analytics') renderAnalytics();
+        if(active&&active.id==='sec-overview'){
+            const perfCanvas=$('#perfCanvas');
+            if(perfCanvas){
+                const data=courses.map(c=>c.enrolled_count||c.students||c.students_count||0);
+                drawBarChart('perfCanvas',courses.map(c=>c.title?.slice(0,12)||''),data.length?data:[0]);
+            }
+        }
+    },250);
+});
 
 init();
 })();

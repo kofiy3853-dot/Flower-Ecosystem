@@ -167,6 +167,8 @@ app.get('/my-activities', (_, res) => res.sendFile(path.join(__dirname, 'my-acti
 app.get('/learning-path', (_, res) => res.sendFile(path.join(__dirname, 'learning-path.html')));
 app.get('/learning-paths', (_, res) => res.sendFile(path.join(__dirname, 'learning-paths.html')));
 app.get('/instructors', (_, res) => res.sendFile(path.join(__dirname, 'instructors.html')));
+app.get('/become-instructor', (_, res) => res.sendFile(path.join(__dirname, 'instructor-apply.html')));
+app.get('/instructor-dashboard', (_, res) => res.sendFile(path.join(__dirname, 'instructor-dashboard.html')));
 app.get('/workshop', (_, res) => res.sendFile(path.join(__dirname, 'workshop-detail.html')));
 app.get('/live-classes', (_, res) => res.sendFile(path.join(__dirname, 'live-classes.html')));
 app.get('/student-dashboard', (_, res) => res.sendFile(path.join(__dirname, 'student-dashboard.html')));
@@ -284,6 +286,7 @@ app.use('/api', require('./routes/showcase'));
 app.use('/api', require('./routes/clubs'));
 app.use('/api', require('./routes/badges'));
 app.use('/api', require('./routes/members'));
+app.use('/api/instructor', require('./routes/instructor'));
 app.use('/api', require('./routes/my-activities'));
 
 // ─── Debug: check admin seed status ───────────────────────────────────────

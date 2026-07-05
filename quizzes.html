@@ -167,6 +167,11 @@
         let timeLeft = 0;
 
         async function initQuizzes() {
+            if (!isLoggedIn()) {
+                sessionStorage.setItem('pending-redirect', 'quizzes.html');
+                openAuthModal('login');
+                return;
+            }
             // Fetch quizzes from API
             try {
                 const apiQuizzes = await api.fetchQuizzes();
@@ -223,6 +228,10 @@
         }
 
         function startQuiz(id) {
+            if (!isLoggedIn()) {
+                openAuthModal('login');
+                return;
+            }
             currentQuiz = quizzes.find(q => q.id === id);
             if (!currentQuiz) return;
             currentQuestion = 0;

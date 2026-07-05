@@ -193,6 +193,10 @@
             });
 
             document.getElementById('submitQuiz').addEventListener('click', async () => {
+                if (!isLoggedIn()) {
+                    openAuthModal('login');
+                    return;
+                }
                 if (submitted) return;
                 const qs = quiz.questions;
                 let correct = 0;

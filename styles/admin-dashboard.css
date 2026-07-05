@@ -78,6 +78,11 @@
 .adm-status.pending{background:rgba(212,175,55,.1);color:#b8941f;}
 .adm-status.inactive{background:rgba(231,76,60,.1);color:#e74c3c;}
 .adm-status.completed{background:rgba(74,144,217,.1);color:#4a90d9;}
+.adm-status.approved{background:rgba(39,174,96,.1);color:#27ae60;}
+.adm-status.rejected{background:rgba(231,76,60,.1);color:#e74c3c;}
+.adm-status.under_review{background:rgba(74,144,217,.1);color:#4a90d9;}
+.adm-status.needs_info{background:rgba(251,146,60,.1);color:#ea580c;}
+.inst-filter-btn.active{background:var(--primary-color,#d4af37);color:#fff;border-color:var(--primary-color,#d4af37);}
 .adm-user-cell{display:flex;align-items:center;gap:.5rem;}
 .adm-user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#d4af37,#b8941f);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:600;flex-shrink:0;}
 .adm-action-btns{display:flex;gap:.35rem;}
