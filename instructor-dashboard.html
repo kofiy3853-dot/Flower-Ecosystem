@@ -280,6 +280,17 @@
                     <div class="inst-section-header"><h2>Settings</h2></div>
                     <div class="inst-card">
                         <div class="inst-settings-form" id="settingsForm">
+                            <div class="inst-form-group" style="text-align:center;">
+                                <label>Profile Photo</label>
+                                <div style="position:relative;display:inline-block;cursor:pointer;" onclick="document.getElementById('settingsPhoto').click()">
+                                    <div id="settingsPhotoPreview" style="width:100px;height:100px;border-radius:50%;background:var(--bg-main);display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--text-light);overflow:hidden;border:3px solid var(--border-color);transition:border-color 0.2s;">
+                                        <span id="settingsPhotoIcon">I</span>
+                                    </div>
+                                    <div style="position:absolute;bottom:0;right:0;width:28px;height:28px;border-radius:50%;background:var(--primary-color);color:white;display:flex;align-items:center;justify-content:center;font-size:0.8rem;border:2px solid white;"><i class="bi bi-camera"></i></div>
+                                </div>
+                                <input type="file" id="settingsPhoto" accept="image/*" style="display:none;" onchange="previewSettingsPhoto(this)">
+                                <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.5rem;">Click to change photo</p>
+                            </div>
                             <div class="inst-form-group"><label>Display Name</label><input type="text" id="settingsName" value=""></div>
                             <div class="inst-form-group"><label>Email</label><input type="email" id="settingsEmail" value="" readonly></div>
                             <div class="inst-form-group"><label>Bio</label><textarea id="settingsBio" rows="3" placeholder="Tell students about yourself..."></textarea></div>

@@ -183,12 +183,20 @@ async function loadUserProfile(){
         $('#instName').textContent=name;
         $('#headerName').textContent=name;
         $('#welcomeName').textContent=name;
-        $('#headerAvatar').textContent=initial;
-        $('#instAvatar').textContent=initial;
         $('#settingsName').value=user.name||user.first_name||'';
         $('#settingsEmail').value=user.email||'';
         $('#settingsBio').value=user.bio||user.description||'';
         $('#settingsSpecialty').value=user.specialty||user.expertise||'';
+        // Update avatars with profile photo if available
+        if (user.profile_image) {
+            const avatarHtml = `<img src="${user.profile_image}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            const headerAvatar = document.getElementById('headerAvatar');
+            const instAvatar = document.getElementById('instAvatar');
+            const photoPreview = document.getElementById('settingsPhotoPreview');
+            if (headerAvatar) headerAvatar.innerHTML = avatarHtml;
+            if (instAvatar) instAvatar.innerHTML = avatarHtml;
+            if (photoPreview) photoPreview.innerHTML = avatarHtml;
+        }
     }catch{}
 }
 
@@ -523,14 +531,51 @@ function renderAnalytics(){
 }
 
 // ─── Settings ────────────────────────────────────────
+let settingsPhotoFile = null;
+
+window.previewSettingsPhoto = function(input) {
+    const file = input.files[0];
+    if (!file) return;
+    settingsPhotoFile = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const preview = document.getElementById('settingsPhotoPreview');
+        preview.innerHTML = `<img src="${e.target.result}" alt="Profile" style="width:100%;height:100%;object-fit:cover;">`;
+    };
+    reader.readAsDataURL(file);
+};
+
 window.saveSettings=async()=>{
     const displayName=$('#settingsName').value;
     const email=$('#settingsEmail').value;
     const bio=$('#settingsBio').value;
     const specialty=$('#settingsSpecialty').value;
     try{
-        const res=await api.updateProfile({name:displayName,email,bio,specialty});
+        let profileImage = null;
+        if (settingsPhotoFile) {
+            const fd = new FormData();
+            fd.append('file', settingsPhotoFile);
+            const uploadRes = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') },
+                body: fd
+            });
+            if (uploadRes.ok) {
+                const uploadData = await uploadRes.json();
+                profileImage = uploadData.urls ? uploadData.urls[0] : uploadData.url;
+            }
+        }
+        const updateData = { name: displayName, email, bio, specialty };
+        if (profileImage) updateData.profile_image = profileImage;
+        const res = await api.updateProfile(updateData);
         if(displayName){$('#welcomeName').textContent=displayName;$('#instName').textContent=displayName;$('#headerName').textContent=displayName;}
+        if (profileImage) {
+            const avatar = document.getElementById('headerAvatar');
+            if (avatar) avatar.innerHTML = `<img src="${profileImage}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            const sidebarAvatar = document.getElementById('instAvatar');
+            if (sidebarAvatar) sidebarAvatar.innerHTML = `<img src="${profileImage}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+        }
+        settingsPhotoFile = null;
         showToast('Settings saved!','success');
     }catch(err){
         showToast('Failed to save settings: '+(err.message||'Unknown error'),'error');
