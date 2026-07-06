@@ -345,7 +345,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     } catch (err) {
       console.error('AI Scanner error:', err);
-      errorMsg.textContent = err.message || 'Failed to analyze image. Please try again.';
+      let msg = err.message || 'Failed to analyze image. Please try again.';
+      if (msg.includes('429') || msg.includes('Rate limit')) msg = 'Too many requests. Please wait a minute before trying again.';
+      if (msg.includes('not configured')) msg = 'AI service is not configured. Please contact support.';
+      if (msg.includes('too large')) msg = 'Image is too large. Please use an image under 4MB.';
+      errorMsg.textContent = msg;
       errorMsg.style.display = 'block';
       if (loadingSection) loadingSection.style.display = 'none';
     } finally {
