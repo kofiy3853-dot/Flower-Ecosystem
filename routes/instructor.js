@@ -173,12 +173,21 @@ router.put('/applications/:id', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler
         [status, rejection_reason || null, admin_notes || null, req.user.id, req.params.id]
     );
 
-    // If approved, change user role to INSTRUCTOR
+    // If approved, change user role to INSTRUCTOR and create instructor level
     if (status === 'approved') {
         await pool.query(
             `UPDATE auth.users SET role = 'INSTRUCTOR', updated_at = CURRENT_TIMESTAMP WHERE id = $1`,
             [app.user_id]
         );
+        // Create instructor level record
+        try {
+            await pool.query(
+                `INSERT INTO learning.instructor_levels (user_id, level, total_students, total_courses)
+                 VALUES ($1, 'new', 0, 0)
+                 ON CONFLICT (user_id) DO NOTHING`,
+                [app.user_id]
+            );
+        } catch (e) { console.error('Failed to create instructor level:', e.message); }
     }
 
     // Notify applicant of status change
@@ -260,6 +269,20 @@ router.get('/stats', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req
         FROM learning.instructor_applications
     `);
     res.json(r.rows[0]);
+}));
+
+// ─── Instructor: Get Own Level ────────────────────────────
+router.get('/my-level', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json({ level: 'new' });
+    try {
+        const r = await pool.query(
+            'SELECT * FROM learning.instructor_levels WHERE user_id = $1',
+            [req.user.id]
+        );
+        res.json(r.rows[0] || { level: 'new' });
+    } catch (err) {
+        res.json({ level: 'new' });
+    }
 }));
 
 // ─── Upload Portfolio Image ─────────────────────────────
