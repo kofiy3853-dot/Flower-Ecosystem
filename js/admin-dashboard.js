@@ -724,10 +724,15 @@ function drawBarChart(canvasId,labels,data){
     const ctx=canvas.getContext('2d');
     const w=canvas.width=canvas.parentElement.clientWidth;
     const h=canvas.height;
+    if(w<=0||h<=0)return;
     ctx.clearRect(0,0,w,h);
-    const max=Math.max(...data)*1.1||1;
+    const safeData=(data||[]).map(v=>Number.isFinite(v)?v:0);
+    if(!safeData.length||!labels.length)return;
+    const max=Math.max(...safeData)*1.1||1;
+    if(!Number.isFinite(max)||max<=0)return;
     const barW=Math.min(36,(w-60)/(labels.length*1.5));
     const startX=40;const chartH=h-35;
+    if(chartH<=0)return;
     ctx.strokeStyle='#e5e7eb';ctx.lineWidth=1;
     for(let i=0;i<=3;i++){
         const y=15+chartH*(i/3);
@@ -735,8 +740,8 @@ function drawBarChart(canvasId,labels,data){
         ctx.fillStyle='#9ca3af';ctx.font='10px Poppins,sans-serif';ctx.textAlign='right';
         ctx.fillText(Math.round(max*(1-i/3)),startX-6,y+3);
     }
-    const gap=(w-startX-15)/labels.length;
-    data.forEach((v,i)=>{
+    const gap=(w-startX-15)/safeData.length;
+    safeData.forEach((v,i)=>{
         const x=startX+i*gap+gap/2-barW/2;
         const barH=(v/max)*chartH;
         const grad=ctx.createLinearGradient(x,15+chartH-barH,x,15+chartH);
@@ -753,12 +758,15 @@ function drawLineChart(canvasId,data){
     const ctx=canvas.getContext('2d');
     const w=canvas.width=canvas.parentElement.clientWidth;
     const h=canvas.height;
+    if(w<=0||h<=0)return;
     ctx.clearRect(0,0,w,h);
-    const max=Math.max(...data)*1.1;
-    const min=Math.min(...data)*0.9;
+    const safeData=(data||[]).map(v=>Number.isFinite(v)?v:0);
+    if(!safeData.length)return;
+    const max=Math.max(...safeData)*1.1||1;
+    const min=Math.min(...safeData)*0.9||0;
     const range=max-min||1;
     const chartH=h-35;const startX=40;
-    const stepX=(w-startX-15)/(data.length-1);
+    const stepX=(w-startX-15)/(safeData.length-1)||1;
     ctx.strokeStyle='#e5e7eb';ctx.lineWidth=1;
     for(let i=0;i<=3;i++){
         const y=15+chartH*(i/3);
@@ -767,7 +775,7 @@ function drawLineChart(canvasId,data){
         ctx.fillText(Math.round(max-range*(i/3)),startX-6,y+3);
     }
     ctx.beginPath();
-    data.forEach((v,i)=>{
+    safeData.forEach((v,i)=>{
         const x=startX+i*stepX;
         const y=15+chartH*(1-(v-min)/range);
         i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
@@ -775,9 +783,9 @@ function drawLineChart(canvasId,data){
     ctx.strokeStyle='#d4af37';ctx.lineWidth=2.5;ctx.stroke();
     const grad=ctx.createLinearGradient(0,15,0,15+chartH);
     grad.addColorStop(0,'rgba(212,175,55,0.2)');grad.addColorStop(1,'rgba(212,175,55,0)');
-    ctx.lineTo(startX+(data.length-1)*stepX,15+chartH);ctx.lineTo(startX,15+chartH);ctx.closePath();
+    ctx.lineTo(startX+(safeData.length-1)*stepX,15+chartH);ctx.lineTo(startX,15+chartH);ctx.closePath();
     ctx.fillStyle=grad;ctx.fill();
-    data.forEach((v,i)=>{
+    safeData.forEach((v,i)=>{
         const x=startX+i*stepX;const y=15+chartH*(1-(v-min)/range);
         ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle='#d4af37';ctx.fill();
         ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
