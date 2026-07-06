@@ -41,9 +41,6 @@ document.addEventListener('click',e=>{
     if(!e.target.closest('.inst-notif-panel')&&!e.target.closest('#notifBtn')){
         $('#notifPanel').classList.remove('open');
     }
-    if(!e.target.closest('.inst-msg-panel')&&!e.target.closest('#msgBtn')){
-        $('#msgPanel').classList.remove('open');
-    }
 });
 
 const iconColorMap={'green':'39,174,96','gold':'212,175,55','red':'231,76,60','blue':'74,144,217','orange':'251,146,60'};
@@ -112,77 +109,6 @@ async function renderNotifications(){
 window.clearNotifications=async()=>{
     try{await api.markAllRead();notificationsData.forEach(n=>n.is_read=true);}catch{}
     renderNotifications();
-};
-
-// ─── Messages ─────────────────────────────────────────
-$('#msgBtn')?.addEventListener('click',()=>{
-    const panel=$('#msgPanel');
-    panel.classList.toggle('open');
-    if(panel.classList.contains('open')) renderMessages();
-});
-async function renderMessages(){
-    const unreadTotal=(conversationsData||[]).reduce((s,c)=>s+(parseInt(c.unread_count)||0),0);
-    const badge=$('#msgBtn .inst-badge');
-    if(badge) badge.textContent=unreadTotal||conversationsData.length;
-    badge.style.display=(unreadTotal||conversationsData.length)?'':'none';
-
-    const list=$('#msgList');
-    if(!conversationsData||!conversationsData.length){
-        list.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text-light);font-size:.85rem;"><i class="bi bi-envelope" style="font-size:1.5rem;display:block;margin-bottom:.5rem;"></i>No messages yet</div>';
-        return;
-    }
-    list.innerHTML=conversationsData.slice(0,10).map(c=>`
-        <div class="inst-notif-item" style="cursor:pointer;" onclick="openConversation('${c.id}','${escapeHtml(c.other_name||'User')}')">
-            <div class="inst-notif-icon" style="background:rgba(74,144,217,.1);color:#4a90d9;">
-                <i class="bi bi-person-circle"></i>
-            </div>
-            <div style="flex:1;min-width:0;">
-                <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <span style="font-weight:500;font-size:.85rem;">${escapeHtml(c.other_name||'User')}</span>
-                    ${c.unread_count>0?`<span style="background:var(--primary-color);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:600;">${c.unread_count}</span>`:''}
-                </div>
-                <div style="font-size:.8rem;color:var(--text-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(c.last_message||'No messages')}</div>
-                <div style="font-size:.7rem;color:var(--text-light);margin-top:.15rem;">${c.last_message_at?timeAgo(c.last_message_at):''}</div>
-            </div>
-        </div>
-    `).join('');
-}
-window.openConversation=async(id,name)=>{
-    $('#msgPanel').classList.remove('open');
-    try{
-        const msgs=await api.fetchMessages(id);
-        const msgsHtml=(Array.isArray(msgs)?msgs:[]).map(m=>`
-            <div style="margin-bottom:.75rem;${m.sender_id==getCurrentUserId()?'text-align:right;':''}">
-                <div style="display:inline-block;max-width:80%;padding:.5rem .75rem;border-radius:12px;font-size:.85rem;${m.sender_id==getCurrentUserId()?'background:var(--primary-color);color:#fff;border-bottom-right-radius:4px;':'background:var(--bg-main);border-bottom-left-radius:4px;'}">${escapeHtml(m.content||'')}</div>
-                <div style="font-size:.65rem;color:var(--text-light);margin-top:.2rem;">${m.created_at?timeAgo(m.created_at):''}</div>
-            </div>
-        `).join('');
-        $('#modalTitle').textContent=`Messages — ${name}`;
-        $('#modalBody').innerHTML=`
-            <div id="convMessages" style="max-height:300px;overflow-y:auto;padding:.5rem 0;">${msgsHtml||'<p style="text-align:center;color:var(--text-light);">No messages yet</p>'}</div>
-            <form id="sendMsgForm" style="display:flex;gap:.5rem;margin-top:.75rem;">
-                <input id="msgInput" type="text" placeholder="Type a message..." style="flex:1;padding:.5rem .75rem;border:1px solid var(--border-color);border-radius:8px;font-size:.85rem;" required>
-                <button type="submit" class="inst-btn inst-btn-primary"><i class="bi bi-send"></i></button>
-            </form>`;
-        $('#modalOverlay').classList.add('active');
-        const convEl=$('#convMessages');
-        if(convEl) convEl.scrollTop=convEl.scrollHeight;
-        document.getElementById('sendMsgForm').addEventListener('submit',async e=>{
-            e.preventDefault();
-            const input=$('#msgInput');
-            const content=input.value.trim();
-            if(!content)return;
-            try{
-                await api.sendMessage(id,content);
-                input.value='';
-                const newMsg=document.createElement('div');
-                newMsg.style.cssText='margin-bottom:.75rem;text-align:right;';
-                newMsg.innerHTML=`<div style="display:inline-block;max-width:80%;padding:.5rem .75rem;border-radius:12px;font-size:.85rem;background:var(--primary-color);color:#fff;border-bottom-right-radius:4px;">${escapeHtml(content)}</div><div style="font-size:.65rem;color:var(--text-light);margin-top:.2rem;">just now</div>`;
-                convEl.appendChild(newMsg);
-                convEl.scrollTop=convEl.scrollHeight;
-            }catch(err){showToast('Failed to send','error');}
-        });
-    }catch(err){showToast('Failed to load messages','error');}
 };
 
 // ─── Init ────────────────────────────────────────────
