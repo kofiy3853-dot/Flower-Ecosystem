@@ -66,12 +66,17 @@ router.get('/', asyncHandler(async (req, res) => {
                 LIMIT $${idx} OFFSET $${idx + 1}`;
 
             const dataR = await pool.query(dataQ, values);
-            return res.json({ events: dataR.rows, total, page: pg, limit: lim, pages: Math.ceil(total / lim) });
+
+            // If database has results, return them
+            if (dataR.rows.length > 0) {
+                return res.json({ events: dataR.rows, total, page: pg, limit: lim, pages: Math.ceil(total / lim) });
+            }
         } catch (err) { console.error('Events query error:', err.message); }
     }
 
+    // Fallback to JSON file if database is empty or unavailable
     const fallback = readJSON(require('path').join(__dirname, '..', 'data', 'events.json'));
-    const filtered = category ? fallback.filter(e => e.category === category) : fallback;
+    const filtered = category ? fallback.filter(e => (e.event_category || '').toLowerCase() === category.toLowerCase()) : fallback;
     res.json({ events: filtered, total: filtered.length, page: 1, limit: 20, pages: 1 });
 }));
 
