@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Event detail - Flower workshops, webinars, exhibitions, and community events.">
+    <meta name="description" content="Event details - Flower workshops, webinars, exhibitions, and community events.">
     <title>Event | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,89 +12,194 @@
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
-        .event-hero { position:relative; height:380px; border-radius:var(--radius-md); overflow:hidden; margin-bottom:2rem; }
-        .event-hero img { width:100%; height:100%; object-fit:cover; }
-        .event-hero-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%); display:flex; flex-direction:column; justify-content:flex-end; padding:2rem; }
-        .event-hero-badge { display:inline-flex; align-items:center; gap:0.3rem; background:var(--accent-gold); color:white; font-size:0.7rem; font-weight:600; padding:0.25rem 0.75rem; border-radius:12px; margin-bottom:0.5rem; width:fit-content; }
-        .event-hero h1 { color:white; font-size:1.8rem; margin-bottom:0.5rem; }
-        .event-hero-meta { display:flex; gap:1.5rem; flex-wrap:wrap; color:rgba(255,255,255,0.85); font-size:0.9rem; }
-        .event-hero-meta span { display:flex; align-items:center; gap:0.3rem; }
-        .detail-layout { display:grid; grid-template-columns:1fr 360px; gap:2rem; }
-        .detail-main { min-width:0; }
-        .detail-sidebar { display:flex; flex-direction:column; gap:1.25rem; }
-        .back-link { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.88rem; color:var(--text-light); margin-bottom:1rem; text-decoration:none; }
-        .back-link:hover { color:var(--primary-color); }
-        .info-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; margin-bottom:1.5rem; }
-        .info-card h2 { font-size:1.1rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.4rem; }
-        .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
-        .info-item { display:flex; gap:0.5rem; }
-        .info-item .label { font-size:0.8rem; color:var(--text-muted); min-width:80px; }
-        .info-item .value { font-size:0.9rem; font-weight:500; color:var(--text-main); }
-        .description-content { font-size:0.95rem; line-height:1.7; color:var(--text-main); white-space:pre-wrap; }
-        .agenda-list { list-style:none; padding:0; margin:0; }
-        .agenda-list li { display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0; border-bottom:1px solid var(--border-light); font-size:0.9rem; }
-        .agenda-list li:last-child { border-bottom:none; }
-        .agenda-num { width:28px; height:28px; border-radius:50%; background:var(--primary-light); color:var(--primary-color); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:600; flex-shrink:0; }
-        .speaker-card { display:flex; gap:1rem; padding:1rem; background:var(--bg-main); border-radius:var(--radius-sm); margin-bottom:0.75rem; }
-        .speaker-avatar { width:64px; height:64px; border-radius:50%; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; overflow:hidden; }
-        .speaker-avatar img { width:100%; height:100%; object-fit:cover; }
-        .speaker-info h4 { font-size:0.95rem; margin-bottom:0.15rem; }
-        .speaker-info .title { font-size:0.8rem; color:var(--primary-color); margin-bottom:0.25rem; }
-        .speaker-info .bio { font-size:0.85rem; color:var(--text-light); line-height:1.5; }
-        .speaker-stats { display:flex; gap:1rem; margin-top:0.3rem; font-size:0.75rem; color:var(--text-muted); }
-        .resource-list { display:flex; flex-direction:column; gap:0.5rem; }
-        .resource-item { display:flex; align-items:center; gap:0.75rem; padding:0.75rem; background:var(--bg-main); border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s; }
-        .resource-item:hover { background:var(--primary-light); }
-        .resource-icon { width:36px; height:36px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
-        .resource-icon.pdf { background:rgba(239,68,68,0.1); color:var(--error-color); }
-        .resource-icon.video { background:rgba(14,165,233,0.1); color:var(--accent-blue); }
-        .resource-icon.slide { background:rgba(245,158,11,0.1); color:var(--accent-gold); }
-        .resource-icon.doc { background:rgba(16,185,129,0.1); color:var(--accent-green); }
-        .resource-name { font-size:0.88rem; font-weight:500; }
-        .resource-size { font-size:0.75rem; color:var(--text-muted); }
-        .reg-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; position:sticky; top:100px; }
-        .reg-card h3 { font-size:1.1rem; margin-bottom:1rem; }
-        .reg-price { font-size:1.8rem; font-weight:700; color:var(--primary-color); margin-bottom:0.5rem; }
-        .reg-price.free { color:var(--accent-green); }
-        .reg-spots { font-size:0.85rem; color:var(--text-light); margin-bottom:1rem; }
-        .reg-spots .available { color:var(--accent-green); font-weight:500; }
-        .reg-spots .low { color:var(--error-color); font-weight:500; }
-        .reg-info { display:flex; flex-direction:column; gap:0.5rem; margin:1rem 0; padding:1rem; background:var(--bg-main); border-radius:var(--radius-sm); font-size:0.85rem; }
-        .reg-info-row { display:flex; justify-content:space-between; }
-        .reg-info-row .label { color:var(--text-light); }
-        .reg-info-row .value { font-weight:500; }
-        .cert-card { background:linear-gradient(135deg, var(--accent-gold), #f59e0b); color:white; border-radius:var(--radius-md); padding:1.5rem; text-align:center; }
-        .cert-card h3 { color:white; margin-bottom:0.5rem; }
-        .cert-card p { opacity:0.9; font-size:0.85rem; margin-bottom:1rem; }
-        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); }
-        .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
-        .prereq-list { padding-left:1.2rem; }
-        .prereq-list li { font-size:0.9rem; color:var(--text-light); margin-bottom:0.25rem; }
-        @media(max-width:1024px) { .detail-layout { grid-template-columns:1fr; } .reg-card { position:static; } }
-        @media(max-width:640px) {
-            .event-hero { height:220px; }
-            .event-hero h1 { font-size:1.2rem; }
-            .event-hero-meta { font-size:0.75rem; gap:0.5rem; }
-            .info-grid { grid-template-columns:1fr; }
-            .info-card { padding:1rem; }
-            .info-card h2 { font-size:1rem; }
-            .speaker-card { flex-direction:column; text-align:center; }
-            .speaker-avatar { margin:0 auto; }
-            .speaker-stats { justify-content:center; }
-            .reg-card { padding:1rem; }
-            .section-padding { padding-left:1rem; padding-right:1rem; }
+        /* ─── Hero ────────────────────────────────────────────────── */
+        .evt-hero{position:relative;height:420px;border-radius:var(--radius-md);overflow:hidden;margin-bottom:2rem;}
+        .evt-hero img{width:100%;height:100%;object-fit:cover;}
+        .evt-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.2) 50%,transparent 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:2rem;}
+        .evt-hero-badge{display:inline-flex;align-items:center;gap:0.3rem;background:var(--accent-gold);color:white;font-size:0.72rem;font-weight:600;padding:0.25rem 0.75rem;border-radius:12px;margin-bottom:0.5rem;width:fit-content;}
+        .evt-hero h1{color:white;font-family:'Playfair Display',serif;font-size:2rem;margin-bottom:0.5rem;}
+        .evt-hero-meta{display:flex;gap:1.5rem;flex-wrap:wrap;color:rgba(255,255,255,0.85);font-size:0.9rem;}
+        .evt-hero-meta span{display:flex;align-items:center;gap:0.3rem;}
+        .evt-hero-actions{display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;}
+        .evt-hero-actions .btn{background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);backdrop-filter:blur(4px);}
+        .evt-hero-actions .btn:hover{background:white;color:var(--text-main);}
+
+        /* ─── Layout ──────────────────────────────────────────────── */
+        .evt-layout{display:grid;grid-template-columns:1fr 360px;gap:2rem;align-items:start;}
+        .evt-main{min-width:0;}
+        .evt-sidebar{position:sticky;top:80px;}
+
+        /* ─── Cards ───────────────────────────────────────────────── */
+        .evt-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:1.5rem;margin-bottom:1.25rem;}
+        .evt-card h2{font-size:1.15rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;}
+        .evt-card h2 i{color:var(--primary-color);}
+
+        /* ─── Info Grid ───────────────────────────────────────────── */
+        .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+        .info-item{text-align:center;padding:1rem;background:var(--bg-light);border-radius:var(--radius-sm);}
+        .info-item i{font-size:1.5rem;color:var(--primary-color);display:block;margin-bottom:0.4rem;}
+        .info-item .label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;}
+        .info-item .value{font-weight:600;font-size:0.95rem;}
+
+        /* ─── Agenda Timeline ─────────────────────────────────────── */
+        .agenda-timeline{position:relative;padding-left:2rem;}
+        .agenda-timeline::before{content:'';position:absolute;left:11px;top:0;bottom:0;width:3px;background:var(--border-color);border-radius:3px;}
+        .agenda-item{position:relative;margin-bottom:1.25rem;}
+        .agenda-item::before{content:'';position:absolute;left:-2rem;top:0.25rem;width:24px;height:24px;border-radius:50%;background:var(--primary-color);border:3px solid white;box-shadow:0 0 0 3px var(--primary-light);z-index:1;}
+        .agenda-time{font-size:0.8rem;color:var(--primary-color);font-weight:600;margin-bottom:0.15rem;}
+        .agenda-title{font-weight:500;}
+        .agenda-desc{font-size:0.85rem;color:var(--text-light);}
+
+        /* ─── Speakers ────────────────────────────────────────────── */
+        .speakers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;}
+        .speaker-card{text-align:center;padding:1.25rem;background:var(--bg-light);border-radius:var(--radius-md);transition:all 0.2s;}
+        .speaker-card:hover{box-shadow:var(--shadow-sm);transform:translateY(-2px);}
+        .speaker-avatar{width:80px;height:80px;border-radius:50%;margin:0 auto 0.75rem;overflow:hidden;background:var(--primary-light);display:flex;align-items:center;justify-content:center;}
+        .speaker-avatar img{width:100%;height:100%;object-fit:cover;}
+        .speaker-avatar i{font-size:2rem;color:var(--primary-color);}
+        .speaker-name{font-weight:600;margin-bottom:0.15rem;}
+        .speaker-role{font-size:0.82rem;color:var(--primary-color);margin-bottom:0.25rem;}
+        .speaker-exp{font-size:0.78rem;color:var(--text-muted);}
+
+        /* ─── Checklist ───────────────────────────────────────────── */
+        .learn-checklist{list-style:none;padding:0;}
+        .learn-checklist li{display:flex;align-items:flex-start;gap:0.6rem;padding:0.5rem 0;font-size:0.95rem;}
+        .learn-checklist li i{color:var(--accent-green);margin-top:0.15rem;flex-shrink:0;}
+
+        /* ─── Materials ───────────────────────────────────────────── */
+        .materials-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:0.75rem;}
+        .material-card{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-light);border-radius:var(--radius-sm);transition:all 0.2s;cursor:pointer;}
+        .material-card:hover{background:var(--primary-light);border-color:var(--primary-color);}
+        .material-card img{width:48px;height:48px;border-radius:8px;object-fit:cover;}
+        .material-card .name{font-weight:500;font-size:0.88rem;}
+        .material-card .price{color:var(--primary-color);font-weight:600;font-size:0.85rem;}
+
+        /* ─── Gallery ─────────────────────────────────────────────── */
+        .gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;}
+        .gallery-item{aspect-ratio:1;border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;}
+        .gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform 0.3s;}
+        .gallery-item:hover img{transform:scale(1.05);}
+
+        /* ─── FAQ ─────────────────────────────────────────────────── */
+        .faq-item{border:1px solid var(--border-color);border-radius:var(--radius-sm);margin-bottom:0.5rem;overflow:hidden;}
+        .faq-q{padding:1rem 1.25rem;font-weight:500;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--bg-white);transition:background 0.2s;}
+        .faq-q:hover{background:var(--bg-light);}
+        .faq-q i{transition:transform 0.2s;}
+        .faq-item.open .faq-q i{transform:rotate(180deg);}
+        .faq-a{padding:0 1.25rem 1rem;font-size:0.92rem;color:var(--text-light);line-height:1.6;display:none;}
+        .faq-item.open .faq-a{display:block;}
+
+        /* ─── Registration Card ───────────────────────────────────── */
+        .reg-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:1.5rem;margin-bottom:1.25rem;}
+        .reg-price{font-size:2rem;font-weight:700;color:var(--primary-color);margin-bottom:0.5rem;}
+        .reg-price.free{color:var(--accent-green);}
+        .reg-row{display:flex;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid var(--border-light);font-size:0.9rem;}
+        .reg-row:last-child{border-bottom:none;}
+        .reg-row .label{color:var(--text-light);}
+        .reg-row .value{font-weight:500;}
+        .reg-row .value.seats-low{color:#e67e22;font-weight:600;}
+        .reg-btn{width:100%;padding:0.85rem;font-size:1rem;margin-top:1rem;}
+        .reg-registered{background:rgba(16,185,129,0.1);border:1px solid var(--accent-green);border-radius:var(--radius-md);padding:1.5rem;text-align:center;margin-bottom:1.25rem;}
+        .reg-registered i{font-size:2rem;color:var(--accent-green);display:block;margin-bottom:0.5rem;}
+
+        /* ─── Stats ───────────────────────────────────────────────── */
+        .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
+        .stat-box{text-align:center;padding:1rem;background:var(--bg-light);border-radius:var(--radius-sm);}
+        .stat-box .num{font-size:1.5rem;font-weight:700;color:var(--primary-color);}
+        .stat-box .label{font-size:0.78rem;color:var(--text-muted);}
+
+        /* ─── Reviews ─────────────────────────────────────────────── */
+        .review-card{padding:1rem;border-bottom:1px solid var(--border-light);}
+        .review-card:last-child{border-bottom:none;}
+        .review-header{display:flex;justify-content:space-between;margin-bottom:0.5rem;}
+        .review-author{display:flex;align-items:center;gap:0.5rem;}
+        .review-avatar{width:36px;height:36px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:var(--primary-color);}
+        .review-stars{color:#f59e0b;font-size:0.85rem;}
+        .review-text{font-size:0.92rem;color:var(--text-light);line-height:1.5;}
+        .review-badge{display:inline-flex;align-items:center;gap:0.2rem;font-size:0.7rem;color:var(--accent-green);background:rgba(16,185,129,0.1);padding:0.15rem 0.5rem;border-radius:10px;}
+
+        /* ─── Organizer Card ──────────────────────────────────────── */
+        .org-card{display:flex;gap:1rem;align-items:center;}
+        .org-avatar{width:64px;height:64px;border-radius:50%;overflow:hidden;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .org-avatar img{width:100%;height:100%;object-fit:cover;}
+        .org-avatar i{font-size:1.5rem;color:var(--primary-color);}
+        .org-info h4{font-size:1rem;margin-bottom:0.15rem;}
+        .org-info .role{font-size:0.82rem;color:var(--primary-color);margin-bottom:0.25rem;}
+        .org-stats{display:flex;gap:1rem;font-size:0.78rem;color:var(--text-muted);}
+
+        /* ─── Discussion ──────────────────────────────────────────── */
+        .disc-item{display:flex;gap:0.75rem;padding:0.75rem 0;border-bottom:1px solid var(--border-light);}
+        .disc-item:last-child{border-bottom:none;}
+        .disc-avatar{width:36px;height:36px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:var(--primary-color);flex-shrink:0;}
+        .disc-name{font-weight:500;font-size:0.88rem;}
+        .disc-time{font-size:0.75rem;color:var(--text-muted);}
+        .disc-text{font-size:0.9rem;color:var(--text-light);margin-top:0.25rem;}
+
+        /* ─── Certificate ─────────────────────────────────────────── */
+        .cert-banner{background:linear-gradient(135deg,#f59e0b,#f97316);border-radius:var(--radius-md);padding:1.5rem;color:white;text-align:center;margin-bottom:1.25rem;}
+        .cert-banner i{font-size:2.5rem;margin-bottom:0.5rem;display:block;}
+        .cert-banner h3{color:white;margin-bottom:0.25rem;}
+        .cert-banner p{opacity:0.9;font-size:0.9rem;}
+
+        /* ─── Related Events ──────────────────────────────────────── */
+        .related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+        .related-card{border:1px solid var(--border-color);border-radius:var(--radius-md);overflow:hidden;transition:all 0.2s;}
+        .related-card:hover{box-shadow:var(--shadow-sm);transform:translateY(-2px);}
+        .related-card img{width:100%;height:120px;object-fit:cover;}
+        .related-card .info{padding:0.75rem;}
+        .related-card .date{font-size:0.75rem;color:var(--primary-color);font-weight:500;}
+        .related-card h4{font-size:0.9rem;margin:0.2rem 0;}
+        .related-card .meta{font-size:0.78rem;color:var(--text-muted);}
+
+        /* ─── Mobile Bottom Bar ───────────────────────────────────── */
+        .mobile-reg-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg-white);border-top:1px solid var(--border-color);padding:0.75rem 1rem;z-index:100;}
+        .mobile-reg-bar .price{font-weight:700;color:var(--primary-color);}
+        .mobile-reg-bar .btn{flex:1;}
+
+        /* ─── Responsive ──────────────────────────────────────────── */
+        @media(max-width:1024px){
+            .evt-layout{grid-template-columns:1fr;}
+            .evt-sidebar{position:static;order:-1;}
+            .info-grid{grid-template-columns:repeat(2,1fr);}
+        }
+        @media(max-width:768px){
+            .evt-hero{height:280px;}
+            .evt-hero h1{font-size:1.4rem;}
+            .evt-hero-actions{flex-direction:column;}
+            .evt-hero-actions .btn{width:100%;}
+            .info-grid{grid-template-columns:1fr 1fr;}
+            .speakers-grid{grid-template-columns:1fr 1fr;}
+            .gallery-grid{grid-template-columns:repeat(3,1fr);}
+            .related-grid{grid-template-columns:1fr;}
+            .mobile-reg-bar{display:flex;gap:0.75rem;align-items:center;}
+            .evt-main{padding-bottom:80px;}
+            .section-padding{padding-left:1rem;padding-right:1rem;}
         }
     </style>
 </head>
 <body>
     <div id="header-container"></div>
 
-    <section class="section-padding" style="padding-top:2rem;">
+    <section class="section-padding" style="padding-top:1.5rem;">
         <div class="container">
-            <a href="events.html" class="back-link"><i class="bi bi-arrow-left"></i> Back to Events</a>
-            <div id="eventContent"></div>
+            <div id="eventContent">
+                <!-- Loading State -->
+                <div style="text-align:center;padding:4rem;">
+                    <div class="spinner" style="margin:0 auto 1rem;"></div>
+                    <p style="color:var(--text-light);">Loading event...</p>
+                </div>
+            </div>
         </div>
     </section>
+
+    <!-- Mobile Registration Bar -->
+    <div class="mobile-reg-bar" id="mobileRegBar" style="display:none;">
+        <div>
+            <div class="price" id="mobilePrice">Free</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);" id="mobileSeats">--</div>
+        </div>
+        <button class="btn btn-primary" onclick="registerForEvent()">Register Now</button>
+    </div>
 
     <div id="footer-container"></div>
 
@@ -107,9 +212,386 @@
     <script src="js/shared/animations.js?v=3.0"></script>
     <script src="js/events.js"></script>
     <script>
+        let currentEvent = null;
+
         document.addEventListener('DOMContentLoaded', () => {
             initEventDetail();
         });
+
+        async function initEventDetail() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            if (!id) {
+                document.getElementById('eventContent').innerHTML = '<div class="empty-state"><h3>Event not found</h3></div>';
+                return;
+            }
+
+            let event;
+            try {
+                const res = await fetch(`/api/events/${id}`, { headers: authHeaders() });
+                if (!res.ok) throw new Error('Not found');
+                event = await res.json();
+            } catch {
+                document.getElementById('eventContent').innerHTML = '<div class="empty-state"><i class="bi bi-calendar-x"></i><h3>Event not found</h3><p>This event may have been removed.</p><a href="events.html" class="btn btn-primary" style="margin-top:1rem;">Browse Events</a></div>';
+                return;
+            }
+
+            currentEvent = event;
+            document.title = `${event.title} | Flower Ecosystem`;
+
+            let speakers = [];
+            try { speakers = event.speakers ? (typeof event.speakers === 'string' ? JSON.parse(event.speakers) : event.speakers) : []; } catch { speakers = []; }
+            let agenda = [];
+            try { agenda = event.agenda ? (typeof event.agenda === 'string' ? JSON.parse(event.agenda) : event.agenda) : []; } catch { agenda = []; }
+
+            const spotsLeft = event.spots_left != null ? event.spots_left : (event.max_participants ? event.max_participants - (event.registrations || 0) : null);
+            const isFull = spotsLeft !== null && spotsLeft <= 0;
+            const isRegistered = event.is_registered;
+
+            document.getElementById('eventContent').innerHTML = `
+                <!-- Hero -->
+                <div class="evt-hero">
+                    <img src="${escapeHtml(event.image_url || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=1200&auto=format&fit=crop')}" alt="${escapeHtml(event.title)}">
+                    <div class="evt-hero-overlay">
+                        ${event.is_featured ? '<div class="evt-hero-badge"><i class="bi bi-star-fill"></i> Featured</div>' : ''}
+                        <h1>${escapeHtml(event.title)}</h1>
+                        <div class="evt-hero-meta">
+                            <span><i class="bi bi-calendar"></i> ${formatDate(event.event_date)}</span>
+                            <span><i class="bi bi-clock"></i> ${formatTime(event.event_date)}${event.end_date ? ' – ' + formatTime(event.end_date) : ''}</span>
+                            <span><i class="bi bi-geo-alt"></i> ${escapeHtml(event.location || 'Online')}</span>
+                            <span><i class="bi bi-tag"></i> ${escapeHtml(event.event_type || 'Event')}</span>
+                            <span><i class="bi bi-people"></i> ${event.registrations || 0} Registered</span>
+                        </div>
+                        <div class="evt-hero-actions">
+                            <button class="btn" onclick="shareEvent()"><i class="bi bi-share"></i> Share</button>
+                            <button class="btn" onclick="addToCalendar()"><i class="bi bi-calendar-plus"></i> Calendar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="evt-layout">
+                    <!-- Main Content -->
+                    <div class="evt-main">
+                        <!-- About -->
+                        <div class="evt-card">
+                            <h2><i class="bi bi-info-circle"></i> About This Event</h2>
+                            <div class="description-content">${escapeHtml(event.description || 'No description available.')}</div>
+                        </div>
+
+                        ${event.difficulty || event.prerequisites ? `
+                        <!-- What You'll Learn -->
+                        <div class="evt-card">
+                            <h2><i class="bi bi-check-circle"></i> What You'll Learn</h2>
+                            <ul class="learn-checklist">
+                                ${event.difficulty ? `<li><i class="bi bi-check-lg"></i> Skill Level: ${escapeHtml(event.difficulty)}</li>` : ''}
+                                ${event.prerequisites ? `<li><i class="bi bi-check-lg"></i> ${escapeHtml(event.prerequisites)}</li>` : ''}
+                                <li><i class="bi bi-check-lg"></i> Hands-on practical experience</li>
+                                <li><i class="bi bi-check-lg"></i> Expert insights and tips</li>
+                                <li><i class="bi bi-check-lg"></i> Networking with fellow enthusiasts</li>
+                            </ul>
+                        </div>` : ''}
+
+                        ${agenda.length ? `
+                        <!-- Agenda -->
+                        <div class="evt-card">
+                            <h2><i class="bi bi-list-check"></i> Event Agenda</h2>
+                            <div class="agenda-timeline">
+                                ${agenda.map(item => `
+                                    <div class="agenda-item">
+                                        <div class="agenda-time">${escapeHtml(typeof item === 'string' ? '' : (item.time || ''))}</div>
+                                        <div class="agenda-title">${escapeHtml(typeof item === 'string' ? item : (item.title || item.activity || ''))}</div>
+                                        ${item.description ? `<div class="agenda-desc">${escapeHtml(item.description)}</div>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>` : ''}
+
+                        ${speakers.length ? `
+                        <!-- Speakers -->
+                        <div class="evt-card">
+                            <h2><i class="bi bi-person-badge"></i> Speakers</h2>
+                            <div class="speakers-grid">
+                                ${speakers.map(s => `
+                                    <div class="speaker-card">
+                                        <div class="speaker-avatar">
+                                            ${s.photo_url ? `<img src="${escapeHtml(s.photo_url)}" alt="${escapeHtml(s.name)}">` : '<i class="bi bi-person"></i>'}
+                                        </div>
+                                        <div class="speaker-name">${escapeHtml(s.name)}</div>
+                                        <div class="speaker-role">${escapeHtml(s.title || 'Speaker')}</div>
+                                        ${s.experience_years ? `<div class="speaker-exp">${s.experience_years} Years Experience</div>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>` : ''}
+
+                        ${event.has_certificate ? `
+                        <!-- Certificate -->
+                        <div class="cert-banner">
+                            <i class="bi bi-award"></i>
+                            <h3>Certificate Included</h3>
+                            <p>Receive a digital certificate after attending the full event.</p>
+                        </div>` : ''}
+
+                        <!-- Community Discussion -->
+                        <div class="evt-card">
+                            <h2><i class="bi bi-chat-dots"></i> Discussion</h2>
+                            <div id="discussionList">
+                                <div class="disc-item">
+                                    <div class="disc-avatar">S</div>
+                                    <div>
+                                        <div style="display:flex;justify-content:space-between;">
+                                            <span class="disc-name">Sarah M.</span>
+                                            <span class="disc-time">2 days ago</span>
+                                        </div>
+                                        <div class="disc-text">Excited for this event! Will materials be provided?</div>
+                                    </div>
+                                </div>
+                                <div class="disc-item">
+                                    <div class="disc-avatar">O</div>
+                                    <div>
+                                        <div style="display:flex;justify-content:space-between;">
+                                            <span class="disc-name">Organizer</span>
+                                            <span class="disc-time">1 day ago</span>
+                                        </div>
+                                        <div class="disc-text">Yes! Basic materials will be provided. You can also purchase extras from our Marketplace.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top:1rem;">
+                                <textarea class="form-input" rows="2" placeholder="Ask a question or join the discussion..." style="width:100%;"></textarea>
+                                <button class="btn btn-primary btn-sm" style="margin-top:0.5rem;">Post Comment</button>
+                            </div>
+                        </div>
+
+                        <!-- Gallery -->
+                        <div class="evt-card">
+                            <h2><i class="bi bi-images"></i> Gallery</h2>
+                            <div class="gallery-grid">
+                                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop" alt="Gallery"></div>
+                                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=400&auto=format&fit=crop" alt="Gallery"></div>
+                                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=400&auto=format&fit=crop" alt="Gallery"></div>
+                                <div class="gallery-item"><img src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?q=400&auto=format&fit=crop" alt="Gallery"></div>
+                            </div>
+                        </div>
+
+                        <!-- Reviews -->
+                        <div class="evt-card">
+                            <h2><i class="bi bi-star"></i> Reviews</h2>
+                            <div class="review-card">
+                                <div class="review-header">
+                                    <div class="review-author">
+                                        <div class="review-avatar">A</div>
+                                        <div>
+                                            <div style="font-weight:500;">Ama K.</div>
+                                            <span class="review-badge"><i class="bi bi-patch-check-fill"></i> Verified Attendee</span>
+                                        </div>
+                                    </div>
+                                    <span class="review-stars">★★★★★</span>
+                                </div>
+                                <div class="review-text">Excellent instructor with practical demonstrations. Learned so much about bouquet design!</div>
+                            </div>
+                            <div class="review-card">
+                                <div class="review-header">
+                                    <div class="review-author">
+                                        <div class="review-avatar">K</div>
+                                        <div>
+                                            <div style="font-weight:500;">Kofi M.</div>
+                                            <span class="review-badge"><i class="bi bi-patch-check-fill"></i> Verified Attendee</span>
+                                        </div>
+                                    </div>
+                                    <span class="review-stars">★★★★★</span>
+                                </div>
+                                <div class="review-text">Great event! The hands-on session was very helpful. Highly recommend for beginners.</div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ -->
+                        <div class="evt-card">
+                            <h2><i class="bi bi-question-circle"></i> Frequently Asked Questions</h2>
+                            <div class="faq-item open">
+                                <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Do I need experience? <i class="bi bi-chevron-down"></i></div>
+                                <div class="faq-a">No, beginners are welcome! This event is designed for all skill levels.</div>
+                            </div>
+                            <div class="faq-item">
+                                <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Will materials be provided? <i class="bi bi-chevron-down"></i></div>
+                                <div class="faq-a">Basic materials are provided. You can purchase additional materials through our Marketplace.</div>
+                            </div>
+                            <div class="faq-item">
+                                <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Will I receive a certificate? <i class="bi bi-chevron-down"></i></div>
+                                <div class="faq-a">Yes! You'll receive a digital certificate after attending the full event.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="evt-sidebar">
+                        <!-- Registration Card -->
+                        ${isRegistered ? `
+                        <div class="reg-registered">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <h3 style="margin-bottom:0.25rem;">You're Registered!</h3>
+                            <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:1rem;">See you at the event.</p>
+                            <button class="btn btn-outline btn-sm" style="margin-right:0.5rem;">View Ticket</button>
+                            <button class="btn btn-sm" style="color:var(--error-color);" onclick="cancelRegistration()">Cancel</button>
+                        </div>` : `
+                        <div class="reg-card">
+                            <div class="reg-price ${event.price == 0 ? 'free' : ''}">${event.price == 0 || !event.price ? 'Free' : `${event.currency || 'GHS'} ${event.price}`}</div>
+                            <div class="reg-row"><span class="label">Seats Left</span><span class="value ${spotsLeft !== null && spotsLeft < 20 ? 'seats-low' : ''}">${spotsLeft !== null ? spotsLeft + ' / ' + event.max_participants : 'Unlimited'}</span></div>
+                            <div class="reg-row"><span class="label">Duration</span><span class="value">${getDuration(event.event_date, event.end_date)}</span></div>
+                            <div class="reg-row"><span class="label">Difficulty</span><span class="value">${escapeHtml(event.difficulty || 'All Levels')}</span></div>
+                            <button class="btn btn-primary reg-btn" onclick="registerForEvent()" ${isFull ? 'disabled' : ''}>${isFull ? 'Sold Out' : 'Register Now'}</button>
+                        </div>`}
+
+                        <!-- Organizer -->
+                        <div class="evt-card">
+                            <h2><i class="bi bi-person"></i> Organizer</h2>
+                            <div class="org-card">
+                                <div class="org-avatar">
+                                    ${event.instructor_image ? `<img src="${escapeHtml(event.instructor_image)}" alt="">` : '<i class="bi bi-person"></i>'}
+                                </div>
+                                <div class="org-info">
+                                    <h4>${escapeHtml(event.organizer_name || 'Event Organizer')}</h4>
+                                    <div class="role">Verified Organizer</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Event Stats -->
+                        <div class="evt-card">
+                            <h2><i class="bi bi-bar-chart"></i> Event Stats</h2>
+                            <div class="stats-grid">
+                                <div class="stat-box"><div class="num">${event.registrations || 0}</div><div class="label">Registered</div></div>
+                                <div class="stat-box"><div class="num">${spotsLeft !== null ? spotsLeft : '∞'}</div><div class="label">Seats Left</div></div>
+                                <div class="stat-box"><div class="num">${event.views || 0}</div><div class="label">Views</div></div>
+                                <div class="stat-box"><div class="num">${event.price == 0 || !event.price ? 'Free' : (event.currency || 'GHS') + ' ' + event.price}</div><div class="label">Price</div></div>
+                            </div>
+                        </div>
+
+                        <!-- Materials -->
+                        <div class="evt-card">
+                            <h2><i class="bi bi-bag"></i> Materials Needed</h2>
+                            <div class="materials-grid">
+                                <div class="material-card" onclick="window.open('marketplace.html?q=floral+foam')">
+                                    <div style="width:48px;height:48px;border-radius:8px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;"><i class="bi bi-box" style="color:var(--primary-color);"></i></div>
+                                    <div><div class="name">Floral Foam</div><div class="price">GHS 15</div></div>
+                                </div>
+                                <div class="material-card" onclick="window.open('marketplace.html?q=roses')">
+                                    <div style="width:48px;height:48px;border-radius:8px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;"><i class="bi bi-flower1" style="color:var(--primary-color);"></i></div>
+                                    <div><div class="name">Roses (Dozen)</div><div class="price">GHS 45</div></div>
+                                </div>
+                                <div class="material-card" onclick="window.open('marketplace.html?q=ribbon')">
+                                    <div style="width:48px;height:48px;border-radius:8px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;"><i class="bi bi-scissors" style="color:var(--primary-color);"></i></div>
+                                    <div><div class="name">Satin Ribbon</div><div class="price">GHS 8</div></div>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline btn-sm w-100" style="margin-top:0.75rem;" onclick="window.open('marketplace.html')"><i class="bi bi-bag"></i> Browse All Materials</button>
+                        </div>
+
+                        <!-- Related Events -->
+                        <div class="evt-card">
+                            <h2><i class="bi bi-calendar-event"></i> Related Events</h2>
+                            <div id="relatedEvents"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Update mobile bar
+            document.getElementById('mobilePrice').textContent = event.price == 0 || !event.price ? 'Free' : `${event.currency || 'GHS'} ${event.price}`;
+            document.getElementById('mobileSeats').textContent = spotsLeft !== null ? `${spotsLeft} seats left` : '';
+            document.getElementById('mobileRegBar').style.display = isRegistered ? 'none' : 'flex';
+
+            loadRelatedEvents(event.event_category);
+        }
+
+        function getDuration(start, end) {
+            if (!start || !end) return 'TBD';
+            const diff = new Date(end) - new Date(start);
+            const hours = Math.floor(diff / 3600000);
+            const mins = Math.floor((diff % 3600000) / 60000);
+            return hours > 0 ? `${hours}h ${mins > 0 ? mins + 'm' : ''}` : `${mins}m`;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' });
+        }
+
+        function formatTime(dateStr) {
+            if (!dateStr) return '';
+            return new Date(dateStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        }
+
+        async function registerForEvent() {
+            if (!localStorage.getItem('flower-token')) {
+                if (typeof openAuthModal === 'function') openAuthModal('login');
+                else window.location.href = 'login.html';
+                return;
+            }
+            if (!currentEvent) return;
+            try {
+                const res = await fetch(`/api/events/${currentEvent.id}/register`, {
+                    method: 'POST',
+                    headers: authHeaders()
+                });
+                if (res.ok) {
+                    alert('Registration successful!');
+                    location.reload();
+                } else {
+                    const data = await res.json();
+                    alert(data.error || 'Registration failed');
+                }
+            } catch { alert('Registration failed. Please try again.'); }
+        }
+
+        function cancelRegistration() {
+            if (!confirm('Are you sure you want to cancel?')) return;
+            alert('Registration cancelled.');
+        }
+
+        function shareEvent() {
+            if (navigator.share) {
+                navigator.share({ title: currentEvent?.title, url: window.location.href });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link copied to clipboard!');
+            }
+        }
+
+        function addToCalendar() {
+            if (!currentEvent) return;
+            const start = new Date(currentEvent.event_date);
+            const end = currentEvent.end_date ? new Date(currentEvent.end_date) : new Date(start.getTime() + 3600000);
+            const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:${start.toISOString().replace(/[-:]/g,'').split('.')[0]}Z\nDTEND:${end.toISOString().replace(/[-:]/g,'').split('.')[0]}Z\nSUMMARY:${currentEvent.title}\nLOCATION:${currentEvent.location || 'Online'}\nEND:VEVENT\nEND:VCALENDAR`;
+            const blob = new Blob([ics], { type: 'text/calendar' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'event.ics';
+            a.click();
+        }
+
+        async function loadRelatedEvents(category) {
+            if (!category) return;
+            try {
+                const res = await fetch(`/api/events?category=${encodeURIComponent(category)}&limit=3`);
+                const data = await res.json();
+                const events = (data.events || []).filter(e => e.id !== currentEvent?.id).slice(0, 3);
+                const el = document.getElementById('relatedEvents');
+                if (!events.length) { el.innerHTML = '<p style="color:var(--text-light);font-size:0.88rem;">No related events</p>'; return; }
+                el.innerHTML = events.map(e => `
+                    <a href="event-detail.html?id=${e.id}" style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--border-light);text-decoration:none;color:inherit;">
+                        <div style="width:60px;height:60px;border-radius:8px;overflow:hidden;flex-shrink:0;">
+                            <img src="${escapeHtml(e.image_url || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=200&auto=format&fit=crop')}" alt="" style="width:100%;height:100%;object-fit:cover;">
+                        </div>
+                        <div>
+                            <div style="font-size:0.75rem;color:var(--primary-color);font-weight:500;">${formatDate(e.event_date)}</div>
+                            <div style="font-weight:500;font-size:0.88rem;">${escapeHtml(e.title)}</div>
+                            <div style="font-size:0.78rem;color:var(--text-muted);">${e.price == 0 || !e.price ? 'Free' : (e.currency || 'GHS') + ' ' + e.price}</div>
+                        </div>
+                    </a>
+                `).join('');
+            } catch {}
+        }
     </script>
 </body>
 </html>
