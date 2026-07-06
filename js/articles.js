@@ -55,7 +55,7 @@ async function loadCategories() {
     const el = document.getElementById('categoryCards');
     if (!el) return;
     el.innerHTML = `<div class="cat-card active" data-slug=""><span class="cat-icon">📚</span><span class="cat-name">All Articles</span></div>` +
-        categories.map(c => `<div class="cat-card" data-slug="${escapeHtml(c.slug || '')}"><span class="cat-icon">${c.icon || '📄'}</span><span class="cat-name">${escapeHtml(c.name)}</span></div>`).join('');
+        categories.map(c => `<div class="cat-card" data-slug="${escapeHtml(c.slug || '')}"><span class="cat-icon"><i class="bi bi-${escapeHtml(c.icon || 'file-text')}"></i></span><span class="cat-name">${escapeHtml(c.name)}</span></div>`).join('');
 }
 
 async function loadFeaturedArticles() {
