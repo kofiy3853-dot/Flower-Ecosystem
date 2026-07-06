@@ -145,11 +145,9 @@ function renderOverview(analytics){
     `).join(''):'<p style="color:var(--text-light);font-size:.85rem;padding:1rem;">No orders yet</p>';
 
     // Mini stats (overview section only)
-    const overviewMinis=$$('#sec-overview .adm-stat-card.mini .adm-stat-value');
-    if(overviewMinis[0]) overviewMinis[0].textContent=users.filter(u=>!u.is_active).length;
-    if(overviewMinis[1]) overviewMinis[1].textContent=sellers.length;
-    if(overviewMinis[2]) overviewMinis[2].textContent=orders.length;
-    if(overviewMinis[3]) overviewMinis[3].textContent='100%';
+    if(el('admPendingApprovals')) el('admPendingApprovals').textContent=users.filter(u=>!u.is_active).length;
+    if(el('admActiveSellers')) el('admActiveSellers').textContent=sellers.length;
+    if(el('admOverviewPosts')) el('admOverviewPosts').textContent=orders.length;
 
     // Pending Actions
     const actions=[
@@ -178,13 +176,12 @@ async function renderUsers(){
         }
     }
     // Update user mini stats (scoped to users section)
-    const miniValues=$$('#sec-users .adm-stat-card.mini .adm-stat-value');
     const roles={Customer:0,Instructor:0,Seller:0,Admin:0};
     users.forEach(u=>{const r=(u.role||'CUSTOMER').toUpperCase();if(r==='INSTRUCTOR')roles.Instructor++;else if(r==='SELLER'||r==='FLORIST'||r==='GROWER')roles.Seller++;else if(r==='ADMIN'||r==='SUPERADMIN')roles.Admin++;else roles.Customer++;});
-    if(miniValues[0]) miniValues[0].textContent=roles.Customer;
-    if(miniValues[1]) miniValues[1].textContent=roles.Instructor;
-    if(miniValues[2]) miniValues[2].textContent=roles.Seller;
-    if(miniValues[3]) miniValues[3].textContent=roles.Admin;
+    if(el('admUserCustomers')) el('admUserCustomers').textContent=roles.Customer;
+    if(el('admUserInstructors')) el('admUserInstructors').textContent=roles.Instructor;
+    if(el('admUserSellers')) el('admUserSellers').textContent=roles.Seller;
+    if(el('admUserAdmins')) el('admUserAdmins').textContent=roles.Admin;
 
     const body=$('#usersBody');
     if(!users.length){body.innerHTML='<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-light);">No users found</td></tr>';return;}

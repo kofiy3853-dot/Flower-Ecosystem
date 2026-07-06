@@ -59,8 +59,8 @@
                     <input type="search" placeholder="Search users, courses, products..." id="admSearch">
                 </div>
                 <div class="adm-header-actions">
-                    <button class="adm-header-btn" id="admNotifBtn"><i class="bi bi-bell"></i><span class="adm-badge">8</span></button>
-                    <button class="adm-header-btn"><i class="bi bi-envelope"></i><span class="adm-badge">3</span></button>
+                    <button class="adm-header-btn" id="admNotifBtn"><i class="bi bi-bell"></i><span class="adm-badge" id="admNotifBadge">0</span></button>
+                    <button class="adm-header-btn"><i class="bi bi-envelope"></i><span class="adm-badge" id="admMsgBadge">0</span></button>
                     <div class="adm-header-profile">
                         <div class="adm-avatar adm-avatar-sm">A</div>
                         <span>Admin</span>
@@ -114,7 +114,7 @@
                     <div class="adm-stats-grid adm-stats-4">
                         <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admPendingApprovals">0</div><div class="adm-stat-label">Pending Approvals</div></div></div>
                         <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admActiveSellers">0</div><div class="adm-stat-label">Active Sellers</div></div></div>
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admCommunityPosts">0</div><div class="adm-stat-label">Community Posts</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admOverviewPosts">0</div><div class="adm-stat-label">Community Posts</div></div></div>
                         <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">100%</div><div class="adm-stat-label">Uptime</div></div></div>
                     </div>
 
@@ -131,9 +131,10 @@
                         <button class="adm-btn adm-btn-primary" onclick="openModal('user')"><i class="bi bi-person-plus"></i> Add User</button>
                     </div>
                     <div class="adm-stats-grid adm-stats-4">
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">0</div><div class="adm-stat-label">New Products</div></div></div>
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">0</div><div class="adm-stat-label">Seller Applications</div></div></div>
-                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value">0</div><div class="adm-stat-label">Reported Content</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admUserCustomers">0</div><div class="adm-stat-label">Customers</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admUserInstructors">0</div><div class="adm-stat-label">Instructors</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admUserSellers">0</div><div class="adm-stat-label">Sellers</div></div></div>
+                        <div class="adm-stat-card mini"><div class="adm-stat-info"><div class="adm-stat-value" id="admUserAdmins">0</div><div class="adm-stat-label">Admins</div></div></div>
                     </div>
                     <div class="adm-card">
                         <div class="adm-filter-bar">
