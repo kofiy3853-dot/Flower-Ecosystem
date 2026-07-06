@@ -267,15 +267,12 @@ async function queryWithFallback(queryFn, jsonKey, res, single = false, fallback
             return res.json(data);
         } catch (err) {
             console.error('Query fallback error:', err.message.split('\n')[0].slice(0, 120));
-            // In production, return empty rather than stale mock data
-            if (process.env.NODE_ENV === 'production') {
-                return res.json(single ? null : []);
-            }
+            // Fall through to JSON fallback instead of returning empty
         }
     }
     const filePath = path.join(__dirname, '..', 'data', jsonKey + '.json');
     const fallback = readJSON(filePath);
-    console.warn(`⚠️  Fallback [${jsonKey}] — DB unavailable or query failed, serving stale data from ${filePath}`);
+    console.warn(`⚠️  Fallback [${jsonKey}] — DB unavailable or query failed, serving data from ${filePath}`);
     res.json(fallbackFn ? fallbackFn(fallback) : fallback);
 }
 
