@@ -362,7 +362,6 @@ function updateAccountUI() {
     const btn = document.getElementById('globalAccountLink');
     const signInLink = document.getElementById('headerSignIn');
     const signInIcon = document.getElementById('headerSignInIcon');
-    const signInText = document.getElementById('headerSignInText');
     const user = getCurrentUser();
 
     if (btn) {
@@ -376,10 +375,9 @@ function updateAccountUI() {
     }
 
     // Update header sign-in link
-    if (signInLink && signInIcon && signInText) {
+    if (signInLink && signInIcon) {
         if (user) {
             signInIcon.className = 'bi bi-person-check-fill';
-            signInText.textContent = user.name || user.email || 'Account';
             signInLink.onclick = function(e) {
                 e.preventDefault();
                 const role = (user.role || '').toLowerCase();
@@ -391,7 +389,6 @@ function updateAccountUI() {
             };
         } else {
             signInIcon.className = 'bi bi-person-circle';
-            signInText.textContent = 'Sign In';
             signInLink.onclick = function(e) {
                 e.preventDefault();
                 openAuthModal('login');
