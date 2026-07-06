@@ -666,11 +666,15 @@ function drawBarChart(canvasId,labels,data){
     const ctx=canvas.getContext('2d');
     const w=canvas.width=canvas.parentElement.clientWidth;
     const h=canvas.height;
+    if(w<=0||h<=0)return;
     ctx.clearRect(0,0,w,h);
-    const safeData=data.map(v=>Number.isFinite(v)?v:0);
+    const safeData=(data||[]).map(v=>Number.isFinite(v)?v:0);
+    if(!safeData.length||!labels.length)return;
     const max=Math.max(...safeData)*1.1||1;
+    if(!Number.isFinite(max)||max<=0)return;
     const barW=Math.min(40,(w-60)/(labels.length*1.5));
     const startX=40;const chartH=h-40;
+    if(chartH<=0)return;
     ctx.strokeStyle='#e5e7eb';ctx.lineWidth=1;
     for(let i=0;i<=4;i++){
         const y=20+chartH*(i/4);
@@ -697,8 +701,10 @@ function drawLineChart(canvasId,data){
     const ctx=canvas.getContext('2d');
     const w=canvas.width=canvas.parentElement.clientWidth;
     const h=canvas.height;
+    if(w<=0||h<=0)return;
     ctx.clearRect(0,0,w,h);
-    const safeData=data.map(v=>Number.isFinite(v)?v:0);
+    const safeData=(data||[]).map(v=>Number.isFinite(v)?v:0);
+    if(!safeData.length)return;
     const max=Math.max(...safeData)*1.1||1;
     const min=Math.min(...safeData)*0.9||0;
     const range=max-min||1;
