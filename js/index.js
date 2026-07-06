@@ -28,8 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchJSON('data/articles.json',               300),  // 5 min cache
         fetchJSON('/api/videos',                       300),
         fetchJSON('/api/courses',                      300),
-        fetchJSON('/api/products/list/florists',      60),   // 1 min cache
-        fetchJSON('data/events.json',                 300),
+        fetchJSON('/api/products/list/florists',      60),
+        fetchJSON('data/events.json?t=' + Date.now(), 0),   // no cache for events
     ]).then(([stats, categories, products, articles, videos, courses, florists, events]) => {
         renderStats(stats);
         renderCategories(categories);
