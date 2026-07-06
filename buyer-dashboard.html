@@ -43,6 +43,16 @@
         .activity-icon { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0; }
         .activity-text { font-size:0.88rem; }
         .activity-time { font-size:0.75rem; color:var(--text-light); }
+        .settings-tab { border:none; background:none; color:var(--text-light); padding:0.5rem 1rem; cursor:pointer; border-bottom:2px solid transparent; }
+        .settings-tab:hover { color:var(--text-main); }
+        .settings-tab.active { color:var(--primary-color); border-bottom-color:var(--primary-color); font-weight:500; }
+        .settings-panel { animation:fadeIn 0.3s ease; }
+        .dash-mobile-item.active { color:var(--primary-color) !important; }
+        @media(max-width:768px) {
+            .dash-mobile-nav { display:block !important; }
+            .dash-main { padding-bottom:4rem; }
+            .dash-sidebar { display:none; }
+        }
     </style>
 </head>
 <body>
@@ -60,6 +70,8 @@
                 <li><a href="#dashboard" class="active" data-section="dashboard"><i class="bi bi-house"></i> Dashboard</a></li>
                 <li><a href="#orders" data-section="orders"><i class="bi bi-receipt"></i> My Orders</a></li>
                 <li><a href="#favorites" data-section="favorites"><i class="bi bi-heart"></i> Favorites</a></li>
+                <li><a href="#learning" data-section="learning"><i class="bi bi-mortarboard"></i> My Learning</a></li>
+                <li><a href="#community" data-section="community"><i class="bi bi-people"></i> Community</a></li>
                 <li><a href="#messages" data-section="messages"><i class="bi bi-chat-dots"></i> Messages</a></li>
                 <li><a href="#notifications" data-section="notifications"><i class="bi bi-bell"></i> Notifications</a></li>
                 <li><a href="#activity" data-section="activity"><i class="bi bi-clock-history"></i> Activity</a></li>
@@ -109,6 +121,41 @@
                     <div class="fav-grid" id="favoritesGrid"></div>
                 </div>
 
+                <!-- Learning -->
+                <div id="section-learning" class="section">
+                    <h1 style="margin-bottom:1.5rem;">My Learning</h1>
+                    <div class="stats-grid" id="learningStats"></div>
+                    <div class="grid-2" style="margin-top:1.5rem;">
+                        <div class="section-card">
+                            <h3>Continue Learning</h3>
+                            <div id="continueCourses"></div>
+                        </div>
+                        <div class="section-card">
+                            <h3>Certificates</h3>
+                            <div id="certificatesList"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Community -->
+                <div id="section-community" class="section">
+                    <h1 style="margin-bottom:1.5rem;">Community Activity</h1>
+                    <div class="grid-2">
+                        <div class="section-card">
+                            <h3>My Posts</h3>
+                            <div id="myPosts"></div>
+                        </div>
+                        <div class="section-card">
+                            <h3>My Discussions</h3>
+                            <div id="myDiscussions"></div>
+                        </div>
+                    </div>
+                    <div class="section-card" style="margin-top:1rem;">
+                        <h3>Upcoming Events</h3>
+                        <div id="upcomingEvents"></div>
+                    </div>
+                </div>
+
                 <!-- Messages -->
                 <div id="section-messages" class="section">
                     <h1 style="margin-bottom:1.5rem;">Messages</h1>
@@ -139,6 +186,27 @@
             </div>
         </main>
     </div>
+
+    <!-- Mobile Bottom Nav -->
+    <nav class="dash-mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg-white);border-top:1px solid var(--border-color);padding:0.5rem;z-index:100;">
+        <div style="display:flex;justify-content:space-around;">
+            <a href="#dashboard" class="dash-mobile-item active" data-section="dashboard" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text-light);font-size:0.65rem;gap:0.15rem;">
+                <i class="bi bi-house" style="font-size:1.1rem;"></i> Home
+            </a>
+            <a href="#orders" class="dash-mobile-item" data-section="orders" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text-light);font-size:0.65rem;gap:0.15rem;">
+                <i class="bi bi-receipt" style="font-size:1.1rem;"></i> Orders
+            </a>
+            <a href="#favorites" class="dash-mobile-item" data-section="favorites" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text-light);font-size:0.65rem;gap:0.15rem;">
+                <i class="bi bi-heart" style="font-size:1.1rem;"></i> Favorites
+            </a>
+            <a href="#learning" class="dash-mobile-item" data-section="learning" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text-light);font-size:0.65rem;gap:0.15rem;">
+                <i class="bi bi-mortarboard" style="font-size:1.1rem;"></i> Learning
+            </a>
+            <a href="#settings" class="dash-mobile-item" data-section="settings" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text-light);font-size:0.65rem;gap:0.15rem;">
+                <i class="bi bi-gear" style="font-size:1.1rem;"></i> More
+            </a>
+        </div>
+    </nav>
 
     <script src="js/shared/api.js?v=4.0"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
@@ -194,6 +262,8 @@
                 case 'dashboard': loadOverview(); break;
                 case 'orders': loadOrders(); break;
                 case 'favorites': loadFavorites(); break;
+                case 'learning': loadLearning(); break;
+                case 'community': loadCommunity(); break;
                 case 'messages': break;
                 case 'notifications': loadNotifications(); break;
                 case 'activity': loadActivity(); break;
@@ -269,6 +339,94 @@
             `).join('') : '<p style="color:var(--text-light);text-align:center;padding:3rem;grid-column:1/-1;">No favorites yet. <a href="marketplace.html">Browse products</a></p>';
         }
 
+        async function loadLearning() {
+            let enrollments = [];
+            try { enrollments = await fetch('/api/enrollments', { headers: authHeaders() }).then(r => r.json()); } catch {}
+            const enrolled = Array.isArray(enrollments) ? enrollments : (enrollments.enrollments || []);
+
+            const completed = enrolled.filter(e => e.completed).length;
+            const inProgress = enrolled.filter(e => !e.completed).length;
+            const certificates = enrolled.filter(e => e.certificate).length;
+
+            document.getElementById('learningStats').innerHTML = `
+                <div class="stat-card"><div class="icon"><i class="bi bi-book"></i></div><div class="num">${enrolled.length}</div><div class="label">Enrolled</div></div>
+                <div class="stat-card"><div class="icon"><i class="bi bi-play-circle"></i></div><div class="num">${inProgress}</div><div class="label">In Progress</div></div>
+                <div class="stat-card"><div class="icon"><i class="bi bi-check-circle"></i></div><div class="num">${completed}</div><div class="label">Completed</div></div>
+                <div class="stat-card"><div class="icon"><i class="bi bi-award"></i></div><div class="num">${certificates}</div><div class="label">Certificates</div></div>
+            `;
+
+            const inProgressCourses = enrolled.filter(e => !e.completed).slice(0, 3);
+            document.getElementById('continueCourses').innerHTML = inProgressCourses.length ? inProgressCourses.map(c => `
+                <div style="display:flex;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);">
+                    <div style="width:50px;height:50px;border-radius:8px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="bi bi-book" style="color:var(--primary-color);"></i>
+                    </div>
+                    <div style="flex:1;">
+                        <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(c.course_name || 'Course')}</div>
+                        <div style="font-size:0.8rem;color:var(--text-light);">${c.progress || 0}% complete</div>
+                        <div style="height:4px;background:var(--bg-light);border-radius:2px;margin-top:0.25rem;">
+                            <div style="height:100%;width:${c.progress || 0}%;background:var(--primary-color);border-radius:2px;"></div>
+                        </div>
+                    </div>
+                    <a href="course-detail.html?id=${c.course_id}" class="btn btn-sm btn-outline">Continue</a>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No courses in progress. <a href="learning.html">Browse courses</a></p>';
+
+            const certs = enrolled.filter(e => e.certificate).slice(0, 3);
+            document.getElementById('certificatesList').innerHTML = certs.length ? certs.map(c => `
+                <div style="display:flex;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);">
+                    <div style="width:40px;height:40px;border-radius:50%;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="bi bi-award" style="color:#8b5cf6;"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(c.course_name || 'Course')}</div>
+                        <div style="font-size:0.8rem;color:var(--text-light);">Completed ${c.completed_at ? new Date(c.completed_at).toLocaleDateString() : ''}</div>
+                    </div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No certificates yet</p>';
+        }
+
+        async function loadCommunity() {
+            let posts = [];
+            try { posts = await fetch('/api/posts?my=1', { headers: authHeaders() }).then(r => r.json()); } catch {}
+            const postList = Array.isArray(posts) ? posts : (posts.posts || []);
+
+            document.getElementById('myPosts').innerHTML = postList.slice(0, 5).length ? postList.slice(0, 5).map(p => `
+                <div style="padding:0.75rem;border-bottom:1px solid var(--border-light);">
+                    <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(p.title || p.content?.slice(0, 50) || 'Post')}</div>
+                    <div style="font-size:0.8rem;color:var(--text-light);">${p.likes || 0} likes · ${p.comments || 0} comments</div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No posts yet. <a href="create-post.html">Create your first post</a></p>';
+
+            let discussions = [];
+            try { discussions = await fetch('/api/discussions?my=1', { headers: authHeaders() }).then(r => r.json()); } catch {}
+            const discList = Array.isArray(discussions) ? discussions : (discussions.discussions || []);
+
+            document.getElementById('myDiscussions').innerHTML = discList.slice(0, 5).length ? discList.slice(0, 5).map(d => `
+                <div style="padding:0.75rem;border-bottom:1px solid var(--border-light);">
+                    <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(d.title || 'Discussion')}</div>
+                    <div style="font-size:0.8rem;color:var(--text-light);">${d.replies || 0} replies</div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No discussions yet. <a href="discussions.html">Join a discussion</a></p>';
+
+            let events = [];
+            try { events = await fetch('/api/events?upcoming=3', { headers: authHeaders() }).then(r => r.json()); } catch {}
+            const eventList = Array.isArray(events) ? events : (events.events || []);
+
+            document.getElementById('upcomingEvents').innerHTML = eventList.slice(0, 3).length ? eventList.slice(0, 3).map(e => `
+                <div style="display:flex;gap:1rem;padding:0.75rem;border-bottom:1px solid var(--border-light);">
+                    <div style="width:50px;height:50px;border-radius:8px;background:var(--primary-light);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
+                        <span style="font-size:0.65rem;color:var(--primary-color);font-weight:600;">${e.date ? new Date(e.date).toLocaleDateString('en', {month:'short'}) : ''}</span>
+                        <span style="font-size:1rem;font-weight:700;color:var(--primary-color);">${e.date ? new Date(e.date).getDate() : ''}</span>
+                    </div>
+                    <div>
+                        <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(e.title || 'Event')}</div>
+                        <div style="font-size:0.8rem;color:var(--text-light);">${e.attendees || 0} attending</div>
+                    </div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No upcoming events. <a href="events.html">Browse events</a></p>';
+        }
+
         async function loadNotifications() {
             let notifs = [];
             try { notifs = await fetch('/api/notifications', { headers: authHeaders() }).then(r => r.json()); } catch {}
@@ -314,15 +472,86 @@
         function loadSettings() {
             const user = typeof getCurrentUser === 'function' ? getCurrentUser() : {};
             document.getElementById('settingsForm').innerHTML = `
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-                    <div class="form-group"><label>Full Name</label><input type="text" class="form-input" value="${escapeHtml(user.name || '')}"></div>
-                    <div class="form-group"><label>Email</label><input type="email" class="form-input" value="${escapeHtml(user.email || '')}" disabled></div>
-                    <div class="form-group"><label>Phone</label><input type="tel" class="form-input" placeholder="+233 XX XXX XXXX"></div>
-                    <div class="form-group"><label>Location</label><input type="text" class="form-input" placeholder="City, Country"></div>
+                <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;border-bottom:1px solid var(--border-color);padding-bottom:0.5rem;">
+                    <button class="btn btn-sm settings-tab active" data-tab="profile"><i class="bi bi-person"></i> Profile</button>
+                    <button class="btn btn-sm settings-tab" data-tab="notifications"><i class="bi bi-bell"></i> Notifications</button>
+                    <button class="btn btn-sm settings-tab" data-tab="preferences"><i class="bi bi-gear"></i> Preferences</button>
                 </div>
-                <div class="form-group"><label>Default Delivery Address</label><textarea class="form-input" rows="2" placeholder="Enter your delivery address"></textarea></div>
-                <button class="btn btn-primary" style="margin-top:1rem;">Save Settings</button>
+
+                <div id="settings-profile" class="settings-panel">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                        <div class="form-group"><label>Full Name</label><input type="text" class="form-input" value="${escapeHtml(user.name || '')}"></div>
+                        <div class="form-group"><label>Email</label><input type="email" class="form-input" value="${escapeHtml(user.email || '')}" disabled></div>
+                        <div class="form-group"><label>Phone</label><input type="tel" class="form-input" placeholder="+233 XX XXX XXXX"></div>
+                        <div class="form-group"><label>Location</label><input type="text" class="form-input" placeholder="City, Country"></div>
+                    </div>
+                    <div class="form-group"><label>Bio</label><textarea class="form-input" rows="2" placeholder="Tell us about yourself..."></textarea></div>
+                    <div class="form-group"><label>Default Delivery Address</label><textarea class="form-input" rows="2" placeholder="Enter your delivery address"></textarea></div>
+                    <button class="btn btn-primary" onclick="saveSettings('profile')" style="margin-top:1rem;">Save Profile</button>
+                </div>
+
+                <div id="settings-notifications" class="settings-panel" style="display:none;">
+                    <div style="display:flex;flex-direction:column;gap:1rem;">
+                        <label style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-light);border-radius:8px;cursor:pointer;">
+                            <input type="checkbox" checked style="width:18px;height:18px;">
+                            <div><div style="font-weight:500;">Order Updates</div><div style="font-size:0.8rem;color:var(--text-light);">Get notified about order status changes</div></div>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-light);border-radius:8px;cursor:pointer;">
+                            <input type="checkbox" checked style="width:18px;height:18px;">
+                            <div><div style="font-weight:500;">New Messages</div><div style="font-size:0.8rem;color:var(--text-light);">Receive alerts for new messages</div></div>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-light);border-radius:8px;cursor:pointer;">
+                            <input type="checkbox" checked style="width:18px;height:18px;">
+                            <div><div style="font-weight:500;">Course Updates</div><div style="font-size:0.8rem;color:var(--text-light);">Notifications about enrolled courses</div></div>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-light);border-radius:8px;cursor:pointer;">
+                            <input type="checkbox" style="width:18px;height:18px;">
+                            <div><div style="font-weight:500;">Marketing Emails</div><div style="font-size:0.8rem;color:var(--text-light);">Receive tips, offers, and news</div></div>
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveSettings('notifications')" style="margin-top:1.5rem;">Save Preferences</button>
+                </div>
+
+                <div id="settings-preferences" class="settings-panel" style="display:none;">
+                    <div style="display:flex;flex-direction:column;gap:1rem;">
+                        <div class="form-group">
+                            <label>Language</label>
+                            <select class="form-input">
+                                <option value="en">English</option>
+                                <option value="tw">Twi</option>
+                                <option value="fr">French</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Currency</label>
+                            <select class="form-input">
+                                <option value="GHS">Ghanaian Cedi (GHS)</option>
+                                <option value="USD">US Dollar (USD)</option>
+                                <option value="NGN">Nigerian Naira (NGN)</option>
+                            </select>
+                        </div>
+                        <label style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-light);border-radius:8px;cursor:pointer;">
+                            <input type="checkbox" checked style="width:18px;height:18px;">
+                            <div><div style="font-weight:500;">Dark Mode</div><div style="font-size:0.8rem;color:var(--text-light);">Use dark theme</div></div>
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveSettings('preferences')" style="margin-top:1.5rem;">Save Preferences</button>
+                </div>
             `;
+
+            // Settings tabs
+            document.querySelectorAll('.settings-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.querySelectorAll('.settings-panel').forEach(p => p.style.display = 'none');
+                    document.getElementById('settings-' + tab.dataset.tab).style.display = 'block';
+                });
+            });
+        }
+
+        function saveSettings(type) {
+            showToast('Settings saved successfully!');
         }
 
         // Logout
@@ -330,6 +559,24 @@
             e.preventDefault();
             if (typeof logout === 'function') logout();
             window.location.href = '/index.html';
+        });
+
+        // Mobile navigation
+        document.querySelectorAll('.dash-mobile-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = item.dataset.section;
+                document.querySelectorAll('.dash-mobile-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                document.querySelectorAll('.dash-nav a').forEach(l => {
+                    l.classList.toggle('active', l.dataset.section === section);
+                });
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.getElementById('section-' + section).classList.add('active');
+                currentSection = section;
+                loadSection(section);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
         });
 
         initDashboard();

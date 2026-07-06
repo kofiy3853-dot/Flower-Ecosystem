@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create and publish articles on Flower Ecosystem">
+    <title>Create Article | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .article-wizard { max-width:1000px; margin:0 auto; padding:2rem; }
+        .article-header { text-align:center; margin-bottom:2rem; }
+        .article-header h1 { font-family:'Playfair Display',serif; font-size:1.8rem; margin-bottom:0.5rem; }
+        .article-header p { color:var(--text-light); font-size:0.95rem; }
+
+        /* Progress */
+        .article-progress { display:flex; justify-content:space-between; margin-bottom:2.5rem; position:relative; }
+        .article-progress::before { content:''; position:absolute; top:20px; left:40px; right:40px; height:3px; background:var(--border-color); }
+        .progress-step { display:flex; flex-direction:column; align-items:center; z-index:1; }
+        .step-num { width:40px; height:40px; border-radius:50%; background:var(--bg-white); border:3px solid var(--border-color); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:0.9rem; color:var(--text-muted); transition:all 0.3s; }
+        .progress-step.active .step-num { border-color:var(--primary-color); color:var(--primary-color); background:var(--primary-light); }
+        .progress-step.done .step-num { border-color:var(--accent-green); background:var(--accent-green); color:white; }
+        .step-text { font-size:0.72rem; color:var(--text-muted); margin-top:0.4rem; text-align:center; }
+        .progress-step.active .step-text { color:var(--primary-color); font-weight:500; }
+
+        /* Form Card */
+        .article-form-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:2rem; }
+
+        /* Steps */
+        .form-step { display:none; }
+        .form-step.active { display:block; }
+        .step-title { font-size:1.2rem; font-weight:600; margin-bottom:0.4rem; display:flex; align-items:center; gap:0.5rem; }
+        .step-title i { color:var(--primary-color); }
+        .step-desc { color:var(--text-light); font-size:0.9rem; margin-bottom:1.5rem; }
+
+        /* Form Elements */
+        .form-group { margin-bottom:1.25rem; }
+        .form-label { display:block; font-weight:500; margin-bottom:0.4rem; font-size:0.9rem; }
+        .form-label .required { color:#ef4444; }
+        .form-hint { font-size:0.8rem; color:var(--text-muted); margin-top:0.2rem; }
+        .form-input, .form-select, .form-textarea { width:100%; padding:0.7rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.95rem; transition:border-color 0.2s; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline:none; border-color:var(--primary-color); box-shadow:0 0 0 3px var(--primary-light); }
+        .form-textarea { min-height:100px; resize:vertical; }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+
+        /* Tags Input */
+        .tags-container { display:flex; flex-wrap:wrap; gap:0.4rem; padding:0.5rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); min-height:44px; cursor:text; }
+        .tags-container:focus-within { border-color:var(--primary-color); box-shadow:0 0 0 3px var(--primary-light); }
+        .tag { display:flex; align-items:center; gap:0.3rem; padding:0.25rem 0.6rem; background:var(--primary-light); color:var(--primary-color); border-radius:4px; font-size:0.82rem; font-weight:500; }
+        .tag .remove { cursor:pointer; opacity:0.7; }
+        .tag .remove:hover { opacity:1; }
+        .tags-input { border:none; outline:none; flex:1; min-width:100px; font-size:0.9rem; }
+
+        /* Rich Editor */
+        .editor-container { border:1px solid var(--border-color); border-radius:var(--radius-sm); overflow:hidden; }
+        .editor-toolbar { padding:0.5rem; background:var(--bg-light); border-bottom:1px solid var(--border-color); display:flex; gap:0.25rem; flex-wrap:wrap; }
+        .editor-btn { padding:0.4rem 0.6rem; border:none; background:none; border-radius:4px; cursor:pointer; color:var(--text-light); transition:all 0.15s; }
+        .editor-btn:hover { background:var(--bg-white); color:var(--text-main); }
+        .editor-btn.active { background:var(--primary-color); color:white; }
+        .editor-separator { width:1px; background:var(--border-color); margin:0 0.25rem; }
+        .editor-content { min-height:400px; padding:1.5rem; font-size:1rem; line-height:1.7; }
+        .editor-content:focus { outline:none; }
+        .editor-content h1 { font-size:1.8rem; margin:1.5rem 0 0.75rem; }
+        .editor-content h2 { font-size:1.4rem; margin:1.25rem 0 0.5rem; }
+        .editor-content h3 { font-size:1.15rem; margin:1rem 0 0.5rem; }
+        .editor-content p { margin-bottom:1rem; }
+        .editor-content ul, .editor-content ol { margin:0.5rem 0 1rem 1.5rem; }
+        .editor-content blockquote { border-left:4px solid var(--primary-color); padding-left:1rem; margin:1rem 0; color:var(--text-light); font-style:italic; }
+        .editor-content img { max-width:100%; border-radius:var(--radius-sm); margin:1rem 0; }
+
+        /* Upload */
+        .upload-area { border:2px dashed var(--border-color); border-radius:var(--radius-md); padding:2rem; text-align:center; cursor:pointer; transition:all 0.2s; }
+        .upload-area:hover { border-color:var(--primary-color); background:var(--primary-light); }
+        .upload-area i { font-size:2rem; color:var(--text-muted); margin-bottom:0.5rem; display:block; }
+        .upload-area p { color:var(--text-light); font-size:0.9rem; }
+        .upload-preview { position:relative; margin-top:1rem; }
+        .upload-preview img { width:100%; max-height:250px; object-fit:cover; border-radius:var(--radius-sm); }
+        .upload-preview .remove-btn { position:absolute; top:0.5rem; right:0.5rem; background:rgba(0,0,0,0.6); color:white; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; }
+
+        /* Slug Input */
+        .slug-input { display:flex; align-items:center; gap:0.5rem; }
+        .slug-prefix { color:var(--text-muted); font-size:0.9rem; white-space:nowrap; }
+
+        /* Link Items */
+        .link-item { display:flex; gap:0.75rem; padding:0.75rem; background:var(--bg-light); border-radius:var(--radius-sm); margin-bottom:0.5rem; align-items:center; }
+        .link-item img { width:50px; height:50px; border-radius:6px; object-fit:cover; }
+        .link-item .info { flex:1; }
+        .link-item .name { font-weight:500; font-size:0.9rem; }
+        .link-item .type { font-size:0.78rem; color:var(--text-light); }
+
+        /* Navigation */
+        .article-nav { display:flex; justify-content:space-between; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border-color); }
+        .article-nav .btn { min-width:130px; }
+
+        /* Visibility Options */
+        .visibility-options { display:flex; flex-wrap:wrap; gap:0.75rem; }
+        .visibility-option { display:flex; align-items:center; gap:0.5rem; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s; }
+        .visibility-option:hover { border-color:var(--primary-color); }
+        .visibility-option.selected { border-color:var(--primary-color); background:var(--primary-light); }
+        .visibility-option input { display:none; }
+
+        /* Schedule */
+        .schedule-toggle { display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem; }
+        .toggle-switch { position:relative; width:48px; height:26px; background:var(--border-color); border-radius:13px; cursor:pointer; transition:all 0.2s; }
+        .toggle-switch.active { background:var(--primary-color); }
+        .toggle-switch::after { content:''; position:absolute; top:3px; left:3px; width:20px; height:20px; background:white; border-radius:50%; transition:all 0.2s; }
+        .toggle-switch.active::after { left:25px; }
+
+        /* Sidebar */
+        .article-sidebar { position:sticky; top:100px; }
+        .sidebar-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; margin-bottom:1rem; }
+        .sidebar-card h3 { font-size:0.95rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+        .sidebar-card h3 i { color:var(--primary-color); }
+        .summary-row { display:flex; justify-content:space-between; padding:0.4rem 0; border-bottom:1px solid var(--border-light); font-size:0.85rem; }
+        .summary-row:last-child { border-bottom:none; }
+        .summary-row .label { color:var(--text-light); }
+        .summary-row .value { font-weight:500; }
+
+        @media(max-width:768px) {
+            .form-row { grid-template-columns:1fr; }
+            .article-wizard { padding:1rem; }
+            .progress-step .step-text { display:none; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div class="article-wizard">
+        <div class="article-header">
+            <h1><i class="bi bi-pencil-square" style="color:var(--primary-color)"></i> Create Article</h1>
+            <p>Share your knowledge with the Flower Ecosystem community</p>
+        </div>
+
+        <!-- Progress -->
+        <div class="article-progress">
+            <div class="progress-step active" data-step="1">
+                <div class="step-num">1</div>
+                <span class="step-text">Basic Info</span>
+            </div>
+            <div class="progress-step" data-step="2">
+                <div class="step-num">2</div>
+                <span class="step-text">Image</span>
+            </div>
+            <div class="progress-step" data-step="3">
+                <div class="step-num">3</div>
+                <span class="step-text">Content</span>
+            </div>
+            <div class="progress-step" data-step="4">
+                <div class="step-num">4</div>
+                <span class="step-text">SEO</span>
+            </div>
+            <div class="progress-step" data-step="5">
+                <div class="step-num">5</div>
+                <span class="step-text">Links</span>
+            </div>
+            <div class="progress-step" data-step="6">
+                <div class="step-num">6</div>
+                <span class="step-text">Publish</span>
+            </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 280px; gap:1.5rem;">
+            <!-- Form -->
+            <div class="article-form-card">
+                <!-- Step 1: Basic Information -->
+                <div class="form-step active" data-step="1">
+                    <h2 class="step-title"><i class="bi bi-info-circle"></i> Basic Information</h2>
+                    <p class="step-desc">Start with the fundamentals of your article</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Article Title <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="articleTitle" placeholder="e.g., The Complete Guide to Rose Care" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Subtitle</label>
+                        <input type="text" class="form-input" id="articleSubtitle" placeholder="A brief tagline for your article">
+                        <p class="form-hint">Optional. Appears below the title.</p>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Category <span class="required">*</span></label>
+                            <select class="form-select" id="articleCategory" required>
+                                <option value="">Select category</option>
+                                <option value="flower-care">Flower Care</option>
+                                <option value="floral-design">Floral Design</option>
+                                <option value="flower-farming">Flower Farming</option>
+                                <option value="gardening">Gardening</option>
+                                <option value="business">Business</option>
+                                <option value="wedding-flowers">Wedding Flowers</option>
+                                <option value="plant-diseases">Plant Diseases</option>
+                                <option value="indoor-plants">Indoor Plants</option>
+                                <option value="sustainability">Sustainability</option>
+                                <option value="industry-news">Industry News</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Author</label>
+                            <div style="display:flex;align-items:center;gap:0.5rem;padding:0.7rem;background:var(--bg-light);border-radius:var(--radius-sm);">
+                                <img src="https://ui-avatars.com/api/?name=Author&background=ec4899&color=fff" alt="" style="width:28px;height:28px;border-radius:50%;">
+                                <span id="authorName">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Tags</label>
+                        <div class="tags-container" id="tagsContainer" onclick="document.getElementById('tagsInput').focus()">
+                            <input type="text" class="tags-input" id="tagsInput" placeholder="Type and press Enter to add tags">
+                        </div>
+                        <p class="form-hint">Press Enter or comma to add a tag. Max 10 tags.</p>
+                    </div>
+                </div>
+
+                <!-- Step 2: Featured Image -->
+                <div class="form-step" data-step="2">
+                    <h2 class="step-title"><i class="bi bi-image"></i> Featured Image</h2>
+                    <p class="step-desc">Add a cover image for your article</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Cover Image <span class="required">*</span></label>
+                        <div class="upload-area" id="coverUploadArea" onclick="document.getElementById('coverInput').click()">
+                            <i class="bi bi-cloud-arrow-up"></i>
+                            <p><strong>Click to upload</strong> or drag and drop</p>
+                            <p style="font-size:0.8rem;">Recommended: 1200 × 630 pixels (16:9)</p>
+                        </div>
+                        <input type="file" id="coverInput" accept="image/*" style="display:none;" onchange="handleCoverUpload(this)">
+                        <div id="coverPreview" class="upload-preview" style="display:none;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Image Caption</label>
+                        <input type="text" class="form-input" id="imageCaption" placeholder="Describe the image">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Image Credit</label>
+                        <input type="text" class="form-input" id="imageCredit" placeholder="e.g., Photo by John Doe">
+                        <p class="form-hint">Optional. Credit the photographer or source.</p>
+                    </div>
+                </div>
+
+                <!-- Step 3: Article Content -->
+                <div class="form-step" data-step="3">
+                    <h2 class="step-title"><i class="bi bi-file-text"></i> Article Content</h2>
+                    <p class="step-desc">Write your article using the rich text editor</p>
+
+                    <div class="editor-container">
+                        <div class="editor-toolbar">
+                            <button type="button" class="editor-btn" onclick="execCmd('formatBlock', 'h1')" title="Heading 1"><b>H1</b></button>
+                            <button type="button" class="editor-btn" onclick="execCmd('formatBlock', 'h2')" title="Heading 2"><b>H2</b></button>
+                            <button type="button" class="editor-btn" onclick="execCmd('formatBlock', 'h3')" title="Heading 3"><b>H3</b></button>
+                            <div class="editor-separator"></div>
+                            <button type="button" class="editor-btn" onclick="execCmd('bold')" title="Bold"><i class="bi bi-type-bold"></i></button>
+                            <button type="button" class="editor-btn" onclick="execCmd('italic')" title="Italic"><i class="bi bi-type-italic"></i></button>
+                            <button type="button" class="editor-btn" onclick="execCmd('underline')" title="Underline"><i class="bi bi-type-underline"></i></button>
+                            <div class="editor-separator"></div>
+                            <button type="button" class="editor-btn" onclick="execCmd('insertUnorderedList')" title="Bullet List"><i class="bi bi-list-ul"></i></button>
+                            <button type="button" class="editor-btn" onclick="execCmd('insertOrderedList')" title="Numbered List"><i class="bi bi-list-ol"></i></button>
+                            <div class="editor-separator"></div>
+                            <button type="button" class="editor-btn" onclick="insertLink()" title="Insert Link"><i class="bi bi-link-45deg"></i></button>
+                            <button type="button" class="editor-btn" onclick="insertImage()" title="Insert Image"><i class="bi bi-image"></i></button>
+                            <button type="button" class="editor-btn" onclick="insertQuote()" title="Blockquote"><i class="bi bi-quote"></i></button>
+                            <div class="editor-separator"></div>
+                            <button type="button" class="editor-btn" onclick="insertCallout('tip')" title="Tip Callout"><i class="bi bi-lightbulb"></i></button>
+                            <button type="button" class="editor-btn" onclick="insertCallout('warning')" title="Warning Callout"><i class="bi bi-exclamation-triangle"></i></button>
+                        </div>
+                        <div class="editor-content" id="editorContent" contenteditable="true" placeholder="Start writing your article..."></div>
+                    </div>
+                    <p class="form-hint" style="margin-top:0.5rem;">Estimated reading time: <span id="readTime">0</span> min</p>
+                </div>
+
+                <!-- Step 4: SEO & Discoverability -->
+                <div class="form-step" data-step="4">
+                    <h2 class="step-title"><i class="bi bi-search"></i> SEO & Discoverability</h2>
+                    <p class="step-desc">Optimize your article for search engines and discovery</p>
+
+                    <div class="form-group">
+                        <label class="form-label">URL Slug <span class="required">*</span></label>
+                        <div class="slug-input">
+                            <span class="slug-prefix">flower-ecosystem.com/articles/</span>
+                            <input type="text" class="form-input" id="urlSlug" placeholder="your-article-slug">
+                        </div>
+                        <p class="form-hint">Auto-generated from title. Only lowercase letters, numbers, and hyphens.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Meta Description <span class="required">*</span></label>
+                        <textarea class="form-textarea" id="metaDesc" rows="3" maxlength="160" placeholder="A brief description for search results..."></textarea>
+                        <p class="form-hint"><span id="metaCharCount">0</span>/160 characters. Appears in Google search results.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Keywords</label>
+                        <input type="text" class="form-input" id="keywords" placeholder="e.g., rose care, flower maintenance, gardening tips">
+                        <p class="form-hint">Comma-separated keywords for SEO.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Reading Time</label>
+                        <div style="display:flex;align-items:center;gap:0.75rem;">
+                            <input type="number" class="form-input" id="readTimeManual" style="width:100px;" placeholder="Auto">
+                            <span style="color:var(--text-light);font-size:0.9rem;">minutes</span>
+                            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.85rem;color:var(--text-light);">
+                                <input type="checkbox" id="autoReadTime" checked> Auto-calculate
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Related Content -->
+                <div class="form-step" data-step="5">
+                    <h2 class="step-title"><i class="bi bi-link-45deg"></i> Related Content</h2>
+                    <p class="step-desc">Link related courses, products, events, and articles</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Related Courses</label>
+                        <div id="relatedCourses">
+                            <p style="color:var(--text-light);font-size:0.9rem;padding:1rem;background:var(--bg-light);border-radius:var(--radius-sm);text-align:center;">
+                                No courses linked yet
+                            </p>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline" style="margin-top:0.5rem;" onclick="openLinkModal('course')">
+                            <i class="bi bi-plus"></i> Link Course
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Related Products</label>
+                        <div id="relatedProducts">
+                            <p style="color:var(--text-light);font-size:0.9rem;padding:1rem;background:var(--bg-light);border-radius:var(--radius-sm);text-align:center;">
+                                No products linked yet
+                            </p>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline" style="margin-top:0.5rem;" onclick="openLinkModal('product')">
+                            <i class="bi bi-plus"></i> Link Product
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Related Events</label>
+                        <div id="relatedEvents">
+                            <p style="color:var(--text-light);font-size:0.9rem;padding:1rem;background:var(--bg-light);border-radius:var(--radius-sm);text-align:center;">
+                                No events linked yet
+                            </p>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline" style="margin-top:0.5rem;" onclick="openLinkModal('event')">
+                            <i class="bi bi-plus"></i> Link Event
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Related Articles</label>
+                        <div id="relatedArticles">
+                            <p style="color:var(--text-light);font-size:0.9rem;padding:1rem;background:var(--bg-light);border-radius:var(--radius-sm);text-align:center;">
+                                No articles linked yet
+                            </p>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline" style="margin-top:0.5rem;" onclick="openLinkModal('article')">
+                            <i class="bi bi-plus"></i> Link Article
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 6: Publishing -->
+                <div class="form-step" data-step="6">
+                    <h2 class="step-title"><i class="bi bi-send"></i> Publishing</h2>
+                    <p class="step-desc">Configure visibility and publish your article</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Visibility <span class="required">*</span></label>
+                        <div class="visibility-options">
+                            <label class="visibility-option selected">
+                                <input type="radio" name="visibility" value="public" checked>
+                                <i class="bi bi-globe"></i>
+                                <div>
+                                    <div style="font-weight:500;">Public</div>
+                                    <div style="font-size:0.78rem;color:var(--text-light);">Visible to everyone</div>
+                                </div>
+                            </label>
+                            <label class="visibility-option">
+                                <input type="radio" name="visibility" value="members">
+                                <i class="bi bi-people"></i>
+                                <div>
+                                    <div style="font-weight:500;">Members Only</div>
+                                    <div style="font-size:0.78rem;color:var(--text-light);">Logged-in users</div>
+                                </div>
+                            </label>
+                            <label class="visibility-option">
+                                <input type="radio" name="visibility" value="students">
+                                <i class="bi bi-mortarboard"></i>
+                                <div>
+                                    <div style="font-weight:500;">Students Only</div>
+                                    <div style="font-size:0.78rem;color:var(--text-light);">Enrolled students</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Schedule Publication</label>
+                        <div class="schedule-toggle">
+                            <div class="toggle-switch" id="scheduleToggle" onclick="toggleSchedule()"></div>
+                            <span>Schedule for later</span>
+                        </div>
+                        <div id="scheduleFields" style="display:none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Publish Date</label>
+                                    <input type="date" class="form-input" id="publishDate">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Publish Time</label>
+                                    <input type="time" class="form-input" id="publishTime">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+                            <div style="padding:0.75rem 1rem;background:var(--bg-light);border-radius:var(--radius-sm);font-size:0.9rem;">
+                                <i class="bi bi-file-earmark" style="color:var(--text-muted);"></i> Draft
+                            </div>
+                            <div style="padding:0.75rem 1rem;background:var(--bg-light);border-radius:var(--radius-sm);font-size:0.9rem;">
+                                <i class="bi bi-clock" style="color:var(--accent-gold);"></i> Pending Review
+                            </div>
+                            <div style="padding:0.75rem 1rem;background:var(--bg-light);border-radius:var(--radius-sm);font-size:0.9rem;">
+                                <i class="bi bi-check-circle" style="color:var(--accent-green);"></i> Published
+                            </div>
+                        </div>
+                        <p class="form-hint" style="margin-top:0.5rem;">Articles may be reviewed before publishing.</p>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="article-nav">
+                    <button type="button" class="btn btn-outline" id="prevBtn" onclick="changeStep(-1)" style="display:none;">
+                        <i class="bi bi-arrow-left"></i> Previous
+                    </button>
+                    <div style="flex:1;"></div>
+                    <button type="button" class="btn btn-outline" onclick="saveDraft()" style="margin-right:0.75rem;">
+                        <i class="bi bi-save"></i> Save Draft
+                    </button>
+                    <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">
+                        Next <i class="bi bi-arrow-right"></i>
+                    </button>
+                    <button type="button" class="btn btn-primary" id="publishBtn" onclick="publishArticle()" style="display:none;">
+                        <i class="bi bi-send"></i> Publish
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="article-sidebar">
+                <div class="sidebar-card">
+                    <h3><i class="bi bi-clipboard-data"></i> Article Summary</h3>
+                    <div class="summary-row">
+                        <span class="label">Title</span>
+                        <span class="value" id="summaryTitle">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="label">Category</span>
+                        <span class="value" id="summaryCategory">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="label">Tags</span>
+                        <span class="value" id="summaryTags">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="label">Read Time</span>
+                        <span class="value" id="summaryReadTime">0 min</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="label">Status</span>
+                        <span class="value" style="color:var(--accent-gold);">Draft</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3><i class="bi bi-lightbulb"></i> Writing Tips</h3>
+                    <ul style="font-size:0.85rem;color:var(--text-light);padding-left:1.25rem;margin:0;">
+                        <li style="margin-bottom:0.5rem;">Use clear, descriptive headings</li>
+                        <li style="margin-bottom:0.5rem;">Break content into scannable sections</li>
+                        <li style="margin-bottom:0.5rem;">Include images to illustrate points</li>
+                        <li style="margin-bottom:0.5rem;">Add related products and courses</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script>
+        let currentStep = 1;
+        const totalSteps = 6;
+        let tags = [];
+        let coverUploaded = false;
+        let linkedItems = { courses: [], products: [], events: [], articles: [] };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHeaderFooter();
+            setupEditor();
+            setupTags();
+            setupSlugGenerator();
+            setupMetaCounter();
+            loadUserInfo();
+        });
+
+        function loadHeaderFooter() {
+            fetch('components/header.html').then(r => r.text()).then(h => document.getElementById('header-container').innerHTML = h);
+            fetch('components/footer.html').then(r => r.text()).then(h => document.getElementById('footer-container').innerHTML = h);
+        }
+
+        function loadUserInfo() {
+            const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+            if (user) {
+                document.getElementById('authorName').textContent = user.name || user.email || 'Author';
+            }
+        }
+
+        // ─── Step Navigation ──────────────────────────────────────────
+        function changeStep(dir) {
+            const newStep = currentStep + dir;
+            if (newStep < 1 || newStep > totalSteps) return;
+            if (dir > 0 && !validateStep(currentStep)) return;
+
+            currentStep = newStep;
+            updateStepDisplay();
+        }
+
+        function updateStepDisplay() {
+            document.querySelectorAll('.form-step').forEach(s => {
+                s.classList.toggle('active', parseInt(s.dataset.step) === currentStep);
+            });
+
+            document.querySelectorAll('.progress-step').forEach(s => {
+                const num = parseInt(s.dataset.step);
+                s.classList.remove('active', 'done');
+                if (num === currentStep) s.classList.add('active');
+                else if (num < currentStep) s.classList.add('done');
+            });
+
+            document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'flex';
+            document.getElementById('nextBtn').style.display = currentStep === totalSteps ? 'none' : 'flex';
+            document.getElementById('publishBtn').style.display = currentStep === totalSteps ? 'flex' : 'none';
+
+            updateSidebar();
+        }
+
+        function validateStep(step) {
+            if (step === 1) {
+                const title = document.getElementById('articleTitle').value;
+                const category = document.getElementById('articleCategory').value;
+                if (!title || !category) {
+                    alert('Please fill in the title and category.');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // ─── Rich Text Editor ─────────────────────────────────────────
+        function setupEditor() {
+            const editor = document.getElementById('editorContent');
+            editor.addEventListener('input', () => {
+                updateReadTime();
+                updateSidebar();
+            });
+            editor.addEventListener('paste', (e) => {
+                e.preventDefault();
+                document.execCommand('insertText', false, e.clipboardData.getData('text/plain'));
+            });
+        }
+
+        function execCmd(cmd, val) {
+            document.execCommand(cmd, false, val || null);
+            document.getElementById('editorContent').focus();
+        }
+
+        function insertLink() {
+            const url = prompt('Enter URL:');
+            if (url) document.execCommand('createLink', false, url);
+        }
+
+        function insertImage() {
+            const url = prompt('Enter image URL:');
+            if (url) document.execCommand('insertImage', false, url);
+        }
+
+        function insertQuote() {
+            document.execCommand('formatBlock', false, 'blockquote');
+        }
+
+        function insertCallout(type) {
+            const editor = document.getElementById('editorContent');
+            const color = type === 'tip' ? '#10b981' : '#f59e0b';
+            const icon = type === 'tip' ? 'bi-lightbulb' : 'bi-exclamation-triangle';
+            const html = `<div style="border-left:4px solid ${color};padding:1rem;margin:1rem 0;background:${color}10;border-radius:0 8px 8px 0;"><i class="bi ${icon}" style="color:${color};margin-right:0.5rem;"></i><strong>${type === 'tip' ? 'Tip' : 'Warning'}:</strong> Enter your ${type} here...</div><p><br></p>`;
+            document.execCommand('insertHTML', false, html);
+        }
+
+        function updateReadTime() {
+            const text = document.getElementById('editorContent').innerText;
+            const words = text.trim().split(/\s+/).length;
+            const minutes = Math.max(1, Math.ceil(words / 200));
+            document.getElementById('readTime').textContent = minutes;
+            document.getElementById('summaryReadTime').textContent = minutes + ' min';
+        }
+
+        // ─── Tags ─────────────────────────────────────────────────────
+        function setupTags() {
+            const input = document.getElementById('tagsInput');
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    addTag(input.value.trim());
+                    input.value = '';
+                }
+                if (e.key === 'Backspace' && !input.value && tags.length) {
+                    removeTag(tags.length - 1);
+                }
+            });
+        }
+
+        function addTag(tag) {
+            tag = tag.replace(/[^a-zA-Z0-9- ]/g, '').trim();
+            if (!tag || tags.length >= 10 || tags.includes(tag)) return;
+            tags.push(tag);
+            renderTags();
+            updateSidebar();
+        }
+
+        function removeTag(index) {
+            tags.splice(index, 1);
+            renderTags();
+            updateSidebar();
+        }
+
+        function renderTags() {
+            const container = document.getElementById('tagsContainer');
+            const input = document.getElementById('tagsInput');
+            container.innerHTML = '';
+            tags.forEach((tag, i) => {
+                const el = document.createElement('span');
+                el.className = 'tag';
+                el.innerHTML = `#${tag} <span class="remove" onclick="removeTag(${i})">&times;</span>`;
+                container.appendChild(el);
+            });
+            container.appendChild(input);
+        }
+
+        // ─── Slug Generator ───────────────────────────────────────────
+        function setupSlugGenerator() {
+            document.getElementById('articleTitle').addEventListener('input', function() {
+                const slug = this.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                document.getElementById('urlSlug').value = slug;
+            });
+        }
+
+        // ─── Meta Counter ─────────────────────────────────────────────
+        function setupMetaCounter() {
+            document.getElementById('metaDesc').addEventListener('input', function() {
+                document.getElementById('metaCharCount').textContent = this.value.length;
+            });
+        }
+
+        // ─── Cover Upload ─────────────────────────────────────────────
+        function handleCoverUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const preview = document.getElementById('coverPreview');
+            preview.innerHTML = `
+                <img src="${URL.createObjectURL(file)}" alt="Cover">
+                <button class="remove-btn" onclick="removeCover()"><i class="bi bi-x"></i></button>
+            `;
+            preview.style.display = 'block';
+            coverUploaded = true;
+        }
+
+        function removeCover() {
+            document.getElementById('coverPreview').style.display = 'none';
+            document.getElementById('coverInput').value = '';
+            coverUploaded = false;
+        }
+
+        // ─── Schedule Toggle ──────────────────────────────────────────
+        function toggleSchedule() {
+            const toggle = document.getElementById('scheduleToggle');
+            const fields = document.getElementById('scheduleFields');
+            toggle.classList.toggle('active');
+            fields.style.display = toggle.classList.contains('active') ? 'block' : 'none';
+        }
+
+        // ─── Visibility Options ───────────────────────────────────────
+        document.querySelectorAll('.visibility-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                document.querySelectorAll('.visibility-option').forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+                opt.querySelector('input').checked = true;
+            });
+        });
+
+        // ─── Link Modal ───────────────────────────────────────────────
+        function openLinkModal(type) {
+            const id = prompt(`Enter ${type} ID to link:`);
+            if (!id) return;
+
+            const names = { course: 'Course', product: 'Product', event: 'Event', article: 'Article' };
+            const item = { id, name: `${names[type]} ${id}`, type };
+
+            const container = document.getElementById('related' + type.charAt(0).toUpperCase() + type.slice(1) + 's');
+            if (container.querySelector('p')) container.innerHTML = '';
+
+            const div = document.createElement('div');
+            div.className = 'link-item';
+            div.innerHTML = `
+                <div style="width:50px;height:50px;background:var(--primary-light);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-link-45deg" style="color:var(--primary-color);"></i>
+                </div>
+                <div class="info">
+                    <div class="name">${item.name}</div>
+                    <div class="type">${item.type}</div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline" onclick="this.closest('.link-item').remove()">Remove</button>
+            `;
+            container.appendChild(div);
+            linkedItems[type + 's'].push(item);
+        }
+
+        // ─── Sidebar Update ───────────────────────────────────────────
+        function updateSidebar() {
+            const title = document.getElementById('articleTitle').value || '-';
+            const category = document.getElementById('articleCategory');
+            const catText = category?.options[category.selectedIndex]?.text || '-';
+            const readTime = document.getElementById('readTime').textContent;
+
+            document.getElementById('summaryTitle').textContent = title;
+            document.getElementById('summaryCategory').textContent = catText;
+            document.getElementById('summaryTags').textContent = tags.length ? tags.map(t => '#' + t).join(' ') : '-';
+            document.getElementById('summaryReadTime').textContent = readTime + ' min';
+        }
+
+        // ─── Save & Publish ───────────────────────────────────────────
+        function saveDraft() {
+            const data = collectData();
+            data.status = 'draft';
+            console.log('Saving draft:', data);
+            alert('Article saved as draft!');
+        }
+
+        function publishArticle() {
+            if (!validateStep(1)) return;
+            const data = collectData();
+            data.status = 'published';
+            console.log('Publishing:', data);
+            alert('Article published successfully!');
+            window.location.href = 'articles.html';
+        }
+
+        function collectData() {
+            return {
+                title: document.getElementById('articleTitle').value,
+                subtitle: document.getElementById('articleSubtitle').value,
+                category: document.getElementById('articleCategory').value,
+                tags,
+                content: document.getElementById('editorContent').innerHTML,
+                slug: document.getElementById('urlSlug').value,
+                metaDescription: document.getElementById('metaDesc').value,
+                keywords: document.getElementById('keywords').value,
+                visibility: document.querySelector('input[name="visibility"]:checked')?.value,
+                related: linkedItems
+            };
+        }
+    </script>
+</body>
+</html>

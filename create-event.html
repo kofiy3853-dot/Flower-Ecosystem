@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create and manage floral events, workshops, webinars, and community gatherings on Flower Ecosystem.">
+    <title>Create Event | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* ─── Wizard Layout ───────────────────────────────────────── */
+        .wizard-container { max-width:1200px; margin:0 auto; padding:2rem; }
+        .wizard-header { text-align:center; margin-bottom:2rem; }
+        .wizard-header h1 { font-family:'Playfair Display',serif; font-size:2rem; margin-bottom:0.5rem; }
+        .wizard-header p { color:var(--text-light); }
+
+        /* ─── Progress Bar ────────────────────────────────────────── */
+        .wizard-progress { margin-bottom:2.5rem; }
+        .progress-steps { display:flex; justify-content:space-between; position:relative; margin-bottom:0.5rem; }
+        .progress-steps::before { content:''; position:absolute; top:20px; left:0; right:0; height:3px; background:var(--border-color); z-index:0; }
+        .progress-step { display:flex; flex-direction:column; align-items:center; position:relative; z-index:1; flex:1; }
+        .step-circle { width:40px; height:40px; border-radius:50%; background:var(--bg-white); border:3px solid var(--border-color); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:0.9rem; color:var(--text-muted); transition:all 0.3s; }
+        .step-circle.active { border-color:var(--primary-color); color:var(--primary-color); background:var(--primary-light); }
+        .step-circle.completed { border-color:var(--accent-green); background:var(--accent-green); color:white; }
+        .step-label { font-size:0.75rem; color:var(--text-muted); margin-top:0.5rem; text-align:center; white-space:nowrap; }
+        .step-label.active { color:var(--primary-color); font-weight:500; }
+
+        /* ─── Form Layout ─────────────────────────────────────────── */
+        .wizard-body { display:grid; grid-template-columns:1fr 320px; gap:2rem; }
+        .wizard-form { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:2rem; }
+        .wizard-sidebar { position:sticky; top:100px; align-self:start; }
+
+        /* ─── Form Sections ───────────────────────────────────────── */
+        .form-step { display:none; }
+        .form-step.active { display:block; }
+        .step-title { font-size:1.3rem; font-weight:600; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.5rem; }
+        .step-title i { color:var(--primary-color); }
+        .step-description { color:var(--text-light); font-size:0.9rem; margin-bottom:1.5rem; }
+
+        /* ─── Form Groups ─────────────────────────────────────────── */
+        .form-group { margin-bottom:1.5rem; }
+        .form-label { display:block; font-weight:500; margin-bottom:0.5rem; font-size:0.9rem; }
+        .form-label .required { color:#ef4444; }
+        .form-hint { font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem; }
+        .form-input, .form-select, .form-textarea { width:100%; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.95rem; transition:border-color 0.2s; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline:none; border-color:var(--primary-color); box-shadow:0 0 0 3px var(--primary-light); }
+        .form-textarea { min-height:120px; resize:vertical; }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+        .form-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+
+        /* ─── Radio & Checkboxes ──────────────────────────────────── */
+        .radio-group, .checkbox-group { display:flex; flex-wrap:wrap; gap:0.75rem; }
+        .radio-option, .checkbox-option { display:flex; align-items:center; gap:0.5rem; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s; }
+        .radio-option:hover, .checkbox-option:hover { border-color:var(--primary-color); }
+        .radio-option.selected, .checkbox-option.selected { border-color:var(--primary-color); background:var(--primary-light); }
+        .radio-option input, .checkbox-option input { display:none; }
+        .radio-dot { width:18px; height:18px; border-radius:50%; border:2px solid var(--border-color); display:flex; align-items:center; justify-content:center; }
+        .radio-option.selected .radio-dot { border-color:var(--primary-color); }
+        .radio-option.selected .radio-dot::after { content:''; width:10px; height:10px; border-radius:50%; background:var(--primary-color); }
+        .checkmark { width:18px; height:18px; border-radius:4px; border:2px solid var(--border-color); display:flex; align-items:center; justify-content:center; }
+        .checkbox-option.selected .checkmark { border-color:var(--primary-color); background:var(--primary-color); }
+        .checkbox-option.selected .checkmark::after { content:'✓'; color:white; font-size:0.7rem; }
+
+        /* ─── Upload Area ─────────────────────────────────────────── */
+        .upload-area { border:2px dashed var(--border-color); border-radius:var(--radius-md); padding:2rem; text-align:center; cursor:pointer; transition:all 0.2s; }
+        .upload-area:hover { border-color:var(--primary-color); background:var(--primary-light); }
+        .upload-area i { font-size:2rem; color:var(--text-muted); margin-bottom:0.5rem; }
+        .upload-area p { color:var(--text-light); font-size:0.9rem; }
+        .upload-preview { position:relative; margin-top:1rem; }
+        .upload-preview img { width:100%; max-height:200px; object-fit:cover; border-radius:var(--radius-sm); }
+        .upload-preview .remove-btn { position:absolute; top:0.5rem; right:0.5rem; background:rgba(0,0,0,0.6); color:white; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; }
+
+        /* ─── Dynamic Lists ───────────────────────────────────────── */
+        .dynamic-list { display:flex; flex-direction:column; gap:0.5rem; }
+        .list-item { display:flex; gap:0.5rem; align-items:center; }
+        .list-item input { flex:1; }
+        .list-item .remove-btn { background:none; border:none; color:#ef4444; cursor:pointer; padding:0.5rem; }
+
+        /* ─── Sidebar Card ────────────────────────────────────────── */
+        .sidebar-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem; margin-bottom:1rem; }
+        .sidebar-card h3 { font-size:0.95rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+        .sidebar-card h3 i { color:var(--primary-color); }
+        .summary-item { display:flex; justify-content:space-between; padding:0.5rem 0; border-bottom:1px solid var(--border-light); font-size:0.88rem; }
+        .summary-item:last-child { border-bottom:none; }
+        .summary-item .label { color:var(--text-light); }
+        .summary-item .value { font-weight:500; }
+
+        /* ─── Navigation Buttons ──────────────────────────────────── */
+        .wizard-nav { display:flex; justify-content:space-between; margin-top:2rem; padding-top:1.5rem; border-top:1px solid var(--border-color); }
+        .wizard-nav .btn { min-width:140px; }
+
+        /* ─── Time Slots ──────────────────────────────────────────── */
+        .time-slot { display:flex; align-items:center; gap:1rem; padding:1rem; background:var(--bg-light); border-radius:var(--radius-sm); margin-bottom:0.75rem; }
+        .time-slot .time { font-weight:500; min-width:100px; }
+        .time-slot .activity { flex:1; }
+
+        /* ─── Speaker Card ────────────────────────────────────────── */
+        .speaker-card { display:flex; gap:1rem; padding:1rem; background:var(--bg-light); border-radius:var(--radius-sm); margin-bottom:0.75rem; }
+        .speaker-card img { width:60px; height:60px; border-radius:50%; object-fit:cover; }
+        .speaker-card .info { flex:1; }
+        .speaker-card .name { font-weight:500; }
+        .speaker-card .role { font-size:0.85rem; color:var(--text-light); }
+
+        /* ─── Checklist ───────────────────────────────────────────── */
+        .checklist-item { display:flex; align-items:center; gap:0.75rem; padding:0.75rem; border-radius:var(--radius-sm); margin-bottom:0.5rem; }
+        .checklist-item.complete { background:rgba(16,185,129,0.1); }
+        .checklist-item.incomplete { background:var(--bg-light); }
+        .checklist-item i { font-size:1.2rem; }
+        .checklist-item.complete i { color:var(--accent-green); }
+        .checklist-item.incomplete i { color:var(--text-muted); }
+
+        /* ─── Product Card ────────────────────────────────────────── */
+        .product-card { display:flex; gap:1rem; padding:1rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); margin-bottom:0.75rem; }
+        .product-card img { width:60px; height:60px; border-radius:var(--radius-sm); object-fit:cover; }
+        .product-card .info { flex:1; }
+        .product-card .name { font-weight:500; font-size:0.9rem; }
+        .product-card .price { color:var(--primary-color); font-weight:600; }
+
+        /* ─── Responsive ──────────────────────────────────────────── */
+        @media(max-width:900px) {
+            .wizard-body { grid-template-columns:1fr; }
+            .wizard-sidebar { position:static; order:-1; }
+            .form-row, .form-row-3 { grid-template-columns:1fr; }
+            .progress-steps { overflow-x:auto; padding-bottom:1rem; }
+            .step-label { font-size:0.65rem; }
+            .wizard-container { padding:1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <div class="wizard-container">
+        <!-- Header -->
+        <div class="wizard-header">
+            <h1><i class="bi bi-calendar-plus" style="color:var(--primary-color)"></i> Create Event</h1>
+            <p>Share your floral knowledge, host workshops, or organize community gatherings</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="wizard-progress">
+            <div class="progress-steps">
+                <div class="progress-step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <span class="step-label active">Basic Info</span>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <span class="step-label">Details</span>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <span class="step-label">Schedule</span>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <span class="step-label">Tickets</span>
+                </div>
+                <div class="progress-step" data-step="5">
+                    <div class="step-circle">5</div>
+                    <span class="step-label">Media</span>
+                </div>
+                <div class="progress-step" data-step="6">
+                    <div class="step-circle">6</div>
+                    <span class="step-label">Settings</span>
+                </div>
+                <div class="progress-step" data-step="7">
+                    <div class="step-circle">7</div>
+                    <span class="step-label">Review</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="wizard-body">
+            <!-- Form -->
+            <div class="wizard-form">
+                <!-- Step 1: Basic Information -->
+                <div class="form-step active" data-step="1">
+                    <h2 class="step-title"><i class="bi bi-info-circle"></i> Basic Information</h2>
+                    <p class="step-description">Start with the essentials about your event</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Event Title <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="eventTitle" placeholder="e.g., Wedding Floral Workshop" required>
+                        <p class="form-hint">Choose a clear, descriptive title</p>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Event Category <span class="required">*</span></label>
+                            <select class="form-select" id="eventCategory" required>
+                                <option value="">Select category</option>
+                                <option value="workshop">🌸 Workshop</option>
+                                <option value="training">🎓 Training</option>
+                                <option value="webinar">🎥 Webinar</option>
+                                <option value="floral-design">💐 Floral Design Class</option>
+                                <option value="farming">🌱 Farming</option>
+                                <option value="exhibition">🎪 Exhibition</option>
+                                <option value="competition">🏆 Competition</option>
+                                <option value="networking">🤝 Networking</option>
+                                <option value="festival">🌹 Festival</option>
+                                <option value="product-launch">🛍 Product Launch</option>
+                                <option value="conference">🎤 Conference</option>
+                                <option value="garden-tour">🌿 Garden Tour</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Event Type <span class="required">*</span></label>
+                            <div class="radio-group">
+                                <label class="radio-option selected">
+                                    <input type="radio" name="eventType" value="online" checked>
+                                    <span class="radio-dot"></span>
+                                    <span><i class="bi bi-laptop"></i> Online</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="eventType" value="physical">
+                                    <span class="radio-dot"></span>
+                                    <span><i class="bi bi-geo-alt"></i> Physical</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="eventType" value="hybrid">
+                                    <span class="radio-dot"></span>
+                                    <span><i class="bi bi-arrows-angle-contract"></i> Hybrid</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Organizer</label>
+                        <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-light);border-radius:var(--radius-sm);">
+                            <img src="https://ui-avatars.com/api/?name=Sarah+Mensah&background=ec4899&color=fff" alt="Organizer" style="width:40px;height:40px;border-radius:50%;">
+                            <div>
+                                <div style="font-weight:500;">Sarah Mensah</div>
+                                <div style="font-size:0.8rem;color:var(--primary-color);"><i class="bi bi-patch-check-fill"></i> Verified Instructor</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Short Description <span class="required">*</span></label>
+                        <textarea class="form-textarea" id="shortDesc" rows="3" maxlength="200" placeholder="A brief summary of your event..." required></textarea>
+                        <p class="form-hint"><span id="charCount">0</span>/200 characters</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Full Description <span class="required">*</span></label>
+                        <div style="border:1px solid var(--border-color);border-radius:var(--radius-sm);overflow:hidden;">
+                            <div style="padding:0.5rem;background:var(--bg-light);border-bottom:1px solid var(--border-color);display:flex;gap:0.5rem;flex-wrap:wrap;">
+                                <button type="button" class="btn btn-sm" style="padding:0.25rem 0.5rem;"><i class="bi bi-bold"></i></button>
+                                <button type="button" class="btn btn-sm" style="padding:0.25rem 0.5rem;"><i class="bi bi-italic"></i></button>
+                                <button type="button" class="btn btn-sm" style="padding:0.25rem 0.5rem;"><i class="bi bi-list-ul"></i></button>
+                                <button type="button" class="btn btn-sm" style="padding:0.25rem 0.5rem;"><i class="bi bi-list-ol"></i></button>
+                                <button type="button" class="btn btn-sm" style="padding:0.25rem 0.5rem;"><i class="bi bi-link-45deg"></i></button>
+                                <button type="button" class="btn btn-sm" style="padding:0.25rem 0.5rem;"><i class="bi bi-image"></i></button>
+                            </div>
+                            <textarea class="form-textarea" id="fullDesc" rows="8" placeholder="Provide detailed information about your event..." required style="border:none;border-radius:0;"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Event Details -->
+                <div class="form-step" data-step="2">
+                    <h2 class="step-title"><i class="bi bi-list-check"></i> Event Details</h2>
+                    <p class="step-description">Help attendees understand what to expect</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Target Audience</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="audience" value="beginners">
+                                <span class="checkmark"></span>
+                                <span>Beginners</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="audience" value="students">
+                                <span class="checkmark"></span>
+                                <span>Students</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="audience" value="florists">
+                                <span class="checkmark"></span>
+                                <span>Florists</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="audience" value="growers">
+                                <span class="checkmark"></span>
+                                <span>Growers</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="audience" value="sellers">
+                                <span class="checkmark"></span>
+                                <span>Sellers</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="audience" value="event-planners">
+                                <span class="checkmark"></span>
+                                <span>Event Planners</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="audience" value="gardeners">
+                                <span class="checkmark"></span>
+                                <span>Gardeners</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="audience" value="everyone">
+                                <span class="checkmark"></span>
+                                <span>Everyone</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Difficulty Level</label>
+                        <div class="radio-group">
+                            <label class="radio-option selected">
+                                <input type="radio" name="difficulty" value="beginner" checked>
+                                <span class="radio-dot"></span>
+                                <span>Beginner</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="difficulty" value="intermediate">
+                                <span class="radio-dot"></span>
+                                <span>Intermediate</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="difficulty" value="advanced">
+                                <span class="radio-dot"></span>
+                                <span>Advanced</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Topics Covered</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="topics" value="bouquet-design">
+                                <span class="checkmark"></span>
+                                <span>Bouquet Design</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="topics" value="flower-care">
+                                <span class="checkmark"></span>
+                                <span>Flower Care</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="topics" value="business">
+                                <span class="checkmark"></span>
+                                <span>Business</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="topics" value="farming">
+                                <span class="checkmark"></span>
+                                <span>Farming</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="topics" value="wedding-flowers">
+                                <span class="checkmark"></span>
+                                <span>Wedding Flowers</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="topics" value="indoor-plants">
+                                <span class="checkmark"></span>
+                                <span>Indoor Plants</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Materials Needed</label>
+                        <div class="dynamic-list" id="materialsList">
+                            <div class="list-item">
+                                <input type="text" class="form-input" placeholder="e.g., Floral Foam">
+                                <button type="button" class="remove-btn" onclick="removeItem(this)"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline" style="margin-top:0.5rem;" onclick="addListItem('materialsList', 'e.g., Floral Foam')">
+                            <i class="bi bi-plus"></i> Add Material
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Location & Schedule -->
+                <div class="form-step" data-step="3">
+                    <h2 class="step-title"><i class="bi bi-calendar-event"></i> Location & Schedule</h2>
+                    <p class="step-description">Set the date, time, and location for your event</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Event Date <span class="required">*</span></label>
+                            <input type="date" class="form-input" id="eventDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">End Date (if multi-day)</label>
+                            <input type="date" class="form-input" id="eventEndDate">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Start Time <span class="required">*</span></label>
+                            <input type="time" class="form-input" id="startTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">End Time <span class="required">*</span></label>
+                            <input type="time" class="form-input" id="endTime" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Time Zone</label>
+                        <select class="form-select" id="timezone">
+                            <option value="GMT">GMT (UTC+0)</option>
+                            <option value="WAT">WAT (UTC+1)</option>
+                            <option value="CAT">CAT (UTC+2)</option>
+                            <option value="EAT">EAT (UTC+3)</option>
+                            <option value="IST">IST (UTC+5:30)</option>
+                            <option value="CST">CST (UTC-6)</option>
+                            <option value="EST">EST (UTC-5)</option>
+                            <option value="PST">PST (UTC-8)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Maximum Attendees</label>
+                        <input type="number" class="form-input" id="maxAttendees" placeholder="Leave blank for unlimited" min="1">
+                        <p class="form-hint">Set a capacity limit or leave empty for unlimited</p>
+                    </div>
+
+                    <!-- Location Fields (Physical) -->
+                    <div id="physicalLocationFields" style="display:none;">
+                        <h3 style="font-size:1rem;margin-bottom:1rem;"><i class="bi bi-geo-alt" style="color:var(--primary-color)"></i> Venue Details</h3>
+                        <div class="form-group">
+                            <label class="form-label">Venue Name</label>
+                            <input type="text" class="form-input" id="venueName" placeholder="e.g., Accra Floral Center">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Street Address</label>
+                            <input type="text" class="form-input" id="streetAddress" placeholder="e.g., 123 Flower Street">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">City</label>
+                                <input type="text" class="form-input" id="city" placeholder="e.g., Accra">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Country</label>
+                                <select class="form-select" id="country">
+                                    <option value="GH">Ghana</option>
+                                    <option value="NG">Nigeria</option>
+                                    <option value="KE">Kenya</option>
+                                    <option value="ZA">South Africa</option>
+                                    <option value="US">United States</option>
+                                    <option value="UK">United Kingdom</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Google Maps Link</label>
+                            <input type="url" class="form-input" id="mapLink" placeholder="https://maps.google.com/...">
+                        </div>
+                    </div>
+
+                    <!-- Location Fields (Online) -->
+                    <div id="onlineLocationFields">
+                        <h3 style="font-size:1rem;margin-bottom:1rem;"><i class="bi bi-laptop" style="color:var(--primary-color)"></i> Online Meeting Details</h3>
+                        <div class="form-group">
+                            <label class="form-label">Meeting Platform</label>
+                            <select class="form-select" id="meetingPlatform">
+                                <option value="zoom">Zoom</option>
+                                <option value="google-meet">Google Meet</option>
+                                <option value="teams">Microsoft Teams</option>
+                                <option value="custom">Custom Platform</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Meeting Link</label>
+                            <input type="url" class="form-input" id="meetingLink" placeholder="https://zoom.us/j/...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Registration & Tickets -->
+                <div class="form-step" data-step="4">
+                    <h2 class="step-title"><i class="bi bi-ticket"></i> Registration & Tickets</h2>
+                    <p class="step-description">Configure how people can register and any ticket options</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Registration Type <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <label class="radio-option selected">
+                                <input type="radio" name="regType" value="free" checked>
+                                <span class="radio-dot"></span>
+                                <span><i class="bi bi-gift"></i> Free</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="regType" value="paid">
+                                <span class="radio-dot"></span>
+                                <span><i class="bi bi-credit-card"></i> Paid</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="regType" value="invite">
+                                <span class="radio-dot"></span>
+                                <span><i class="bi bi-envelope-lock"></i> Invite Only</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="paidFields" style="display:none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Price <span class="required">*</span></label>
+                                <div style="display:flex;align-items:center;gap:0.5rem;">
+                                    <select class="form-select" style="width:100px;">
+                                        <option value="GHS">GHS</option>
+                                        <option value="USD">USD</option>
+                                        <option value="NGN">NGN</option>
+                                    </select>
+                                    <input type="number" class="form-input" id="ticketPrice" placeholder="0.00" min="0" step="0.01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Early Bird Discount</label>
+                                <input type="number" class="form-input" id="earlyBirdPrice" placeholder="Discounted price" min="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Registration Opens</label>
+                            <input type="date" class="form-input" id="regOpens">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Registration Closes</label>
+                            <input type="date" class="form-input" id="regCloses">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Ticket Types</label>
+                        <div class="dynamic-list" id="ticketTypes">
+                            <div class="list-item">
+                                <input type="text" class="form-input" value="General Admission" placeholder="Ticket name">
+                                <input type="number" class="form-input" style="width:120px;" placeholder="Price" min="0">
+                                <input type="number" class="form-input" style="width:100px;" placeholder="Qty" min="1">
+                                <button type="button" class="remove-btn" onclick="removeItem(this)"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline" style="margin-top:0.5rem;" onclick="addTicketType()">
+                            <i class="bi bi-plus"></i> Add Ticket Type
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 5: Media -->
+                <div class="form-step" data-step="5">
+                    <h2 class="step-title"><i class="bi bi-images"></i> Media</h2>
+                    <p class="step-description">Upload visuals to make your event stand out</p>
+
+                    <div class="form-group">
+                        <label class="form-label">Cover Image <span class="required">*</span></label>
+                        <div class="upload-area" id="coverUpload" onclick="document.getElementById('coverInput').click()">
+                            <i class="bi bi-cloud-arrow-up"></i>
+                            <p><strong>Click to upload</strong> or drag and drop</p>
+                            <p style="font-size:0.8rem;">Recommended: 1600 × 900 pixels</p>
+                        </div>
+                        <input type="file" id="coverInput" accept="image/*" style="display:none;" onchange="handleCoverUpload(this)">
+                        <div id="coverPreview" class="upload-preview" style="display:none;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Gallery Images</label>
+                        <div class="upload-area" onclick="document.getElementById('galleryInput').click()">
+                            <i class="bi bi-images"></i>
+                            <p><strong>Add multiple images</strong></p>
+                            <p style="font-size:0.8rem;">Up to 10 images</p>
+                        </div>
+                        <input type="file" id="galleryInput" accept="image/*" multiple style="display:none;" onchange="handleGalleryUpload(this)">
+                        <div id="galleryPreview" style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:1rem;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Promotional Video</label>
+                        <div class="upload-area" onclick="document.getElementById('videoInput').click()">
+                            <i class="bi bi-play-circle"></i>
+                            <p><strong>Add a promotional video</strong></p>
+                            <p style="font-size:0.8rem;">YouTube or Vimeo link, or upload MP4</p>
+                        </div>
+                        <input type="file" id="videoInput" accept="video/*" style="display:none;">
+                    </div>
+                </div>
+
+                <!-- Step 6: Additional Settings -->
+                <div class="form-step" data-step="6">
+                    <h2 class="step-title"><i class="bi bi-gear"></i> Additional Settings</h2>
+                    <p class="step-description">Configure speakers, agenda, and integrations</p>
+
+                    <!-- Speakers Section -->
+                    <div class="form-group">
+                        <label class="form-label">Speakers / Instructors</label>
+                        <div id="speakersList">
+                            <div class="speaker-card">
+                                <img src="https://ui-avatars.com/api/?name=Sarah+Mensah&background=ec4899&color=fff" alt="Speaker">
+                                <div class="info">
+                                    <div class="name">Sarah Mensah</div>
+                                    <div class="role">Master Florist</div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline" onclick="editSpeaker(this)">Edit</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline" onclick="addSpeaker()">
+                            <i class="bi bi-plus"></i> Add Speaker
+                        </button>
+                    </div>
+
+                    <!-- Agenda Section -->
+                    <div class="form-group">
+                        <label class="form-label">Event Agenda</label>
+                        <div id="agendaList">
+                            <div class="time-slot">
+                                <input type="time" class="form-input" style="width:120px;" value="09:00">
+                                <input type="text" class="form-input activity" value="Registration & Welcome">
+                                <button type="button" class="remove-btn" onclick="removeItem(this.closest('.time-slot'))"><i class="bi bi-trash"></i></button>
+                            </div>
+                            <div class="time-slot">
+                                <input type="time" class="form-input" style="width:120px;" value="09:30">
+                                <input type="text" class="form-input activity" value="Introduction to Floral Design">
+                                <button type="button" class="remove-btn" onclick="removeItem(this.closest('.time-slot'))"><i class="bi bi-trash"></i></button>
+                            </div>
+                            <div class="time-slot">
+                                <input type="time" class="form-input" style="width:120px;" value="10:30">
+                                <input type="text" class="form-input activity" value="Hands-on Workshop">
+                                <button type="button" class="remove-btn" onclick="removeItem(this.closest('.time-slot'))"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline" style="margin-top:0.5rem;" onclick="addAgendaItem()">
+                            <i class="bi bi-plus"></i> Add Agenda Item
+                        </button>
+                    </div>
+
+                    <!-- Certificates -->
+                    <div class="form-group">
+                        <label class="form-label">Certificates</label>
+                        <div class="radio-group">
+                            <label class="radio-option selected">
+                                <input type="radio" name="certificate" value="yes" checked>
+                                <span class="radio-dot"></span>
+                                <span><i class="bi bi-award"></i> Issue Certificate</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="certificate" value="no">
+                                <span class="radio-dot"></span>
+                                <span><i class="bi bi-x-circle"></i> Attendance Only</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Community Integration -->
+                    <div class="form-group">
+                        <label class="form-label">Community Integration</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-option selected">
+                                <input type="checkbox" name="community" value="discussion" checked>
+                                <span class="checkmark"></span>
+                                <span>Create Discussion Thread</span>
+                            </label>
+                            <label class="checkbox-option selected">
+                                <input type="checkbox" name="community" value="comments" checked>
+                                <span class="checkmark"></span>
+                                <span>Allow Comments</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="community" value="photos">
+                                <span class="checkmark"></span>
+                                <span>Allow Photo Uploads</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Marketplace Integration -->
+                    <div class="form-group">
+                        <label class="form-label">Marketplace Products</label>
+                        <p class="form-hint">Link products that attendees may need for this event</p>
+                        <div id="productsList">
+                            <div class="product-card">
+                                <img src="https://images.unsplash.com/photo-1490750967868-88aa4f44baee?w=100" alt="Product">
+                                <div class="info">
+                                    <div class="name">White Roses (Dozen)</div>
+                                    <div class="price">GHS 45</div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline" onclick="removeItem(this.closest('.product-card'))">Remove</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline" onclick="addProduct()">
+                            <i class="bi bi-plus"></i> Add Product
+                        </button>
+                    </div>
+
+                    <!-- Learning Integration -->
+                    <div class="form-group">
+                        <label class="form-label">Learning Center Integration</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="learning" value="calendar">
+                                <span class="checkmark"></span>
+                                <span>Add to Learning Calendar</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="learning" value="path">
+                                <span class="checkmark"></span>
+                                <span>Count toward Learning Path</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="learning" value="certificate">
+                                <span class="checkmark"></span>
+                                <span>Eligible for Certificate</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 7: Review & Publish -->
+                <div class="form-step" data-step="7">
+                    <h2 class="step-title"><i class="bi bi-check-circle"></i> Review & Publish</h2>
+                    <p class="step-description">Review your event details before publishing</p>
+
+                    <!-- Event Preview -->
+                    <div style="background:var(--bg-light);border-radius:var(--radius-md);padding:1.5rem;margin-bottom:1.5rem;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+                            <div>
+                                <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.25rem;">Event Title</div>
+                                <div style="font-weight:500;" id="previewTitle">-</div>
+                            </div>
+                            <div>
+                                <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.25rem;">Category</div>
+                                <div style="font-weight:500;" id="previewCategory">-</div>
+                            </div>
+                            <div>
+                                <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.25rem;">Date & Time</div>
+                                <div style="font-weight:500;" id="previewDate">-</div>
+                            </div>
+                            <div>
+                                <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.25rem;">Location</div>
+                                <div style="font-weight:500;" id="previewLocation">-</div>
+                            </div>
+                            <div style="grid-column:1/-1;">
+                                <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.25rem;">Description</div>
+                                <div id="previewDesc">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Checklist -->
+                    <div class="form-group">
+                        <label class="form-label">Publishing Checklist</label>
+                        <div id="checklist">
+                            <div class="checklist-item incomplete" id="checkCover">
+                                <i class="bi bi-circle"></i>
+                                <span>Cover Image Uploaded</span>
+                            </div>
+                            <div class="checklist-item incomplete" id="checkDesc">
+                                <i class="bi bi-circle"></i>
+                                <span>Description Complete</span>
+                            </div>
+                            <div class="checklist-item incomplete" id="checkSchedule">
+                                <i class="bi bi-circle"></i>
+                                <span>Schedule Added</span>
+                            </div>
+                            <div class="checklist-item incomplete" id="checkSpeakers">
+                                <i class="bi bi-circle"></i>
+                                <span>Speakers Added</span>
+                            </div>
+                            <div class="checklist-item incomplete" id="checkReg">
+                                <i class="bi bi-circle"></i>
+                                <span>Registration Configured</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="wizard-nav">
+                    <button type="button" class="btn btn-outline" id="prevBtn" onclick="changeStep(-1)" style="display:none;">
+                        <i class="bi bi-arrow-left"></i> Previous
+                    </button>
+                    <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeStep(1)">
+                        Next <i class="bi bi-arrow-right"></i>
+                    </button>
+                    <div style="display:flex;gap:0.75rem;" id="publishBtns" style="display:none;">
+                        <button type="button" class="btn btn-outline" onclick="saveDraft()">
+                            <i class="bi bi-save"></i> Save Draft
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="previewEvent()">
+                            <i class="bi bi-eye"></i> Preview
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="publishEvent()">
+                            <i class="bi bi-send"></i> Publish Event
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="wizard-sidebar">
+                <div class="sidebar-card">
+                    <h3><i class="bi bi-clipboard-data"></i> Event Summary</h3>
+                    <div class="summary-item">
+                        <span class="label">Category</span>
+                        <span class="value" id="summaryCategory">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Type</span>
+                        <span class="value" id="summaryType">Online</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Date</span>
+                        <span class="value" id="summaryDate">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Duration</span>
+                        <span class="value" id="summaryDuration">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Attendees</span>
+                        <span class="value" id="summaryAttendees">Unlimited</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Price</span>
+                        <span class="value" id="summaryPrice">Free</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Status</span>
+                        <span class="value" style="color:var(--accent-gold);">Draft</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3><i class="bi bi-lightbulb"></i> Tips</h3>
+                    <ul style="font-size:0.85rem;color:var(--text-light);padding-left:1.25rem;margin:0;">
+                        <li style="margin-bottom:0.5rem;">Use a clear, descriptive title</li>
+                        <li style="margin-bottom:0.5rem;">Upload a high-quality cover image</li>
+                        <li style="margin-bottom:0.5rem;">Add speakers to build credibility</li>
+                        <li style="margin-bottom:0.5rem;">Set up tickets early for paid events</li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3><i class="bi bi-question-circle"></i> Need Help?</h3>
+                    <p style="font-size:0.85rem;color:var(--text-light);margin:0;">
+                        Check our <a href="#" style="color:var(--primary-color);">Event Creation Guide</a> for detailed instructions.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/api.js"></script>
+    <script>
+        // ─── State ──────────────────────────────────────────────────────
+        let currentStep = 1;
+        const totalSteps = 7;
+        let coverUploaded = false;
+        let galleryImages = [];
+
+        // ─── Init ───────────────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHeaderFooter();
+            setupEventListeners();
+            updateSidebar();
+        });
+
+        function loadHeaderFooter() {
+            fetch('components/header.html').then(r => r.text()).then(h => {
+                document.getElementById('header-container').innerHTML = h;
+            });
+            fetch('components/footer.html').then(r => r.text()).then(h => {
+                document.getElementById('footer-container').innerHTML = h;
+            });
+        }
+
+        // ─── Event Listeners ────────────────────────────────────────────
+        function setupEventListeners() {
+            // Character count for short description
+            document.getElementById('shortDesc')?.addEventListener('input', function() {
+                document.getElementById('charCount').textContent = this.value.length;
+                updateSidebar();
+            });
+
+            // Event type radio buttons
+            document.querySelectorAll('input[name="eventType"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateLocationFields(this.value);
+                    updateRadioOption(this);
+                    updateSidebar();
+                });
+            });
+
+            // Registration type radio buttons
+            document.querySelectorAll('input[name="regType"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updatePaidFields(this.value);
+                    updateRadioOption(this);
+                    updateSidebar();
+                });
+            });
+
+            // Radio button styling
+            document.querySelectorAll('.radio-option input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateRadioOption(this);
+                });
+            });
+
+            // Checkbox styling
+            document.querySelectorAll('.checkbox-option input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    this.closest('.checkbox-option').classList.toggle('selected', this.checked);
+                });
+            });
+
+            // Form inputs for sidebar update
+            ['eventTitle', 'eventCategory', 'eventDate', 'startTime', 'endTime', 'maxAttendees'].forEach(id => {
+                document.getElementById(id)?.addEventListener('change', updateSidebar);
+                document.getElementById(id)?.addEventListener('input', updateSidebar);
+            });
+        }
+
+        function updateRadioOption(radio) {
+            const group = radio.closest('.radio-group');
+            group.querySelectorAll('.radio-option').forEach(opt => opt.classList.remove('selected'));
+            radio.closest('.radio-option').classList.add('selected');
+        }
+
+        // ─── Step Navigation ────────────────────────────────────────────
+        function changeStep(direction) {
+            const newStep = currentStep + direction;
+            if (newStep < 1 || newStep > totalSteps) return;
+
+            // Validate current step before moving forward
+            if (direction > 0 && !validateStep(currentStep)) return;
+
+            currentStep = newStep;
+            updateStepDisplay();
+
+            if (currentStep === totalSteps) {
+                updateReview();
+            }
+        }
+
+        function updateStepDisplay() {
+            // Update form steps
+            document.querySelectorAll('.form-step').forEach(step => {
+                step.classList.toggle('active', parseInt(step.dataset.step) === currentStep);
+            });
+
+            // Update progress steps
+            document.querySelectorAll('.progress-step').forEach(step => {
+                const stepNum = parseInt(step.dataset.step);
+                const circle = step.querySelector('.step-circle');
+                const label = step.querySelector('.step-label');
+
+                circle.classList.remove('active', 'completed');
+                label.classList.remove('active');
+
+                if (stepNum === currentStep) {
+                    circle.classList.add('active');
+                    label.classList.add('active');
+                } else if (stepNum < currentStep) {
+                    circle.classList.add('completed');
+                    circle.innerHTML = '<i class="bi bi-check"></i>';
+                }
+            });
+
+            // Update navigation buttons
+            document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'flex';
+            document.getElementById('nextBtn').style.display = currentStep === totalSteps ? 'none' : 'flex';
+            document.getElementById('publishBtns').style.display = currentStep === totalSteps ? 'flex' : 'none';
+        }
+
+        function validateStep(step) {
+            // Add validation logic here
+            return true;
+        }
+
+        // ─── Location Fields Toggle ─────────────────────────────────────
+        function updateLocationFields(type) {
+            const physicalFields = document.getElementById('physicalLocationFields');
+            const onlineFields = document.getElementById('onlineLocationFields');
+
+            if (type === 'physical') {
+                physicalFields.style.display = 'block';
+                onlineFields.style.display = 'none';
+            } else if (type === 'online') {
+                physicalFields.style.display = 'none';
+                onlineFields.style.display = 'block';
+            } else {
+                // Hybrid - show both
+                physicalFields.style.display = 'block';
+                onlineFields.style.display = 'block';
+            }
+        }
+
+        // ─── Paid Fields Toggle ─────────────────────────────────────────
+        function updatePaidFields(type) {
+            const paidFields = document.getElementById('paidFields');
+            paidFields.style.display = type === 'paid' ? 'block' : 'none';
+        }
+
+        // ─── Sidebar Update ─────────────────────────────────────────────
+        function updateSidebar() {
+            const title = document.getElementById('eventTitle')?.value || '-';
+            const category = document.getElementById('eventCategory');
+            const categoryText = category?.options[category.selectedIndex]?.text || '-';
+            const date = document.getElementById('eventDate')?.value || '-';
+            const startTime = document.getElementById('startTime')?.value || '';
+            const endTime = document.getElementById('endTime')?.value || '';
+            const attendees = document.getElementById('maxAttendees')?.value || 'Unlimited';
+
+            const typeRadio = document.querySelector('input[name="eventType"]:checked');
+            const type = typeRadio ? typeRadio.value.charAt(0).toUpperCase() + typeRadio.value.slice(1) : 'Online';
+
+            const regTypeRadio = document.querySelector('input[name="regType"]:checked');
+            const price = regTypeRadio?.value === 'paid' ? document.getElementById('ticketPrice')?.value || '0' : 'Free';
+
+            document.getElementById('summaryTitle').textContent = title;
+            document.getElementById('summaryCategory').textContent = categoryText;
+            document.getElementById('summaryType').textContent = type;
+            document.getElementById('summaryDate').textContent = date !== '-' ? date : '-';
+            document.getElementById('summaryAttendees').textContent = attendees;
+            document.getElementById('summaryPrice').textContent = regTypeRadio?.value === 'paid' ? `GHS ${price}` : 'Free';
+        }
+
+        // ─── Dynamic List Functions ─────────────────────────────────────
+        function addListItem(containerId, placeholder) {
+            const container = document.getElementById(containerId);
+            const item = document.createElement('div');
+            item.className = 'list-item';
+            item.innerHTML = `
+                <input type="text" class="form-input" placeholder="${placeholder}">
+                <button type="button" class="remove-btn" onclick="removeItem(this)"><i class="bi bi-trash"></i></button>
+            `;
+            container.appendChild(item);
+        }
+
+        function removeItem(element) {
+            if (typeof element === 'object' && element.closest) {
+                element.closest('.list-item, .time-slot, .speaker-card, .product-card')?.remove();
+            }
+        }
+
+        function addTicketType() {
+            const container = document.getElementById('ticketTypes');
+            const item = document.createElement('div');
+            item.className = 'list-item';
+            item.innerHTML = `
+                <input type="text" class="form-input" placeholder="Ticket name">
+                <input type="number" class="form-input" style="width:120px;" placeholder="Price" min="0">
+                <input type="number" class="form-input" style="width:100px;" placeholder="Qty" min="1">
+                <button type="button" class="remove-btn" onclick="removeItem(this)"><i class="bi bi-trash"></i></button>
+            `;
+            container.appendChild(item);
+        }
+
+        function addAgendaItem() {
+            const container = document.getElementById('agendaList');
+            const item = document.createElement('div');
+            item.className = 'time-slot';
+            item.innerHTML = `
+                <input type="time" class="form-input" style="width:120px;">
+                <input type="text" class="form-input activity" placeholder="Activity">
+                <button type="button" class="remove-btn" onclick="removeItem(this.closest('.time-slot'))"><i class="bi bi-trash"></i></button>
+            `;
+            container.appendChild(item);
+        }
+
+        function addSpeaker() {
+            const container = document.getElementById('speakersList');
+            const card = document.createElement('div');
+            card.className = 'speaker-card';
+            card.innerHTML = `
+                <img src="https://ui-avatars.com/api/?name=New+Speaker&background=8b5cf6&color=fff" alt="Speaker">
+                <div class="info">
+                    <input type="text" class="form-input" placeholder="Speaker Name" style="margin-bottom:0.5rem;">
+                    <input type="text" class="form-input" placeholder="Role/Title">
+                </div>
+                <button type="button" class="btn btn-sm btn-outline" onclick="removeItem(this.closest('.speaker-card'))">Remove</button>
+            `;
+            container.appendChild(card);
+        }
+
+        function addProduct() {
+            const container = document.getElementById('productsList');
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <div style="width:60px;height:60px;background:var(--bg-light);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-plus" style="font-size:1.5rem;color:var(--text-muted);"></i>
+                </div>
+                <div class="info">
+                    <input type="text" class="form-input" placeholder="Product Name" style="margin-bottom:0.5rem;">
+                    <input type="number" class="form-input" placeholder="Price" min="0" style="width:120px;">
+                </div>
+                <button type="button" class="btn btn-sm btn-outline" onclick="removeItem(this.closest('.product-card'))">Remove</button>
+            `;
+            container.appendChild(card);
+        }
+
+        // ─── File Upload Functions ───────────────────────────────────────
+        function handleCoverUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const preview = document.getElementById('coverPreview');
+            preview.innerHTML = `
+                <img src="${URL.createObjectURL(file)}" alt="Cover">
+                <button class="remove-btn" onclick="removeCover()"><i class="bi bi-x"></i></button>
+            `;
+            preview.style.display = 'block';
+            coverUploaded = true;
+            updateChecklist();
+        }
+
+        function removeCover() {
+            document.getElementById('coverPreview').style.display = 'none';
+            document.getElementById('coverInput').value = '';
+            coverUploaded = false;
+            updateChecklist();
+        }
+
+        function handleGalleryUpload(input) {
+            const files = Array.from(input.files);
+            const preview = document.getElementById('galleryPreview');
+
+            files.forEach(file => {
+                if (galleryImages.length >= 10) return;
+                galleryImages.push(file);
+
+                const img = document.createElement('div');
+                img.style.cssText = 'position:relative;width:80px;height:80px;';
+                img.innerHTML = `
+                    <img src="${URL.createObjectURL(file)}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);">
+                    <button class="remove-btn" style="width:20px;height:20px;font-size:0.6rem;" onclick="this.parentElement.remove()"><i class="bi bi-x"></i></button>
+                `;
+                preview.appendChild(img);
+            });
+        }
+
+        // ─── Checklist Update ───────────────────────────────────────────
+        function updateChecklist() {
+            const title = document.getElementById('eventTitle')?.value;
+            const desc = document.getElementById('fullDesc')?.value;
+            const date = document.getElementById('eventDate')?.value;
+            const speakers = document.querySelectorAll('.speaker-card').length;
+
+            updateCheckItem('checkCover', coverUploaded);
+            updateCheckItem('checkDesc', desc && desc.length > 10);
+            updateCheckItem('checkSchedule', !!date);
+            updateCheckItem('checkSpeakers', speakers > 0);
+            updateCheckItem('checkReg', true);
+        }
+
+        function updateCheckItem(id, complete) {
+            const item = document.getElementById(id);
+            if (!item) return;
+            item.className = `checklist-item ${complete ? 'complete' : 'incomplete'}`;
+            item.querySelector('i').className = `bi ${complete ? 'bi-check-circle-fill' : 'bi-circle'}`;
+        }
+
+        // ─── Review Update ──────────────────────────────────────────────
+        function updateReview() {
+            document.getElementById('previewTitle').textContent = document.getElementById('eventTitle')?.value || '-';
+
+            const category = document.getElementById('eventCategory');
+            document.getElementById('previewCategory').textContent = category?.options[category.selectedIndex]?.text || '-';
+
+            const date = document.getElementById('eventDate')?.value || '-';
+            const time = document.getElementById('startTime')?.value || '';
+            document.getElementById('previewDate').textContent = time ? `${date}, ${time}` : date;
+
+            const typeRadio = document.querySelector('input[name="eventType"]:checked');
+            const location = typeRadio?.value === 'online' ? 'Online' :
+                            typeRadio?.value === 'physical' ? document.getElementById('venueName')?.value || 'Physical Location' :
+                            'Hybrid';
+            document.getElementById('previewLocation').textContent = location;
+
+            document.getElementById('previewDesc').textContent = document.getElementById('shortDesc')?.value || '-';
+
+            updateChecklist();
+        }
+
+        // ─── Form Actions ───────────────────────────────────────────────
+        function saveDraft() {
+            alert('Event saved as draft!');
+        }
+
+        function previewEvent() {
+            alert('Opening preview...');
+        }
+
+        function publishEvent() {
+            if (confirm('Are you sure you want to publish this event?')) {
+                alert('Event published successfully!');
+                window.location.href = 'events.html';
+            }
+        }
+    </script>
+</body>
+</html>

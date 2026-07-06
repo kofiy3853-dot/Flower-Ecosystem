@@ -56,6 +56,13 @@ function renderStars(rating) {
 // ─── Init ──────────────────────────────────────────────────────────────
 
 async function initLearningPage() {
+    // Read tab from URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam && ['courses', 'articles', 'videos', 'quizzes'].includes(tabParam)) {
+        currentTab = tabParam;
+    }
+
     renderCategoryCards();
     renderSidebarCategories();
     renderLearningPaths();
@@ -176,6 +183,11 @@ function setupFilterChips() {
 }
 
 function setupContentTabs() {
+    // Activate the correct tab based on currentTab
+    document.querySelectorAll('.learn-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === currentTab);
+    });
+
     document.getElementById('contentTabs')?.addEventListener('click', e => {
         const tab = e.target.closest('.learn-tab');
         if (!tab) return;

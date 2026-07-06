@@ -74,6 +74,13 @@ async function initEventsPage() {
     miniCalMonth = now.getMonth();
     miniCalYear = now.getFullYear();
 
+    // Read category from URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryParam = urlParams.get('category');
+    if (categoryParam) {
+        currentCategory = categoryParam;
+    }
+
     renderCategoryCards();
     renderMiniCalendar();
     setupLeftSidebar();
