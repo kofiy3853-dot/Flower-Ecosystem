@@ -522,7 +522,7 @@ router.get('/articles', asyncHandler(async (req, res) => {
             const values = [];
             let idx = 1;
 
-            if (category) { conditions.push(`ac.slug = $${idx}`); values.push(category); idx++; }
+            if (category) { conditions.push(`a.category ILIKE $${idx}`); values.push(`%${category}%`); idx++; }
             if (search) { conditions.push(`(a.title ILIKE $${idx} OR a.excerpt ILIKE $${idx} OR a.content ILIKE $${idx})`); values.push(`%${search}%`); idx++; }
             if (featured === 'true') { conditions.push(`a.is_featured = true`); }
 
@@ -530,7 +530,7 @@ router.get('/articles', asyncHandler(async (req, res) => {
             const sortMap = { newest: 'a.published_at DESC', popular: 'a.views DESC', reading_time: 'a.reading_time ASC' };
             const orderBy = sortMap[sort] || 'a.published_at DESC';
 
-            const countQ = `SELECT COUNT(*) FROM learning.articles a LEFT JOIN learning.article_categories ac ON ac.id = a.category_id ${where}`;
+            const countQ = `SELECT COUNT(*) FROM learning.articles a ${where}`;
             const countR = await pool.query(countQ, values);
             const total = parseInt(countR.rows[0].count, 10);
 
@@ -539,10 +539,8 @@ router.get('/articles', asyncHandler(async (req, res) => {
 
             const dataQ = `
                 SELECT a.id, a.title, a.slug, a.excerpt, a.thumbnail_url, a.author_name, a.author_title,
-                       a.reading_time, a.is_featured, a.views, a.published_at, a.table_of_contents,
-                       ac.name AS category_name, ac.slug AS category_slug, ac.icon AS category_icon
+                       a.reading_time, a.is_featured, a.views, a.published_at, a.category
                 FROM learning.articles a
-                LEFT JOIN learning.article_categories ac ON ac.id = a.category_id
                 ${where}
                 ORDER BY a.is_featured DESC, ${orderBy}
                 LIMIT $${idx} OFFSET $${idx + 1}`;
@@ -563,9 +561,8 @@ router.get('/articles/featured', asyncHandler(async (_, res) => {
     if (await dbAvailable()) {
         try {
             const r = await pool.query(`
-                SELECT a.*, ac.name AS category_name, ac.icon AS category_icon
+                SELECT a.id, a.title, a.slug, a.excerpt, a.thumbnail_url, a.author_name, a.category
                 FROM learning.articles a
-                LEFT JOIN learning.article_categories ac ON ac.id = a.category_id
                 WHERE a.is_featured = true AND a.is_published = true
                 ORDER BY a.published_at DESC LIMIT 4`);
             if (r.rows.length) return res.json(r.rows);
@@ -639,8 +636,10 @@ router.get('/articles/:id/related', asyncHandler(async (req, res) => {
 router.get('/videos', asyncHandler(async (_, res) => {
     return queryWithFallback(
         async () => {
+            // Use simpler query to avoid column existence issues
             const r = await pool.query(`
-                SELECT l.id, l.title, l.content AS description, l.video_url, l.duration_minutes,
+                SELECT l.id, l.title, l.content AS description, l.video_url,
+                       COALESCE(l.duration_minutes, 0) as duration_minutes,
                        l.sort_order,
                        c.title AS course_title, c.instructor, c.category, c.thumbnail_url AS course_image,
                        c.id AS course_id

@@ -145,7 +145,7 @@ router.get('/:id', asyncHandler(async (req, res) => {
                      FROM events.event_resources res WHERE res.event_id = e.id) AS resources
                 FROM events.events e
                 LEFT JOIN (SELECT event_id, COUNT(*) AS reg_count FROM events.event_registrations GROUP BY event_id) rc ON rc.event_id = e.id
-                WHERE e.id = $1 OR e.slug = $1`, [id]);
+                WHERE e.id::text = $1 OR e.slug = $1`, [id]);
 
             if (!r.rows.length) return res.status(404).json({ error: 'Event not found' });
 
