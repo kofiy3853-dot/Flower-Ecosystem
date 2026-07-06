@@ -1,6 +1,6 @@
 /* Instructor Dashboard Styles */
-.inst-layout{display:flex;min-height:100vh;padding-top:64px;}
-.inst-sidebar{width:260px;background:var(--bg-white,#fff);border-right:1px solid var(--border-color,#e5e7eb);position:fixed;top:64px;bottom:0;left:0;overflow-y:auto;z-index:110;transition:transform .3s;display:flex;flex-direction:column;}
+.inst-layout{display:flex;min-height:100vh;}
+.inst-sidebar{width:260px;background:var(--bg-white,#fff);border-right:1px solid var(--border-color,#e5e7eb);position:fixed;top:0;bottom:0;left:0;overflow-y:auto;z-index:110;transition:transform .3s;display:flex;flex-direction:column;}
 .inst-sidebar-header{padding:1.5rem 1.25rem;border-bottom:1px solid var(--border-color,#e5e7eb);display:flex;align-items:center;gap:.75rem;}
 .inst-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#d4af37,#b8941f);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:1.1rem;flex-shrink:0;}
 .inst-avatar-sm{width:32px;height:32px;font-size:.85rem;}
@@ -14,7 +14,7 @@
 .inst-nav-item i{width:20px;text-align:center;font-size:1rem;}
 .inst-sidebar-footer{border-top:1px solid var(--border-color,#e5e7eb);padding:.5rem 0;}
 .inst-main{flex:1;margin-left:260px;min-height:calc(100vh - 64px);}
-.inst-header{position:sticky;top:64px;z-index:50;background:var(--bg-white,#fff);border-bottom:1px solid var(--border-color,#e5e7eb);padding:.75rem 2rem;display:flex;align-items:center;gap:1rem;}
+.inst-header{position:sticky;top:0;z-index:50;background:var(--bg-white,#fff);border-bottom:1px solid var(--border-color,#e5e7eb);padding:.75rem 2rem;display:flex;align-items:center;gap:1rem;}
 .inst-hamburger{display:none;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-main,#374151);}
 .inst-header-search{flex:1;max-width:400px;position:relative;}
 .inst-header-search i{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--text-light,#9ca3af);}
