@@ -29,7 +29,7 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
         return res.status(400).json({ error: 'Invalid input types' });
     }
 
-    const roleMap = { buyer: 'CUSTOMER', seller: 'SELLER', florist: 'FLORIST', grower: 'GROWER', customer: 'CUSTOMER', instructor: 'INSTRUCTOR', student: 'STUDENT' };
+    const roleMap = { buyer: 'CUSTOMER', seller: 'SELLER', florist: 'FLORIST', grower: 'GROWER', customer: 'CUSTOMER', student: 'STUDENT' };
     const dbRole = roleMap[(role || '').toLowerCase()] || 'CUSTOMER';
     const isActive = true;
 
