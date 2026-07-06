@@ -81,6 +81,19 @@ async function initEventsPage() {
         currentCategory = categoryParam;
     }
 
+    // Check user role and show/hide create event buttons
+    const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+    if (user) {
+        const role = (user.role || '').toLowerCase();
+        const allowedRoles = ['admin', 'superadmin', 'instructor', 'seller', 'florist', 'grower'];
+        if (allowedRoles.includes(role)) {
+            const hostCta = document.getElementById('hostCta');
+            const mobileFab = document.getElementById('mobileFab');
+            if (hostCta) hostCta.style.display = 'block';
+            if (mobileFab) mobileFab.style.display = 'flex';
+        }
+    }
+
     renderCategoryCards();
     renderMiniCalendar();
     setupLeftSidebar();

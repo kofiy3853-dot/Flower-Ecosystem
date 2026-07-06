@@ -134,7 +134,7 @@
 <body>
     <div id="header-container"></div>
 
-    <div class="wizard-container">
+    <div id="wizardContainer" class="wizard-container">
         <!-- Header -->
         <div class="wizard-header">
             <h1><i class="bi bi-calendar-plus" style="color:var(--primary-color)"></i> Create Event</h1>
@@ -874,6 +874,39 @@
         // ─── Init ───────────────────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', () => {
             loadHeaderFooter();
+
+            // Check authentication
+            const token = localStorage.getItem('flower-token');
+            if (!token) {
+                document.getElementById('wizardContainer').innerHTML = `
+                    <div style="text-align:center;padding:4rem 2rem;">
+                        <i class="bi bi-lock" style="font-size:3rem;color:var(--text-muted);display:block;margin-bottom:1rem;"></i>
+                        <h2>Sign In Required</h2>
+                        <p style="color:var(--text-light);margin-bottom:1.5rem;">You need to sign in to create an event.</p>
+                        <a href="javascript:void(0)" onclick="sessionStorage.setItem('pending-auth','login');if(typeof openAuthModal==='function')openAuthModal('login');else window.location.href='login.html';" class="btn btn-primary">Sign In</a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Check user role - only instructors, verified sellers, florists, growers, and admins can create events
+            const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+            if (user) {
+                const role = (user.role || '').toLowerCase();
+                const allowedRoles = ['admin', 'superadmin', 'instructor', 'seller', 'florist', 'grower'];
+                if (!allowedRoles.includes(role)) {
+                    document.getElementById('wizardContainer').innerHTML = `
+                        <div style="text-align:center;padding:4rem 2rem;">
+                            <i class="bi bi-shield-lock" style="font-size:3rem;color:var(--text-muted);display:block;margin-bottom:1rem;"></i>
+                            <h2>Not Authorized</h2>
+                            <p style="color:var(--text-light);margin-bottom:1.5rem;">Only verified instructors, sellers, and florists can create events.</p>
+                            <a href="events.html" class="btn btn-primary">Browse Events</a>
+                        </div>
+                    `;
+                    return;
+                }
+            }
+
             setupEventListeners();
             updateSidebar();
         });
