@@ -118,8 +118,6 @@
 
     <div class="modal-overlay" id="listingModal"><div class="modal"><h3>New Marketplace Listing</h3><div class="form-group"><label>Flower Name *</label><input type="text" id="listFlower"></div><div class="form-row"><div class="form-group"><label>Price Per Unit *</label><input type="number" id="listPrice" step="0.01"></div><div class="form-group"><label>Unit Type</label><select id="listUnit"><option value="stem">Per Stem</option><option value="bunch">Per Bunch</option><option value="box">Per Box</option><option value="kg">Per Kg</option></select></div></div><div class="form-row"><div class="form-group"><label>Available Quantity</label><input type="number" id="listQty"></div><div class="form-group"><label>Min Order</label><input type="number" id="listMin" value="100"></div></div><div class="form-group"><label>Quality Grade</label><select id="listGrade"><option>A+</option><option>A</option><option>B+</option><option>B</option></select></div><div class="form-group"><label>Description</label><textarea id="listDesc" rows="2"></textarea></div><div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;"><button class="btn btn-outline btn-sm" onclick="hideModal('listingModal')">Cancel</button><button class="btn btn-primary btn-sm" onclick="saveListing()">Publish</button></div></div></div>
 
-    <div id="footer-container"></div>
-
     <script src="js/shared/api.js?v=4.0"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/auth.js?v=3.4"></script>
