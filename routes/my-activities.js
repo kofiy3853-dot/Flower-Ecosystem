@@ -20,7 +20,7 @@ router.get('/my-activities/timeline', requireAuth, asyncHandler(async (req, res)
         q.rows.forEach(r => items.push({ id: r.id, type: r.type, label: r.label, created_at: r.created_at }));
     } catch {}
     try {
-        const s = await pool.query("SELECT id, title AS label, 'story' AS type, created_at FROM community.stories WHERE user_id = $1 ORDER BY created_at DESC LIMIT 20", [uid]);
+        const s = await pool.query("SELECT id, title AS label, 'story' AS type, created_at FROM community.success_stories WHERE user_id = $1 ORDER BY created_at DESC LIMIT 20", [uid]);
         s.rows.forEach(r => items.push({ id: r.id, type: r.type, label: r.label, created_at: r.created_at }));
     } catch {}
     try {
@@ -101,7 +101,7 @@ router.get('/my-activities/heatmap', requireAuth, asyncHandler(async (req, res) 
             SELECT DATE(created_at) AS day, COUNT(*)::int AS count FROM (
                 SELECT created_at FROM community.discussions WHERE user_id = $1 AND created_at >= $2
                 UNION ALL SELECT created_at FROM qa.questions WHERE user_id = $1 AND created_at >= $2
-                UNION ALL SELECT created_at FROM community.stories WHERE user_id = $1 AND created_at >= $2
+                UNION ALL SELECT created_at FROM community.success_stories WHERE user_id = $1 AND created_at >= $2
                 UNION ALL SELECT created_at FROM community.posts WHERE user_id = $1 AND post_type = 'showcase' AND created_at >= $2
                 UNION ALL SELECT registered_at FROM events.event_registrations WHERE user_id = $1 AND registered_at >= $2
                 UNION ALL SELECT joined_at FROM community.club_members WHERE user_id = $1 AND joined_at >= $2
@@ -121,7 +121,7 @@ router.get('/my-activities/analytics', requireAuth, asyncHandler(async (req, res
             pool.query('SELECT COUNT(*)::int AS c FROM platform.follows WHERE follower_id = $1', [uid]),
             pool.query("SELECT id, title, like_count, comment_count FROM community.posts WHERE user_id = $1 AND post_type != 'showcase' ORDER BY like_count + comment_count DESC LIMIT 1", [uid]),
             pool.query("SELECT id, title FROM community.discussions WHERE user_id = $1 ORDER BY views DESC LIMIT 1", [uid]),
-            pool.query("SELECT id, title, like_count FROM community.stories WHERE user_id = $1 ORDER BY like_count DESC LIMIT 1", [uid]),
+            pool.query("SELECT id, title, like_count FROM community.success_stories WHERE user_id = $1 ORDER BY like_count DESC LIMIT 1", [uid]),
             pool.query(`
                 SELECT EXTRACT(DOW FROM created_at)::int AS dow, COUNT(*)::int AS c FROM (
                     SELECT created_at FROM community.discussions WHERE user_id = $1

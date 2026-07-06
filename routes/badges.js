@@ -12,7 +12,7 @@ async function checkAndAwardBadges(userId) {
         // Gather user stats in parallel
         const [discussions, stories, showcasePosts, bestAnswers, clubJoins, registrations, accountAge] = await Promise.all([
             pool.query('SELECT COUNT(*)::int AS c FROM community.discussions WHERE user_id = $1', [userId]),
-            pool.query('SELECT COUNT(*)::int AS c FROM community.stories WHERE user_id = $1', [userId]),
+            pool.query('SELECT COUNT(*)::int AS c FROM community.success_stories WHERE user_id = $1', [userId]),
             pool.query("SELECT COUNT(*)::int AS c, COALESCE(SUM(like_count),0)::int AS total_likes FROM community.posts WHERE user_id = $1 AND post_type = 'showcase'", [userId]),
             pool.query('SELECT COUNT(*)::int AS c FROM community.discussion_comments WHERE user_id = $1 AND is_best_answer = true', [userId]),
             pool.query('SELECT COUNT(*)::int AS c FROM community.club_members WHERE user_id = $1', [userId]),

@@ -42,7 +42,7 @@ router.get('/courses/enrolled', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.json({ courses: [] });
     try {
         const r = await pool.query(`
-            SELECT c.*, cp.completion_percentage AS progress
+            SELECT c.*, COALESCE(cp.progress, 0) AS progress
             FROM learning.enrollments e
             JOIN learning.courses c ON c.id = e.course_id
             LEFT JOIN learning.progress cp ON cp.user_id = e.user_id AND cp.course_id = e.course_id

@@ -25,7 +25,7 @@ router.get('/', asyncHandler(async (req, res) => {
             if (best_seller === 'true') { conditions.push('p.best_seller = true'); }
             if (new_arrival === 'true') { conditions.push('p.new_arrival = true'); }
 
-            const sortMap = { price_asc: 'p.price ASC', price_desc: 'p.price DESC', rating: 'p.avg_rating DESC', newest: 'p.created_at DESC', name: 'p.name ASC' };
+            const sortMap = { price_asc: 'p.price ASC', price_desc: 'p.price DESC', rating: 'p.rating DESC', newest: 'p.created_at DESC', name: 'p.name ASC' };
             const orderBy = sortMap[sort] || 'p.created_at DESC';
 
             const pg = Math.max(1, parseInt(page, 10) || 1);

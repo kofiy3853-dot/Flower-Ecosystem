@@ -67,7 +67,7 @@ router.get('/members/top', asyncHandler(async (_, res) => {
             SELECT u.id, u.first_name, u.last_name, u.profile_image, u.role, u.description,
                 (SELECT COUNT(*)::int FROM community.discussions WHERE user_id = u.id) +
                 (SELECT COUNT(*)::int FROM qa.answers WHERE user_id = u.id) * 2 +
-                (SELECT COUNT(*)::int FROM community.stories WHERE user_id = u.id) * 3 +
+                (SELECT COUNT(*)::int FROM community.success_stories WHERE user_id = u.id) * 3 +
                 COALESCE((SELECT points FROM qa.user_points WHERE user_id = u.id), 0) AS score
             FROM auth.users u
             WHERE u.is_active = true
@@ -125,7 +125,7 @@ router.get('/members/:id/activity', asyncHandler(async (req, res) => {
         q.rows.forEach(r => items.push({ id: r.id, type: r.type, label: r.label, created_at: r.created_at }));
     } catch {}
     try {
-        const s = await pool.query("SELECT id, 'story' AS type, title AS label, created_at FROM community.stories WHERE user_id = $1 ORDER BY created_at DESC LIMIT 5", [uid]);
+        const s = await pool.query("SELECT id, 'story' AS type, title AS label, created_at FROM community.success_stories WHERE user_id = $1 ORDER BY created_at DESC LIMIT 5", [uid]);
         s.rows.forEach(r => items.push({ id: r.id, type: r.type, label: r.label, created_at: r.created_at }));
     } catch {}
     try {
@@ -145,7 +145,7 @@ router.get('/members/:id/reputation', asyncHandler(async (req, res) => {
         const [qp, dr, sr] = await Promise.all([
             pool.query("SELECT points, questions_asked, answers_given, best_answers FROM qa.user_points WHERE user_id = $1", [req.params.id]),
             pool.query('SELECT COUNT(*)::int AS c FROM community.discussions WHERE user_id = $1', [req.params.id]),
-            pool.query('SELECT COUNT(*)::int AS c FROM community.stories WHERE user_id = $1', [req.params.id])
+            pool.query('SELECT COUNT(*)::int AS c FROM community.success_stories WHERE user_id = $1', [req.params.id])
         ]);
 
         const qaPoints = qp.rows.length ? qp.rows[0].points : 0;
@@ -170,7 +170,7 @@ router.get('/members/:id/reputation', asyncHandler(async (req, res) => {
             pool.query(`
                 SELECT COUNT(*)::int AS c FROM (
                     SELECT u.id, COALESCE(qp.points,0) + (SELECT COUNT(*)::int FROM community.discussions WHERE user_id = u.id)*5 +
-                        (SELECT COUNT(*)::int FROM community.stories WHERE user_id = u.id)*10 AS score
+                        (SELECT COUNT(*)::int FROM community.success_stories WHERE user_id = u.id)*10 AS score
                     FROM auth.users u LEFT JOIN qa.user_points qp ON qp.user_id = u.id
                 ) scores WHERE score > $1`, [total])
         ]);

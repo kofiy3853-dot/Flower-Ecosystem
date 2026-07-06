@@ -74,8 +74,8 @@ router.get('/users/:id/activity', requireRole('ADMIN', 'SUPERADMIN'), asyncHandl
         pool.query(`SELECT e.*, c.title AS course_title FROM learning.enrollments e
             LEFT JOIN learning.courses c ON c.id = e.course_id WHERE e.user_id = $1 ORDER BY e.enrolled_at DESC LIMIT 10`, [id]).catch(() => ({ rows: [] })),
         pool.query(`SELECT * FROM marketplace.orders WHERE buyer_id = $1 ORDER BY created_at DESC LIMIT 10`, [id]).catch(() => ({ rows: [] })),
-        pool.query(`SELECT * FROM platform.posts WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10`, [id]).catch(() => ({ rows: [] })),
-        pool.query(`SELECT * FROM platform.discussions WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10`, [id]).catch(() => ({ rows: [] })),
+        pool.query(`SELECT * FROM community.posts WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10`, [id]).catch(() => ({ rows: [] })),
+        pool.query(`SELECT * FROM community.discussions WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10`, [id]).catch(() => ({ rows: [] })),
         pool.query(`SELECT * FROM learning.certificates WHERE user_id = $1 ORDER BY issued_at DESC`, [id]).catch(() => ({ rows: [] }))
     ]);
 

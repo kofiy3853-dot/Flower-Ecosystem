@@ -25,7 +25,7 @@ router.get('/:id/stats', asyncHandler(async (req, res) => {
         counts.questions = qr.rows[0].c;
     } catch { console.error('Stats questions error:', uid); }
     try {
-        const sr = await pool.query('SELECT COUNT(*)::int AS c FROM community.stories WHERE user_id = $1', [uid]);
+        const sr = await pool.query('SELECT COUNT(*)::int AS c FROM community.success_stories WHERE user_id = $1', [uid]);
         counts.stories = sr.rows[0].c;
     } catch { console.error('Stats stories error:', uid); }
     try {
@@ -71,7 +71,7 @@ router.get('/:id/stories', asyncHandler(async (req, res) => {
     try {
         const r = await pool.query(
             `SELECT s.id, s.title, s.content, s.created_at, s.views, s.like_count
-             FROM community.stories s WHERE s.user_id = $1 ORDER BY s.created_at DESC LIMIT 20`,
+             FROM community.success_stories s WHERE s.user_id = $1 ORDER BY s.created_at DESC LIMIT 20`,
             [req.params.id]
         );
         res.json({ stories: r.rows });
@@ -124,7 +124,7 @@ router.get('/list/members', asyncHandler(async (req, res) => {
             SELECT u.id, u.first_name, u.last_name, u.profile_image, u.role, u.business_name, u.description, u.location, u.created_at,
                 (SELECT COUNT(*)::int FROM community.discussions WHERE user_id = u.id) AS discussions,
                 (SELECT COUNT(*)::int FROM qa.questions WHERE user_id = u.id) AS questions,
-                (SELECT COUNT(*)::int FROM community.stories WHERE user_id = u.id) AS stories,
+                (SELECT COUNT(*)::int FROM community.success_stories WHERE user_id = u.id) AS stories,
                 (SELECT COUNT(*)::int FROM community.posts WHERE user_id = u.id AND post_type = 'showcase') AS showcase
             FROM auth.users u ${where}
             ORDER BY ${orderBy}
