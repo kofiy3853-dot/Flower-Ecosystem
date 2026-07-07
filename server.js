@@ -90,6 +90,7 @@ app.get('/marketplace', (_, res) => res.sendFile(path.join(__dirname, 'marketpla
 app.get('/ai-scanner', (_, res) => res.sendFile(path.join(__dirname, 'ai-scanner.html')));
 app.get('/flower-encyclopedia', (_, res) => res.sendFile(path.join(__dirname, 'flower-encyclopedia.html')));
 app.get('/flower-meanings', (_, res) => res.sendFile(path.join(__dirname, 'flower-meanings.html')));
+app.get('/flower-finder', (_, res) => res.sendFile(path.join(__dirname, 'flower-finder.html')));
 app.get('/flower/:slug', (_, res) => res.sendFile(path.join(__dirname, 'flower-detail.html')));
 app.get('/admin', (_, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 app.get('/admin/flowers', (_, res) => res.sendFile(path.join(__dirname, 'admin-flowers.html')));

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Flower Finder - Find the perfect flower for any occasion with our guided tool.">
+    <title>Flower Finder | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .ff-hero{background:linear-gradient(135deg,#065f46 0%,#047857 50%,#065f46 100%);padding:4rem 0 3rem;color:white;text-align:center;}
+        .ff-hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,2.8rem);margin-bottom:0.5rem;}
+        .ff-hero p{opacity:0.85;font-size:1.05rem;max-width:500px;margin:0 auto;}
+
+        .ff-wizard{max-width:700px;margin:2rem auto;background:var(--bg-white);border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.1);overflow:hidden;}
+        .ff-step{display:none;padding:2.5rem;}
+        .ff-step.active{display:block;}
+        .ff-step-header{text-align:center;margin-bottom:2rem;}
+        .ff-step-num{width:48px;height:48px;border-radius:50%;background:var(--primary-light);color:var(--primary-color);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;margin:0 auto 0.75rem;}
+        .ff-step-title{font-size:1.3rem;font-weight:600;margin-bottom:0.25rem;}
+        .ff-step-desc{color:var(--text-light);font-size:0.9rem;}
+
+        .ff-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.75rem;}
+        .ff-option{padding:1rem;border:2px solid var(--border-color);border-radius:12px;text-align:center;cursor:pointer;transition:all 0.2s;}
+        .ff-option:hover{border-color:var(--primary-color);background:var(--primary-light);}
+        .ff-option.selected{border-color:var(--primary-color);background:var(--primary-color);color:white;}
+        .ff-option-icon{font-size:2rem;margin-bottom:0.4rem;}
+        .ff-option-name{font-weight:500;font-size:0.9rem;}
+
+        .ff-color-options{display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;}
+        .ff-color{width:50px;height:50px;border-radius:50%;border:3px solid var(--border-color);cursor:pointer;transition:all 0.2s;}
+        .ff-color:hover{transform:scale(1.1);}
+        .ff-color.selected{border-color:var(--primary-color);box-shadow:0 0 0 3px var(--primary-light);}
+
+        .ff-budget-slider{width:100%;margin:1rem 0;}
+        .ff-budget-labels{display:flex;justify-content:space-between;font-size:0.85rem;color:var(--text-light);}
+        .ff-budget-value{text-align:center;font-size:1.5rem;font-weight:700;color:var(--primary-color);margin:0.5rem 0;}
+
+        .ff-nav{display:flex;justify-content:space-between;padding:1.5rem 2.5rem;border-top:1px solid var(--border-color);}
+
+        .ff-results{max-width:900px;margin:2rem auto;padding:0 1rem;}
+        .ff-results-header{text-align:center;margin-bottom:2rem;}
+        .ff-results-header h2{font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:0.5rem;}
+        .ff-results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.25rem;}
+        .ff-result-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:14px;overflow:hidden;transition:all 0.3s;}
+        .ff-result-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.1);}
+        .ff-result-img{height:180px;overflow:hidden;position:relative;}
+        .ff-result-img img{width:100%;height:100%;object-fit:cover;}
+        .ff-result-meaning{position:absolute;top:0.75rem;left:0.75rem;background:rgba(255,255,255,0.95);padding:0.25rem 0.6rem;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--primary-color);}
+        .ff-result-body{padding:1.25rem;}
+        .ff-result-name{font-family:'Playfair Display',serif;font-size:1.15rem;margin-bottom:0.25rem;}
+        .ff-result-meaning-text{color:var(--primary-color);font-weight:500;font-size:0.9rem;margin-bottom:0.5rem;}
+        .ff-result-desc{font-size:0.85rem;color:var(--text-light);line-height:1.5;margin-bottom:1rem;}
+        .ff-result-actions{display:flex;gap:0.5rem;}
+        .ff-result-actions .btn{flex:1;font-size:0.85rem;padding:0.5rem;}
+
+        .ff-progress{display:flex;justify-content:center;gap:0.5rem;margin-bottom:2rem;}
+        .ff-progress-dot{width:10px;height:10px;border-radius:50%;background:var(--border-color);transition:all 0.2s;}
+        .ff-progress-dot.active{background:var(--primary-color);transform:scale(1.2);}
+        .ff-progress-dot.done{background:var(--accent-green);}
+
+        @media(max-width:600px){
+            .ff-options{grid-template-columns:repeat(2,1fr);}
+            .ff-step{padding:1.5rem;}
+            .ff-results-grid{grid-template-columns:1fr;}
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="ff-hero">
+        <div class="container">
+            <h1>🔍 Flower Finder</h1>
+            <p>Answer a few questions and we'll find the perfect flower for any occasion.</p>
+        </div>
+    </section>
+
+    <!-- Wizard -->
+    <div class="container">
+        <div class="ff-wizard" id="ffWizard">
+            <!-- Progress -->
+            <div class="ff-progress" id="ffProgress"></div>
+
+            <!-- Step 1: Occasion -->
+            <div class="ff-step active" data-step="1">
+                <div class="ff-step-header">
+                    <div class="ff-step-num">1</div>
+                    <h2 class="ff-step-title">What's the occasion?</h2>
+                    <p class="ff-step-desc">Select the event or reason for giving flowers</p>
+                </div>
+                <div class="ff-options" id="occasionOptions">
+                    <div class="ff-option" data-value="wedding" onclick="selectOption('occasion', this)">
+                        <div class="ff-option-icon">💍</div>
+                        <div class="ff-option-name">Wedding</div>
+                    </div>
+                    <div class="ff-option" data-value="birthday" onclick="selectOption('occasion', this)">
+                        <div class="ff-option-icon">🎂</div>
+                        <div class="ff-option-name">Birthday</div>
+                    </div>
+                    <div class="ff-option" data-value="anniversary" onclick="selectOption('occasion', this)">
+                        <div class="ff-option-icon">💕</div>
+                        <div class="ff-option-name">Anniversary</div>
+                    </div>
+                    <div class="ff-option" data-value="valentine" onclick="selectOption('occasion', this)">
+                        <div class="ff-option-icon">❤️</div>
+                        <div class="ff-option-name">Valentine's Day</div>
+                    </div>
+                    <div class="ff-option" data-value="mother" onclick="selectOption('occasion', this)">
+                        <div class="ff-option-icon">👩</div>
+                        <div class="ff-option-name">Mother's Day</div>
+                    </div>
+                    <div class="ff-option" data-value="sympathy" onclick="selectOption('occasion', this)">
+                        <div class="ff-option-icon">🙏</div>
+                        <div class="ff-option-name">Sympathy</div>
+                    </div>
+                    <div class="ff-option" data-value="congratulations" onclick="selectOption('occasion', this)">
+                        <div class="ff-option-icon">🎉</div>
+                        <div class="ff-option-name">Congratulations</div>
+                    </div>
+                    <div class="ff-option" data-value="getwell" onclick="selectOption('occasion', this)">
+                        <div class="ff-option-icon">🤒</div>
+                        <div class="ff-option-name">Get Well</div>
+                    </div>
+                    <div class="ff-option" data-value="thankyou" onclick="selectOption('occasion', this)">
+                        <div class="ff-option-icon">🙏</div>
+                        <div class="ff-option-name">Thank You</div>
+                    </div>
+                    <div class="ff-option" data-value="housewarming" onclick="selectOption('occasion', this)">
+                        <div class="ff-option-icon">🏠</div>
+                        <div class="ff-option-name">Housewarming</div>
+                    </div>
+                    <div class="ff-option" data-value="newbaby" onclick="selectOption('occasion', this)">
+                        <div class="ff-option-icon">👶</div>
+                        <div class="ff-option-name">New Baby</div>
+                    </div>
+                    <div class="ff-option" data-value="justbecause" onclick="selectOption('occasion', this)">
+                        <div class="ff-option-icon">🌸</div>
+                        <div class="ff-option-name">Just Because</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Feeling -->
+            <div class="ff-step" data-step="2">
+                <div class="ff-step-header">
+                    <div class="ff-step-num">2</div>
+                    <h2 class="ff-step-title">How should they feel?</h2>
+                    <p class="ff-step-desc">What emotion do you want to convey?</p>
+                </div>
+                <div class="ff-options" id="feelingOptions">
+                    <div class="ff-option" data-value="loved" onclick="selectOption('feeling', this)">
+                        <div class="ff-option-icon">❤️</div>
+                        <div class="ff-option-name">Loved</div>
+                    </div>
+                    <div class="ff-option" data-value="appreciated" onclick="selectOption('feeling', this)">
+                        <div class="ff-option-icon">🙏</div>
+                        <div class="ff-option-name">Appreciated</div>
+                    </div>
+                    <div class="ff-option" data-value="celebrated" onclick="selectOption('feeling', this)">
+                        <div class="ff-option-icon">🎉</div>
+                        <div class="ff-option-name">Celebrated</div>
+                    </div>
+                    <div class="ff-option" data-value="comforted" onclick="selectOption('feeling', this)">
+                        <div class="ff-option-icon">🤗</div>
+                        <div class="ff-option-name">Comforted</div>
+                    </div>
+                    <div class="ff-option" data-value="inspired" onclick="selectOption('feeling', this)">
+                        <div class="ff-option-icon">✨</div>
+                        <div class="ff-option-name">Inspired</div>
+                    </div>
+                    <div class="ff-option" data-value="peaceful" onclick="selectOption('feeling', this)">
+                        <div class="ff-option-icon">🕊️</div>
+                        <div class="ff-option-name">Peaceful</div>
+                    </div>
+                    <div class="ff-option" data-value="cheerful" onclick="selectOption('feeling', this)">
+                        <div class="ff-option-icon">😊</div>
+                        <div class="ff-option-name">Cheerful</div>
+                    </div>
+                    <div class="ff-option" data-value="elegant" onclick="selectOption('feeling', this)">
+                        <div class="ff-option-icon">👑</div>
+                        <div class="ff-option-name">Elegant</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Color -->
+            <div class="ff-step" data-step="3">
+                <div class="ff-step-header">
+                    <div class="ff-step-num">3</div>
+                    <h2 class="ff-step-title">Preferred color?</h2>
+                    <p class="ff-step-desc">Choose a color or skip for any color</p>
+                </div>
+                <div class="ff-color-options">
+                    <div class="ff-color" data-value="red" style="background:#ef4444;" onclick="selectColor(this)" title="Red"></div>
+                    <div class="ff-color" data-value="pink" style="background:#ec4899;" onclick="selectColor(this)" title="Pink"></div>
+                    <div class="ff-color" data-value="white" style="background:#f8fafc;" onclick="selectColor(this)" title="White"></div>
+                    <div class="ff-color" data-value="yellow" style="background:#eab308;" onclick="selectColor(this)" title="Yellow"></div>
+                    <div class="ff-color" data-value="purple" style="background:#8b5cf6;" onclick="selectColor(this)" title="Purple"></div>
+                    <div class="ff-color" data-value="orange" style="background:#f97316;" onclick="selectColor(this)" title="Orange"></div>
+                    <div class="ff-color" data-value="blue" style="background:#3b82f6;" onclick="selectColor(this)" title="Blue"></div>
+                    <div class="ff-color" data-value="any" style="background:linear-gradient(135deg,#ef4444,#eab308,#3b82f6,#8b5cf6);" onclick="selectColor(this)" title="Any Color"></div>
+                </div>
+            </div>
+
+            <!-- Step 4: Budget -->
+            <div class="ff-step" data-step="4">
+                <div class="ff-step-header">
+                    <div class="ff-step-num">4</div>
+                    <h2 class="ff-step-title">What's your budget?</h2>
+                    <p class="ff-step-desc">Select your price range</p>
+                </div>
+                <div class="ff-budget-value" id="budgetDisplay">GHS 100</div>
+                <input type="range" class="ff-budget-slider" id="budgetSlider" min="20" max="500" value="100" step="10" oninput="updateBudget(this.value)">
+                <div class="ff-budget-labels">
+                    <span>GHS 20</span>
+                    <span>GHS 500+</span>
+                </div>
+            </div>
+
+            <!-- Step 5: Results -->
+            <div class="ff-step" data-step="5">
+                <div class="ff-step-header">
+                    <div class="ff-step-num">✓</div>
+                    <h2 class="ff-step-title">Your Perfect Flowers</h2>
+                    <p class="ff-step-desc">Based on your preferences, here are our recommendations</p>
+                </div>
+                <div id="ffResults"></div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="ff-nav">
+                <button class="btn btn-outline" id="ffPrevBtn" onclick="ffPrev()" style="display:none;">
+                    <i class="bi bi-arrow-left"></i> Back
+                </button>
+                <div style="flex:1;"></div>
+                <button class="btn btn-primary" id="ffNextBtn" onclick="ffNext()" disabled>
+                    Next <i class="bi bi-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script>
+        let ffCurrentStep = 1;
+        const ffTotalSteps = 5;
+        let ffSelections = { occasion: '', feeling: '', color: '', budget: 100 };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProgress();
+        });
+
+        // ─── Progress ────────────────────────────────────────────────
+        function renderProgress() {
+            const el = document.getElementById('ffProgress');
+            el.innerHTML = Array.from({length: ffTotalSteps}, (_, i) => {
+                const step = i + 1;
+                let cls = 'ff-progress-dot';
+                if (step < ffCurrentStep) cls += ' done';
+                else if (step === ffCurrentStep) cls += ' active';
+                return `<div class="${cls}"></div>`;
+            }).join('');
+        }
+
+        // ─── Step Navigation ─────────────────────────────────────────
+        function ffNext() {
+            if (ffCurrentStep < ffTotalSteps) {
+                document.querySelector(`.ff-step[data-step="${ffCurrentStep}"]`).classList.remove('active');
+                ffCurrentStep++;
+                document.querySelector(`.ff-step[data-step="${ffCurrentStep}"]`).classList.add('active');
+                document.getElementById('ffPrevBtn').style.display = ffCurrentStep > 1 ? 'flex' : 'none';
+                document.getElementById('ffNextBtn').style.display = ffCurrentStep < ffTotalSteps ? 'flex' : 'none';
+
+                if (ffCurrentStep === ffTotalSteps) {
+                    showResults();
+                }
+                renderProgress();
+            }
+        }
+
+        function ffPrev() {
+            if (ffCurrentStep > 1) {
+                document.querySelector(`.ff-step[data-step="${ffCurrentStep}"]`).classList.remove('active');
+                ffCurrentStep--;
+                document.querySelector(`.ff-step[data-step="${ffCurrentStep}"]`).classList.add('active');
+                document.getElementById('ffPrevBtn').style.display = ffCurrentStep > 1 ? 'flex' : 'none';
+                document.getElementById('ffNextBtn').style.display = 'flex';
+                renderProgress();
+            }
+        }
+
+        // ─── Selections ──────────────────────────────────────────────
+        function selectOption(type, el) {
+            const parent = el.parentElement;
+            parent.querySelectorAll('.ff-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            ffSelections[type] = el.dataset.value;
+            document.getElementById('ffNextBtn').disabled = false;
+        }
+
+        function selectColor(el) {
+            document.querySelectorAll('.ff-color').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            ffSelections.color = el.dataset.value;
+            document.getElementById('ffNextBtn').disabled = false;
+        }
+
+        function updateBudget(value) {
+            ffSelections.budget = parseInt(value);
+            document.getElementById('budgetDisplay').textContent = `GHS ${value}`;
+            document.getElementById('ffNextBtn').disabled = false;
+        }
+
+        // ─── Show Results ────────────────────────────────────────────
+        async function showResults() {
+            const { occasion, feeling, color, budget } = ffSelections;
+            let url = `/api/meanings?limit=12`;
+            if (occasion) url += `&occasion=${encodeURIComponent(occasion)}`;
+            if (color && color !== 'any') url += `&color=${encodeURIComponent(color)}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                let results = data.meanings || [];
+
+                // Filter by budget (approximate)
+                results = results.filter(m => {
+                    // All flowers can be within budget at different quantities
+                    return true;
+                });
+
+                // Sort by relevance
+                results.sort((a, b) => {
+                    const aOccasion = (a.occasions || []).includes(occasion) ? 1 : 0;
+                    const bOccasion = (b.occasions || []).includes(occasion) ? 1 : 0;
+                    return bOccasion - aOccasion;
+                });
+
+                const container = document.getElementById('ffResults');
+                if (results.length) {
+                    container.innerHTML = `
+                        <div style="text-align:center;margin-bottom:1.5rem;padding:1rem;background:var(--primary-light);border-radius:12px;">
+                            <p style="color:var(--primary-color);font-weight:500;">
+                                For a <strong>${ffSelections.occasion}</strong> occasion, we recommend these flowers that convey <strong>${ffSelections.feeling || 'beautiful sentiments'}</strong>.
+                            </p>
+                        </div>
+                        <div class="ff-results-grid">
+                            ${results.map(m => `
+                                <div class="ff-result-card">
+                                    <div class="ff-result-img">
+                                        <img src="${m.primary_image || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop'}" alt="${escapeHtml(m.common_name || '')}" loading="lazy">
+                                        <div class="ff-result-meaning">${escapeHtml(m.meaning || '')}</div>
+                                    </div>
+                                    <div class="ff-result-body">
+                                        <div class="ff-result-name">${escapeHtml(m.common_name || '')}</div>
+                                        <div class="ff-result-meaning-text">${escapeHtml(m.meaning || '')}</div>
+                                        <div class="ff-result-desc">${escapeHtml((m.description || '').slice(0, 100))}...</div>
+                                        <div class="ff-result-actions">
+                                            <a href="flower-meaning-detail.html?slug=${m.slug || ''}" class="btn btn-outline btn-sm">Learn More</a>
+                                            <a href="marketplace.html?search=${encodeURIComponent(m.common_name || '')}" class="btn btn-primary btn-sm">Buy Now</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="text-align:center;margin-top:2rem;">
+                            <button class="btn btn-outline" onclick="resetFinder()"><i class="bi bi-arrow-repeat"></i> Start Over</button>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="ff-no-results">
+                            <i class="bi bi-search" style="font-size:3rem;margin-bottom:1rem;display:block;opacity:0.5;"></i>
+                            <p>No flowers found matching your criteria.</p>
+                            <button class="btn btn-primary" onclick="resetFinder()">Try Again</button>
+                        </div>
+                    `;
+                }
+            } catch {}
+        }
+
+        function resetFinder() {
+            ffCurrentStep = 1;
+            ffSelections = { occasion: '', feeling: '', color: '', budget: 100 };
+            document.querySelectorAll('.ff-option, .ff-color').forEach(o => o.classList.remove('selected'));
+            document.getElementById('budgetSlider').value = 100;
+            document.getElementById('budgetDisplay').textContent = 'GHS 100';
+            document.getElementById('ffNextBtn').disabled = true;
+            document.querySelectorAll('.ff-step').forEach(s => s.classList.remove('active'));
+            document.querySelector('.ff-step[data-step="1"]').classList.add('active');
+            document.getElementById('ffPrevBtn').style.display = 'none';
+            document.getElementById('ffNextBtn').style.display = 'flex';
+            renderProgress();
+        }
+
+        function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    </script>
+</body>
+</html>
