@@ -88,6 +88,8 @@ app.use(rateLimiter(
 app.get('/flowers/category/:slug', (_, res) => res.sendFile(path.join(__dirname, 'category-listing.html')));
 app.get('/marketplace', (_, res) => res.sendFile(path.join(__dirname, 'marketplace.html')));
 app.get('/ai-scanner', (_, res) => res.sendFile(path.join(__dirname, 'ai-scanner.html')));
+app.get('/flower-encyclopedia', (_, res) => res.sendFile(path.join(__dirname, 'flower-encyclopedia.html')));
+app.get('/flower/:slug', (_, res) => res.sendFile(path.join(__dirname, 'flower-detail.html')));
 app.get('/admin', (_, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 app.get('/admin/flowers', (_, res) => res.sendFile(path.join(__dirname, 'admin-flowers.html')));
 app.get('/admin/category-images', (_, res) => res.sendFile(path.join(__dirname, 'admin-category-images.html')));
@@ -322,6 +324,7 @@ app.use('/api', require('./routes/badges'));
 app.use('/api', require('./routes/members'));
 app.use('/api/instructor', require('./routes/instructor'));
 app.use('/api', require('./routes/my-activities'));
+app.use('/api', require('./routes/flower-encyclopedia'));
 app.use('/api', require('./routes/category-images'));
 
 // ─── Error handling ────────────────────────────────────────────────────────
