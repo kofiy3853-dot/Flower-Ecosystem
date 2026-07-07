@@ -275,14 +275,21 @@ pool.query('SELECT 1')
     })
     .catch(e => console.warn('PostgreSQL unavailable — serving static files only:', e.message));
 
-// ─── Uploads static ───────────────────────────────────────────────────────
+// ─── Static files with cache headers ──────────────────────────────────────
 
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
 }
-app.use('/uploads', require('express').static(uploadsDir));
-app.use('/images', require('express').static(path.join(__dirname, 'images')));
+
+// Cache static assets for 1 day
+app.use('/images', require('express').static(path.join(__dirname, 'images'), { maxAge: '1d' }));
+app.use('/uploads', require('express').static(uploadsDir, { maxAge: '1d' }));
+
+// Cache CSS/JS for 1 week in production
+const staticOptions = process.env.NODE_ENV === 'production' ? { maxAge: '7d', immutable: true } : {};
+app.use('/styles', require('express').static(path.join(__dirname, 'styles'), staticOptions));
+app.use('/js', require('express').static(path.join(__dirname, 'js'), staticOptions));
 
 // ─── API Routes ────────────────────────────────────────────────────────────
 

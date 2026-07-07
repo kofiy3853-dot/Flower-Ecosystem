@@ -152,8 +152,30 @@ async function loadComponent(url, targetId) {
     }
 }
 
+// Add performance hints to document head
+function addPerformanceHints() {
+    if (document.querySelector('link[rel="preconnect"][href="https://images.unsplash.com"]')) return;
+
+    const hints = [
+        { rel: 'preconnect', href: 'https://images.unsplash.com', crossorigin: '' },
+        { rel: 'preconnect', href: 'https://ui-avatars.com', crossorigin: '' },
+        { rel: 'prefetch', href: 'marketplace.html' },
+        { rel: 'prefetch', href: 'learning.html' }
+    ];
+
+    hints.forEach(h => {
+        const link = document.createElement('link');
+        link.rel = h.rel;
+        link.href = h.href;
+        if (h.crossorigin) link.crossOrigin = 'anonymous';
+        document.head.appendChild(link);
+    });
+}
+
 // Automatically load shared components if their containers exist
 function initComponents() {
+    addPerformanceHints();
+
     if (document.getElementById('preloader-container')) {
         loadComponent('/components/preloader.html', 'preloader-container');
     }
