@@ -272,10 +272,10 @@ async function loadEvents() {
     if (currentCategory) params.set('category', currentCategory);
     if (search) params.set('search', search);
 
-    // Map filters
-    if (currentFilter === 'free') params.set('type', 'free');
-    if (currentFilter === 'online') params.set('type', 'online');
-    if (currentFilter === 'in-person') params.set('type', 'in-person');
+    // Map filters to correct API parameters
+    if (currentFilter === 'free') params.set('price', 'free');
+    if (currentFilter === 'online') params.set('location_type', 'online');
+    if (currentFilter === 'in-person') params.set('location_type', 'in-person');
     if (currentFilter === 'upcoming') params.set('status', 'upcoming');
     if (currentFilter === 'past') params.set('status', 'past');
     if (currentFilter === 'this-week' || currentFilter === 'this-month') params.set('status', 'upcoming');

@@ -23,7 +23,7 @@ router.get('/categories', asyncHandler(async (_, res) => {
 }));
 
 router.get('/', asyncHandler(async (req, res) => {
-    const { category, search, type, status = 'upcoming', sort = 'date', page = 1, limit = 20, featured } = req.query;
+    const { category, search, type, status = 'upcoming', sort = 'date', page = 1, limit = 20, featured, price, location_type } = req.query;
 
     if (await dbAvailable()) {
         try {
@@ -37,6 +37,9 @@ router.get('/', asyncHandler(async (req, res) => {
             if (type) { conditions.push(`e.event_type = $${idx}`); values.push(type.toUpperCase()); idx++; }
             if (search) { conditions.push(`(e.title ILIKE $${idx} OR e.description ILIKE $${idx})`); values.push(`%${search}%`); idx++; }
             if (featured === 'true') { conditions.push(`e.is_featured = true`); }
+            if (price === 'free') { conditions.push(`(e.price = 0 OR e.price IS NULL)`); }
+            if (location_type === 'online') { conditions.push(`(e.location ILIKE '%online%' OR e.location ILIKE '%zoom%' OR e.location ILIKE '%virtual%')`); }
+            if (location_type === 'in-person') { conditions.push(`(e.location IS NOT NULL AND e.location != '' AND e.location NOT ILIKE '%online%' AND e.location NOT ILIKE '%zoom%' AND e.location NOT ILIKE '%virtual%')`); }
 
             const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
             const sortMap = { date: 'e.event_date ASC', newest: 'e.created_at DESC', price_low: 'e.price ASC', price_high: 'e.price DESC', popular: 'reg_count DESC' };
@@ -67,16 +70,17 @@ router.get('/', asyncHandler(async (req, res) => {
 
             const dataR = await pool.query(dataQ, values);
 
-            // If database has results, return them
             if (dataR.rows.length > 0) {
                 return res.json({ events: dataR.rows, total, page: pg, limit: lim, pages: Math.ceil(total / lim) });
             }
         } catch (err) { console.error('Events query error:', err.message); }
     }
 
-    // Fallback to JSON file if database is empty or unavailable
     const fallback = readJSON(require('path').join(__dirname, '..', 'data', 'events.json'));
-    const filtered = category ? fallback.filter(e => (e.event_category || '').toLowerCase() === category.toLowerCase()) : fallback;
+    let filtered = category ? fallback.filter(e => (e.event_category || '').toLowerCase() === category.toLowerCase()) : fallback;
+    if (price === 'free') filtered = filtered.filter(e => !e.price || e.price === 0);
+    if (location_type === 'online') filtered = filtered.filter(e => (e.location || '').toLowerCase().includes('online'));
+    if (location_type === 'in-person') filtered = filtered.filter(e => e.location && !e.location.toLowerCase().includes('online'));
     res.json({ events: filtered, total: filtered.length, page: 1, limit: 20, pages: 1 });
 }));
 
