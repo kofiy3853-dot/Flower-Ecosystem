@@ -721,4 +721,121 @@ router.get('/:id/analytics', requireAuth, asyncHandler(async (req, res) => {
     });
 }));
 
+// ─── Seed Events (Admin only) ─────────────────────────────────────────
+
+router.post('/seed', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+
+    const userRole = (req.user.role || '').toUpperCase();
+    if (!['ADMIN', 'SUPERADMIN'].includes(userRole)) {
+        return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    // Check if events already exist
+    const existing = await pool.query('SELECT COUNT(*)::int AS c FROM events.events');
+    if (existing.rows[0].c > 0) {
+        return res.json({ message: 'Events already exist', count: existing.rows[0].c });
+    }
+
+    const events = [
+        {
+            title: 'Advanced Flower Arrangement Workshop',
+            description: 'Master the art of professional flower arrangement with hands-on training from industry experts. Learn bouquet design, color theory, and structural mechanics.',
+            location: 'Online (Zoom)',
+            event_date: '2026-08-20 10:00:00',
+            end_date: '2026-08-20 13:00:00',
+            event_type: 'WORKSHOP',
+            event_category: 'Floristry Workshops',
+            image_url: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=80&w=800&auto=format&fit=crop',
+            max_participants: 150,
+            price: 20.00,
+            difficulty: 'Advanced',
+            is_featured: true
+        },
+        {
+            title: 'Medicinal Flowers Webinar',
+            description: 'Discover the healing properties of common flowers and learn how to create natural remedies for everyday wellness.',
+            location: 'Online (Zoom)',
+            event_date: '2026-09-10 14:00:00',
+            end_date: '2026-09-10 15:30:00',
+            event_type: 'WEBINAR',
+            event_category: 'Medicinal Plants',
+            image_url: 'https://images.unsplash.com/photo-1471899236350-e3016bf1e69e?q=80&w=800&auto=format&fit=crop',
+            max_participants: 500,
+            price: 0,
+            difficulty: 'Beginner',
+            is_featured: true
+        },
+        {
+            title: 'Annual Flower Exhibition',
+            description: 'The largest flower exhibition in West Africa featuring international exhibitors, competitive displays, and rare plant auctions.',
+            location: 'Accra International Conference Centre',
+            event_date: '2026-10-10 09:00:00',
+            end_date: '2026-10-12 18:00:00',
+            event_type: 'EXHIBITION',
+            event_category: 'Exhibitions',
+            image_url: 'https://images.unsplash.com/photo-1567691482090-4cc36f5721f6?q=80&w=800&auto=format&fit=crop',
+            max_participants: 1000,
+            price: 20.00,
+            difficulty: 'All Levels',
+            is_featured: true
+        },
+        {
+            title: 'Wedding Flower Planning 101',
+            description: 'Expert tips for planning and executing stunning wedding flower designs on any budget. Perfect for aspiring wedding florists.',
+            location: 'Online (Zoom)',
+            event_date: '2026-08-05 18:00:00',
+            end_date: '2026-08-05 19:30:00',
+            event_type: 'WEBINAR',
+            event_category: 'Floristry Workshops',
+            image_url: 'https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=800&auto=format&fit=crop',
+            max_participants: 500,
+            price: 0,
+            difficulty: 'Beginner',
+            is_featured: false
+        },
+        {
+            title: 'Succulent Terrarium Building',
+            description: 'Build your own beautiful succulent terrarium to take home. All materials included. Fun for all ages!',
+            location: 'Takoradi Community Center',
+            event_date: '2026-08-18 14:00:00',
+            end_date: '2026-08-18 16:00:00',
+            event_type: 'WORKSHOP',
+            event_category: 'Gardening',
+            image_url: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?q=80&w=800&auto=format&fit=crop',
+            max_participants: 15,
+            price: 25.00,
+            difficulty: 'Beginner',
+            is_featured: false
+        },
+        {
+            title: 'Floral Photography Masterclass',
+            description: 'Capture your floral arrangements beautifully with smartphone or DSLR. Learn lighting, composition and editing techniques.',
+            location: 'Online (Live)',
+            event_date: '2026-09-02 16:00:00',
+            end_date: '2026-09-02 18:00:00',
+            event_type: 'WEBINAR',
+            event_category: 'Flower Care',
+            image_url: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=800&auto=format&fit=crop',
+            max_participants: 100,
+            price: 15.00,
+            difficulty: 'Intermediate',
+            is_featured: false
+        }
+    ];
+
+    let inserted = 0;
+    for (const e of events) {
+        const slug = e.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        await pool.query(
+            `INSERT INTO events.events (title, slug, description, location, event_date, end_date, event_type, event_category, image_url, max_participants, price, difficulty, is_featured, status, organizer_id)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'upcoming', $14)`,
+            [e.title, slug, e.description, e.location, e.event_date, e.end_date, e.event_type, e.event_category, e.image_url, e.max_participants, e.price, e.difficulty, e.is_featured, req.user.id]
+        );
+        inserted++;
+    }
+
+    res.json({ message: `Seeded ${inserted} events`, count: inserted });
+}));
+
 module.exports = router;
