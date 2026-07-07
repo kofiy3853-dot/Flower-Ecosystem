@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Flower Encyclopedia - Discover, identify, and learn about thousands of flowers and plants.">
+    <title>Flower Encyclopedia | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .enc-hero{background:linear-gradient(135deg,#1a472a 0%,#2d5a3d 50%,#1a472a 100%);padding:4rem 0 3rem;color:white;text-align:center;}
+        .enc-hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,2.8rem);margin-bottom:0.5rem;}
+        .enc-hero p{opacity:0.85;font-size:1.05rem;margin-bottom:1.5rem;max-width:600px;margin-left:auto;margin-right:auto;}
+        .enc-hero-btns{display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;}
+        .enc-hero-btns .btn{background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);backdrop-filter:blur(4px);}
+        .enc-hero-btns .btn:hover{background:white;color:var(--text-main);}
+
+        .enc-search{background:var(--bg-white);border-radius:16px;padding:1.5rem;box-shadow:0 10px 40px rgba(0,0,0,0.1);margin:-2rem auto 2rem;max-width:800px;position:relative;z-index:10;}
+        .enc-search-bar{display:flex;gap:0.5rem;margin-bottom:1rem;}
+        .enc-search-bar input{flex:1;padding:0.85rem 1.25rem;border:1px solid var(--border-color);border-radius:12px;font-size:1rem;outline:none;}
+        .enc-search-bar input:focus{border-color:var(--primary-color);}
+        .enc-filters{display:flex;gap:0.5rem;flex-wrap:wrap;}
+        .enc-filter{padding:0.4rem 0.8rem;border:1px solid var(--border-color);border-radius:20px;font-size:0.8rem;cursor:pointer;background:var(--bg-white);transition:all 0.2s;}
+        .enc-filter:hover,.enc-filter.active{border-color:var(--primary-color);color:var(--primary-color);background:var(--primary-light);}
+
+        .enc-ai-section{background:linear-gradient(135deg,var(--primary-light),#fce7f0);border-radius:16px;padding:2rem;margin-bottom:2rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center;}
+        .enc-ai-upload{border:2px dashed var(--primary-color);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:all 0.2s;background:white;}
+        .enc-ai-upload:hover{background:var(--primary-light);}
+        .enc-ai-upload i{font-size:3rem;color:var(--primary-color);margin-bottom:0.5rem;display:block;}
+        .enc-ai-result{background:white;border-radius:12px;padding:1.5rem;display:none;}
+        .enc-ai-result.show{display:block;}
+        .enc-ai-badge{display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.75rem;border-radius:20px;font-size:0.75rem;font-weight:600;margin-bottom:0.75rem;}
+        .enc-ai-badge.high{background:rgba(16,185,129,0.1);color:var(--accent-green);}
+
+        .enc-alpha{display:flex;justify-content:center;gap:0.25rem;flex-wrap:wrap;margin:2rem 0;}
+        .enc-alpha-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border-color);background:var(--bg-white);cursor:pointer;font-weight:500;font-size:0.85rem;transition:all 0.2s;}
+        .enc-alpha-btn:hover,.enc-alpha-btn.active{background:var(--primary-color);color:white;border-color:var(--primary-color);}
+
+        .enc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.25rem;margin:2rem 0;}
+        .enc-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:14px;overflow:hidden;transition:all 0.3s;cursor:pointer;}
+        .enc-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.1);}
+        .enc-card-img{height:180px;overflow:hidden;}
+        .enc-card-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s;}
+        .enc-card:hover .enc-card-img img{transform:scale(1.05);}
+        .enc-card-body{padding:1rem;}
+        .enc-card-name{font-weight:600;font-size:1rem;margin-bottom:0.2rem;}
+        .enc-card-sci{font-size:0.82rem;color:var(--primary-color);font-style:italic;margin-bottom:0.5rem;}
+        .enc-card-meta{display:flex;gap:0.75rem;font-size:0.75rem;color:var(--text-light);}
+        .enc-card-meta span{display:flex;align-items:center;gap:0.2rem;}
+        .enc-card-badge{position:absolute;top:0.75rem;right:0.75rem;background:white;padding:0.2rem 0.5rem;border-radius:6px;font-size:0.7rem;font-weight:600;}
+
+        .enc-season{margin:2rem 0;}
+        .enc-season h2{font-size:1.3rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;}
+        .enc-season-scroll{display:flex;gap:1rem;overflow-x:auto;padding-bottom:0.5rem;scrollbar-width:thin;}
+        .enc-season-scroll::-webkit-scrollbar{height:6px;}
+        .enc-season-scroll::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px;}
+        .enc-season-card{min-width:180px;flex-shrink:0;}
+
+        @media(max-width:768px){
+            .enc-ai-section{grid-template-columns:1fr;}
+            .enc-grid{grid-template-columns:repeat(2,1fr);}
+        }
+        @media(max-width:480px){
+            .enc-grid{grid-template-columns:1fr;}
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="enc-hero">
+        <div class="container">
+            <h1>🌸 Flower Encyclopedia</h1>
+            <p>Discover, identify, and learn about thousands of flowers and plants from around the world.</p>
+            <div class="enc-hero-btns">
+                <a href="#browse" class="btn">Browse Flowers</a>
+                <a href="#identify" class="btn">Identify a Flower</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search -->
+    <div class="container">
+        <div class="enc-search">
+            <div class="enc-search-bar">
+                <input type="text" id="encSearch" placeholder="Search by flower name, scientific name, color...">
+                <button class="btn btn-primary" onclick="searchFlowers()"><i class="bi bi-search"></i></button>
+            </div>
+            <div class="enc-filters" id="encFilters">
+                <button class="enc-filter" data-filter="all" onclick="setFilter('all')">All</button>
+                <button class="enc-filter" data-filter="indoor" onclick="setFilter('indoor')">Indoor</button>
+                <button class="enc-filter" data-filter="outdoor" onclick="setFilter('outdoor')">Outdoor</button>
+                <button class="enc-filter" data-filter="easy" onclick="setFilter('easy')">Easy Care</button>
+                <button class="enc-filter" data-filter="spring" onclick="setFilter('spring')">Spring</button>
+                <button class="enc-filter" data-filter="summer" onclick="setFilter('summer')">Summer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Identification -->
+    <div class="container" id="identify">
+        <div class="enc-ai-section">
+            <div>
+                <h2 style="margin-bottom:0.5rem;">📷 AI Flower Identification</h2>
+                <p style="color:var(--text-light);margin-bottom:1rem;">Upload a photo to instantly identify any flower</p>
+                <div class="enc-ai-upload" id="aiUpload" onclick="document.getElementById('aiFileInput').click()">
+                    <i class="bi bi-camera"></i>
+                    <p><strong>Upload Flower Photo</strong></p>
+                    <p style="font-size:0.8rem;">or drag and drop</p>
+                    <input type="file" id="aiFileInput" accept="image/*" style="display:none;" onchange="identifyFlower(this.files[0])">
+                </div>
+            </div>
+            <div class="enc-ai-result" id="aiResult">
+                <div class="enc-ai-badge high"><i class="bi bi-check-circle"></i> Identified</div>
+                <h3 id="aiFlowerName" style="margin-bottom:0.25rem;">-</h3>
+                <p style="font-style:italic;color:var(--primary-color);margin-bottom:0.75rem;" id="aiScientificName">-</p>
+                <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:1rem;" id="aiDescription">-</p>
+                <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                    <span class="enc-filter" id="aiCareLevel">-</span>
+                    <span class="enc-filter" id="aiSunlight">-</span>
+                    <span class="enc-filter" id="aiWater">-</span>
+                </div>
+                <a href="#" id="aiViewDetails" class="btn btn-primary btn-sm" style="margin-top:1rem;">View Full Details</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Flowers -->
+    <section class="section-padding" id="browse">
+        <div class="container">
+            <h2 style="margin-bottom:1.5rem;">Featured Flowers</h2>
+            <div class="enc-grid" id="featuredGrid"></div>
+        </div>
+    </section>
+
+    <!-- Alphabet Navigation -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <h2 style="margin-bottom:1rem;">Browse by Name</h2>
+            <div class="enc-alpha" id="alphaNav"></div>
+            <div class="enc-grid" id="flowerGrid"></div>
+            <div id="loadMore" style="text-align:center;margin-top:1.5rem;">
+                <button class="btn btn-outline" onclick="loadMoreFlowers()">Load More</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seasonal Flowers -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="enc-season">
+                <h2>🌸 Spring Flowers</h2>
+                <div class="enc-season-scroll" id="springFlowers"></div>
+            </div>
+            <div class="enc-season">
+                <h2>☀️ Summer Flowers</h2>
+                <div class="enc-season-scroll" id="summerFlowers"></div>
+            </div>
+            <div class="enc-season">
+                <h2>🍂 Autumn Flowers</h2>
+                <div class="enc-season-scroll" id="autumnFlowers"></div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script>
+        let allFlowers = [];
+        let currentLetter = '';
+        let currentFilter = 'all';
+        let currentPage = 1;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAlphaNav();
+            loadFeatured();
+            loadFlowers();
+            loadSeasonal();
+            setupDragDrop();
+        });
+
+        // ─── Alphabet Navigation ──────────────────────────────────────
+        function renderAlphaNav() {
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            document.getElementById('alphaNav').innerHTML = letters.map(l =>
+                `<button class="enc-alpha-btn${currentLetter === l ? ' active' : ''}" onclick="selectLetter('${l}')">${l}</button>`
+            ).join('') + `<button class="enc-alpha-btn${currentLetter === '' ? ' active' : ''}" onclick="selectLetter('')" style="width:auto;padding:0 0.75rem;">All</button>`;
+        }
+
+        function selectLetter(letter) {
+            currentLetter = letter;
+            currentPage = 1;
+            renderAlphaNav();
+            loadFlowers();
+        }
+
+        // ─── Filters ──────────────────────────────────────────────────
+        function setFilter(filter) {
+            currentFilter = filter;
+            currentPage = 1;
+            document.querySelectorAll('.enc-filter').forEach(f => f.classList.toggle('active', f.dataset.filter === filter));
+            loadFlowers();
+        }
+
+        function searchFlowers() {
+            currentPage = 1;
+            loadFlowers();
+        }
+
+        // ─── Load Data ────────────────────────────────────────────────
+        async function loadFeatured() {
+            try {
+                const res = await fetch('/api/flowers/featured');
+                const data = await res.json();
+                renderFlowerCards(data, 'featuredGrid');
+            } catch {}
+        }
+
+        async function loadFlowers() {
+            const search = document.getElementById('encSearch')?.value || '';
+            let url = `/api/flowers?page=${currentPage}&limit=20`;
+            if (search) url += `&search=${encodeURIComponent(search)}`;
+            if (currentLetter) url += `&letter=${currentLetter}`;
+            if (currentFilter === 'indoor') url += '&indoor_outdoor=Indoor';
+            if (currentFilter === 'outdoor') url += '&indoor_outdoor=Outdoor';
+            if (currentFilter === 'easy') url += '&care_level=Easy';
+            if (currentFilter === 'spring') url += '&season=Spring';
+            if (currentFilter === 'summer') url += '&season=Summer';
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                allFlowers = data.flowers || [];
+                renderFlowerCards(allFlowers, 'flowerGrid');
+                document.getElementById('loadMore').style.display = data.pages > currentPage ? 'block' : 'none';
+            } catch {}
+        }
+
+        function loadMoreFlowers() {
+            currentPage++;
+            loadFlowers();
+        }
+
+        async function loadSeasonal() {
+            const seasons = ['Spring', 'Summer', 'Autumn'];
+            for (const season of seasons) {
+                try {
+                    const res = await fetch(`/api/flowers/seasonal/${season}`);
+                    const data = await res.json();
+                    const container = document.getElementById(season.toLowerCase() + 'Flowers');
+                    if (container) {
+                        container.innerHTML = data.map(f => `
+                            <a href="flower-detail.html?slug=${f.slug}" class="enc-card enc-season-card" style="text-decoration:none;color:inherit;">
+                                <div class="enc-card-img">
+                                    <img src="${f.primary_image || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop'}" alt="${f.common_name}" loading="lazy">
+                                </div>
+                                <div class="enc-card-body">
+                                    <div class="enc-card-name">${escapeHtml(f.common_name)}</div>
+                                    <div class="enc-card-sci">${escapeHtml(f.scientific_name || '')}</div>
+                                </div>
+                            </a>
+                        `).join('');
+                    }
+                } catch {}
+            }
+        }
+
+        // ─── Render Cards ─────────────────────────────────────────────
+        function renderFlowerCards(flowers, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (!flowers.length) {
+                container.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:2rem;grid-column:1/-1;">No flowers found</p>';
+                return;
+            }
+
+            container.innerHTML = flowers.map(f => `
+                <a href="flower-detail.html?slug=${f.slug}" class="enc-card" style="text-decoration:none;color:inherit;">
+                    <div class="enc-card-img" style="position:relative;">
+                        <img src="${f.primary_image || f.image_url || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop'}" alt="${escapeHtml(f.common_name)}" loading="lazy">
+                        <span class="enc-card-badge">${escapeHtml(f.care_level || 'Easy')}</span>
+                    </div>
+                    <div class="enc-card-body">
+                        <div class="enc-card-name">${escapeHtml(f.common_name)}</div>
+                        <div class="enc-card-sci">${escapeHtml(f.scientific_name || '')}</div>
+                        <div class="enc-card-meta">
+                            <span><i class="bi bi-sun"></i> ${escapeHtml(f.sunlight || 'Sun')}</span>
+                            <span><i class="bi bi-droplet"></i> ${escapeHtml(f.water_requirements || 'Regular')}</span>
+                            <span><i class="bi bi-emoji-smile"></i> ${escapeHtml(f.indoor_outdoor || 'Outdoor')}</span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // ─── AI Identification ────────────────────────────────────────
+        function setupDragDrop() {
+            const area = document.getElementById('aiUpload');
+            ['dragenter', 'dragover'].forEach(e => area.addEventListener(e, ev => { ev.preventDefault(); area.style.background = 'var(--primary-light)'; }));
+            ['dragleave', 'drop'].forEach(e => area.addEventListener(e, ev => { ev.preventDefault(); area.style.background = 'white'; }));
+            area.addEventListener('drop', e => { if (e.dataTransfer.files.length) identifyFlower(e.dataTransfer.files[0]); });
+        }
+
+        async function identifyFlower(file) {
+            if (!file) return;
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('aiUpload').innerHTML = `
+                    <img src="${e.target.result}" style="max-height:150px;border-radius:8px;margin-bottom:0.5rem;">
+                    <p style="font-size:0.85rem;">Analyzing...</p>
+                `;
+            };
+            reader.readAsDataURL(file);
+
+            // Simulate AI identification (in production, call OpenAI Vision API)
+            setTimeout(() => {
+                const flowers = [
+                    { name: 'Rose', scientific: 'Rosa', care: 'Intermediate', sun: 'Full Sun', water: 'Regular', desc: 'Classic flowering plant known for beautiful blooms and fragrance.' },
+                    { name: 'Sunflower', scientific: 'Helianthus annuus', care: 'Easy', sun: 'Full Sun', water: 'Regular', desc: 'Bright, cheerful flower that follows the sun.' },
+                    { name: 'Tulip', scientific: 'Tulipa', care: 'Easy', sun: 'Full Sun', water: 'Moderate', desc: 'Spring-blooming bulb flower in many colors.' },
+                    { name: 'Orchid', scientific: 'Orchidaceae', care: 'Advanced', sun: 'Indirect', water: 'Low', desc: 'Exotic flower known for stunning beauty.' },
+                    { name: 'Lily', scientific: 'Lilium', care: 'Intermediate', sun: 'Full Sun', water: 'Regular', desc: 'Elegant flower with large, dramatic blooms.' }
+                ];
+
+                const result = flowers[Math.floor(Math.random() * flowers.length)];
+
+                document.getElementById('aiUpload').innerHTML = `
+                    <img src="${URL.createObjectURL(file)}" style="max-height:150px;border-radius:8px;margin-bottom:0.5rem;">
+                    <p style="font-size:0.85rem;color:var(--accent-green);"><i class="bi bi-check-circle"></i> Identified!</p>
+                `;
+
+                document.getElementById('aiFlowerName').textContent = result.name;
+                document.getElementById('aiScientificName').textContent = result.scientific;
+                document.getElementById('aiDescription').textContent = result.desc;
+                document.getElementById('aiCareLevel').textContent = result.care;
+                document.getElementById('aiSunlight').textContent = result.sun;
+                document.getElementById('aiWater').textContent = result.water;
+                document.getElementById('aiViewDetails').href = `flower-detail.html?slug=${result.name.toLowerCase()}`;
+                document.getElementById('aiResult').classList.add('show');
+            }, 1500);
+        }
+
+        function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    </script>
+</body>
+</html>
