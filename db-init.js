@@ -207,6 +207,42 @@ async function run() {
             }
         }
 
+        // Run flower encyclopedia tables
+        const flowerEncPath = path.join(__dirname, 'sql', 'flower-encyclopedia.sql');
+        if (fs.existsSync(flowerEncPath)) {
+            console.log('Running flower-encyclopedia.sql...');
+            try {
+                await client.query(fs.readFileSync(flowerEncPath, 'utf8'));
+                console.log('flower-encyclopedia.sql applied.');
+            } catch (e) {
+                console.log('flower-encyclopedia.sql partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
+        // Run flower meanings tables
+        const flowerMeaningsPath = path.join(__dirname, 'sql', 'flower-meanings.sql');
+        if (fs.existsSync(flowerMeaningsPath)) {
+            console.log('Running flower-meanings.sql...');
+            try {
+                await client.query(fs.readFileSync(flowerMeaningsPath, 'utf8'));
+                console.log('flower-meanings.sql applied.');
+            } catch (e) {
+                console.log('flower-meanings.sql partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
+        // Run care guides enhanced tables
+        const careGuidesPath = path.join(__dirname, 'sql', 'care-guides-enhanced.sql');
+        if (fs.existsSync(careGuidesPath)) {
+            console.log('Running care-guides-enhanced.sql...');
+            try {
+                await client.query(fs.readFileSync(careGuidesPath, 'utf8'));
+                console.log('care-guides-enhanced.sql applied.');
+            } catch (e) {
+                console.log('care-guides-enhanced.sql partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
         // Sync students_count for all courses from actual enrollment data
         try {
             await client.query(`
