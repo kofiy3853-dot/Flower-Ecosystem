@@ -91,6 +91,7 @@ app.get('/ai-scanner', (_, res) => res.sendFile(path.join(__dirname, 'ai-scanner
 app.get('/flower-encyclopedia', (_, res) => res.sendFile(path.join(__dirname, 'flower-encyclopedia.html')));
 app.get('/flower-meanings', (_, res) => res.sendFile(path.join(__dirname, 'flower-meanings.html')));
 app.get('/flower-finder', (_, res) => res.sendFile(path.join(__dirname, 'flower-finder.html')));
+app.get('/care-guides-hub', (_, res) => res.sendFile(path.join(__dirname, 'care-guides-hub.html')));
 app.get('/flower/:slug', (_, res) => res.sendFile(path.join(__dirname, 'flower-detail.html')));
 app.get('/admin', (_, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 app.get('/admin/flowers', (_, res) => res.sendFile(path.join(__dirname, 'admin-flowers.html')));
@@ -328,6 +329,7 @@ app.use('/api/instructor', require('./routes/instructor'));
 app.use('/api', require('./routes/my-activities'));
 app.use('/api', require('./routes/flower-encyclopedia'));
 app.use('/api', require('./routes/flower-meanings'));
+app.use('/api', require('./routes/care-guides-enhanced'));
 app.use('/api', require('./routes/category-images'));
 
 // ─── Error handling ────────────────────────────────────────────────────────

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Flower Care Guides - Learn how to grow healthier flowers with expert care tips and AI assistance.">
+    <title>Flower Care Guides | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .cg-hero{background:linear-gradient(135deg,#065f46 0%,#047857 50%,#065f46 100%);padding:4rem 0 3rem;color:white;text-align:center;}
+        .cg-hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,2.8rem);margin-bottom:0.5rem;}
+        .cg-hero p{opacity:0.85;font-size:1.05rem;max-width:600px;margin:0 auto;}
+
+        .cg-search{background:var(--bg-white);border-radius:16px;padding:1.25rem;box-shadow:0 10px 40px rgba(0,0,0,0.1);margin:-1.5rem auto 2rem;max-width:600px;}
+        .cg-search input{width:100%;padding:0.85rem 1.25rem;border:1px solid var(--border-color);border-radius:12px;font-size:1rem;outline:none;}
+        .cg-search input:focus{border-color:var(--primary-color);}
+
+        .cg-ai-section{background:linear-gradient(135deg,var(--primary-light),#fce7f0);border-radius:16px;padding:2rem;margin:2rem auto;max-width:700px;}
+        .cg-ai-input{display:flex;gap:0.5rem;margin-top:1rem;}
+        .cg-ai-input input{flex:1;padding:0.85rem 1rem;border:1px solid var(--border-color);border-radius:12px;font-size:0.95rem;}
+        .cg-ai-examples{display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.75rem;}
+        .cg-ai-example{padding:0.35rem 0.7rem;border:1px solid var(--border-color);border-radius:20px;font-size:0.78rem;cursor:pointer;background:var(--bg-white);transition:all 0.2s;}
+        .cg-ai-example:hover{border-color:var(--primary-color);color:var(--primary-color);}
+
+        .cg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin:2rem 0;}
+        .cg-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:14px;padding:1.25rem;text-align:center;cursor:pointer;transition:all 0.3s;text-decoration:none;color:inherit;}
+        .cg-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.1);border-color:var(--primary-color);}
+        .cg-card-icon{font-size:2.5rem;margin-bottom:0.5rem;}
+        .cg-card-name{font-weight:600;font-size:0.9rem;}
+
+        .cg-guides{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;margin:2rem 0;}
+        .cg-guide-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:14px;overflow:hidden;transition:all 0.3s;cursor:pointer;text-decoration:none;color:inherit;}
+        .cg-guide-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.1);}
+        .cg-guide-img{height:160px;overflow:hidden;position:relative;}
+        .cg-guide-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s;}
+        .cg-guide-card:hover .cg-guide-img img{transform:scale(1.05);}
+        .cg-guide-badge{position:absolute;top:0.75rem;left:0.75rem;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.7rem;font-weight:600;background:rgba(255,255,255,0.95);}
+        .cg-guide-difficulty{color:var(--accent-green);}
+        .cg-guide-body{padding:1.25rem;}
+        .cg-guide-name{font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:0.25rem;}
+        .cg-guide-meta{display:flex;gap:0.75rem;font-size:0.78rem;color:var(--text-light);margin-top:0.5rem;}
+        .cg-guide-meta span{display:flex;align-items:center;gap:0.2rem;}
+
+        .cg-no-results{text-align:center;padding:3rem;color:var(--text-light);}
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="cg-hero">
+        <div class="container">
+            <h1>🌿 Flower Care Guides</h1>
+            <p>Learn how to grow healthier flowers with expert care tips, maintenance guides, and AI assistance.</p>
+        </div>
+    </section>
+
+    <!-- Search -->
+    <div class="container">
+        <div class="cg-search">
+            <input type="text" id="cgSearch" placeholder="Search flower, plant, or care topic..." oninput="debounceSearch()">
+        </div>
+    </div>
+
+    <!-- AI Care Assistant -->
+    <div class="container">
+        <div class="cg-ai-section">
+            <h2>🤖 Ask the AI Plant Expert</h2>
+            <p style="color:var(--text-light);">What would you like help with?</p>
+            <div class="cg-ai-input">
+                <input type="text" id="aiCareInput" placeholder="e.g., Why are my rose leaves turning yellow?">
+                <button class="btn btn-primary" onclick="askAICare()"><i class="bi bi-send"></i></button>
+            </div>
+            <div class="cg-ai-examples">
+                <button class="cg-ai-example" onclick="askAIExample('Why are my rose leaves turning yellow?')">Yellow leaves</button>
+                <button class="cg-ai-example" onclick="askAIExample('How often should I water orchids?')">Orchid watering</button>
+                <button class="cg-ai-example" onclick="askAIExample('Can lilies grow indoors?')">Indoor lilies</button>
+                <button class="cg-ai-example" onclick="askAIExample('Best fertilizer for roses?')">Rose fertilizer</button>
+            </div>
+            <div id="aiCareResult" style="display:none;margin-top:1rem;padding:1rem;background:white;border-radius:12px;"></div>
+        </div>
+    </div>
+
+    <!-- Browse by Flower -->
+    <section class="section-padding">
+        <div class="container">
+            <h2>Browse by Flower</h2>
+            <p style="color:var(--text-light);margin-bottom:1rem;">Find care guides for specific flowers</p>
+            <div class="cg-grid" id="flowerGrid"></div>
+        </div>
+    </section>
+
+    <!-- Browse by Topic -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <h2>Browse by Care Topic</h2>
+            <p style="color:var(--text-light);margin-bottom:1rem;">Learn about specific care aspects</p>
+            <div class="cg-grid" id="topicGrid"></div>
+        </div>
+    </section>
+
+    <!-- Featured Guides -->
+    <section class="section-padding">
+        <div class="container">
+            <h2>Featured Care Guides</h2>
+            <p style="color:var(--text-light);margin-bottom:1rem;">Expert-curated guides for popular flowers</p>
+            <div class="cg-guides" id="featuredGuides"></div>
+        </div>
+    </section>
+
+    <!-- Seasonal Tips -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <h2>Seasonal Care Tips</h2>
+            <p style="color:var(--text-light);margin-bottom:1rem;">What to do right now</p>
+            <div id="seasonalTips"></div>
+        </div>
+    </section>
+
+    <!-- All Guides -->
+    <section class="section-padding">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+                <h2>All Care Guides</h2>
+                <select id="cgSort" onchange="loadAllGuides()" style="padding:0.5rem 1rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);">
+                    <option value="popular">Most Popular</option>
+                    <option value="newest">Newest</option>
+                    <option value="name">Name A-Z</option>
+                </select>
+            </div>
+            <div class="cg-guides" id="allGuides"></div>
+            <div id="loadMore" style="text-align:center;margin-top:1.5rem;">
+                <button class="btn btn-outline" onclick="loadMoreGuides()">Load More</button>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script>
+        let cgPage = 1;
+        let searchTimeout = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFlowers();
+            loadTopics();
+            loadFeaturedGuides();
+            loadSeasonalTips();
+            loadAllGuides();
+        });
+
+        // ─── Search ──────────────────────────────────────────────────
+        function debounceSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => loadAllGuides(), 300);
+        }
+
+        // ─── Browse by Flower ────────────────────────────────────────
+        async function loadFlowers() {
+            const flowers = [
+                { name: 'Roses', icon: '🌹', slug: 'rose' },
+                { name: 'Tulips', icon: '🌷', slug: 'tulip' },
+                { name: 'Sunflowers', icon: '🌻', slug: 'sunflower' },
+                { name: 'Orchids', icon: '🪴', slug: 'orchid' },
+                { name: 'Lilies', icon: '🌺', slug: 'lily' },
+                { name: 'Peonies', icon: '🌸', slug: 'peony' },
+                { name: 'Hydrangeas', icon: '💠', slug: 'hydrangea' },
+                { name: 'Lavender', icon: '💜', slug: 'lavender' }
+            ];
+
+            document.getElementById('flowerGrid').innerHTML = flowers.map(f => `
+                <div class="cg-card" onclick="filterByFlower('${f.name}')">
+                    <div class="cg-card-icon">${f.icon}</div>
+                    <div class="cg-card-name">${f.name}</div>
+                </div>
+            `).join('');
+        }
+
+        function filterByFlower(name) {
+            document.getElementById('cgSearch').value = name;
+            loadAllGuides();
+        }
+
+        // ─── Browse by Topic ─────────────────────────────────────────
+        function loadTopics() {
+            const topics = [
+                { name: 'Watering', icon: '💧' },
+                { name: 'Sunlight', icon: '☀️' },
+                { name: 'Soil', icon: '🌱' },
+                { name: 'Repotting', icon: '🪴' },
+                { name: 'Pruning', icon: '✂️' },
+                { name: 'Temperature', icon: '🌡️' },
+                { name: 'Pest Control', icon: '🐛' },
+                { name: 'Fertilizer', icon: '🍃' },
+                { name: 'Blooming', icon: '🌼' },
+                { name: 'Winter Care', icon: '❄️' }
+            ];
+
+            document.getElementById('topicGrid').innerHTML = topics.map(t => `
+                <div class="cg-card" onclick="filterByFlower('${t.name}')">
+                    <div class="cg-card-icon">${t.icon}</div>
+                    <div class="cg-card-name">${t.name}</div>
+                </div>
+            `).join('');
+        }
+
+        // ─── Featured Guides ─────────────────────────────────────────
+        async function loadFeaturedGuides() {
+            try {
+                const res = await fetch('/api/care-guides/featured');
+                const data = await res.json();
+                renderGuideCards(data, 'featuredGuides');
+            } catch {}
+        }
+
+        // ─── Seasonal Tips ───────────────────────────────────────────
+        function loadSeasonalTips() {
+            const month = new Date().getMonth();
+            let season, tips;
+
+            if (month >= 2 && month <= 4) {
+                season = '🌸 Spring';
+                tips = [
+                    'Start fertilizing as new growth appears',
+                    'Prune dead branches from winter',
+                    'Transplant seedlings outdoors',
+                    'Monitor for early pest activity'
+                ];
+            } else if (month >= 5 && month <= 7) {
+                season = '☀️ Summer';
+                tips = [
+                    'Water deeply during hot spells',
+                    'Deadhead spent blooms regularly',
+                    'Provide shade for heat-sensitive plants',
+                    'Harvest flowers in the cool morning'
+                ];
+            } else if (month >= 8 && month <= 10) {
+                season = '🍂 Autumn';
+                tips = [
+                    'Reduce watering as growth slows',
+                    'Plant spring-blooming bulbs',
+                    'Collect seeds for next year',
+                    'Protect tender plants from frost'
+                ];
+            } else {
+                season = '❄️ Winter';
+                tips = [
+                    'Keep indoor plants away from drafts',
+                    'Reduce watering frequency',
+                    'Provide extra light for houseplants',
+                    'Plan your spring garden'
+                ];
+            }
+
+            document.getElementById('seasonalTips').innerHTML = `
+                <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:14px;padding:1.5rem;">
+                    <h3 style="margin-bottom:1rem;">${season} Care Tips</h3>
+                    <ul style="list-style:none;padding:0;">
+                        ${tips.map(t => `
+                            <li style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0;border-bottom:1px solid var(--border-light);font-size:0.9rem;">
+                                <i class="bi bi-check-circle-fill" style="color:var(--accent-green);"></i> ${t}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        // ─── All Guides ──────────────────────────────────────────────
+        async function loadAllGuides() {
+            const search = document.getElementById('cgSearch')?.value || '';
+            const sort = document.getElementById('cgSort')?.value || 'popular';
+            let url = `/api/care-guides?page=${cgPage}&limit=12&sort=${sort}`;
+            if (search) url += `&search=${encodeURIComponent(search)}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                renderGuideCards(data.guides || [], 'allGuides');
+                document.getElementById('loadMore').style.display = data.pages > cgPage ? 'block' : 'none';
+            } catch {}
+        }
+
+        function loadMoreGuides() {
+            cgPage++;
+            loadAllGuides();
+        }
+
+        // ─── Render Cards ────────────────────────────────────────────
+        function renderGuideCards(guides, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (!guides.length) {
+                container.innerHTML = '<div class="cg-no-results"><p>No care guides found</p></div>';
+                return;
+            }
+
+            container.innerHTML = guides.map(g => `
+                <a href="care-guide-detail.html?slug=${g.slug || ''}" class="cg-guide-card">
+                    <div class="cg-guide-img">
+                        <img src="${g.cover_image || g.image_url || 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=400&auto=format&fit=crop'}" alt="${escapeHtml(g.title || g.common_name || '')}" loading="lazy">
+                        <span class="cg-guide-badge cg-guide-difficulty">${escapeHtml(g.difficulty || 'Beginner')}</span>
+                    </div>
+                    <div class="cg-guide-body">
+                        <div class="cg-guide-name">${escapeHtml(g.common_name || g.title || '')}</div>
+                        <div style="font-size:0.85rem;color:var(--text-light);">${escapeHtml(g.description || '').slice(0, 80)}...</div>
+                        <div class="cg-guide-meta">
+                            <span><i class="bi bi-clock"></i> ${g.reading_time || 10} min</span>
+                            <span><i class="bi bi-${g.indoor_outdoor === 'Indoor' ? 'house' : 'tree'}"></i> ${escapeHtml(g.indoor_outdoor || 'Outdoor')}</span>
+                            <span><i class="bi bi-eye"></i> ${g.views || 0}</span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // ─── AI Care Assistant ───────────────────────────────────────
+        function askAIExample(question) {
+            document.getElementById('aiCareInput').value = question;
+            askAICare();
+        }
+
+        async function askAICare() {
+            const question = document.getElementById('aiCareInput').value.trim();
+            if (!question) return;
+
+            const resultDiv = document.getElementById('aiCareResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p style="color:var(--text-light);"><i class="bi bi-hourglass-split"></i> Thinking...</p>';
+
+            // Simulate AI response
+            setTimeout(() => {
+                const q = question.toLowerCase();
+                let answer = '';
+
+                if (q.includes('yellow') && q.includes('leaves')) {
+                    answer = `<strong>Yellow leaves</strong> are usually caused by:<br><br>
+                        1. <strong>Overwatering</strong> - Check if soil is soggy<br>
+                        2. <strong>Nutrient deficiency</strong> - Try a balanced fertilizer<br>
+                        3. <strong>Poor drainage</strong> - Ensure pot has drainage holes<br><br>
+                        <em>Tip: Let the top inch of soil dry between waterings.</em>`;
+                } else if (q.includes('water') && q.includes('orchid')) {
+                    answer = `<strong>Orchid watering</strong>:<br><br>
+                        Water once a week in winter, twice in summer.<br>
+                        Use room temperature water.<br>
+                        Water in the morning so excess evaporates.<br>
+                        Never let roots sit in standing water.<br><br>
+                        <em>Tip: Ice cube method works well for Phalaenopsis orchids.</em>`;
+                } else if (q.includes('indoor') && q.includes('lily')) {
+                    answer = `<strong>Indoor Lilies</strong>:<br><br>
+                        Yes, lilies can grow indoors with proper care:<br>
+                        • Bright indirect light (6+ hours)<br>
+                        • Well-draining soil<br>
+                        • Keep soil moist but not soggy<br>
+                        • Cool temperatures (60-70°F)<br><br>
+                        <em>Note: Lilies are toxic to cats and dogs.</em>`;
+                } else if (q.includes('fertilizer') && q.includes('rose')) {
+                    answer = `<strong>Best fertilizer for roses</strong>:<br><br>
+                        • Balanced NPK (10-10-10) for general use<br>
+                        • High-phosphorus (5-10-5) for more blooms<br>
+                        • Apply every 4-6 weeks during growing season<br>
+                        • Stop fertilizing 6 weeks before first frost<br><br>
+                        <em>Tip: Organic options include compost and fish emulsion.</em>`;
+                } else {
+                    answer = `I can help with plant care! Here are some common topics:<br><br>
+                        • Watering schedules<br>
+                        • Light requirements<br>
+                        • Soil and fertilizer<br>
+                        • Pest control<br>
+                        • Pruning tips<br><br>
+                        Try asking about a specific flower or problem!`;
+                }
+
+                resultDiv.innerHTML = `<div style="padding:1rem;background:var(--primary-light);border-radius:12px;border-left:4px solid var(--primary-color);">${answer}</div>`;
+            }, 800);
+        }
+
+        function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    </script>
+</body>
+</html>
