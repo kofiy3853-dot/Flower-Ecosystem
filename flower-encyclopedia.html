@@ -132,12 +132,23 @@
                 </div>
             </div>
 
-            <!-- Clear Filters -->
-            <div style="margin-top:0.75rem;">
-                <button class="btn btn-sm btn-outline" onclick="clearFilters()" id="clearFiltersBtn" style="display:none;">
-                    <i class="bi bi-x-circle"></i> Clear Filters
-                </button>
-                <span class="enc-result-count" id="resultCount"></span>
+            <!-- Sort & Clear -->
+            <div style="margin-top:0.75rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                <div style="display:flex;align-items:center;gap:0.5rem;">
+                    <span style="font-size:0.75rem;color:var(--text-muted);">Sort by:</span>
+                    <select id="encSort" onchange="setSort(this.value)" style="padding:0.35rem 0.6rem;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:0.8rem;background:var(--bg-white);">
+                        <option value="name">Name A-Z</option>
+                        <option value="name_desc">Name Z-A</option>
+                        <option value="newest">Newest</option>
+                        <option value="popular">Most Popular</option>
+                    </select>
+                </div>
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <button class="btn btn-sm btn-outline" onclick="clearFilters()" id="clearFiltersBtn" style="display:none;">
+                        <i class="bi bi-x-circle"></i> Clear Filters
+                    </button>
+                    <span class="enc-result-count" id="resultCount"></span>
+                </div>
             </div>
         </div>
     </div>
@@ -220,6 +231,7 @@
         let currentPage = 1;
         let currentSeason = '';
         let currentColor = '';
+        let currentSort = 'name';
         let searchTimeout = null;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -303,6 +315,12 @@
             loadFlowers();
         }
 
+        function setSort(sort) {
+            currentSort = sort;
+            currentPage = 1;
+            loadFlowers();
+        }
+
         // ─── Load Data ────────────────────────────────────────────────
         async function loadFeatured() {
             try {
@@ -314,7 +332,7 @@
 
         async function loadFlowers() {
             const search = document.getElementById('encSearch')?.value || '';
-            let url = `/api/flowers?page=${currentPage}&limit=20`;
+            let url = `/api/flowers?page=${currentPage}&limit=20&sort=${currentSort}`;
             if (search) url += `&search=${encodeURIComponent(search)}`;
             if (currentLetter) url += `&letter=${currentLetter}`;
             if (currentFilter === 'indoor') url += '&indoor_outdoor=Indoor';

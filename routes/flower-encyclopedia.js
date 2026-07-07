@@ -23,7 +23,7 @@ router.get('/flowers', asyncHandler(async (req, res) => {
             if (letter) { conditions.push(`f.common_name ILIKE $${idx}`); values.push(`${letter}%`); idx++; }
 
             const where = 'WHERE ' + conditions.join(' AND ');
-            const sortMap = { name: 'f.common_name ASC', newest: 'f.created_at DESC', popular: 'f.views DESC' };
+            const sortMap = { name: 'f.common_name ASC', name_desc: 'f.common_name DESC', newest: 'f.created_at DESC', popular: 'f.views DESC' };
             const orderBy = sortMap[sort] || 'f.common_name ASC';
 
             const pg = Math.max(1, parseInt(page, 10) || 1);
