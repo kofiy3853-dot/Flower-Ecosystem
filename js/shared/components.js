@@ -166,6 +166,12 @@ function initComponents() {
     if (document.getElementById('footer-container')) {
         loadComponent('/components/footer.html', 'footer-container');
     }
+    // Load AI Assistant into body
+    if (!document.getElementById('aiAssistant') && !window.location.pathname.includes('admin')) {
+        fetch('/components/ai-assistant.html').then(r => r.text()).then(html => {
+            document.body.insertAdjacentHTML('beforeend', html);
+        }).catch(() => {});
+    }
 }
 
 if (document.readyState === 'loading') {

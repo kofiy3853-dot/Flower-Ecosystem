@@ -1,0 +1,221 @@
+<!-- AI Assistant Floating Widget -->
+<div id="aiAssistant" style="position:fixed;bottom:24px;left:24px;z-index:1000;">
+    <!-- Chat Toggle Button -->
+    <button id="aiToggle" onclick="toggleAiChat()" style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--primary-color),#be185d);color:white;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(216,68,124,0.4);display:flex;align-items:center;justify-content:center;font-size:1.5rem;transition:transform 0.3s;">
+        <i class="bi bi-robot"></i>
+    </button>
+
+    <!-- Chat Window -->
+    <div id="aiChatWindow" style="display:none;position:absolute;bottom:70px;left:0;width:380px;height:500px;background:var(--bg-white);border:1px solid var(--border-color);border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.15);overflow:hidden;flex-direction:column;">
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,var(--primary-color),#be185d);color:white;padding:1rem 1.25rem;display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+                <div style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <div>
+                    <div style="font-weight:600;font-size:0.95rem;">Flora AI Assistant</div>
+                    <div style="font-size:0.75rem;opacity:0.8;">Ask me anything about flowers</div>
+                </div>
+            </div>
+            <button onclick="toggleAiChat()" style="background:none;border:none;color:white;font-size:1.2rem;cursor:pointer;opacity:0.8;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Messages -->
+        <div id="aiMessages" style="flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.75rem;">
+            <div class="ai-message ai-bot" style="display:flex;gap:0.5rem;">
+                <div style="width:28px;height:28px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="bi bi-robot" style="color:var(--primary-color);font-size:0.8rem;"></i>
+                </div>
+                <div style="background:var(--bg-light);padding:0.75rem 1rem;border-radius:12px;border-top-left-radius:4px;max-width:85%;font-size:0.9rem;line-height:1.5;">
+                    Hi! I'm Flora, your flower assistant. I can help you with:
+                    <br><br>
+                    🌸 Finding the right flowers<br>
+                    💐 Care tips and advice<br>
+                    🎨 Arrangement suggestions<br>
+                    🛒 Product recommendations<br>
+                    <br>
+                    How can I help you today?
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div style="padding:0.5rem 1rem;display:flex;gap:0.4rem;flex-wrap:wrap;border-top:1px solid var(--border-light);">
+            <button onclick="sendQuickMessage('What flowers are best for weddings?')" style="padding:0.35rem 0.6rem;border:1px solid var(--border-color);border-radius:16px;background:var(--bg-white);font-size:0.75rem;cursor:pointer;color:var(--text-main);white-space:nowrap;">Wedding flowers</button>
+            <button onclick="sendQuickMessage('How do I care for roses?')" style="padding:0.35rem 0.6rem;border:1px solid var(--border-color);border-radius:16px;background:var(--bg-white);font-size:0.75rem;cursor:pointer;color:var(--text-main);white-space:nowrap;">Rose care</button>
+            <button onclick="sendQuickMessage('Suggest an arrangement for a birthday')" style="padding:0.35rem 0.6rem;border:1px solid var(--border-color);border-radius:16px;background:var(--bg-white);font-size:0.75rem;cursor:pointer;color:var(--text-main);white-space:nowrap;">Birthday ideas</button>
+        </div>
+
+        <!-- Input -->
+        <div style="padding:0.75rem 1rem;border-top:1px solid var(--border-color);display:flex;gap:0.5rem;">
+            <input type="text" id="aiInput" placeholder="Type your question..." onkeydown="if(event.key==='Enter')sendAiMessage()" style="flex:1;padding:0.6rem 1rem;border:1px solid var(--border-color);border-radius:20px;font-size:0.9rem;outline:none;">
+            <button onclick="sendAiMessage()" style="width:36px;height:36px;border-radius:50%;background:var(--primary-color);color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+                <i class="bi bi-send-fill" style="font-size:0.8rem;"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .ai-message { animation: fadeInUp 0.3s ease; }
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    .ai-typing { display:flex; gap:4px; padding:0.5rem; }
+    .ai-typing span { width:6px; height:6px; background:var(--text-muted); border-radius:50%; animation: typing 1.4s infinite; }
+    .ai-typing span:nth-child(2) { animation-delay:0.2s; }
+    .ai-typing span:nth-child(3) { animation-delay:0.4s; }
+    @keyframes typing { 0%, 60%, 100% { transform:translateY(0); } 30% { transform:translateY(-4px); } }
+
+    @media(max-width:480px) {
+        #aiChatWindow { width:calc(100vw - 32px); left:-12px; height:70vh; }
+    }
+</style>
+
+<script>
+    let aiChatOpen = false;
+
+    function toggleAiChat() {
+        aiChatOpen = !aiChatOpen;
+        const window = document.getElementById('aiChatWindow');
+        const toggle = document.getElementById('aiToggle');
+        window.style.display = aiChatOpen ? 'flex' : 'none';
+        toggle.innerHTML = aiChatOpen ? '<i class="bi bi-x-lg"></i>' : '<i class="bi bi-robot"></i>';
+        if (aiChatOpen) document.getElementById('aiInput').focus();
+    }
+
+    function sendQuickMessage(msg) {
+        document.getElementById('aiInput').value = msg;
+        sendAiMessage();
+    }
+
+    async function sendAiMessage() {
+        const input = document.getElementById('aiInput');
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        // Add user message
+        addMessage(msg, 'user');
+        input.value = '';
+
+        // Show typing indicator
+        const typing = document.createElement('div');
+        typing.className = 'ai-message ai-bot';
+        typing.id = 'typingIndicator';
+        typing.innerHTML = `
+            <div style="width:28px;height:28px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="bi bi-robot" style="color:var(--primary-color);font-size:0.8rem;"></i>
+            </div>
+            <div class="ai-typing"><span></span><span></span><span></span></div>
+        `;
+        document.getElementById('aiMessages').appendChild(typing);
+        scrollAiMessages();
+
+        // Get AI response
+        try {
+            const response = await getAiResponse(msg);
+            document.getElementById('typingIndicator')?.remove();
+            addMessage(response, 'bot');
+        } catch (err) {
+            document.getElementById('typingIndicator')?.remove();
+            addMessage("Sorry, I couldn't process that. Please try again.", 'bot');
+        }
+    }
+
+    function addMessage(text, sender) {
+        const messages = document.getElementById('aiMessages');
+        const div = document.createElement('div');
+        div.className = `ai-message ai-${sender}`;
+
+        if (sender === 'user') {
+            div.style.display = 'flex';
+            div.style.justifyContent = 'flex-end';
+            div.innerHTML = `<div style="background:var(--primary-color);color:white;padding:0.75rem 1rem;border-radius:12px;border-top-right-radius:4px;max-width:85%;font-size:0.9rem;line-height:1.5;">${escapeHtml(text)}</div>`;
+        } else {
+            div.style.display = 'flex';
+            div.innerHTML = `
+                <div style="width:28px;height:28px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="bi bi-robot" style="color:var(--primary-color);font-size:0.8rem;"></i>
+                </div>
+                <div style="background:var(--bg-light);padding:0.75rem 1rem;border-radius:12px;border-top-left-radius:4px;max-width:85%;font-size:0.9rem;line-height:1.5;">${text}</div>
+            `;
+        }
+
+        messages.appendChild(div);
+        scrollAiMessages();
+    }
+
+    function scrollAiMessages() {
+        const messages = document.getElementById('aiMessages');
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    async function getAiResponse(question) {
+        const q = question.toLowerCase();
+
+        // Simple keyword-based responses
+        if (q.includes('wedding') || q.includes('bridal')) {
+            return `For weddings, popular choices include:<br><br>
+                🌹 <strong>Roses</strong> - Classic symbol of love<br>
+                🌸 <strong>Peonies</strong> - Romance and prosperity<br>
+                💮 <strong>Lilies</strong> - Purity and elegance<br>
+                🌺 <strong>Hydrangeas</strong> - Abundance<br><br>
+                Check our <a href="marketplace.html?search=wedding" style="color:var(--primary-color);">marketplace</a> for wedding collections!`;
+        }
+
+        if (q.includes('rose') && (q.includes('care') || q.includes('maintain'))) {
+            return `Rose care tips:<br><br>
+                💧 <strong>Water</strong> - Change every 2-3 days<br>
+                ✂️ <strong>Trim</strong> - Cut stems at 45° angle<br>
+                🌡️ <strong>Temperature</strong> - Keep cool (65-75°F)<br>
+                🍃 <strong>Leaves</strong> - Remove below waterline<br><br>
+                Visit our <a href="care-guides.html" style="color:var(--primary-color);">Care Guides</a> for more!`;
+        }
+
+        if (q.includes('birthday') || q.includes('arrangement')) {
+            return `Great birthday arrangement ideas:<br><br>
+                🌻 <strong>Sunflowers</strong> - Bright and cheerful<br>
+                🌷 <strong>Tulips</strong> - Spring freshness<br>
+                🌺 <strong>Gerberas</strong> - Fun and colorful<br>
+                💐 <strong>Mixed Bouquet</strong> - Something for everyone<br><br>
+                Browse our <a href="arrangements.html" style="color:var(--primary-color);">arrangements</a> for inspiration!`;
+        }
+
+        if (q.includes('product') || q.includes('buy') || q.includes('shop')) {
+            return `I can help you find products! Here are some popular categories:<br><br>
+                🌹 <a href="marketplace.html?category=roses" style="color:var(--primary-color);">Roses</a><br>
+                💐 <a href="marketplace.html?category=bouquets" style="color:var(--primary-color);">Bouquets</a><br>
+                🌱 <a href="marketplace.html?category=plants" style="color:var(--primary-color);">Plants</a><br>
+                🎁 <a href="marketplace.html?category=gifts" style="color:var(--primary-color);">Gifts</a><br><br>
+                What are you looking for?`;
+        }
+
+        if (q.includes('care') || q.includes('water') || q.includes('grow')) {
+            return `General flower care tips:<br><br>
+                💧 Water regularly but don't overwater<br>
+                ☀️ Provide appropriate sunlight<br>
+                🌡️ Keep away from drafts and heat<br>
+                ✂️ Remove dead flowers promptly<br>
+                🧪 Use flower food when available<br><br>
+                Check our <a href="care-guides.html" style="color:var(--primary-color);">Care Guides</a> for specific advice!`;
+        }
+
+        if (q.includes('price') || q.includes('cost') || q.includes('cheap') || q.includes('budget')) {
+            return `Our price ranges:<br><br>
+                💐 Budget: GHS 20 - 50<br>
+                🌹 Mid-range: GHS 50 - 150<br>
+                👑 Premium: GHS 150 - 500+<br><br>
+                <a href="deals.html" style="color:var(--primary-color);">Check our deals</a> for current offers!`;
+        }
+
+        // Default response
+        return `Thanks for your question! I can help with:<br><br>
+            🌸 Flower recommendations<br>
+            💐 Arrangement ideas<br>
+            💧 Care and maintenance<br>
+            🛒 Product suggestions<br>
+            📚 Learning resources<br><br>
+            Could you tell me more about what you need?`;
+    }
+</script>
