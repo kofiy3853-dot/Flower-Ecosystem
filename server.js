@@ -318,7 +318,7 @@ app.use('/api', require('./routes/garden'));
 app.use('/api/care-guides', require('./routes/care-guides'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/notifications', require('./routes/notifications'));
-app.use('/api/messages', require('./routes/notifications'));
+app.use('/api/messages', require('./routes/messages'));
 app.use('/api/qa', require('./routes/qa'));
 app.use('/api/identification', require('./routes/identification'));
 app.use('/api/openai', require('./routes/openai'));

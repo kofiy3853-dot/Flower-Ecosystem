@@ -22,12 +22,6 @@ function cartTotal(items) {
 }
 
 router.get('/', requireAuth, asyncHandler(async (req, res) => {
-    const mockCart = getMockCart(req.user.id);
-    if (mockCart.items.length > 0) {
-        const items = getMockCartProducts(mockCart);
-        return res.json({ cart: { id: mockCart.id, user_id: mockCart.user_id }, items, total: cartTotal(items) });
-    }
-
     if (await dbAvailable()) {
         try {
             let cart = await pool.query('SELECT id FROM marketplace.carts WHERE user_id = $1', [req.user.id]);
@@ -50,7 +44,9 @@ router.get('/', requireAuth, asyncHandler(async (req, res) => {
             console.error('Cart query error:', err.message);
         }
     }
-    res.json({ cart: { id: mockCart.id, user_id: mockCart.user_id }, items: [], total: 0 });
+    const mockCart = getMockCart(req.user.id);
+    const items = getMockCartProducts(mockCart);
+    res.json({ cart: { id: mockCart.id, user_id: mockCart.user_id }, items, total: cartTotal(items) });
 }));
 
 router.post('/items', requireAuth, asyncHandler(async (req, res) => {

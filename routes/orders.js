@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { pool, rateLimiter, asyncHandler, requireAuth } = require('./middleware');
 
 router.post('/', requireAuth, rateLimiter(10, 60000), asyncHandler(async (req, res) => {
-    const { coupon_id, discount_amount } = req.body || {};
+    const { coupon_code } = req.body || {};
     const cart = await pool.query(
         'SELECT id FROM marketplace.carts WHERE user_id = $1',
         [req.user.id]
@@ -12,32 +12,61 @@ router.post('/', requireAuth, rateLimiter(10, 60000), asyncHandler(async (req, r
     const items = await pool.query(
         `SELECT ci.product_id, ci.quantity, p.price, p.seller_id
          FROM marketplace.cart_items ci
-         JOIN marketplace.products p ON p.id = ci.product_id
+         JOIN marketplace.products p ON p.id = ci.product_id AND p.is_active = true
          WHERE ci.cart_id = $1`,
         [cart.rows[0].id]
     );
     if (!items.rows.length) return res.status(400).json({ error: 'Cart is empty' });
 
     const total = items.rows.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
-    const finalTotal = Math.max(0, total - (parseFloat(discount_amount) || 0));
+
+    let discountAmount = 0;
+    let couponId = null;
+    if (coupon_code && typeof coupon_code === 'string') {
+        const couponR = await pool.query(
+            `SELECT id, discount_type, discount_value, min_order_amount, max_uses, current_uses
+             FROM marketplace.coupons
+             WHERE code = $1 AND is_active = true
+               AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)
+               AND (max_uses = 0 OR current_uses < max_uses)`,
+            [coupon_code.toUpperCase().slice(0, 50)]
+        );
+        if (!couponR.rows.length) {
+            return res.status(400).json({ error: 'Invalid or expired coupon code' });
+        }
+        const coupon = couponR.rows[0];
+        if (total < Number(coupon.min_order_amount)) {
+            return res.status(400).json({
+                error: `Minimum order amount of ${Number(coupon.min_order_amount).toFixed(2)} required for this coupon`
+            });
+        }
+        if (coupon.discount_type === 'percentage') {
+            discountAmount = (total * Number(coupon.discount_value)) / 100;
+        } else {
+            discountAmount = Number(coupon.discount_value);
+        }
+        discountAmount = Math.min(discountAmount, total);
+        couponId = coupon.id;
+    }
+
+    const finalTotal = Math.max(0, total - discountAmount);
 
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
 
         for (const item of items.rows) {
-            const stock = await client.query(
-                'SELECT stock_quantity FROM marketplace.products WHERE id = $1 FOR UPDATE',
-                [item.product_id]
+            const stockUpdate = await client.query(
+                `UPDATE marketplace.products
+                 SET stock_quantity = stock_quantity - $1
+                 WHERE id = $2 AND stock_quantity >= $1
+                 RETURNING stock_quantity`,
+                [item.quantity, item.product_id]
             );
-            if (!stock.rows.length || stock.rows[0].stock_quantity < item.quantity) {
+            if (!stockUpdate.rows.length) {
                 await client.query('ROLLBACK');
                 return res.status(400).json({ error: 'Insufficient stock for product' });
             }
-            await client.query(
-                'UPDATE marketplace.products SET stock_quantity = stock_quantity - $1 WHERE id = $2',
-                [item.quantity, item.product_id]
-            );
         }
         const order = await client.query(
             `INSERT INTO marketplace.orders (user_id, total_amount)
@@ -57,8 +86,8 @@ router.post('/', requireAuth, rateLimiter(10, 60000), asyncHandler(async (req, r
         );
         await client.query('COMMIT');
 
-        if (coupon_id) {
-            pool.query('UPDATE marketplace.coupons SET current_uses = current_uses + 1 WHERE id = $1 AND (max_uses = 0 OR current_uses < max_uses)', [coupon_id])
+        if (couponId) {
+            pool.query('UPDATE marketplace.coupons SET current_uses = current_uses + 1 WHERE id = $1 AND (max_uses = 0 OR current_uses < max_uses)', [couponId])
                 .catch(err => console.error('Failed to increment coupon usage:', err.message));
         }
 

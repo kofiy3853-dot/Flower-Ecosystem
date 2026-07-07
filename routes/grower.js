@@ -74,8 +74,10 @@ router.put('/crops/:id', requireAuth, asyncHandler(async (req, res) => {
             field_location = COALESCE($6, field_location), planting_date = COALESCE($7, planting_date),
             expected_harvest = COALESCE($8, expected_harvest), price_per_unit = COALESCE($9, price_per_unit),
             quality_grade = COALESCE($10, quality_grade), notes = COALESCE($11, notes), updated_at = CURRENT_TIMESTAMP
-         WHERE id = $12 RETURNING *`,
-        [flower_name, variety, quantity, growth_stage, status, field_location, planting_date, expected_harvest, price_per_unit, quality_grade, notes, id]
+         WHERE id = $12
+           AND grower_id = (SELECT id FROM growers.profiles WHERE user_id = $13)
+         RETURNING *`,
+        [flower_name, variety, quantity, growth_stage, status, field_location, planting_date, expected_harvest, price_per_unit, quality_grade, notes, id, req.user.id]
     );
     if (!r.rows.length) return res.status(404).json({ error: 'Crop not found' });
     res.json(r.rows[0]);
@@ -83,13 +85,26 @@ router.put('/crops/:id', requireAuth, asyncHandler(async (req, res) => {
 
 router.delete('/crops/:id', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const r = await pool.query('DELETE FROM growers.crops WHERE id = $1 RETURNING id', [req.params.id]);
+    const r = await pool.query(
+        `DELETE FROM growers.crops
+         WHERE id = $1
+           AND grower_id = (SELECT id FROM growers.profiles WHERE user_id = $2)
+         RETURNING id`,
+        [req.params.id, req.user.id]
+    );
     if (!r.rows.length) return res.status(404).json({ error: 'Crop not found' });
     res.json({ message: 'Crop deleted' });
 }));
 
 router.post('/crops/:id/health', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const own = await pool.query(
+        `SELECT 1 FROM growers.crops c
+         JOIN growers.profiles p ON p.id = c.grower_id
+         WHERE c.id = $1 AND p.user_id = $2`,
+        [req.params.id, req.user.id]
+    );
+    if (!own.rows.length) return res.status(403).json({ error: 'Not authorized' });
     const { health_score, issue, issue_type, treatment } = req.body;
     const r = await pool.query(
         'INSERT INTO growers.crop_health (crop_id, health_score, issue, issue_type, treatment) VALUES ($1, $2, $3, $4, $5) RETURNING *',

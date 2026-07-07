@@ -95,6 +95,19 @@ function parseJsonResponse(content) {
     return JSON.parse(clean);
 }
 
+// ─── SSRF Protection ───────────────────────────────────────────────────
+const SAFE_IMAGE_URL_RE = /^https:\/\//i;
+const BLOCKED_HOSTS_RE = /^https?:\/\/(localhost|127\.|0\.|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|169\.254\.)/i;
+
+function validateImageUrl(url) {
+    if (typeof url !== 'string') return false;
+    const trimmed = url.trim();
+    if (!SAFE_IMAGE_URL_RE.test(trimmed)) return false;
+    if (BLOCKED_HOSTS_RE.test(trimmed)) return false;
+    if (trimmed.length > 2048) return false;
+    return true;
+}
+
 // ─── Image Processing ───────────────────────────────────────────────────
 const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4MB limit for API
 
@@ -140,6 +153,9 @@ router.post('/analyze-flower', requireAuth, upload.single('image'), asyncHandler
             return res.status(400).json({ error: error.message });
         }
     } else if (req.body && req.body.imageUrl) {
+        if (!validateImageUrl(req.body.imageUrl)) {
+            return res.status(400).json({ error: 'imageUrl must be a valid external https:// URL' });
+        }
         imageUrl = req.body.imageUrl;
     } else {
         return res.status(400).json({ error: 'Image file or imageUrl is required' });
@@ -185,6 +201,9 @@ router.post('/flower-expert', requireAuth, upload.single('image'), asyncHandler(
             return res.status(400).json({ error: error.message });
         }
     } else if (req.body && req.body.imageUrl) {
+        if (!validateImageUrl(req.body.imageUrl)) {
+            return res.status(400).json({ error: 'imageUrl must be a valid external https:// URL' });
+        }
         imageUrl = req.body.imageUrl;
     } else {
         return res.status(400).json({ error: 'Image file or imageUrl is required' });
