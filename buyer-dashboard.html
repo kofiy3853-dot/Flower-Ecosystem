@@ -69,12 +69,15 @@
             <ul class="dash-nav">
                 <li><a href="#dashboard" class="active" data-section="dashboard"><i class="bi bi-house"></i> Dashboard</a></li>
                 <li><a href="#orders" data-section="orders"><i class="bi bi-receipt"></i> My Orders</a></li>
+                <li><a href="#wishlist" data-section="wishlist"><i class="bi bi-bookmark-heart"></i> Wishlist</a></li>
                 <li><a href="#favorites" data-section="favorites"><i class="bi bi-heart"></i> Favorites</a></li>
+                <li><a href="#tracking" data-section="tracking"><i class="bi bi-truck"></i> Order Tracking</a></li>
+                <li><a href="#recently-viewed" data-section="recently-viewed"><i class="bi bi-clock-history"></i> Recently Viewed</a></li>
                 <li><a href="#learning" data-section="learning"><i class="bi bi-mortarboard"></i> My Learning</a></li>
+                <li><a href="#events" data-section="events"><i class="bi bi-calendar-event"></i> My Events</a></li>
                 <li><a href="#community" data-section="community"><i class="bi bi-people"></i> Community</a></li>
                 <li><a href="#messages" data-section="messages"><i class="bi bi-chat-dots"></i> Messages</a></li>
                 <li><a href="#notifications" data-section="notifications"><i class="bi bi-bell"></i> Notifications</a></li>
-                <li><a href="#activity" data-section="activity"><i class="bi bi-clock-history"></i> Activity</a></li>
                 <li><a href="#settings" data-section="settings"><i class="bi bi-gear"></i> Settings</a></li>
                 <li><a href="#" class="theme-toggle" id="themeToggle"><i class="bi bi-moon-fill" id="themeIcon"></i> <span id="themeText">Dark Mode</span></a></li>
                 <li style="margin-top:1rem;border-top:1px solid var(--border-color);padding-top:0.75rem;"><a href="#" id="buyerLogout" style="color:var(--error-color);"><i class="bi bi-box-arrow-left"></i> Sign Out</a></li>
@@ -97,15 +100,41 @@
                         <p style="opacity:0.85;">Manage your orders, favorites, and account.</p>
                     </div>
                     <div class="stats-grid" id="statsGrid"></div>
-                    <div class="grid-2">
-                        <div class="section-card"><h3>Recent Orders</h3><div id="recentOrders"></div></div>
-                        <div class="section-card"><h3>Quick Actions</h3>
-                            <div style="display:flex;flex-direction:column;gap:0.5rem;">
-                                <a href="marketplace.html" class="btn btn-primary w-100"><i class="bi bi-bag"></i> Browse Marketplace</a>
-                                <a href="florists.html" class="btn btn-outline w-100"><i class="bi bi-people"></i> Find Florists</a>
-                                <a href="arrangements.html" class="btn btn-outline w-100"><i class="bi bi-flower1"></i> View Arrangements</a>
-                            </div>
+
+                    <!-- Quick Actions -->
+                    <div class="section-card" style="margin-bottom:1.5rem;">
+                        <h3><i class="bi bi-lightning" style="color:var(--accent-gold)"></i> Quick Actions</h3>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.75rem;">
+                            <a href="marketplace.html" class="btn btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                                <i class="bi bi-bag" style="font-size:1.5rem;color:var(--primary-color);"></i> Shop
+                            </a>
+                            <a href="events.html" class="btn btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                                <i class="bi bi-calendar-event" style="font-size:1.5rem;color:var(--primary-color);"></i> Events
+                            </a>
+                            <a href="learning.html" class="btn btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                                <i class="bi bi-mortarboard" style="font-size:1.5rem;color:var(--primary-color);"></i> Learn
+                            </a>
+                            <a href="community.html" class="btn btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                                <i class="bi bi-people" style="font-size:1.5rem;color:var(--primary-color);"></i> Community
+                            </a>
                         </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="section-card">
+                            <h3>Recent Orders</h3>
+                            <div id="recentOrders"></div>
+                        </div>
+                        <div class="section-card">
+                            <h3>Recommended For You</h3>
+                            <div id="recommendations"></div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Events -->
+                    <div class="section-card" style="margin-top:1.5rem;">
+                        <h3><i class="bi bi-calendar-event" style="color:var(--primary-color)"></i> Upcoming Events</h3>
+                        <div id="dashboardEvents"></div>
                     </div>
                 </div>
 
@@ -115,10 +144,29 @@
                     <div id="ordersList"></div>
                 </div>
 
+                <!-- Wishlist -->
+                <div id="section-wishlist" class="section">
+                    <h1 style="margin-bottom:1.5rem;">My Wishlist</h1>
+                    <p style="color:var(--text-light);margin-bottom:1rem;">Items you've saved for later</p>
+                    <div class="fav-grid" id="wishlistGrid"></div>
+                </div>
+
                 <!-- Favorites -->
                 <div id="section-favorites" class="section">
                     <h1 style="margin-bottom:1.5rem;">Favorites</h1>
                     <div class="fav-grid" id="favoritesGrid"></div>
+                </div>
+
+                <!-- Order Tracking -->
+                <div id="section-tracking" class="section">
+                    <h1 style="margin-bottom:1.5rem;">Order Tracking</h1>
+                    <div id="trackingList"></div>
+                </div>
+
+                <!-- Recently Viewed -->
+                <div id="section-recently-viewed" class="section">
+                    <h1 style="margin-bottom:1.5rem;">Recently Viewed</h1>
+                    <div class="fav-grid" id="recentlyViewedGrid"></div>
                 </div>
 
                 <!-- Learning -->
@@ -133,6 +181,26 @@
                         <div class="section-card">
                             <h3>Certificates</h3>
                             <div id="certificatesList"></div>
+                        </div>
+                    </div>
+                    <!-- Learning Progress -->
+                    <div class="section-card" style="margin-top:1.5rem;">
+                        <h3><i class="bi bi-graph-up" style="color:var(--primary-color)"></i> Learning Progress</h3>
+                        <div id="learningProgress"></div>
+                    </div>
+                </div>
+
+                <!-- My Events -->
+                <div id="section-events" class="section">
+                    <h1 style="margin-bottom:1.5rem;">My Events</h1>
+                    <div class="grid-2">
+                        <div class="section-card">
+                            <h3>Upcoming Events</h3>
+                            <div id="upcomingEventsList"></div>
+                        </div>
+                        <div class="section-card">
+                            <h3>Past Events</h3>
+                            <div id="pastEventsList"></div>
                         </div>
                     </div>
                 </div>
@@ -261,12 +329,15 @@
             switch (section) {
                 case 'dashboard': loadOverview(); break;
                 case 'orders': loadOrders(); break;
+                case 'wishlist': loadWishlist(); break;
                 case 'favorites': loadFavorites(); break;
+                case 'tracking': loadTracking(); break;
+                case 'recently-viewed': loadRecentlyViewed(); break;
                 case 'learning': loadLearning(); break;
+                case 'events': loadMyEvents(); break;
                 case 'community': loadCommunity(); break;
                 case 'messages': break;
                 case 'notifications': loadNotifications(); break;
-                case 'activity': loadActivity(); break;
                 case 'settings': loadSettings(); break;
             }
         }
@@ -302,6 +373,41 @@
                     </div>
                 </div>
             `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No orders yet. <a href="marketplace.html">Start shopping!</a></p>';
+
+            // Recommendations
+            let products = [];
+            try { products = await fetch('/api/products?limit=4&sort=popular', { headers: authHeaders() }).then(r => r.json()); } catch {}
+            const productList = Array.isArray(products) ? products : (products.products || []);
+
+            document.getElementById('recommendations').innerHTML = productList.length ? productList.map(p => `
+                <div style="display:flex;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);cursor:pointer;" onclick="window.location.href='product-detail.html?id=${p.id}'">
+                    <div style="width:50px;height:50px;border-radius:8px;overflow:hidden;flex-shrink:0;">
+                        <img src="${escapeHtml(p.image || p.thumbnail_url || '')}" alt="${escapeHtml(p.name || 'Product')}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
+                    </div>
+                    <div style="flex:1;">
+                        <div style="font-weight:500;font-size:0.88rem;">${escapeHtml(p.name || 'Product')}</div>
+                        <div style="font-size:0.8rem;color:var(--primary-color);font-weight:600;">GHS ${Number(p.price || 0).toFixed(2)}</div>
+                    </div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:1rem;">No recommendations yet</p>';
+
+            // Dashboard Events
+            let events = [];
+            try { events = await fetch('/api/events?limit=3', { headers: authHeaders() }).then(r => r.json()); } catch {}
+            const eventList = Array.isArray(events) ? events : (events.events || []);
+
+            document.getElementById('dashboardEvents').innerHTML = eventList.length ? eventList.slice(0, 3).map(e => `
+                <div style="display:flex;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);">
+                    <div style="width:40px;height:40px;border-radius:8px;background:var(--primary-light);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
+                        <span style="font-size:0.5rem;color:var(--primary-color);font-weight:600;">${e.event_date ? new Date(e.event_date).toLocaleDateString('en', {month:'short'}) : ''}</span>
+                        <span style="font-size:0.85rem;font-weight:700;color:var(--primary-color);">${e.event_date ? new Date(e.event_date).getDate() : ''}</span>
+                    </div>
+                    <div>
+                        <div style="font-weight:500;font-size:0.88rem;">${escapeHtml(e.title || 'Event')}</div>
+                        <div style="font-size:0.78rem;color:var(--text-light);">${e.event_date ? new Date(e.event_date).toLocaleTimeString('en', {hour:'numeric',minute:'2-digit'}) : ''}</div>
+                    </div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:1rem;">No upcoming events</p>';
         }
 
         async function loadOrders() {
@@ -384,6 +490,149 @@
                     </div>
                 </div>
             `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No certificates yet</p>';
+
+            // Learning Progress
+            const progressHtml = enrolled.length ? `
+                <div style="display:flex;flex-direction:column;gap:0.75rem;">
+                    ${enrolled.slice(0, 5).map(c => `
+                        <div style="display:flex;align-items:center;gap:0.75rem;">
+                            <div style="flex:1;font-size:0.9rem;">${escapeHtml(c.course_name || 'Course')}</div>
+                            <div style="width:100px;height:6px;background:var(--bg-light);border-radius:3px;">
+                                <div style="height:100%;width:${c.progress || 0}%;background:${c.progress >= 100 ? 'var(--accent-green)' : 'var(--primary-color)'};border-radius:3px;"></div>
+                            </div>
+                            <div style="font-size:0.8rem;font-weight:500;width:40px;text-align:right;">${c.progress || 0}%</div>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : '<p style="color:var(--text-light);text-align:center;padding:1rem;">No learning data yet</p>';
+            document.getElementById('learningProgress').innerHTML = progressHtml;
+        }
+
+        // ─── Wishlist ──────────────────────────────────────────────────────
+        async function loadWishlist() {
+            let items = [];
+            try { items = await fetch('/api/buyer/wishlist', { headers: authHeaders() }).then(r => r.json()); } catch {}
+            const list = Array.isArray(items) ? items : (items.items || []);
+
+            document.getElementById('wishlistGrid').innerHTML = list.length ? list.map(item => `
+                <div class="fav-card">
+                    <div class="fav-img"><img src="${escapeHtml(item.image || item.thumbnail || '')}" alt="${escapeHtml(item.name || 'Product')}" loading="lazy"></div>
+                    <div class="fav-body">
+                        <div class="fav-name">${escapeHtml(item.name || 'Product')}</div>
+                        <div class="fav-price">GHS ${Number(item.price || 0).toFixed(2)}</div>
+                        <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+                            <a href="product-detail.html?id=${item.id}" class="btn btn-sm btn-outline" style="flex:1;">View</a>
+                            <button class="btn btn-sm btn-primary" style="flex:1;" onclick="addToCart('${item.id}')">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:3rem;grid-column:1/-1;">Your wishlist is empty. <a href="marketplace.html">Browse products</a></p>';
+        }
+
+        // ─── Order Tracking ────────────────────────────────────────────────
+        async function loadTracking() {
+            let orders = [];
+            try { orders = await fetch('/api/orders', { headers: authHeaders() }).then(r => r.json()); } catch {}
+            const orderList = Array.isArray(orders) ? orders : (orders.orders || []);
+            const activeOrders = orderList.filter(o => o.status !== 'DELIVERED' && o.status !== 'CANCELLED');
+
+            const statusSteps = ['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED'];
+            const statusIcons = { PENDING: 'bi-clock', CONFIRMED: 'bi-check-circle', SHIPPED: 'bi-truck', DELIVERED: 'bi-house-check' };
+
+            document.getElementById('trackingList').innerHTML = activeOrders.length ? activeOrders.map(o => {
+                const currentIdx = statusSteps.indexOf(o.status);
+                return `
+                    <div class="section-card" style="margin-bottom:1rem;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                            <div>
+                                <div style="font-weight:600;">Order #${(o.id || '').slice(0, 8)}</div>
+                                <div style="font-size:0.8rem;color:var(--text-light);">${o.created_at ? new Date(o.created_at).toLocaleDateString() : ''}</div>
+                            </div>
+                            <div style="font-weight:700;color:var(--primary-color);">GHS ${Number(o.total_amount || 0).toFixed(2)}</div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;position:relative;">
+                            <div style="position:absolute;top:15px;left:0;right:0;height:3px;background:var(--bg-light);"></div>
+                            <div style="position:absolute;top:15px;left:0;height:3px;background:var(--accent-green);width:${(currentIdx / (statusSteps.length - 1)) * 100}%;"></div>
+                            ${statusSteps.map((s, i) => `
+                                <div style="text-align:center;z-index:1;">
+                                    <div style="width:32px;height:32px;border-radius:50%;background:${i <= currentIdx ? 'var(--accent-green)' : 'var(--bg-light)'};display:flex;align-items:center;justify-content:center;margin:0 auto 0.25rem;">
+                                        <i class="bi ${statusIcons[s]}" style="color:${i <= currentIdx ? 'white' : 'var(--text-muted)'};font-size:0.9rem;"></i>
+                                    </div>
+                                    <div style="font-size:0.7rem;color:${i <= currentIdx ? 'var(--accent-green)' : 'var(--text-muted)'};">${s}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('') : '<p style="color:var(--text-light);text-align:center;padding:3rem;">No active orders to track</p>';
+        }
+
+        // ─── Recently Viewed ───────────────────────────────────────────────
+        async function loadRecentlyViewed() {
+            let items = [];
+            try { items = JSON.parse(localStorage.getItem('recentlyViewed') || '[]'); } catch {}
+            const uniqueItems = items.filter((item, i, self) => self.findIndex(x => x.id === item.id) === i).slice(0, 12);
+
+            document.getElementById('recentlyViewedGrid').innerHTML = uniqueItems.length ? uniqueItems.map(item => `
+                <div class="fav-card" onclick="window.location.href='product-detail.html?id=${item.id}'">
+                    <div class="fav-img"><img src="${escapeHtml(item.image || '')}" alt="${escapeHtml(item.name || 'Product')}" loading="lazy"></div>
+                    <div class="fav-body">
+                        <div class="fav-name">${escapeHtml(item.name || 'Product')}</div>
+                        <div class="fav-price">GHS ${Number(item.price || 0).toFixed(2)}</div>
+                    </div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:3rem;">No recently viewed items</p>';
+        }
+
+        // ─── My Events ─────────────────────────────────────────────────────
+        async function loadMyEvents() {
+            let events = [];
+            try { events = await fetch('/api/events/my', { headers: authHeaders() }).then(r => r.json()); } catch {}
+            const eventList = Array.isArray(events) ? events : (events.events || []);
+
+            const upcoming = eventList.filter(e => new Date(e.event_date) >= new Date());
+            const past = eventList.filter(e => new Date(e.event_date) < new Date());
+
+            document.getElementById('upcomingEventsList').innerHTML = upcoming.length ? upcoming.map(e => `
+                <div style="display:flex;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);">
+                    <div style="width:50px;height:50px;border-radius:8px;background:var(--primary-light);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
+                        <span style="font-size:0.6rem;color:var(--primary-color);font-weight:600;">${e.event_date ? new Date(e.event_date).toLocaleDateString('en', {month:'short'}) : ''}</span>
+                        <span style="font-size:1rem;font-weight:700;color:var(--primary-color);">${e.event_date ? new Date(e.event_date).getDate() : ''}</span>
+                    </div>
+                    <div style="flex:1;">
+                        <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(e.title || 'Event')}</div>
+                        <div style="font-size:0.8rem;color:var(--text-light);">${e.location || 'Online'}</div>
+                    </div>
+                    <a href="event-detail.html?id=${e.id}" class="btn btn-sm btn-outline">View</a>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No upcoming events. <a href="events.html">Browse events</a></p>';
+
+            document.getElementById('pastEventsList').innerHTML = past.length ? past.map(e => `
+                <div style="display:flex;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);opacity:0.7;">
+                    <div style="width:50px;height:50px;border-radius:8px;background:var(--bg-light);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
+                        <span style="font-size:0.6rem;color:var(--text-muted);font-weight:600;">${e.event_date ? new Date(e.event_date).toLocaleDateString('en', {month:'short'}) : ''}</span>
+                        <span style="font-size:1rem;font-weight:700;color:var(--text-muted);">${e.event_date ? new Date(e.event_date).getDate() : ''}</span>
+                    </div>
+                    <div style="flex:1;">
+                        <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(e.title || 'Event')}</div>
+                        <div style="font-size:0.8rem;color:var(--text-light);">Attended</div>
+                    </div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No past events</p>';
+
+            // Dashboard Events
+            document.getElementById('dashboardEvents').innerHTML = upcoming.length ? upcoming.slice(0, 3).map(e => `
+                <div style="display:flex;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);">
+                    <div style="width:40px;height:40px;border-radius:8px;background:var(--primary-light);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
+                        <span style="font-size:0.5rem;color:var(--primary-color);font-weight:600;">${e.event_date ? new Date(e.event_date).toLocaleDateString('en', {month:'short'}) : ''}</span>
+                        <span style="font-size:0.85rem;font-weight:700;color:var(--primary-color);">${e.event_date ? new Date(e.event_date).getDate() : ''}</span>
+                    </div>
+                    <div>
+                        <div style="font-weight:500;font-size:0.88rem;">${escapeHtml(e.title || 'Event')}</div>
+                        <div style="font-size:0.78rem;color:var(--text-light);">${e.event_date ? new Date(e.event_date).toLocaleTimeString('en', {hour:'numeric',minute:'2-digit'}) : ''}</div>
+                    </div>
+                </div>
+            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:1rem;">No upcoming events</p>';
         }
 
         async function loadCommunity() {
