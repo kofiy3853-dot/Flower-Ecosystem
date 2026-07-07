@@ -257,22 +257,22 @@
 
             // Meta
             const location = f.location || 'Accra, Ghana';
-            const rating = (4 + Math.random()).toFixed(1);
-            const reviews = Math.floor(Math.random() * 200) + 20;
-            const products = f.products || Math.floor(Math.random() * 50) + 10;
+            const rating = f.rating || 0;
+            const reviews = f.review_count || 0;
+            const products = f.product_count || 0;
             document.getElementById('fpMeta').innerHTML = `
                 <span><i class="bi bi-geo-alt"></i> ${location}</span>
-                <span><i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${rating} (${reviews} reviews)</span>
+                <span><i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${rating > 0 ? rating + ' (' + reviews + ' reviews)' : 'No reviews yet'}</span>
                 <span><i class="bi bi-box-seam"></i> ${products} Products</span>
-                <span><i class="bi bi-clock"></i> ${Math.floor(Math.random() * 15) + 5} Years Experience</span>
+                ${f.experience_years ? `<span><i class="bi bi-clock"></i> ${f.experience_years} Years Experience</span>` : ''}
             `;
 
             // Stats
             document.getElementById('fpStats').innerHTML = `
                 <div class="fp-stat"><div class="fp-stat-value">${products}</div><div class="fp-stat-label">Products</div></div>
                 <div class="fp-stat"><div class="fp-stat-value">${reviews}</div><div class="fp-stat-label">Reviews</div></div>
-                <div class="fp-stat"><div class="fp-stat-value">${rating}</div><div class="fp-stat-label">Rating</div></div>
-                <div class="fp-stat"><div class="fp-stat-value">${Math.floor(Math.random() * 200) + 50}</div><div class="fp-stat-label">Orders Completed</div></div>
+                <div class="fp-stat"><div class="fp-stat-value">${rating > 0 ? rating : '-'}</div><div class="fp-stat-label">Rating</div></div>
+                <div class="fp-stat"><div class="fp-stat-value">${f.order_count || 0}</div><div class="fp-stat-label">Orders Completed</div></div>
             `;
 
             // Services
@@ -293,59 +293,62 @@
             `).join('');
 
             // Gallery
-            const galleryImages = [
-                f.image || 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=400&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?q=400&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1507290439931-a861b5a38200?q=400&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=400&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1566907225470-af29f1201069?q=400&auto=format&fit=crop'
-            ];
-            document.getElementById('fpGallery').innerHTML = galleryImages.map(img => `
-                <div class="fp-gallery-item"><img src="${img}" alt="Gallery" loading="lazy"></div>
-            `).join('');
+            const galleryImages = f.gallery || (f.image ? [f.image] : []);
+            if (galleryImages.length) {
+                document.getElementById('fpGallery').innerHTML = galleryImages.map(img => `
+                    <div class="fp-gallery-item"><img src="${escapeHtml(img)}" alt="Gallery" loading="lazy"></div>
+                `).join('');
+            } else {
+                document.getElementById('fpGallery').innerHTML = '<p style="color:var(--text-light);text-align:center;padding:2rem;">No gallery images yet.</p>';
+            }
 
             // Reviews
-            const reviewsList = [
-                { author: 'Sarah M.', rating: 5, text: 'Absolutely stunning arrangements! The florist understood exactly what I wanted for my wedding.', date: '2 weeks ago' },
-                { author: 'John K.', rating: 5, text: 'My wife loved the anniversary bouquet. Fresh and beautifully wrapped.', date: '1 month ago' },
-                { author: 'Ama D.', rating: 4, text: 'Beautiful birthday flowers delivered on time. Great quality!', date: '3 weeks ago' },
-                { author: 'Kofi A.', rating: 5, text: 'Professional service and gorgeous arrangements. Highly recommend!', date: '2 months ago' }
-            ];
-            document.getElementById('fpReviews').innerHTML = reviewsList.map(r => `
-                <div class="fp-review">
-                    <div class="fp-review-header">
-                        <div class="fp-review-author">${r.author}</div>
-                        <div class="fp-review-stars">${renderStars(r.rating)}</div>
+            const reviewsList = f.reviews || [];
+            if (reviewsList.length) {
+                document.getElementById('fpReviews').innerHTML = reviewsList.map(r => `
+                    <div class="fp-review">
+                        <div class="fp-review-header">
+                            <div class="fp-review-author">${escapeHtml(r.author || r.author_name || 'Anonymous')}</div>
+                            <div class="fp-review-stars">${renderStars(r.rating || 0)}</div>
+                        </div>
+                        <div class="fp-review-text">"${escapeHtml(r.text || r.content || '')}"</div>
+                        <div class="fp-review-date">${r.date || ''}</div>
                     </div>
-                    <div class="fp-review-text">"${r.text}"</div>
-                    <div class="fp-review-date">${r.date}</div>
-                </div>
-            `).join('');
+                `).join('');
+            } else {
+                document.getElementById('fpReviews').innerHTML = '<p style="color:var(--text-light);text-align:center;padding:2rem;">No reviews yet.</p>';
+            }
 
             // About
             document.getElementById('fpAbout').textContent = f.description || 'We are a passionate team of florists dedicated to creating beautiful arrangements for every occasion. With years of experience, we specialize in weddings, events, and custom bouquets. Our mission is to bring joy through flowers.';
 
             // Delivery areas
-            const areas = ['Accra', 'Tema', 'Kumasi', 'Cape Coast', 'Takoradi'];
-            document.getElementById('fpDelivery').innerHTML = areas.map(a => `<span class="fp-delivery-tag"><i class="bi bi-geo-alt"></i> ${a}</span>`).join('');
+            const areas = f.delivery_areas || [];
+            if (areas.length) {
+                document.getElementById('fpDelivery').innerHTML = areas.map(a => `<span class="fp-delivery-tag"><i class="bi bi-geo-alt"></i> ${escapeHtml(a)}</span>`).join('');
+            } else {
+                document.getElementById('fpDelivery').innerHTML = '<p style="color:var(--text-light);font-size:0.9rem;">No delivery areas listed.</p>';
+            }
 
             // Business hours
-            const hours = [
-                { day: 'Monday – Friday', time: '8:00 AM – 6:00 PM' },
-                { day: 'Saturday', time: '9:00 AM – 4:00 PM' },
-                { day: 'Sunday', time: 'Closed' }
-            ];
-            document.getElementById('fpHours').innerHTML = hours.map(h => `
-                <div class="fp-hours-row"><span>${h.day}</span><span>${h.time}</span></div>
-            `).join('');
+            const hours = f.business_hours || [];
+            if (hours.length) {
+                document.getElementById('fpHours').innerHTML = hours.map(h => `
+                    <div class="fp-hours-row"><span>${escapeHtml(h.day || '')}</span><span>${escapeHtml(h.time || '')}</span></div>
+                `).join('');
+            } else {
+                document.getElementById('fpHours').innerHTML = '<p style="color:var(--text-light);font-size:0.9rem;">Hours not available.</p>';
+            }
 
             // Contact
+            const phone = f.phone || '';
+            const email = f.email || `info@${(f.name || 'florist').toLowerCase().replace(/\s+/g, '')}.com`;
+            const whatsapp = f.whatsapp || '';
             document.getElementById('fpContactInfo').innerHTML = `
-                <div class="fp-contact-item"><i class="bi bi-telephone"></i><span>+233 20 555 0101</span></div>
-                <div class="fp-contact-item"><i class="bi bi-envelope"></i><a href="mailto:info@${f.name.toLowerCase().replace(/\s+/g, '')}.com">info@${f.name.toLowerCase().replace(/\s+/g, '')}.com</a></div>
-                <div class="fp-contact-item"><i class="bi bi-whatsapp"></i><a href="https://wa.me/233205550101">Chat on WhatsApp</a></div>
-                <div class="fp-contact-item"><i class="bi bi-geo-alt"></i><span>${location}</span></div>
+                ${phone ? `<div class="fp-contact-item"><i class="bi bi-telephone"></i><span>${escapeHtml(phone)}</span></div>` : ''}
+                <div class="fp-contact-item"><i class="bi bi-envelope"></i><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></div>
+                ${whatsapp ? `<div class="fp-contact-item"><i class="bi bi-whatsapp"></i><a href="https://wa.me/${escapeHtml(whatsapp)}">Chat on WhatsApp</a></div>` : ''}
+                <div class="fp-contact-item"><i class="bi bi-geo-alt"></i><span>${escapeHtml(location)}</span></div>
             `;
 
             // Contact button
