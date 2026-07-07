@@ -266,7 +266,7 @@ async function loadCourses() {
         const title = c.title || c.name || 'Untitled';
         const instructor = c.instructor || c.author_name || 'Instructor';
         const thumbnail = c.thumbnail_url || c.thumbnail || c.image_url || c.image || '';
-        const rating = c.rating || 4.5;
+        const rating = c.rating || 0;
         const students = c.students_count || c.students || 0;
         const price = c.price || 0;
         const level = c.level || 'All Levels';

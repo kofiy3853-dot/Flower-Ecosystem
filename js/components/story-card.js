@@ -71,7 +71,7 @@ function renderStoryCard(story) {
 
 function renderFeaturedStory(story) {
   if (!story) return '';
-  const rating = story.rating || 5;
+  const rating = story.rating || 0;
   const readingTime = story.reading_time_minutes || estimateReadingTime(story.content || story.story || '');
   return `
     <div class="featured-story">
