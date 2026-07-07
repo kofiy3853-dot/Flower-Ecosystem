@@ -178,13 +178,23 @@ if (useCloudinary && cloudinary && CloudinaryStorage) {
         cloudinary,
         params: {
             folder: 'flower-ecosystem/videos',
-            resource_type: 'video',
-            allowed_formats: ['mp4', 'webm', 'mov'],
-            transformation: [{ width: 1280, height: 720, crop: 'limit' }]
+            resource_type: 'video'
         }
     });
+    console.log('Using Cloudinary for video storage');
 } else {
-    videoStorage = storage;
+    const uploadsDir = path.join(__dirname, '..', 'uploads');
+    if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    videoStorage = multer.diskStorage({
+        destination: (req, file, cb) => cb(null, uploadsDir),
+        filename: (req, file, cb) => {
+            const ext = path.extname(file.originalname).toLowerCase();
+            cb(null, `video-${Date.now()}-${crypto.randomBytes(8).toString('hex')}${ext}`);
+        }
+    });
+    console.log('Using local disk for video storage');
 }
 
 const uploadVideo = multer({
