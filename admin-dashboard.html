@@ -87,6 +87,31 @@
                         <div class="adm-stat-card"><div class="adm-stat-icon" style="background:rgba(172,50,80,.1);color:#ac3250;"><i class="bi bi-book"></i></div><div class="adm-stat-info"><div class="adm-stat-value">0</div><div class="adm-stat-label">Active Courses</div></div></div>
                     </div>
 
+                    <!-- Quick Actions -->
+                    <div class="adm-card" style="margin-bottom:1.5rem;">
+                        <div class="adm-card-header"><h3><i class="bi bi-lightning" style="color:#d4af37"></i> Quick Actions</h3></div>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.75rem;">
+                            <button class="adm-btn adm-btn-outline" onclick="switchSection('users')" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                                <i class="bi bi-person-plus" style="font-size:1.5rem;color:var(--primary-color);"></i> Add User
+                            </button>
+                            <button class="adm-btn adm-btn-outline" onclick="switchSection('courses')" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                                <i class="bi bi-plus-circle" style="font-size:1.5rem;color:var(--primary-color);"></i> Create Course
+                            </button>
+                            <button class="adm-btn adm-btn-outline" onclick="switchSection('marketplace')" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                                <i class="bi bi-bag-plus" style="font-size:1.5rem;color:var(--primary-color);"></i> Add Product
+                            </button>
+                            <button class="adm-btn adm-btn-outline" onclick="switchSection('events')" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                                <i class="bi bi-calendar-plus" style="font-size:1.5rem;color:var(--primary-color);"></i> Create Event
+                            </button>
+                            <button class="adm-btn adm-btn-outline" onclick="window.open('/admin/category-images')" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                                <i class="bi bi-images" style="font-size:1.5rem;color:var(--primary-color);"></i> Manage Images
+                            </button>
+                            <a href="seed-events.html" class="adm-btn adm-btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;text-decoration:none;">
+                                <i class="bi bi-database" style="font-size:1.5rem;color:var(--primary-color);"></i> Seed Data
+                            </a>
+                        </div>
+                    </div>
+
                     <div class="adm-grid-2col">
                         <div class="adm-card">
                             <div class="adm-card-header"><h3>Recent Users</h3><a class="adm-link" onclick="switchSection('users')">View All</a></div>
@@ -119,6 +144,22 @@
                     <div class="adm-card">
                         <div class="adm-card-header"><h3>Pending Actions</h3></div>
                         <div id="pendingActions"></div>
+                    </div>
+
+                    <div class="adm-grid-2col" style="margin-top:1.5rem;">
+                        <div class="adm-card">
+                            <div class="adm-card-header"><h3><i class="bi bi-heart" style="color:var(--primary-color)"></i> Top Sellers</h3></div>
+                            <div id="topSellers"></div>
+                        </div>
+                        <div class="adm-card">
+                            <div class="adm-card-header"><h3><i class="bi bi-calendar-event" style="color:var(--primary-color)"></i> Recent Events</h3></div>
+                            <div id="recentEvents"></div>
+                        </div>
+                    </div>
+
+                    <div class="adm-card" style="margin-top:1.5rem;">
+                        <div class="adm-card-header"><h3><i class="bi bi-activity" style="color:var(--primary-color)"></i> Recent Activity</h3></div>
+                        <div id="recentActivity"></div>
                     </div>
                 </section>
 

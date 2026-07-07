@@ -165,6 +165,50 @@ function renderOverview(analytics){
     const activityData=labels.map(()=>Math.floor(Math.random()*200)+50);
     drawBarChart('activityCanvas',labels,activityData);
     drawLineChart('revenueCanvas',[3200,4100,3800,5200,4800,6100,7200]);
+
+    // Top Sellers
+    const topSellers=sellers.slice(0,5);
+    const topSellersEl=$('#topSellers');
+    if(topSellersEl) topSellersEl.innerHTML=topSellers.length?topSellers.map((s,i)=>`
+        <div style="display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border-color);">
+            <div style="width:24px;height:24px;border-radius:50%;background:${i<3?'#d4af37':'var(--bg-light)'};display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:600;color:${i<3?'white':'var(--text-muted)'};">${i+1}</div>
+            <div style="flex:1;"><div style="font-size:.85rem;font-weight:500;">${escapeHtml(s.name||s.first_name||'Seller')}</div><div style="font-size:.7rem;color:var(--text-light);">${s.product_count||0} products</div></div>
+            <div style="font-size:.85rem;color:var(--primary-color);font-weight:500;">${'★'.repeat(Math.round(s.rating||0))}${'☆'.repeat(5-Math.round(s.rating||0))}</div>
+        </div>
+    `).join(''):'<p style="color:var(--text-light);font-size:.85rem;padding:1rem;">No sellers yet</p>';
+
+    // Recent Events
+    let recentEventsList=[];
+    try{recentEventsList=await fetch('/api/events?limit=5',{headers:authHeaders()}).then(r=>r.json()).then(d=>d.events||[]);}catch{}
+    const recentEventsEl=$('#recentEvents');
+    if(recentEventsEl) recentEventsEl.innerHTML=recentEventsList.length?recentEventsList.slice(0,5).map(e=>`
+        <div style="display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border-color);">
+            <div style="width:40px;height:40px;border-radius:8px;background:var(--primary-light);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
+                <span style="font-size:.5rem;color:var(--primary-color);font-weight:600;">${e.event_date?new Date(e.event_date).toLocaleDateString('en',{month:'short'}):''}</span>
+                <span style="font-size:.85rem;font-weight:700;color:var(--primary-color);">${e.event_date?new Date(e.event_date).getDate():''}</span>
+            </div>
+            <div style="flex:1;"><div style="font-size:.85rem;font-weight:500;">${escapeHtml(e.title||'Event')}</div><div style="font-size:.7rem;color:var(--text-light);">${e.registrations||0} registered</div></div>
+            <span class="adm-status upcoming">Upcoming</span>
+        </div>
+    `).join(''):'<p style="color:var(--text-light);font-size:.85rem;padding:1rem;">No upcoming events</p>';
+
+    // Recent Activity
+    const activities=[
+        {icon:'bi-person-plus',text:`${users.length} users registered`,color:'#d4af37'},
+        {icon:'bi-receipt',text:`${orders.length} orders placed`,color:'#4a90d9'},
+        {icon:'bi-book',text:`${courses.length} courses available`,color:'#ac3250'},
+        {icon:'bi-shop',text:`${products.length} products listed`,color:'#5a7a60'},
+        {icon:'bi-calendar-event',text:`${recentEventsList.length} upcoming events`,color:'#8b5cf6'}
+    ];
+    const activityEl=$('#recentActivity');
+    if(activityEl) activityEl.innerHTML=activities.map(a=>`
+        <div style="display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border-color);">
+            <div style="width:32px;height:32px;border-radius:50%;background:${a.color}15;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="bi ${a.icon}" style="color:${a.color};font-size:.85rem;"></i>
+            </div>
+            <div style="font-size:.88rem;">${a.text}</div>
+        </div>
+    `).join('');
 }
 
 // ─── Users ───────────────────────────────────────────
