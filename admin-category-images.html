@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Image Manager | Admin</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .cim-layout { display:grid; grid-template-columns:280px 1fr; gap:1.5rem; min-height:calc(100vh - 120px); }
+        .cim-sidebar { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1rem; position:sticky; top:80px; height:fit-content; max-height:calc(100vh - 100px); overflow-y:auto; }
+        .cim-sidebar h3 { font-size:1rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+        .cim-sidebar h3 i { color:var(--primary-color); }
+        .cim-search { width:100%; padding:0.6rem 0.8rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.85rem; margin-bottom:1rem; }
+        .cim-cat-item { display:flex; align-items:center; gap:0.75rem; padding:0.75rem; border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s; margin-bottom:0.25rem; }
+        .cim-cat-item:hover { background:var(--bg-light); }
+        .cim-cat-item.active { background:var(--primary-light); color:var(--primary-color); }
+        .cim-cat-icon { width:36px; height:36px; border-radius:8px; background:var(--bg-light); display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+        .cim-cat-info { flex:1; min-width:0; }
+        .cim-cat-name { font-size:0.88rem; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .cim-cat-count { font-size:0.75rem; color:var(--text-muted); }
+        .cim-main { min-width:0; }
+        .cim-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem; }
+        .cim-upload-area { border:2px dashed var(--border-color); border-radius:var(--radius-md); padding:2.5rem; text-align:center; cursor:pointer; transition:all 0.2s; margin-bottom:1.5rem; background:var(--bg-white); }
+        .cim-upload-area:hover, .cim-upload-area.dragover { border-color:var(--primary-color); background:var(--primary-light); }
+        .cim-upload-area i { font-size:2.5rem; color:var(--text-muted); margin-bottom:0.75rem; display:block; }
+        .cim-upload-area p { color:var(--text-light); font-size:0.9rem; }
+        .cim-upload-area .btn { margin-top:1rem; }
+        .cim-filters { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+        .cim-filter-btn { padding:0.4rem 0.8rem; border:1px solid var(--border-color); border-radius:20px; background:var(--bg-white); font-size:0.8rem; cursor:pointer; transition:all 0.2s; }
+        .cim-filter-btn:hover { border-color:var(--primary-color); color:var(--primary-color); }
+        .cim-filter-btn.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+        .cim-gallery { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1rem; }
+        .cim-img-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow:hidden; transition:all 0.3s; }
+        .cim-img-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); }
+        .cim-img-wrap { position:relative; aspect-ratio:4/3; overflow:hidden; }
+        .cim-img-wrap img { width:100%; height:100%; object-fit:cover; }
+        .cim-img-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; gap:0.5rem; opacity:0; transition:opacity 0.2s; }
+        .cim-img-card:hover .cim-img-overlay { opacity:1; }
+        .cim-img-btn { width:36px; height:36px; border-radius:50%; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+        .cim-img-btn.featured { background:var(--accent-gold); color:white; }
+        .cim-img-btn.edit { background:var(--bg-white); color:var(--text-main); }
+        .cim-img-btn.delete { background:#ef4444; color:white; }
+        .cim-img-badge { position:absolute; top:0.5rem; left:0.5rem; padding:0.2rem 0.5rem; border-radius:4px; font-size:0.65rem; font-weight:600; }
+        .cim-img-badge.featured { background:var(--accent-gold); color:white; }
+        .cim-img-badge.inactive { background:var(--text-muted); color:white; }
+        .cim-img-info { padding:0.75rem; }
+        .cim-img-alt { font-size:0.82rem; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .cim-img-meta { font-size:0.72rem; color:var(--text-muted); margin-top:0.2rem; }
+        .cim-empty { text-align:center; padding:4rem 2rem; color:var(--text-light); }
+        .cim-empty i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
+        .cim-preview-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:1000; align-items:center; justify-content:center; }
+        .cim-preview-modal.show { display:flex; }
+        .cim-preview-modal img { max-width:90%; max-height:90vh; object-fit:contain; border-radius:8px; }
+        .cim-preview-close { position:absolute; top:1rem; right:1rem; background:rgba(255,255,255,0.2); border:none; color:white; width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:1.2rem; }
+        .cim-progress { height:4px; background:var(--bg-light); border-radius:2px; margin-top:0.5rem; overflow:hidden; }
+        .cim-progress-fill { height:100%; background:var(--primary-color); transition:width 0.3s; }
+        @media(max-width:768px) {
+            .cim-layout { grid-template-columns:1fr; }
+            .cim-sidebar { position:static; }
+            .cim-gallery { grid-template-columns:repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="cim-layout">
+                <!-- Sidebar: Categories -->
+                <aside class="cim-sidebar">
+                    <h3><i class="bi bi-images"></i> Categories</h3>
+                    <input type="text" class="cim-search" placeholder="Search categories..." id="catSearch" oninput="filterCategories()">
+                    <div id="catList"></div>
+                </aside>
+
+                <!-- Main Content -->
+                <main class="cim-main">
+                    <div class="cim-header">
+                        <div>
+                            <h1 style="font-size:1.3rem;">Category Image Manager</h1>
+                            <p style="color:var(--text-light);font-size:0.9rem;" id="selectedCatName">Select a category to manage images</p>
+                        </div>
+                        <div id="bulkActions" style="display:none;">
+                            <button class="btn btn-sm btn-outline" onclick="bulkDelete()"><i class="bi bi-trash"></i> Delete Selected</button>
+                        </div>
+                    </div>
+
+                    <!-- Upload Area -->
+                    <div class="cim-upload-area" id="uploadArea" style="display:none;" onclick="document.getElementById('fileInput').click()">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                        <p><strong>Click to upload</strong> or drag and drop</p>
+                        <p style="font-size:0.8rem;">JPG, PNG, WebP • Max 5MB each • Up to 10 files</p>
+                        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="handleUpload(this.files)">
+                        <div id="uploadProgress" style="display:none;"></div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="cim-filters" id="filterBar" style="display:none;">
+                        <button class="cim-filter-btn active" data-filter="all" onclick="setFilter('all')">All</button>
+                        <button class="cim-filter-btn" data-filter="featured" onclick="setFilter('featured')">Featured</button>
+                        <button class="cim-filter-btn" data-filter="active" onclick="setFilter('active')">Active</button>
+                        <button class="cim-filter-btn" data-filter="inactive" onclick="setFilter('inactive')">Inactive</button>
+                        <button class="cim-filter-btn" data-filter="newest" onclick="setFilter('newest')">Newest</button>
+                    </div>
+
+                    <!-- Gallery -->
+                    <div class="cim-gallery" id="gallery"></div>
+                    <div class="cim-empty" id="emptyState" style="display:none;">
+                        <i class="bi bi-images"></i>
+                        <p>No images yet. Upload some images for this category.</p>
+                    </div>
+                    <div id="pagination" style="margin-top:1.5rem;text-align:center;"></div>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preview Modal -->
+    <div class="cim-preview-modal" id="previewModal">
+        <button class="cim-preview-close" onclick="closePreview()"><i class="bi bi-x-lg"></i></button>
+        <img id="previewImg" src="" alt="">
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:none;align-items:center;justify-content:center;">
+        <div style="background:var(--bg-white);border-radius:var(--radius-md);padding:1.5rem;width:400px;max-width:90vw;">
+            <h3 style="margin-bottom:1rem;">Edit Image</h3>
+            <div class="form-group">
+                <label class="form-label">Alt Text</label>
+                <input type="text" class="form-input" id="editAltText">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Caption</label>
+                <input type="text" class="form-input" id="editCaption">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Photographer</label>
+                <input type="text" class="form-input" id="editPhotographer">
+            </div>
+            <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
+                <button class="btn btn-outline btn-sm" onclick="closeEditModal()">Cancel</button>
+                <button class="btn btn-primary btn-sm" onclick="saveEdit()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script>
+        let categories = [];
+        let selectedCategoryId = null;
+        let currentFilter = 'all';
+        let currentImageId = null;
+        let images = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadCategories();
+            setupDragDrop();
+        });
+
+        function checkAuth() {
+            const token = localStorage.getItem('flower-token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            const user = JSON.parse(localStorage.getItem('flower-user') || '{}');
+            if (!['admin', 'superadmin'].includes(user.role?.toLowerCase())) {
+                alert('Admin access required');
+                window.location.href = 'index.html';
+            }
+        }
+
+        async function loadCategories() {
+            try {
+                const res = await fetch('/api/products/list/categories');
+                categories = await res.json();
+                renderCategories();
+            } catch (err) {
+                console.error('Failed to load categories:', err);
+            }
+        }
+
+        function renderCategories() {
+            const search = document.getElementById('catSearch').value.toLowerCase();
+            const filtered = categories.filter(c => c.name?.toLowerCase().includes(search));
+
+            document.getElementById('catList').innerHTML = filtered.map(c => `
+                <div class="cim-cat-item${selectedCategoryId === c.id ? ' active' : ''}" onclick="selectCategory(${c.id}, '${c.name}')">
+                    <div class="cim-cat-icon"><i class="bi bi-folder"></i></div>
+                    <div class="cim-cat-info">
+                        <div class="cim-cat-name">${escapeHtml(c.name)}</div>
+                        <div class="cim-cat-count">${c.image_count || 0} images</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterCategories() { renderCategories(); }
+
+        async function selectCategory(id, name) {
+            selectedCategoryId = id;
+            document.getElementById('selectedCatName').textContent = name;
+            document.getElementById('uploadArea').style.display = 'block';
+            document.getElementById('filterBar').style.display = 'flex';
+            renderCategories();
+            await loadImages();
+        }
+
+        async function loadImages() {
+            if (!selectedCategoryId) return;
+            try {
+                const res = await fetch(`/api/categories/${selectedCategoryId}/images?filter=${currentFilter}`);
+                const data = await res.json();
+                images = data.images || [];
+                renderGallery();
+            } catch (err) {
+                console.error('Failed to load images:', err);
+            }
+        }
+
+        function renderGallery() {
+            const gallery = document.getElementById('gallery');
+            const empty = document.getElementById('emptyState');
+
+            if (!images.length) {
+                gallery.innerHTML = '';
+                empty.style.display = 'block';
+                return;
+            }
+            empty.style.display = 'none';
+
+            gallery.innerHTML = images.map(img => `
+                <div class="cim-img-card" data-id="${img.id}">
+                    <div class="cim-img-wrap" onclick="openPreview('${img.storage_path}')">
+                        <img src="${img.storage_path}" alt="${escapeHtml(img.alt_text || '')}" loading="lazy">
+                        <div class="cim-img-overlay">
+                            <button class="cim-img-btn featured" onclick="event.stopPropagation();setFeatured('${img.id}')" title="Set Featured"><i class="bi bi-star-fill"></i></button>
+                            <button class="cim-img-btn edit" onclick="event.stopPropagation();openEditModal('${img.id}', '${escapeHtml(img.alt_text || '')}', '${escapeHtml(img.caption || '')}', '${escapeHtml(img.photographer || '')}')" title="Edit"><i class="bi bi-pencil"></i></button>
+                            <button class="cim-img-btn delete" onclick="event.stopPropagation();deleteImage('${img.id}')" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                        ${img.is_featured ? '<span class="cim-img-badge featured"><i class="bi bi-star-fill"></i> Featured</span>' : ''}
+                        ${img.status === 'inactive' ? '<span class="cim-img-badge inactive">Inactive</span>' : ''}
+                    </div>
+                    <div class="cim-img-info">
+                        <div class="cim-img-alt">${escapeHtml(img.alt_text || 'No alt text')}</div>
+                        <div class="cim-img-meta">${img.photographer ? '📸 ' + escapeHtml(img.photographer) : ''} • ${new Date(img.created_at).toLocaleDateString()}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.cim-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
+            loadImages();
+        }
+
+        // ─── Upload ──────────────────────────────────────────────────
+        function setupDragDrop() {
+            const area = document.getElementById('uploadArea');
+            ['dragenter', 'dragover'].forEach(e => area.addEventListener(e, ev => { ev.preventDefault(); area.classList.add('dragover'); }));
+            ['dragleave', 'drop'].forEach(e => area.addEventListener(e, ev => { ev.preventDefault(); area.classList.remove('dragover'); }));
+            area.addEventListener('drop', e => handleUpload(e.dataTransfer.files));
+        }
+
+        async function handleUpload(files) {
+            if (!selectedCategoryId || !files.length) return;
+            const progress = document.getElementById('uploadProgress');
+            progress.style.display = 'block';
+            progress.innerHTML = '<div class="cim-progress"><div class="cim-progress-fill" style="width:0%"></div></div><p style="font-size:0.85rem;margin-top:0.5rem;">Uploading...</p>';
+
+            const formData = new FormData();
+            Array.from(files).forEach(f => formData.append('images', f));
+
+            try {
+                const res = await fetch(`/api/categories/${selectedCategoryId}/images`, {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') },
+                    body: formData
+                });
+                if (res.ok) {
+                    showToast('Images uploaded successfully');
+                    loadImages();
+                } else {
+                    showToast('Upload failed', 'error');
+                }
+            } catch (err) {
+                showToast('Upload failed', 'error');
+            }
+            progress.style.display = 'none';
+            document.getElementById('fileInput').value = '';
+        }
+
+        // ─── Actions ─────────────────────────────────────────────────
+        async function setFeatured(id) {
+            try {
+                await fetch(`/api/images/${id}/feature`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') }
+                });
+                showToast('Featured image updated');
+                loadImages();
+            } catch (err) {
+                showToast('Failed to update', 'error');
+            }
+        }
+
+        async function deleteImage(id) {
+            if (!confirm('Delete this image?')) return;
+            try {
+                await fetch(`/api/images/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') }
+                });
+                showToast('Image deleted');
+                loadImages();
+            } catch (err) {
+                showToast('Failed to delete', 'error');
+            }
+        }
+
+        function openEditModal(id, alt, caption, photographer) {
+            currentImageId = id;
+            document.getElementById('editAltText').value = alt;
+            document.getElementById('editCaption').value = caption;
+            document.getElementById('editPhotographer').value = photographer;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        async function saveEdit() {
+            try {
+                await fetch(`/api/images/${currentImageId}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token'), 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        alt_text: document.getElementById('editAltText').value,
+                        caption: document.getElementById('editCaption').value,
+                        photographer: document.getElementById('editPhotographer').value
+                    })
+                });
+                showToast('Image updated');
+                closeEditModal();
+                loadImages();
+            } catch (err) {
+                showToast('Failed to update', 'error');
+            }
+        }
+
+        function openPreview(src) {
+            document.getElementById('previewImg').src = src;
+            document.getElementById('previewModal').classList.add('show');
+        }
+
+        function closePreview() {
+            document.getElementById('previewModal').classList.remove('show');
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `position:fixed;bottom:2rem;right:2rem;padding:0.75rem 1.25rem;background:${type === 'error' ? '#ef4444' : 'var(--accent-green)'};color:white;border-radius:8px;z-index:2000;font-size:0.9rem;animation:fadeIn 0.3s;`;
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    </script>
+</body>
+</html>

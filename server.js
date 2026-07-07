@@ -90,6 +90,7 @@ app.get('/marketplace', (_, res) => res.sendFile(path.join(__dirname, 'marketpla
 app.get('/ai-scanner', (_, res) => res.sendFile(path.join(__dirname, 'ai-scanner.html')));
 app.get('/admin', (_, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 app.get('/admin/flowers', (_, res) => res.sendFile(path.join(__dirname, 'admin-flowers.html')));
+app.get('/admin/category-images', (_, res) => res.sendFile(path.join(__dirname, 'admin-category-images.html')));
 app.get('/composting', (_, res) => res.sendFile(path.join(__dirname, 'composting.html')));
 app.get('/arrangements', (_, res) => res.sendFile(path.join(__dirname, 'arrangements.html')));
 app.get('/gardening', (_, res) => res.sendFile(path.join(__dirname, 'gardening.html')));
@@ -314,6 +315,7 @@ app.use('/api', require('./routes/badges'));
 app.use('/api', require('./routes/members'));
 app.use('/api/instructor', require('./routes/instructor'));
 app.use('/api', require('./routes/my-activities'));
+app.use('/api', require('./routes/category-images'));
 
 // ─── Error handling ────────────────────────────────────────────────────────
 
