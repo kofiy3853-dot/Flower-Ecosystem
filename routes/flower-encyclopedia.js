@@ -4,7 +4,7 @@ const path = require('path');
 
 // ─── List flowers with filters ────────────────────────────────────────
 router.get('/flowers', asyncHandler(async (req, res) => {
-    const { search, color, season, sunlight, water, care_level, indoor_outdoor, sort = 'name', page = 1, limit = 20, letter } = req.query;
+    const { search, color, season, sunlight, water, care_level, indoor_outdoor, fragrant, sort = 'name', page = 1, limit = 20, letter } = req.query;
 
     if (await dbAvailable()) {
         try {
@@ -13,12 +13,13 @@ router.get('/flowers', asyncHandler(async (req, res) => {
             let idx = 1;
 
             if (search) { conditions.push(`(f.common_name ILIKE $${idx} OR f.scientific_name ILIKE $${idx})`); values.push(`%${search}%`); idx++; }
-            if (color) { conditions.push(`$${idx} = ANY(f.colors)`); values.push(color); idx++; }
-            if (season) { conditions.push(`f.bloom_season ILIKE $${idx}`); values.push(`%${season}%`); idx++; }
+            if (color) { conditions.push(`$${idx} = ANY(f.colors)`); values.push(color.charAt(0).toUpperCase() + color.slice(1)); idx++; }
+            if (season) { conditions.push(`f.bloom_season ILIKE $${idx}`); values.push(`%${season.charAt(0).toUpperCase() + season.slice(1)}%`); idx++; }
             if (sunlight) { conditions.push(`f.sunlight ILIKE $${idx}`); values.push(`%${sunlight}%`); idx++; }
             if (water) { conditions.push(`f.water_requirements ILIKE $${idx}`); values.push(`%${water}%`); idx++; }
             if (care_level) { conditions.push(`f.care_level = $${idx}`); values.push(care_level); idx++; }
             if (indoor_outdoor) { conditions.push(`f.indoor_outdoor = $${idx}`); values.push(indoor_outdoor); idx++; }
+            if (fragrant === 'true') { conditions.push(`f.fragrance IS NOT NULL AND f.fragrance != ''`); }
             if (letter) { conditions.push(`f.common_name ILIKE $${idx}`); values.push(`${letter}%`); idx++; }
 
             const where = 'WHERE ' + conditions.join(' AND ');

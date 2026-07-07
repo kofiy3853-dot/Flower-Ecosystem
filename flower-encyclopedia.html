@@ -26,6 +26,12 @@
         .enc-filters{display:flex;gap:0.5rem;flex-wrap:wrap;}
         .enc-filter{padding:0.4rem 0.8rem;border:1px solid var(--border-color);border-radius:20px;font-size:0.8rem;cursor:pointer;background:var(--bg-white);transition:all 0.2s;}
         .enc-filter:hover,.enc-filter.active{border-color:var(--primary-color);color:var(--primary-color);background:var(--primary-light);}
+        .enc-filter-group{margin-top:0.75rem;}
+        .enc-filter-label{font-size:0.75rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.4rem;}
+        .enc-color-btn{width:28px;height:28px;border-radius:50%;border:2px solid var(--border-color);cursor:pointer;transition:all 0.2s;}
+        .enc-color-btn:hover,.enc-color-btn.active{border-color:var(--primary-color);transform:scale(1.15);}
+        .enc-result-count{font-size:0.88rem;color:var(--text-light);margin-bottom:1rem;}
+        .enc-no-results{text-align:center;padding:3rem;color:var(--text-light);}
 
         .enc-ai-section{background:linear-gradient(135deg,var(--primary-light),#fce7f0);border-radius:16px;padding:2rem;margin-bottom:2rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center;}
         .enc-ai-upload{border:2px dashed var(--primary-color);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:all 0.2s;background:white;}
@@ -88,16 +94,50 @@
     <div class="container">
         <div class="enc-search">
             <div class="enc-search-bar">
-                <input type="text" id="encSearch" placeholder="Search by flower name, scientific name, color...">
+                <input type="text" id="encSearch" placeholder="Search by flower name, scientific name, color..." oninput="debounceSearch()">
                 <button class="btn btn-primary" onclick="searchFlowers()"><i class="bi bi-search"></i></button>
             </div>
+
+            <!-- Quick Filters -->
             <div class="enc-filters" id="encFilters">
-                <button class="enc-filter" data-filter="all" onclick="setFilter('all')">All</button>
-                <button class="enc-filter" data-filter="indoor" onclick="setFilter('indoor')">Indoor</button>
-                <button class="enc-filter" data-filter="outdoor" onclick="setFilter('outdoor')">Outdoor</button>
-                <button class="enc-filter" data-filter="easy" onclick="setFilter('easy')">Easy Care</button>
-                <button class="enc-filter" data-filter="spring" onclick="setFilter('spring')">Spring</button>
-                <button class="enc-filter" data-filter="summer" onclick="setFilter('summer')">Summer</button>
+                <button class="enc-filter active" data-filter="all" onclick="setFilter('all')">All</button>
+                <button class="enc-filter" data-filter="indoor" onclick="setFilter('indoor')">🌿 Indoor</button>
+                <button class="enc-filter" data-filter="outdoor" onclick="setFilter('outdoor')">🌳 Outdoor</button>
+                <button class="enc-filter" data-filter="easy" onclick="setFilter('easy')">✨ Easy Care</button>
+                <button class="enc-filter" data-filter="fragrant" onclick="setFilter('fragrant')">🌸 Fragrant</button>
+            </div>
+
+            <!-- Season Filters -->
+            <div class="enc-filter-group">
+                <div class="enc-filter-label">Season</div>
+                <div class="enc-filters">
+                    <button class="enc-filter" data-season="spring" onclick="setSeason('spring')">🌸 Spring</button>
+                    <button class="enc-filter" data-season="summer" onclick="setSeason('summer')">☀️ Summer</button>
+                    <button class="enc-filter" data-season="autumn" onclick="setSeason('autumn')">🍂 Autumn</button>
+                    <button class="enc-filter" data-season="winter" onclick="setSeason('winter')">❄️ Winter</button>
+                </div>
+            </div>
+
+            <!-- Color Filters -->
+            <div class="enc-filter-group">
+                <div class="enc-filter-label">Color</div>
+                <div class="enc-filters" style="gap:0.4rem;">
+                    <button class="enc-color-btn" data-color="red" onclick="setColor('red')" style="background:#ef4444;" title="Red"></button>
+                    <button class="enc-color-btn" data-color="pink" onclick="setColor('pink')" style="background:#ec4899;" title="Pink"></button>
+                    <button class="enc-color-btn" data-color="white" onclick="setColor('white')" style="background:#f8fafc;" title="White"></button>
+                    <button class="enc-color-btn" data-color="yellow" onclick="setColor('yellow')" style="background:#eab308;" title="Yellow"></button>
+                    <button class="enc-color-btn" data-color="purple" onclick="setColor('purple')" style="background:#8b5cf6;" title="Purple"></button>
+                    <button class="enc-color-btn" data-color="blue" onclick="setColor('blue')" style="background:#3b82f6;" title="Blue"></button>
+                    <button class="enc-color-btn" data-color="orange" onclick="setColor('orange')" style="background:#f97316;" title="Orange"></button>
+                </div>
+            </div>
+
+            <!-- Clear Filters -->
+            <div style="margin-top:0.75rem;">
+                <button class="btn btn-sm btn-outline" onclick="clearFilters()" id="clearFiltersBtn" style="display:none;">
+                    <i class="bi bi-x-circle"></i> Clear Filters
+                </button>
+                <span class="enc-result-count" id="resultCount"></span>
             </div>
         </div>
     </div>
@@ -178,6 +218,9 @@
         let currentLetter = '';
         let currentFilter = 'all';
         let currentPage = 1;
+        let currentSeason = '';
+        let currentColor = '';
+        let searchTimeout = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             renderAlphaNav();
@@ -206,8 +249,53 @@
         function setFilter(filter) {
             currentFilter = filter;
             currentPage = 1;
-            document.querySelectorAll('.enc-filter').forEach(f => f.classList.toggle('active', f.dataset.filter === filter));
+            document.querySelectorAll('#encFilters .enc-filter').forEach(f => f.classList.toggle('active', f.dataset.filter === filter));
+            updateClearButton();
             loadFlowers();
+        }
+
+        function setSeason(season) {
+            currentSeason = currentSeason === season ? '' : season;
+            document.querySelectorAll('[data-season]').forEach(f => f.classList.toggle('active', f.dataset.season === currentSeason));
+            currentPage = 1;
+            updateClearButton();
+            loadFlowers();
+        }
+
+        function setColor(color) {
+            currentColor = currentColor === color ? '' : color;
+            document.querySelectorAll('[data-color]').forEach(f => f.classList.toggle('active', f.dataset.color === currentColor));
+            currentPage = 1;
+            updateClearButton();
+            loadFlowers();
+        }
+
+        function clearFilters() {
+            currentFilter = 'all';
+            currentSeason = '';
+            currentColor = '';
+            currentLetter = '';
+            currentPage = 1;
+            document.getElementById('encSearch').value = '';
+            document.querySelectorAll('.enc-filter').forEach(f => f.classList.toggle('active', f.dataset.filter === 'all'));
+            document.querySelectorAll('[data-season]').forEach(f => f.classList.remove('active'));
+            document.querySelectorAll('[data-color]').forEach(f => f.classList.remove('active'));
+            renderAlphaNav();
+            updateClearButton();
+            loadFlowers();
+        }
+
+        function updateClearButton() {
+            const hasFilters = currentFilter !== 'all' || currentSeason || currentColor || currentLetter;
+            document.getElementById('clearFiltersBtn').style.display = hasFilters ? 'inline-flex' : 'none';
+        }
+
+        function debounceSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                currentPage = 1;
+                loadFlowers();
+            }, 300);
         }
 
         function searchFlowers() {
@@ -232,8 +320,9 @@
             if (currentFilter === 'indoor') url += '&indoor_outdoor=Indoor';
             if (currentFilter === 'outdoor') url += '&indoor_outdoor=Outdoor';
             if (currentFilter === 'easy') url += '&care_level=Easy';
-            if (currentFilter === 'spring') url += '&season=Spring';
-            if (currentFilter === 'summer') url += '&season=Summer';
+            if (currentFilter === 'fragrant') url += '&fragrant=true';
+            if (currentSeason) url += `&season=${currentSeason}`;
+            if (currentColor) url += `&color=${currentColor}`;
 
             try {
                 const res = await fetch(url);
@@ -241,6 +330,18 @@
                 allFlowers = data.flowers || [];
                 renderFlowerCards(allFlowers, 'flowerGrid');
                 document.getElementById('loadMore').style.display = data.pages > currentPage ? 'block' : 'none';
+
+                // Update result count
+                const countEl = document.getElementById('resultCount');
+                if (countEl) {
+                    const hasFilters = currentFilter !== 'all' || currentSeason || currentColor || currentLetter || search;
+                    countEl.textContent = hasFilters ? `Showing ${allFlowers.length} of ${data.total || allFlowers.length} flowers` : '';
+                }
+
+                // Show no results message
+                if (!allFlowers.length) {
+                    document.getElementById('flowerGrid').innerHTML = '<div class="enc-no-results"><i class="bi bi-search" style="font-size:3rem;display:block;margin-bottom:1rem;opacity:0.5;"></i><p>No flowers match your filters. Try adjusting your search.</p><button class="btn btn-primary btn-sm" onclick="clearFilters()">Clear Filters</button></div>';
+                }
             } catch {}
         }
 
