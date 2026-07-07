@@ -202,5 +202,12 @@ if (document.readyState === 'loading') {
     initComponents();
 }
 
+// Register Service Worker
+if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+    navigator.serviceWorker.register('/service-worker.js')
+        .then(reg => console.log('Service Worker registered'))
+        .catch(err => console.log('Service Worker registration failed:', err));
+}
+
 window.ProductCard = ProductCard;
 window.loadComponent = loadComponent;
