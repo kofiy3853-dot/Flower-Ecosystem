@@ -1,1 +1,52 @@
-[]
+[
+    {
+        "id": "lesson-001",
+        "course_id": "course-001",
+        "title": "Introduction to Floral Design",
+        "description": "Welcome to floral design! Learn the basics of color, texture, and form.",
+        "order": 1,
+        "duration_minutes": 15,
+        "is_free": true,
+        "type": "video"
+    },
+    {
+        "id": "lesson-002",
+        "course_id": "course-001",
+        "title": "Color Theory for Flowers",
+        "description": "Master color combinations that make arrangements pop.",
+        "order": 2,
+        "duration_minutes": 20,
+        "is_free": false,
+        "type": "video"
+    },
+    {
+        "id": "lesson-003",
+        "course_id": "course-001",
+        "title": "Tools of the Trade",
+        "description": "Essential tools every florist needs in their kit.",
+        "order": 3,
+        "duration_minutes": 12,
+        "is_free": false,
+        "type": "video"
+    },
+    {
+        "id": "lesson-004",
+        "course_id": "course-002",
+        "title": "Wedding Bouquet Fundamentals",
+        "description": "Learn the structure and style of bridal bouquets.",
+        "order": 1,
+        "duration_minutes": 30,
+        "is_free": true,
+        "type": "video"
+    },
+    {
+        "id": "lesson-005",
+        "course_id": "course-002",
+        "title": "Centerpiece Design",
+        "description": "Create stunning table centerpieces for any wedding style.",
+        "order": 2,
+        "duration_minutes": 25,
+        "is_free": false,
+        "type": "video"
+    }
+]

@@ -1,1 +1,77 @@
-[]
+[
+    {
+        "id": "p1",
+        "name": "Classic Red Rose Bouquet",
+        "price": 45.00,
+        "description": "A stunning dozen long-stem red roses, hand-tied with baby's breath and eucalyptus.",
+        "category_id": "cat-roses",
+        "seller_id": "seller-001",
+        "stock_quantity": 50,
+        "is_active": true,
+        "flower_cond": "Fresh",
+        "color": "Red",
+        "occasion": "Valentine",
+        "image": "https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop",
+        "created_at": "2026-01-15T10:00:00Z"
+    },
+    {
+        "id": "p2",
+        "name": "Mixed Spring Bouquet",
+        "price": 35.00,
+        "description": "Colorful mix of tulips, daisies, and carnations in pastel shades.",
+        "category_id": "cat-bouquets",
+        "seller_id": "seller-002",
+        "stock_quantity": 30,
+        "is_active": true,
+        "flower_cond": "Fresh",
+        "color": "Mixed",
+        "occasion": "Birthday",
+        "image": "https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=400&auto=format&fit=crop",
+        "created_at": "2026-02-10T10:00:00Z"
+    },
+    {
+        "id": "p3",
+        "name": "White Orchid Plant",
+        "price": 65.00,
+        "description": "Elegant white phalaenopsis orchid in a ceramic pot. Perfect for home or office.",
+        "category_id": "cat-orchids",
+        "seller_id": "seller-001",
+        "stock_quantity": 15,
+        "is_active": true,
+        "flower_cond": "Fresh",
+        "color": "White",
+        "occasion": "Housewarming",
+        "image": "https://images.unsplash.com/photo-1522926193341-e9ffd686c60f?q=400&auto=format&fit=crop",
+        "created_at": "2026-03-01T10:00:00Z"
+    },
+    {
+        "id": "p4",
+        "name": "Wildflower Meadow Bundle",
+        "price": 28.00,
+        "description": "Hand-picked wildflowers including poppies, cornflowers, and daisies.",
+        "category_id": "cat-wildflowers",
+        "seller_id": "seller-003",
+        "stock_quantity": 40,
+        "is_active": true,
+        "flower_cond": "Fresh",
+        "color": "Mixed",
+        "occasion": "Just Because",
+        "image": "https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?q=400&auto=format&fit=crop",
+        "created_at": "2026-03-15T10:00:00Z"
+    },
+    {
+        "id": "p5",
+        "name": "Succulent Trio Set",
+        "price": 22.00,
+        "description": "Three assorted succulents in decorative pots. Low maintenance and beautiful.",
+        "category_id": "cat-succulents",
+        "seller_id": "seller-002",
+        "stock_quantity": 60,
+        "is_active": true,
+        "flower_cond": "Fresh",
+        "color": "Green",
+        "occasion": "Gift",
+        "image": "https://images.unsplash.com/photo-1485955900006-10f4d324d411?q=400&auto=format&fit=crop",
+        "created_at": "2026-04-01T10:00:00Z"
+    }
+]

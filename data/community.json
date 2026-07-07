@@ -1,1 +1,78 @@
-[]
+{
+    "discussions": [
+        {
+            "id": "disc-001",
+            "title": "Best roses for tropical climates?",
+            "content": "I'm looking for rose varieties that thrive in hot, humid conditions. Any recommendations?",
+            "category": "Growing Tips",
+            "author_name": "Kwame Asante",
+            "author_avatar": null,
+            "votes": 12,
+            "answer_count": 5,
+            "views": 234,
+            "created_at": "2026-03-20T10:00:00Z",
+            "is_solved": true
+        },
+        {
+            "id": "disc-002",
+            "title": "How to keep cut flowers fresh longer?",
+            "content": "My flowers always wilt after 2 days. What are the best tricks to extend their life?",
+            "category": "Care Tips",
+            "author_name": "Ama Darko",
+            "author_avatar": null,
+            "votes": 23,
+            "answer_count": 8,
+            "views": 567,
+            "created_at": "2026-04-02T14:30:00Z",
+            "is_solved": true
+        },
+        {
+            "id": "disc-003",
+            "title": "Starting a flower business - advice needed",
+            "content": "I want to start selling flowers at the local market. What should I know about sourcing, pricing, and storage?",
+            "category": "Business",
+            "author_name": "Efua Mensah",
+            "author_avatar": null,
+            "votes": 31,
+            "answer_count": 12,
+            "views": 890,
+            "created_at": "2026-04-15T09:00:00Z",
+            "is_solved": false
+        },
+        {
+            "id": "disc-004",
+            "title": "Organic pest control for flower gardens",
+            "content": "What natural methods work best for keeping pests away from flowers without chemicals?",
+            "category": "Growing Tips",
+            "author_name": "Yaw Boateng",
+            "author_avatar": null,
+            "votes": 18,
+            "answer_count": 6,
+            "views": 345,
+            "created_at": "2026-05-01T11:15:00Z",
+            "is_solved": true
+        }
+    ],
+    "successStories": [
+        {
+            "id": "ss-001",
+            "title": "From Hobby to Full-Time Florist",
+            "content": "How I turned my passion for flowers into a thriving business in just one year.",
+            "author_name": "Sarah Mensah",
+            "author_avatar": null,
+            "votes": 45,
+            "views": 1200,
+            "created_at": "2026-02-28T10:00:00Z"
+        },
+        {
+            "id": "ss-002",
+            "title": "My First Wedding Contract",
+            "content": "Tips and lessons learned from landing and executing my first large wedding order.",
+            "author_name": "Amara Osei",
+            "author_avatar": null,
+            "votes": 38,
+            "views": 980,
+            "created_at": "2026-03-25T10:00:00Z"
+        }
+    ]
+}

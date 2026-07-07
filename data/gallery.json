@@ -1,1 +1,47 @@
-[]
+[
+    {
+        "id": "gal-001",
+        "title": "Spring Rose Garden",
+        "description": "A vibrant garden of mixed roses in full bloom.",
+        "category": "Garden",
+        "image_url": "https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=600&auto=format&fit=crop",
+        "photographer": "Sarah Mensah",
+        "likes": 124
+    },
+    {
+        "id": "gal-002",
+        "title": "Wedding Bouquet Collection",
+        "description": "Stunning bridal bouquets from our spring collection.",
+        "category": "Bouquets",
+        "image_url": "https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=600&auto=format&fit=crop",
+        "photographer": "Amara Osei",
+        "likes": 89
+    },
+    {
+        "id": "gal-003",
+        "title": "Wildflower Meadow",
+        "description": "Natural wildflower field in the countryside.",
+        "category": "Nature",
+        "image_url": "https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?q=600&auto=format&fit=crop",
+        "photographer": "Grace Addo",
+        "likes": 201
+    },
+    {
+        "id": "gal-004",
+        "title": "Orchid Close-Up",
+        "description": "Detailed macro shot of a white phalaenopsis orchid.",
+        "category": "Close-Up",
+        "image_url": "https://images.unsplash.com/photo-1522926193341-e9ffd686c60f?q=600&auto=format&fit=crop",
+        "photographer": "Dr. Kofi Mensah",
+        "likes": 156
+    },
+    {
+        "id": "gal-005",
+        "title": "Tulip Fields of Holland",
+        "description": "Colorful tulip rows stretching to the horizon.",
+        "category": "Landscape",
+        "image_url": "https://images.unsplash.com/photo-1457089328109-e5d9bd499191?q=600&auto=format&fit=crop",
+        "photographer": "Visitor Submission",
+        "likes": 312
+    }
+]

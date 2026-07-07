@@ -1,1 +1,38 @@
-[]
+[
+    {
+        "id": "fl-001",
+        "name": "Bloom & Petal Florist",
+        "description": "Premium floral arrangements for weddings, events, and everyday occasions.",
+        "location": "Accra, Ghana",
+        "rating": 4.8,
+        "reviews_count": 124,
+        "specialties": ["Weddings", "Events", "Custom Arrangements"],
+        "image": "https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=400&auto=format&fit=crop",
+        "phone": "+233-20-123-4567",
+        "is_verified": true
+    },
+    {
+        "id": "fl-002",
+        "name": "Garden Glory Floristry",
+        "description": "Farm-fresh flowers sourced directly from local growers.",
+        "location": "Kumasi, Ghana",
+        "rating": 4.6,
+        "reviews_count": 89,
+        "specialties": ["Farm-to-Vase", "Seasonal Blooms", "Succulents"],
+        "image": "https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?q=400&auto=format&fit=crop",
+        "phone": "+233-24-987-6543",
+        "is_verified": true
+    },
+    {
+        "id": "fl-003",
+        "name": "Petal Perfect Designs",
+        "description": "Artistic floral design studio specializing in modern and contemporary arrangements.",
+        "location": "Tema, Ghana",
+        "rating": 4.9,
+        "reviews_count": 67,
+        "specialties": ["Modern Design", "Corporate Events", "Sympathy"],
+        "image": "https://images.unsplash.com/photo-1455659817273-f96807779a8a?q=400&auto=format&fit=crop",
+        "phone": "+233-50-456-7890",
+        "is_verified": false
+    }
+]

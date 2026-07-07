@@ -1,1 +1,49 @@
-[]
+[
+    {
+        "id": "quiz-001",
+        "title": "Rose Varieties Quiz",
+        "description": "Test your knowledge of different rose varieties and their care.",
+        "course_id": "course-001",
+        "difficulty": "Beginner",
+        "questions": [
+            {
+                "question": "What is the scientific name for the common garden rose?",
+                "options": ["Rosa gallica", "Rosa chinensis", "Rosa rugosa", "Rosa multiflora"],
+                "correct_answer": "Rosa chinensis"
+            },
+            {
+                "question": "How often should roses be watered during summer?",
+                "options": ["Daily", "Every 2-3 days", "Once a week", "Every 2 weeks"],
+                "correct_answer": "Every 2-3 days"
+            },
+            {
+                "question": "What angle should you cut rose stems at?",
+                "options": ["30 degrees", "45 degrees", "60 degrees", "90 degrees"],
+                "correct_answer": "45 degrees"
+            }
+        ],
+        "passing_score": 60,
+        "time_limit_minutes": 10
+    },
+    {
+        "id": "quiz-002",
+        "title": "Wedding Flowers Knowledge Check",
+        "description": "How well do you know wedding flowers and their meanings?",
+        "course_id": "course-002",
+        "difficulty": "Intermediate",
+        "questions": [
+            {
+                "question": "Which flower traditionally symbolizes purity in weddings?",
+                "options": ["Rose", "Lily", "Tulip", "Daisy"],
+                "correct_answer": "Lily"
+            },
+            {
+                "question": "What is a boutonniere?",
+                "options": ["A table centerpiece", "A single flower worn on the lapel", "A bridal bouquet", "A flower crown"],
+                "correct_answer": "A single flower worn on the lapel"
+            }
+        ],
+        "passing_score": 70,
+        "time_limit_minutes": 8
+    }
+]

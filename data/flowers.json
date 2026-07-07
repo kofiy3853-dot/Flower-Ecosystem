@@ -1,0 +1,7 @@
+[
+    {"id":"1","common_name":"Rose","scientific_name":"Rosa","family":"Rosaceae","care_level":"Intermediate","sunlight":"Full Sun","water_requirements":"Regular","bloom_season":"Spring, Summer","colors":["Red","Pink","White","Yellow","Purple"],"indoor_outdoor":"Outdoor","slug":"rose","status":"active"},
+    {"id":"2","common_name":"Sunflower","scientific_name":"Helianthus annuus","family":"Asteraceae","care_level":"Easy","sunlight":"Full Sun","water_requirements":"Regular","bloom_season":"Summer","colors":["Yellow","Orange","Red"],"indoor_outdoor":"Outdoor","slug":"sunflower","status":"active"},
+    {"id":"3","common_name":"Tulip","scientific_name":"Tulipa","family":"Liliaceae","care_level":"Easy","sunlight":"Full Sun","water_requirements":"Moderate","bloom_season":"Spring","colors":["Red","Pink","White","Yellow","Purple"],"indoor_outdoor":"Outdoor","slug":"tulip","status":"active"},
+    {"id":"4","common_name":"Orchid","scientific_name":"Orchidaceae","family":"Orchidaceae","care_level":"Advanced","sunlight":"Indirect Light","water_requirements":"Low","bloom_season":"Varies","colors":["White","Pink","Purple","Yellow"],"indoor_outdoor":"Indoor","slug":"orchid","status":"active"},
+    {"id":"5","common_name":"Lily","scientific_name":"Lilium","family":"Liliaceae","care_level":"Intermediate","sunlight":"Full Sun","water_requirements":"Regular","bloom_season":"Summer","colors":["White","Pink","Orange","Yellow"],"indoor_outdoor":"Outdoor","slug":"lily","status":"active"}
+]

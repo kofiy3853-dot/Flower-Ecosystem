@@ -1,1 +1,38 @@
-[]
+[
+    {
+        "id": "user-001",
+        "first_name": "Admin",
+        "last_name": "User",
+        "email": "admin@flower.com",
+        "role": "ADMIN",
+        "is_active": true,
+        "created_at": "2026-01-01T00:00:00Z"
+    },
+    {
+        "id": "user-002",
+        "first_name": "Sarah",
+        "last_name": "Mensah",
+        "email": "sarah@example.com",
+        "role": "SELLER",
+        "is_active": true,
+        "created_at": "2026-01-15T10:00:00Z"
+    },
+    {
+        "id": "user-003",
+        "first_name": "Kwame",
+        "last_name": "Asante",
+        "email": "kwame@example.com",
+        "role": "BUYER",
+        "is_active": true,
+        "created_at": "2026-02-01T10:00:00Z"
+    },
+    {
+        "id": "user-004",
+        "first_name": "Ama",
+        "last_name": "Darko",
+        "email": "ama@example.com",
+        "role": "GROWER",
+        "is_active": true,
+        "created_at": "2026-02-15T10:00:00Z"
+    }
+]

@@ -1,1 +1,38 @@
-[]
+[
+    {
+        "id": "vid-001",
+        "title": "Basic Flower Arrangement Techniques",
+        "description": "Learn the fundamentals of creating beautiful flower arrangements at home.",
+        "category": "Floral Design",
+        "instructor": "Sarah Mensah",
+        "duration_minutes": 25,
+        "url": "https://www.youtube.com/watch?v=example1",
+        "thumbnail_url": "https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop",
+        "views": 12500,
+        "is_published": true
+    },
+    {
+        "id": "vid-002",
+        "title": "How to Make a Bridal Bouquet",
+        "description": "Step-by-step tutorial for creating a stunning bridal bouquet.",
+        "category": "Wedding Flowers",
+        "instructor": "Amara Osei",
+        "duration_minutes": 40,
+        "url": "https://www.youtube.com/watch?v=example2",
+        "thumbnail_url": "https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=400&auto=format&fit=crop",
+        "views": 8900,
+        "is_published": true
+    },
+    {
+        "id": "vid-003",
+        "title": "Rose Pruning Masterclass",
+        "description": "Professional tips on pruning roses for healthier blooms.",
+        "category": "Care Guides",
+        "instructor": "Dr. Kofi Mensah",
+        "duration_minutes": 18,
+        "url": "https://www.youtube.com/watch?v=example3",
+        "thumbnail_url": "https://images.unsplash.com/photo-1455659817273-f96807779a8a?q=400&auto=format&fit=crop",
+        "views": 6200,
+        "is_published": true
+    }
+]
