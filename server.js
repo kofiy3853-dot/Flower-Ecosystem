@@ -92,6 +92,7 @@ app.get('/flower-encyclopedia', (_, res) => res.sendFile(path.join(__dirname, 'f
 app.get('/flower-meanings', (_, res) => res.sendFile(path.join(__dirname, 'flower-meanings.html')));
 app.get('/flower-finder', (_, res) => res.sendFile(path.join(__dirname, 'flower-finder.html')));
 app.get('/care-guides-hub', (_, res) => res.sendFile(path.join(__dirname, 'care-guides-hub.html')));
+app.get('/care-guide', (_, res) => res.sendFile(path.join(__dirname, 'care-guide-detail.html')));
 app.get('/flower/:slug', (_, res) => res.sendFile(path.join(__dirname, 'flower-detail.html')));
 app.get('/admin', (_, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 app.get('/admin/flowers', (_, res) => res.sendFile(path.join(__dirname, 'admin-flowers.html')));

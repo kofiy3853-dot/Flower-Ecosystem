@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Care guide for your plants - Flower Ecosystem">
-    <meta property="og:title" content="Care Guide | Flower Ecosystem">
-    <meta property="og:description" content="Detailed plant and flower care guide on Flower Ecosystem.">
-    <meta property="og:type" content="website">
+    <meta name="description" content="Care Guide - Flower Ecosystem">
     <title>Care Guide | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,82 +12,342 @@
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
-        .back-link { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.88rem; color:var(--text-light); margin-bottom:1rem; text-decoration:none; }
-        .back-link:hover { color:var(--primary-color); }
-        .guide-hero { height:350px; border-radius:var(--radius-md); overflow:hidden; margin-bottom:2rem; position:relative; }
-        .guide-hero img { width:100%; height:100%; object-fit:cover; }
-        .guide-hero-overlay { position:absolute; bottom:0; left:0; right:0; padding:2rem; background:linear-gradient(to top, rgba(0,0,0,0.7), transparent); }
-        .guide-hero-overlay .cat-badge { display:inline-block; background:var(--primary-color); color:white; font-size:0.7rem; font-weight:600; padding:0.2rem 0.6rem; border-radius:4px; margin-bottom:0.5rem; }
-        .guide-hero-overlay h1 { color:white; font-size:1.8rem; margin-bottom:0.5rem; }
-        .guide-hero-meta { display:flex; gap:1.5rem; color:rgba(255,255,255,0.85); font-size:0.85rem; flex-wrap:wrap; }
-        .guide-hero-meta span { display:flex; align-items:center; gap:0.3rem; }
-        .detail-layout { display:grid; grid-template-columns:1fr 300px; gap:2rem; }
-        .detail-main { min-width:0; }
-        .detail-sidebar { display:flex; flex-direction:column; gap:1.25rem; }
-        .care-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem; margin-bottom:1.5rem; }
-        .care-card h2 { font-size:1.1rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.4rem; }
-        .care-params { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
-        .care-param { display:flex; gap:0.75rem; padding:0.75rem; background:var(--bg-main); border-radius:var(--radius-sm); }
-        .care-param .icon { width:36px; height:36px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
-        .care-param .icon.light { background:rgba(245,158,11,0.1); color:var(--accent-gold); }
-        .care-param .icon.water { background:rgba(14,165,233,0.1); color:var(--accent-blue); }
-        .care-param .icon.temp { background:rgba(239,68,68,0.1); color:var(--error-color); }
-        .care-param .icon.humid { background:rgba(16,185,129,0.1); color:var(--accent-green); }
-        .care-param .icon.soil { background:rgba(139,92,246,0.1); color:#8b5cf6; }
-        .care-param .label { font-size:0.75rem; color:var(--text-muted); }
-        .care-param .value { font-size:0.88rem; font-weight:500; }
-        .content-text { font-size:0.95rem; line-height:1.8; color:var(--text-main); }
-        .content-text h2 { font-size:1.3rem; margin:2rem 0 0.75rem; }
-        .content-text h3 { font-size:1.1rem; margin:1.5rem 0 0.5rem; color:var(--primary-color); }
-        .content-text p { margin-bottom:1rem; }
-        .content-text ul, .content-text ol { padding-left:1.5rem; margin-bottom:1rem; }
-        .content-text li { margin-bottom:0.4rem; }
-        .content-text strong { color:var(--text-main); }
-        .tips-list { list-style:none; padding:0; margin:0; }
-        .tips-list li { display:flex; align-items:flex-start; gap:0.75rem; padding:0.6rem 0; border-bottom:1px solid var(--border-light); font-size:0.9rem; }
-        .tips-list li:last-child { border-bottom:none; }
-        .tip-icon { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; flex-shrink:0; }
-        .tip-icon.tip { background:rgba(16,185,129,0.1); color:var(--accent-green); }
-        .tip-icon.warning { background:rgba(239,68,68,0.1); color:var(--error-color); }
-        .share-bar { display:flex; gap:0.75rem; padding:1.5rem 0; border-top:1px solid var(--border-color); margin-top:1.5rem; }
-        .related-card { display:flex; gap:0.75rem; padding:0.75rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s; text-decoration:none; color:inherit; }
-        .related-card:hover { border-color:var(--primary-color); box-shadow:var(--shadow-sm); }
-        .related-img { width:80px; height:60px; border-radius:var(--radius-sm); overflow:hidden; flex-shrink:0; }
-        .related-img img { width:100%; height:100%; object-fit:cover; }
-        .related-info h4 { font-size:0.85rem; margin-bottom:0.2rem; line-height:1.3; }
-        .related-info .meta { font-size:0.75rem; color:var(--text-muted); }
-        .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-light); }
-        .empty-state i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
-        @media(max-width:1024px) { .detail-layout { grid-template-columns:1fr; } .care-params { grid-template-columns:1fr; } }
-        @media(max-width:640px) { .guide-hero { height:250px; } }
+        .cgd-hero{position:relative;height:350px;overflow:hidden;}
+        .cgd-hero img{width:100%;height:100%;object-fit:cover;}
+        .cgd-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.8) 0%,transparent 60%);display:flex;flex-direction:column;justify-content:flex-end;padding:2rem;}
+        .cgd-hero h1{color:white;font-family:'Playfair Display',serif;font-size:2rem;margin-bottom:0.25rem;}
+        .cgd-hero-meta{display:flex;gap:1rem;flex-wrap:wrap;color:rgba(255,255,255,0.85);font-size:0.9rem;margin-top:0.5rem;}
+        .cgd-hero-meta span{display:flex;align-items:center;gap:0.3rem;}
+        .cgd-hero-actions{display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;}
+
+        .cgd-layout{display:grid;grid-template-columns:1fr 320px;gap:2rem;margin-top:-2rem;position:relative;z-index:10;}
+        .cgd-main{min-width:0;}
+        .cgd-sidebar{position:sticky;top:80px;}
+
+        .cgd-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:1.5rem;margin-bottom:1.25rem;}
+        .cgd-card h2{font-size:1.15rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;}
+        .cgd-card h2 i{color:var(--primary-color);}
+
+        .care-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+        .care-item{text-align:center;padding:1rem;background:var(--bg-light);border-radius:var(--radius-sm);}
+        .care-item i{font-size:1.5rem;display:block;margin-bottom:0.4rem;}
+        .care-item .label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;}
+        .care-item .value{font-weight:600;font-size:0.95rem;}
+
+        .timeline{position:relative;padding-left:2rem;}
+        .timeline::before{content:'';position:absolute;left:11px;top:0;bottom:0;width:3px;background:var(--border-color);border-radius:3px;}
+        .timeline-item{position:relative;margin-bottom:1.25rem;}
+        .timeline-item::before{content:'';position:absolute;left:-2rem;top:0.25rem;width:24px;height:24px;border-radius:50%;background:var(--primary-color);border:3px solid white;box-shadow:0 0 0 3px var(--primary-light);z-index:1;}
+        .timeline-day{font-weight:600;color:var(--primary-color);font-size:0.9rem;margin-bottom:0.25rem;}
+        .timeline-task{font-size:0.9rem;}
+
+        .care-section{margin-bottom:2rem;}
+        .care-section h3{font-size:1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;}
+        .care-section h3 i{color:var(--primary-color);}
+
+        .problem-card{background:var(--bg-light);border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.75rem;border-left:4px solid var(--primary-color);}
+        .problem-card.high{border-left-color:#ef4444;}
+        .problem-card.medium{border-left-color:#f59e0b;}
+        .problem-card.low{border-left-color:#10b981;}
+        .problem-name{font-weight:600;margin-bottom:0.25rem;}
+        .problem-detail{font-size:0.85rem;color:var(--text-light);margin-bottom:0.25rem;}
+        .problem-label{font-size:0.75rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;}
+
+        .season-tabs{display:flex;gap:0.25rem;background:var(--bg-light);border-radius:var(--radius-sm);padding:0.25rem;margin-bottom:1rem;}
+        .season-tab{padding:0.5rem 1rem;border-radius:var(--radius-sm);font-size:0.85rem;cursor:pointer;border:none;background:none;transition:all 0.2s;}
+        .season-tab.active{background:var(--bg-white);color:var(--text-main);box-shadow:var(--shadow-xs);}
+        .season-content{display:none;padding:1rem;background:var(--bg-light);border-radius:var(--radius-sm);line-height:1.6;}
+        .season-content.active{display:block;}
+
+        .product-card{display:flex;gap:0.75rem;padding:0.75rem;background:var(--bg-light);border-radius:var(--radius-sm);margin-bottom:0.5rem;cursor:pointer;transition:all 0.2s;}
+        .product-card:hover{background:var(--primary-light);}
+        .product-card img{width:50px;height:50px;border-radius:8px;object-fit:cover;}
+        .product-card .name{font-weight:500;font-size:0.88rem;}
+        .product-card .price{color:var(--primary-color);font-weight:600;font-size:0.85rem;}
+
+        @media(max-width:768px){
+            .cgd-layout{grid-template-columns:1fr;}
+            .cgd-sidebar{position:static;}
+            .care-grid{grid-template-columns:repeat(2,1fr);}
+        }
+        @media(max-width:480px){
+            .care-grid{grid-template-columns:1fr;}
+        }
     </style>
 </head>
 <body>
     <div id="header-container"></div>
-    <div style="padding:1rem 0;"><div class="container"><a href="care-guides.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-size:0.88rem;color:var(--text-light);text-decoration:none;"><i class="bi bi-arrow-left"></i> Back to Care Guides</a></div></div>
+    <div style="padding:1rem 0;"><div class="container"><a href="care-guides-hub.html" style="display:inline-flex;align-items:center;gap:0.4rem;font-size:0.88rem;color:var(--text-light);text-decoration:none;"><i class="bi bi-arrow-left"></i> Back to Care Guides</a></div></div>
 
-    <section class="section-padding" style="padding-top:2rem;">
-        <div class="container">
-            <div id="guideContent"></div>
-        </div>
-    </section>
+    <div id="careGuideContent">
+        <div style="text-align:center;padding:4rem;"><div class="spinner" style="margin:0 auto 1rem;"></div><p style="color:var(--text-light);">Loading care guide...</p></div>
+    </div>
 
     <div id="footer-container"></div>
-    <div id="auth-modal-container"></div>
 
     <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/auth.js?v=3.4"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/animations.js?v=3.0"></script>
-    <script src="js/shared/api.js?v=4.0"></script>
-    <script src="js/shared/cart.js?v=3.0"></script>
-    <script src="js/shared/ui.js?v=2.0"></script>
-    <script src="js/shared/animations.js?v=3.0"></script>
-    <script src="js/care-guides.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            initCareGuideDetail();
-        });
+        let guide = null;
+
+        document.addEventListener('DOMContentLoaded', () => initCareGuide());
+
+        async function initCareGuide() {
+            const params = new URLSearchParams(window.location.search);
+            const slug = params.get('slug');
+            if (!slug) {
+                document.getElementById('careGuideContent').innerHTML = '<div style="text-align:center;padding:4rem;"><h3>Care guide not found</h3><a href="care-guides-hub.html" class="btn btn-primary" style="margin-top:1rem;">Browse Care Guides</a></div>';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/care-guides/${slug}`);
+                if (!res.ok) throw new Error('Not found');
+                guide = await res.json();
+            } catch {
+                document.getElementById('careGuideContent').innerHTML = '<div style="text-align:center;padding:4rem;"><h3>Care guide not found</h3><a href="care-guides-hub.html" class="btn btn-primary" style="margin-top:1rem;">Browse Care Guides</a></div>';
+                return;
+            }
+
+            document.title = `${guide.common_name || guide.title} Care Guide | Flower Ecosystem`;
+            renderCareGuide();
+        }
+
+        function renderCareGuide() {
+            const problems = guide.problems || [];
+            const seasonal = guide.seasonal || [];
+
+            document.getElementById('careGuideContent').innerHTML = `
+                <!-- Hero -->
+                <div class="cgd-hero">
+                    <img src="${guide.cover_image || guide.image_url || 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=1200&auto=format&fit=crop'}" alt="${esc(guide.common_name || '')}">
+                    <div class="cgd-hero-overlay">
+                        <h1>${esc(guide.common_name || guide.title || '')} Care Guide</h1>
+                        <div class="cgd-hero-meta">
+                            <span><i class="bi bi-tag"></i> ${esc(guide.difficulty || 'Beginner')}</span>
+                            <span><i class="bi bi-${guide.indoor_outdoor === 'Indoor' ? 'house' : 'tree'}"></i> ${esc(guide.indoor_outdoor || 'Outdoor')}</span>
+                            <span><i class="bi bi-clock"></i> ${guide.reading_time || 10} min read</span>
+                            ${guide.scientific_name ? `<span><i class="bi bi-book"></i> <em>${esc(guide.scientific_name)}</em></span>` : ''}
+                        </div>
+                        <div class="cgd-hero-actions">
+                            <button class="btn" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);" onclick="saveGuide()"><i class="bi bi-bookmark"></i> Save Guide</button>
+                            <button class="btn" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);" onclick="window.print()"><i class="bi bi-printer"></i> Print</button>
+                            <button class="btn" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);" onclick="shareGuide()"><i class="bi bi-share"></i> Share</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="cgd-layout">
+                        <!-- Main Content -->
+                        <div class="cgd-main">
+                            <!-- Quick Care Summary -->
+                            <div class="cgd-card">
+                                <h2><i class="bi bi-list-check"></i> Quick Care Summary</h2>
+                                <div class="care-grid">
+                                    <div class="care-item"><i class="bi bi-droplet" style="color:var(--accent-blue);"></i><div class="label">Water</div><div class="value">${esc(guide.water_frequency || 'Regular')}</div></div>
+                                    <div class="care-item"><i class="bi bi-sun" style="color:var(--accent-gold);"></i><div class="label">Sunlight</div><div class="value">${esc(guide.sunlight || 'Full Sun')}</div></div>
+                                    <div class="care-item"><i class="bi bi-thermometer-half" style="color:var(--error-color);"></i><div class="label">Temperature</div><div class="value">${esc(guide.temperature || '18-26°C')}</div></div>
+                                    <div class="care-item"><i class="bi bi-egg" style="color:var(--accent-green);"></i><div class="label">Soil</div><div class="value">${esc(guide.soil_type || 'Well-draining')}</div></div>
+                                    <div class="care-item"><i class="bi bi-droplet-half" style="color:var(--primary-color);"></i><div class="label">Fertilizer</div><div class="value">${esc(guide.fertilizer || 'Monthly')}</div></div>
+                                    <div class="care-item"><i class="bi bi-cloud-humidity" style="color:var(--accent-blue);"></i><div class="label">Humidity</div><div class="value">${esc(guide.humidity || 'Moderate')}</div></div>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="cgd-card">
+                                <h2><i class="bi bi-info-circle"></i> About This Guide</h2>
+                                <p style="font-size:0.95rem;color:var(--text-light);line-height:1.7;">${esc(guide.description || 'No description available.')}</p>
+                            </div>
+
+                            <!-- Care Schedule -->
+                            <div class="cgd-card">
+                                <h2><i class="bi bi-calendar-check"></i> Weekly Care Schedule</h2>
+                                <div class="timeline">
+                                    <div class="timeline-item"><div class="timeline-day">Monday</div><div class="timeline-task">💧 Water thoroughly</div></div>
+                                    <div class="timeline-item"><div class="timeline-day">Wednesday</div><div class="timeline-task">🌱 Check soil moisture</div></div>
+                                    <div class="timeline-item"><div class="timeline-day">Friday</div><div class="timeline-task">✂️ Remove dead flowers/leaves</div></div>
+                                    <div class="timeline-item"><div class="timeline-day">Sunday</div><div class="timeline-task">🍃 Apply fertilizer (every 2 weeks)</div></div>
+                                </div>
+                            </div>
+
+                            <!-- Step by Step Care -->
+                            <div class="cgd-card">
+                                <h2><i class="bi bi-book"></i> Step-by-Step Care Guide</h2>
+
+                                <div class="care-section">
+                                    <h3><i class="bi bi-droplet"></i> Watering</h3>
+                                    <p style="font-size:0.9rem;color:var(--text-light);line-height:1.6;">
+                                        Water deeply when the top inch of soil feels dry. For most flowers, this means watering once or twice a week during the growing season. Reduce watering in winter. Always water at the base of the plant to avoid wetting the leaves.
+                                    </p>
+                                    <div style="margin-top:0.75rem;padding:0.75rem;background:var(--bg-light);border-radius:var(--radius-sm);font-size:0.85rem;">
+                                        <strong>Signs of overwatering:</strong> Yellow leaves, mushy stems, root rot<br>
+                                        <strong>Signs of underwatering:</strong> Wilting, dry soil, crispy leaf edges
+                                    </div>
+                                </div>
+
+                                <div class="care-section">
+                                    <h3><i class="bi bi-sun"></i> Sunlight</h3>
+                                    <p style="font-size:0.9rem;color:var(--text-light);line-height:1.6;">
+                                        Most flowering plants need at least 6 hours of direct sunlight daily. Place south-facing windows for maximum light. For shade-loving plants, east or north-facing windows work best.
+                                    </p>
+                                </div>
+
+                                <div class="care-section">
+                                    <h3><i class="bi bi-egg"></i> Soil & Potting</h3>
+                                    <p style="font-size:0.9rem;color:var(--text-light);line-height:1.6;">
+                                        Use well-draining potting mix appropriate for your plant type. Ensure pots have drainage holes. Repot every 1-2 years or when roots circle the pot.
+                                    </p>
+                                </div>
+
+                                <div class="care-section">
+                                    <h3><i class="bi bi-scissors"></i> Pruning</h3>
+                                    <p style="font-size:0.9rem;color:var(--text-light);line-height:1.6;">
+                                        Prune dead or diseased parts immediately. For flowering plants, prune after blooming. Use clean, sharp tools to prevent disease spread.
+                                    </p>
+                                </div>
+
+                                <div class="care-section">
+                                    <h3><i class="bi bi-leaf"></i> Fertilizing</h3>
+                                    <p style="font-size:0.9rem;color:var(--text-light);line-height:1.6;">
+                                        Feed with a balanced fertilizer every 4-6 weeks during the growing season. Reduce or stop fertilizing in winter when growth slows.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Common Problems -->
+                            ${problems.length ? `
+                            <div class="cgd-card">
+                                <h2><i class="bi bi-exclamation-triangle"></i> Common Problems</h2>
+                                ${problems.map(p => `
+                                    <div class="problem-card ${(p.severity || 'medium').toLowerCase()}">
+                                        <div class="problem-name">${esc(p.name)}</div>
+                                        <div class="problem-detail"><span class="problem-label">Symptoms:</span> ${esc(p.symptoms)}</div>
+                                        <div class="problem-detail"><span class="problem-label">Causes:</span> ${esc(p.causes)}</div>
+                                        <div class="problem-detail"><span class="problem-label">Treatment:</span> ${esc(p.treatment)}</div>
+                                        <div class="problem-detail"><span class="problem-label">Prevention:</span> ${esc(p.prevention)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            ` : ''}
+
+                            <!-- Seasonal Care -->
+                            <div class="cgd-card">
+                                <h2><i class="bi bi-calendar3"></i> Seasonal Care</h2>
+                                <div class="season-tabs" id="seasonTabs">
+                                    <button class="season-tab active" onclick="switchSeason('spring')">🌸 Spring</button>
+                                    <button class="season-tab" onclick="switchSeason('summer')">☀️ Summer</button>
+                                    <button class="season-tab" onclick="switchSeason('autumn')">🍂 Autumn</button>
+                                    <button class="season-tab" onclick="switchSeason('winter')">❄️ Winter</button>
+                                </div>
+                                <div id="seasonContent"></div>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar -->
+                        <div class="cgd-sidebar">
+                            <!-- Products -->
+                            <div class="cgd-card">
+                                <h2><i class="bi bi-bag"></i> Recommended Products</h2>
+                                <div class="product-card" onclick="window.open('marketplace.html?q=fertilizer')">
+                                    <div style="width:50px;height:50px;background:var(--primary-light);border-radius:8px;display:flex;align-items:center;justify-content:center;"><i class="bi bi-droplet" style="color:var(--primary-color);"></i></div>
+                                    <div><div class="name">Plant Fertilizer</div><div class="price">From GHS 25</div></div>
+                                </div>
+                                <div class="product-card" onclick="window.open('marketplace.html?q=soil')">
+                                    <div style="width:50px;height:50px;background:var(--primary-light);border-radius:8px;display:flex;align-items:center;justify-content:center;"><i class="bi bi-egg" style="color:var(--primary-color);"></i></div>
+                                    <div><div class="name">Potting Soil</div><div class="price">From GHS 35</div></div>
+                                </div>
+                                <div class="product-card" onclick="window.open('marketplace.html?q=pruning')">
+                                    <div style="width:50px;height:50px;background:var(--primary-light);border-radius:8px;display:flex;align-items:center;justify-content:center;"><i class="bi bi-scissors" style="color:var(--primary-color);"></i></div>
+                                    <div><div class="name">Pruning Shears</div><div class="price">From GHS 45</div></div>
+                                </div>
+                                <button class="btn btn-outline btn-sm w-100" style="margin-top:0.5rem;" onclick="window.open('marketplace.html')"><i class="bi bi-bag"></i> Shop All</button>
+                            </div>
+
+                            <!-- Courses -->
+                            <div class="cgd-card">
+                                <h2><i class="bi bi-mortarboard"></i> Related Courses</h2>
+                                <div style="padding:0.75rem;background:var(--bg-light);border-radius:var(--radius-sm);margin-bottom:0.5rem;cursor:pointer;" onclick="window.open('learning.html')">
+                                    <div style="font-weight:500;font-size:0.9rem;">Flower Care Basics</div>
+                                    <div style="font-size:0.8rem;color:var(--text-light);">Free • 2 hours</div>
+                                </div>
+                                <div style="padding:0.75rem;background:var(--bg-light);border-radius:var(--radius-sm);cursor:pointer;" onclick="window.open('learning.html')">
+                                    <div style="font-weight:500;font-size:0.9rem;">Indoor Plant Mastery</div>
+                                    <div style="font-size:0.8rem;color:var(--text-light);">$15 • 4 hours</div>
+                                </div>
+                            </div>
+
+                            <!-- Related Flowers -->
+                            <div class="cgd-card">
+                                <h2><i class="bi bi-flower1"></i> Similar Flowers</h2>
+                                <div id="relatedFlowers"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Load related flowers and seasonal data
+            loadRelatedFlowers();
+            switchSeason('spring');
+        }
+
+        function switchSeason(season) {
+            document.querySelectorAll('.season-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const seasonData = {
+                spring: { title: 'Spring Care', tips: ['Start fertilizing as new growth appears', 'Prune dead branches from winter', 'Transplant seedlings outdoors', 'Watch for early pest activity', 'Increase watering frequency'] },
+                summer: { title: 'Summer Care', tips: ['Water deeply during hot spells', 'Deadhead spent blooms regularly', 'Provide shade for heat-sensitive plants', 'Harvest flowers in the cool morning', 'Apply mulch to retain moisture'] },
+                autumn: { title: 'Autumn Care', tips: ['Reduce watering as growth slows', 'Plant spring-blooming bulbs', 'Collect seeds for next year', 'Protect tender plants from frost', 'Clean up fallen leaves'] },
+                winter: { title: 'Winter Care', tips: ['Keep indoor plants away from drafts', 'Reduce watering frequency', 'Provide extra light for houseplants', 'Plan your spring garden', 'Store tender bulbs properly'] }
+            };
+
+            const data = seasonData[season] || seasonData.spring;
+            document.getElementById('seasonContent').innerHTML = `
+                <div class="season-content active">
+                    <h4 style="margin-bottom:0.75rem;">${data.title}</h4>
+                    <ul style="list-style:none;padding:0;">
+                        ${data.tips.map(t => `<li style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0;font-size:0.9rem;"><i class="bi bi-check-circle-fill" style="color:var(--accent-green);"></i> ${t}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        async function loadRelatedFlowers() {
+            if (!guide?.flower_slug) return;
+            try {
+                const res = await fetch(`/api/flowers/${guide.flower_slug}/similar`);
+                const data = await res.json();
+                document.getElementById('relatedFlowers').innerHTML = data.length ? data.map(f => `
+                    <a href="flower-detail.html?slug=${f.slug}" style="display:flex;gap:0.5rem;padding:0.5rem 0;border-bottom:1px solid var(--border-light);text-decoration:none;color:inherit;font-size:0.88rem;">
+                        <span>${esc(f.common_name)}</span>
+                        <span style="color:var(--text-muted);font-style:italic;margin-left:auto;">${esc(f.scientific_name || '')}</span>
+                    </a>
+                `).join('') : '<p style="color:var(--text-light);font-size:0.85rem;">No similar flowers found</p>';
+            } catch {}
+        }
+
+        function saveGuide() {
+            if (!localStorage.getItem('flower-token')) {
+                if (typeof openAuthModal === 'function') openAuthModal('login');
+                else window.location.href = 'login.html';
+                return;
+            }
+            alert('Care guide saved!');
+        }
+
+        function shareGuide() {
+            if (navigator.share) {
+                navigator.share({ title: document.title, url: window.location.href });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link copied!');
+            }
+        }
+
+        function esc(s) { return (s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
     </script>
 </body>
 </html>
