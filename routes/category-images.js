@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const { pool, requireAuth, asyncHandler, dbAvailable } = require('./middleware');
 const multer = require('multer');
+const sharp = require('sharp');
 
 // Configure multer for category images
 const uploadsDir = path.join(__dirname, '..', 'uploads', 'categories');
@@ -89,7 +90,20 @@ router.post('/categories/:id/images', requireAuth, upload.array('images', 10), a
 
     const results = [];
     for (const file of req.files) {
-        const storagePath = '/uploads/categories/' + path.basename(file.path);
+        // Compress image
+        const compressedPath = file.path.replace(path.extname(file.path), '-compressed.webp');
+        try {
+            await sharp(file.path)
+                .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+                .webp({ quality: 85 })
+                .toFile(compressedPath);
+            fs.unlinkSync(file.path);
+        } catch (e) {
+            // Keep original if compression fails
+        }
+
+        const finalPath = fs.existsSync(compressedPath) ? compressedPath : file.path;
+        const storagePath = '/uploads/categories/' + path.basename(finalPath);
 
         const r = await pool.query(
             `INSERT INTO marketplace.category_images (category_id, file_name, storage_path, alt_text, caption, photographer, display_order)
@@ -138,7 +152,18 @@ router.put('/images/:id/replace', requireAuth, upload.single('image'), asyncHand
     const oldPath = path.join(__dirname, '..', existing.rows[0].storage_path);
     if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
 
-    const storagePath = '/uploads/categories/' + path.basename(req.file.path);
+    // Compress new image
+    const compressedPath = req.file.path.replace(path.extname(req.file.path), '-compressed.webp');
+    try {
+        await sharp(req.file.path)
+            .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+            .webp({ quality: 85 })
+            .toFile(compressedPath);
+        fs.unlinkSync(req.file.path);
+    } catch (e) {}
+
+    const finalPath = fs.existsSync(compressedPath) ? compressedPath : req.file.path;
+    const storagePath = '/uploads/categories/' + path.basename(finalPath);
 
     const r = await pool.query(
         'UPDATE marketplace.category_images SET storage_path = $1, file_name = $2 WHERE id = $3 RETURNING *',
