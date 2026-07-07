@@ -243,6 +243,18 @@ async function run() {
             }
         }
 
+        // Run care guides base tables (care_categories, care_guides, care_tips)
+        const careGuidesBasePath = path.join(__dirname, 'sql', 'care-guides.sql');
+        if (fs.existsSync(careGuidesBasePath)) {
+            console.log('Running care-guides.sql...');
+            try {
+                await client.query(fs.readFileSync(careGuidesBasePath, 'utf8'));
+                console.log('care-guides.sql applied.');
+            } catch (e) {
+                console.log('care-guides.sql partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
         // Sync students_count for all courses from actual enrollment data
         try {
             await client.query(`
