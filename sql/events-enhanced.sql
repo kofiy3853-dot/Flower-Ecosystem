@@ -107,3 +107,41 @@ BEGIN
         ('Growing Roses from Cuttings', 'Learn the complete process of propagating roses from cuttings. Includes soil prep, timing, and care tips.', 'Online (Zoom)', '2026-09-20 11:00:00', '2026-09-20 12:30:00', 'WEBINAR', 'Gardening', 'https://images.unsplash.com/photo-1455659817273-f96807779a8a?q=80&w=800&auto=format&fit=crop', 300, 0, 'upcoming', 'Beginner', false, NULL);
     END IF;
 END $$;
+
+-- Event Discussions
+CREATE TABLE IF NOT EXISTS events.event_discussions (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    event_id        UUID NOT NULL REFERENCES events.events(id) ON DELETE CASCADE,
+    user_id         UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    content         TEXT NOT NULL,
+    parent_id       UUID REFERENCES events.event_discussions(id) ON DELETE CASCADE,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_event_discussions_event ON events.event_discussions(event_id);
+
+-- Event Reviews
+CREATE TABLE IF NOT EXISTS events.event_reviews (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    event_id        UUID NOT NULL REFERENCES events.events(id) ON DELETE CASCADE,
+    user_id         UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    rating          INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    content         TEXT,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(event_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_event_reviews_event ON events.event_reviews(event_id);
+
+-- Event Gallery
+CREATE TABLE IF NOT EXISTS events.event_gallery (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    event_id        UUID NOT NULL REFERENCES events.events(id) ON DELETE CASCADE,
+    user_id         UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    image_url       TEXT NOT NULL,
+    caption         TEXT,
+    sort_order      INT DEFAULT 0,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_event_gallery_event ON events.event_gallery(event_id);

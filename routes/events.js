@@ -314,4 +314,111 @@ router.post('/:id/certificate', requireAuth, asyncHandler(async (req, res) => {
     } catch (err) { throw err; }
 }));
 
+// ─── Discussions ──────────────────────────────────────────────────────
+
+router.get('/:id/discussions', asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    if (await dbAvailable()) {
+        try {
+            const r = await pool.query(`
+                SELECT d.*, u.first_name, u.last_name, u.profile_image
+                FROM events.event_discussions d
+                JOIN auth.users u ON u.id = d.user_id
+                WHERE d.event_id = $1
+                ORDER BY d.created_at DESC`, [id]);
+            return res.json(r.rows);
+        } catch {}
+    }
+    res.json([]);
+}));
+
+router.post('/:id/discussions', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id } = req.params;
+    const { content, parent_id } = req.body;
+    if (!content) return res.status(400).json({ error: 'Content is required' });
+    const r = await pool.query(
+        'INSERT INTO events.event_discussions (event_id, user_id, content, parent_id) VALUES ($1, $2, $3, $4) RETURNING *',
+        [id, req.user.id, content, parent_id || null]
+    );
+    res.status(201).json(r.rows[0]);
+}));
+
+// ─── Reviews ──────────────────────────────────────────────────────────
+
+router.get('/:id/reviews', asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    if (await dbAvailable()) {
+        try {
+            const r = await pool.query(`
+                SELECT r.*, u.first_name, u.last_name, u.profile_image
+                FROM events.event_reviews r
+                JOIN auth.users u ON u.id = r.user_id
+                WHERE r.event_id = $1
+                ORDER BY r.created_at DESC`, [id]);
+            return res.json(r.rows);
+        } catch {}
+    }
+    res.json([]);
+}));
+
+router.post('/:id/reviews', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id } = req.params;
+    const { rating, content } = req.body;
+    if (!rating || rating < 1 || rating > 5) return res.status(400).json({ error: 'Rating must be 1-5' });
+    const r = await pool.query(
+        'INSERT INTO events.event_reviews (event_id, user_id, rating, content) VALUES ($1, $2, $3, $4) ON CONFLICT (event_id, user_id) DO UPDATE SET rating = $3, content = $4 RETURNING *',
+        [id, req.user.id, rating, content || null]
+    );
+    res.status(201).json(r.rows[0]);
+}));
+
+// ─── Gallery ──────────────────────────────────────────────────────────
+
+router.get('/:id/gallery', asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    if (await dbAvailable()) {
+        try {
+            const r = await pool.query(
+                'SELECT * FROM events.event_gallery WHERE event_id = $1 ORDER BY sort_order, created_at',
+                [id]);
+            return res.json(r.rows);
+        } catch {}
+    }
+    res.json([]);
+}));
+
+router.post('/:id/gallery', requireAuth, upload.single('image'), asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id } = req.params;
+    const { caption } = req.body;
+    const image_url = getFileUrl(req.file);
+    if (!image_url) return res.status(400).json({ error: 'Image is required' });
+    const r = await pool.query(
+        'INSERT INTO events.event_gallery (event_id, user_id, image_url, caption) VALUES ($1, $2, $3, $4) RETURNING *',
+        [id, req.user.id, image_url, caption || null]
+    );
+    res.status(201).json(r.rows[0]);
+}));
+
+// ─── Attendees ────────────────────────────────────────────────────────
+
+router.get('/:id/attendees', requireAuth, asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    if (await dbAvailable()) {
+        try {
+            const r = await pool.query(`
+                SELECT u.id, u.first_name, u.last_name, u.profile_image, u.role,
+                    er.registered_at, er.status, er.attended
+                FROM events.event_registrations er
+                JOIN auth.users u ON u.id = er.user_id
+                WHERE er.event_id = $1
+                ORDER BY er.registered_at DESC`, [id]);
+            return res.json(r.rows);
+        } catch {}
+    }
+    res.json([]);
+}));
+
 module.exports = router;
