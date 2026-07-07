@@ -421,4 +421,304 @@ router.get('/:id/attendees', requireAuth, asyncHandler(async (req, res) => {
     res.json([]);
 }));
 
+// ─── Ticket Types ─────────────────────────────────────────────────────
+
+router.get('/:id/tickets', asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    if (await dbAvailable()) {
+        try {
+            const r = await pool.query(`
+                SELECT t.*,
+                    t.quantity - COALESCE(s.sold, 0) AS available
+                FROM events.event_ticket_types t
+                LEFT JOIN (
+                    SELECT ticket_type_id, COUNT(*) AS sold
+                    FROM events.event_tickets WHERE status = 'valid'
+                    GROUP BY ticket_type_id
+                ) s ON s.ticket_type_id = t.id
+                WHERE t.event_id = $1
+                ORDER BY t.price ASC`, [id]);
+            return res.json(r.rows);
+        } catch {}
+    }
+    res.json([]);
+}));
+
+router.post('/:id/tickets', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id } = req.params;
+    const { name, price, quantity, benefits, sale_start, sale_end } = req.body;
+    if (!name) return res.status(400).json({ error: 'Ticket name is required' });
+    const r = await pool.query(
+        `INSERT INTO events.event_ticket_types (event_id, name, price, quantity, benefits, sale_start, sale_end)
+         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+        [id, name, price || 0, quantity || 100, benefits || null, sale_start || null, sale_end || null]
+    );
+    res.status(201).json(r.rows[0]);
+}));
+
+router.put('/:id/tickets/:ticketId', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id, ticketId } = req.params;
+    const { name, price, quantity, benefits, sale_start, sale_end, is_active } = req.body;
+    const r = await pool.query(
+        `UPDATE events.event_ticket_types SET
+            name = COALESCE($1, name), price = COALESCE($2, price),
+            quantity = COALESCE($3, quantity), benefits = COALESCE($4, benefits),
+            sale_start = COALESCE($5, sale_start), sale_end = COALESCE($6, sale_end),
+            is_active = COALESCE($7, is_active)
+         WHERE id = $8 AND event_id = $9 RETURNING *`,
+        [name, price, quantity, benefits, sale_start, sale_end, is_active, ticketId, id]
+    );
+    if (!r.rows.length) return res.status(404).json({ error: 'Ticket type not found' });
+    res.json(r.rows[0]);
+}));
+
+// ─── Ticket Purchase ──────────────────────────────────────────────────
+
+router.post('/:id/purchase', requireAuth, rateLimiter(10, 60000), asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id } = req.params;
+    const { ticket_type_id, quantity = 1, payment_method } = req.body;
+
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        // Get ticket type
+        const ticketType = await client.query(
+            'SELECT * FROM events.event_ticket_types WHERE id = $1 AND event_id = $2',
+            [ticket_type_id, id]);
+        if (!ticketType.rows.length) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'Ticket type not found' });
+        }
+
+        const ticket = ticketType.rows[0];
+
+        // Check availability
+        const sold = await client.query(
+            'SELECT COUNT(*)::int AS cnt FROM events.event_tickets WHERE ticket_type_id = $1 AND status = $2',
+            [ticket_type_id, 'valid']);
+        const available = ticket.quantity - (sold.rows[0].cnt || 0);
+        if (quantity > available) {
+            await client.query('ROLLBACK');
+            return res.status(400).json({ error: `Only ${available} tickets available` });
+        }
+
+        // Calculate total
+        const total_amount = ticket.price * quantity;
+
+        // Create order
+        const order = await client.query(
+            `INSERT INTO events.event_orders (user_id, event_id, total_amount, payment_method, status)
+             VALUES ($1, $2, $3, $4, 'pending') RETURNING *`,
+            [req.user.id, id, total_amount, payment_method || 'card']);
+
+        // Create tickets
+        const tickets = [];
+        for (let i = 0; i < quantity; i++) {
+            const ticketCode = `EVT-${Date.now()}-${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+            const t = await client.query(
+                `INSERT INTO events.event_tickets (order_id, event_id, user_id, ticket_type_id, ticket_code, price)
+                 VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+                [order.rows[0].id, id, req.user.id, ticket_type_id, ticketCode, ticket.price]);
+            tickets.push(t.rows[0]);
+        }
+
+        // Update registration
+        await client.query(
+            'INSERT INTO events.event_registrations (event_id, user_id, order_id) VALUES ($1, $2, $3) ON CONFLICT (event_id, user_id) DO NOTHING',
+            [id, req.user.id, order.rows[0].id]);
+
+        await client.query('COMMIT');
+
+        res.status(201).json({
+            order: order.rows[0],
+            tickets,
+            total_amount
+        });
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+    }
+}));
+
+// ─── Orders ───────────────────────────────────────────────────────────
+
+router.get('/orders/my', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    try {
+        const r = await pool.query(`
+            SELECT o.*, e.title AS event_title, e.event_date, e.image_url,
+                (SELECT json_agg(t.*) FROM events.event_tickets t WHERE t.order_id = o.id) AS tickets
+            FROM events.event_orders o
+            JOIN events.events e ON e.id = o.event_id
+            WHERE o.user_id = $1
+            ORDER BY o.created_at DESC`, [req.user.id]);
+        res.json(r.rows);
+    } catch { res.json([]); }
+}));
+
+router.get('/orders/:orderId', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { orderId } = req.params;
+    const r = await pool.query(`
+        SELECT o.*, e.title AS event_title, e.event_date, e.location, e.image_url,
+            (SELECT json_agg(json_build_object(
+                'id', t.id, 'code', t.ticket_code, 'type', tt.name,
+                'price', t.price, 'status', t.status
+            )) FROM events.event_tickets t
+            JOIN events.event_ticket_types tt ON tt.id = t.ticket_type_id
+            WHERE t.order_id = o.id) AS tickets
+        FROM events.event_orders o
+        JOIN events.events e ON e.id = o.event_id
+        WHERE o.id = $1 AND o.user_id = $2`, [orderId, req.user.id]);
+    if (!r.rows.length) return res.status(404).json({ error: 'Order not found' });
+    res.json(r.rows[0]);
+}));
+
+// ─── Payment Processing (Mock) ────────────────────────────────────────
+
+router.post('/orders/:orderId/pay', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { orderId } = req.params;
+    const { payment_reference } = req.body;
+
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        const order = await client.query(
+            'SELECT * FROM events.event_orders WHERE id = $1 AND user_id = $2 FOR UPDATE',
+            [orderId, req.user.id]);
+        if (!order.rows.length) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'Order not found' });
+        }
+        if (order.rows[0].status !== 'pending') {
+            await client.query('ROLLBACK');
+            return res.status(400).json({ error: 'Order already processed' });
+        }
+
+        // Mock payment - in production, integrate with Paystack/Flutterwave
+        const paymentSuccess = true; // Simulate success
+
+        if (paymentSuccess) {
+            await client.query(
+                `UPDATE events.event_orders SET status = 'paid', payment_reference = $1, paid_at = CURRENT_TIMESTAMP WHERE id = $2`,
+                [payment_reference || `PAY-${Date.now()}`, orderId]);
+
+            // Update ticket status
+            await client.query(
+                "UPDATE events.event_tickets SET status = 'valid' WHERE order_id = $1",
+                [orderId]);
+
+            await client.query('COMMIT');
+            res.json({ message: 'Payment successful', order_id: orderId });
+        } else {
+            await client.query('ROLLBACK');
+            res.status(402).json({ error: 'Payment failed' });
+        }
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+    }
+}));
+
+// ─── Refund ───────────────────────────────────────────────────────────
+
+router.post('/orders/:orderId/refund', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { orderId } = req.params;
+    const { reason } = req.body;
+
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        const order = await client.query(
+            'SELECT * FROM events.event_orders WHERE id = $1 AND user_id = $2 FOR UPDATE',
+            [orderId, req.user.id]);
+        if (!order.rows.length) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'Order not found' });
+        }
+        if (order.rows[0].status !== 'paid') {
+            await client.query('ROLLBACK');
+            return res.status(400).json({ error: 'Can only refund paid orders' });
+        }
+
+        // Update order status
+        await client.query(
+            `UPDATE events.event_orders SET status = 'refunded', refund_reason = $1, refunded_at = CURRENT_TIMESTAMP WHERE id = $2`,
+            [reason || 'Customer requested refund', orderId]);
+
+        // Invalidate tickets
+        await client.query(
+            "UPDATE events.event_tickets SET status = 'refunded' WHERE order_id = $1",
+            [orderId]);
+
+        await client.query('COMMIT');
+        res.json({ message: 'Refund processed' });
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+    }
+}));
+
+// ─── Check-in ─────────────────────────────────────────────────────────
+
+router.post('/:id/checkin', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id } = req.params;
+    const { ticket_code } = req.body;
+    if (!ticket_code) return res.status(400).json({ error: 'Ticket code is required' });
+
+    const r = await pool.query(
+        `UPDATE events.event_tickets SET status = 'used', checked_in_at = CURRENT_TIMESTAMP
+         WHERE event_id = $1 AND ticket_code = $2 AND status = 'valid'
+         RETURNING *`, [id, ticket_code]);
+    if (!r.rows.length) return res.status(404).json({ error: 'Invalid or already used ticket' });
+
+    // Update registration attendance
+    await pool.query(
+        'UPDATE events.event_registrations SET attended = true WHERE event_id = $1 AND user_id = $2',
+        [id, r.rows[0].user_id]);
+
+    res.json({ message: 'Check-in successful', ticket: r.rows[0] });
+}));
+
+// ─── Event Analytics ──────────────────────────────────────────────────
+
+router.get('/:id/analytics', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id } = req.params;
+
+    const [registrations, revenue, tickets, attendance] = await Promise.all([
+        pool.query('SELECT COUNT(*)::int AS total FROM events.event_registrations WHERE event_id = $1', [id]),
+        pool.query(`SELECT COALESCE(SUM(total_amount), 0)::numeric AS total FROM events.event_orders WHERE event_id = $1 AND status = 'paid'`, [id]),
+        pool.query(`SELECT tt.name, COUNT(t.id)::int AS sold FROM events.event_tickets t
+            JOIN events.event_ticket_types tt ON tt.id = t.ticket_type_id
+            WHERE t.event_id = $1 AND t.status = 'valid'
+            GROUP BY tt.name`, [id]),
+        pool.query('SELECT COUNT(*)::int AS attended FROM events.event_registrations WHERE event_id = $1 AND attended = true', [id])
+    ]);
+
+    res.json({
+        registrations: registrations.rows[0].total,
+        revenue: revenue.rows[0].total,
+        tickets_sold: tickets.rows,
+        attendance_rate: registrations.rows[0].total > 0
+            ? Math.round((attendance.rows[0].attended / registrations.rows[0].total) * 100)
+            : 0
+    });
+}));
+
 module.exports = router;

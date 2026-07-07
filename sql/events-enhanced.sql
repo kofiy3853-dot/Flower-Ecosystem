@@ -145,3 +145,55 @@ CREATE TABLE IF NOT EXISTS events.event_gallery (
 );
 
 CREATE INDEX IF NOT EXISTS idx_event_gallery_event ON events.event_gallery(event_id);
+
+-- Event Ticket Types
+CREATE TABLE IF NOT EXISTS events.event_ticket_types (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    event_id        UUID NOT NULL REFERENCES events.events(id) ON DELETE CASCADE,
+    name            VARCHAR(100) NOT NULL,
+    price           DECIMAL(10,2) DEFAULT 0,
+    quantity        INT DEFAULT 100,
+    benefits        TEXT,
+    sale_start      TIMESTAMP,
+    sale_end        TIMESTAMP,
+    is_active       BOOLEAN DEFAULT TRUE,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_ticket_types_event ON events.event_ticket_types(event_id);
+
+-- Event Orders
+CREATE TABLE IF NOT EXISTS events.event_orders (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id         UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    event_id        UUID NOT NULL REFERENCES events.events(id) ON DELETE CASCADE,
+    total_amount    DECIMAL(10,2) NOT NULL DEFAULT 0,
+    payment_method  VARCHAR(50),
+    payment_reference VARCHAR(255),
+    status          VARCHAR(50) DEFAULT 'pending',
+    refund_reason   TEXT,
+    paid_at         TIMESTAMP,
+    refunded_at     TIMESTAMP,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_event_orders_user ON events.event_orders(user_id);
+CREATE INDEX IF NOT EXISTS idx_event_orders_event ON events.event_orders(event_id);
+
+-- Event Tickets
+CREATE TABLE IF NOT EXISTS events.event_tickets (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    order_id        UUID NOT NULL REFERENCES events.event_orders(id) ON DELETE CASCADE,
+    event_id        UUID NOT NULL REFERENCES events.events(id) ON DELETE CASCADE,
+    user_id         UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    ticket_type_id  UUID NOT NULL REFERENCES events.event_ticket_types(id),
+    ticket_code     VARCHAR(50) UNIQUE NOT NULL,
+    price           DECIMAL(10,2) NOT NULL DEFAULT 0,
+    status          VARCHAR(50) DEFAULT 'valid',
+    checked_in_at   TIMESTAMP,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_event_tickets_event ON events.event_tickets(event_id);
+CREATE INDEX IF NOT EXISTS idx_event_tickets_order ON events.event_tickets(order_id);
+CREATE INDEX IF NOT EXISTS idx_event_tickets_code ON events.event_tickets(ticket_code);
