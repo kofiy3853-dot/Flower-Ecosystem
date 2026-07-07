@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="My Garden - Track your plants and get personalized care reminders.">
+    <title>My Garden | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .mg-hero{background:linear-gradient(135deg,#065f46 0%,#047857 50%,#065f46 100%);padding:3rem 0 2rem;color:white;text-align:center;}
+        .mg-hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3vw,2.4rem);margin-bottom:0.5rem;}
+        .mg-hero p{opacity:0.85;font-size:0.95rem;}
+
+        .mg-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:1.5rem 0;}
+        .mg-stat{background:var(--bg-white);border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;text-align:center;}
+        .mg-stat .icon{font-size:1.5rem;margin-bottom:0.4rem;}
+        .mg-stat .num{font-size:1.5rem;font-weight:700;color:var(--primary-color);}
+        .mg-stat .label{font-size:0.78rem;color:var(--text-light);}
+
+        .mg-section{margin:2rem 0;}
+        .mg-section h2{font-size:1.3rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;}
+        .mg-section h2 i{color:var(--primary-color);}
+
+        .mg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;}
+        .mg-plant-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:14px;overflow:hidden;transition:all 0.3s;}
+        .mg-plant-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.1);}
+        .mg-plant-img{height:160px;overflow:hidden;position:relative;}
+        .mg-plant-img img{width:100%;height:100%;object-fit:cover;}
+        .mg-plant-status{position:absolute;top:0.75rem;right:0.75rem;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.7rem;font-weight:600;}
+        .mg-plant-status.healthy{background:rgba(16,185,129,0.9);color:white;}
+        .mg-plant-status.attention{background:rgba(245,158,11,0.9);color:white;}
+        .mg-plant-body{padding:1.25rem;}
+        .mg-plant-name{font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:0.25rem;}
+        .mg-plant-nickname{font-size:0.85rem;color:var(--text-light);margin-bottom:0.5rem;}
+        .mg-plant-meta{display:flex;gap:0.75rem;font-size:0.78rem;color:var(--text-light);margin-bottom:0.75rem;}
+        .mg-plant-meta span{display:flex;align-items:center;gap:0.2rem;}
+        .mg-plant-actions{display:flex;gap:0.5rem;}
+        .mg-plant-actions .btn{flex:1;font-size:0.82rem;padding:0.5rem;}
+
+        .mg-reminders{background:var(--bg-white);border:1px solid var(--border-color);border-radius:14px;padding:1.5rem;}
+        .mg-reminder-item{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);}
+        .mg-reminder-item:last-child{border-bottom:none;}
+        .mg-reminder-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .mg-reminder-icon.overdue{background:rgba(239,68,68,0.1);color:#ef4444;}
+        .mg-reminder-icon.due{background:rgba(245,158,11,0.1);color:#f59e0b;}
+        .mg-reminder-icon.ok{background:rgba(16,185,129,0.1);color:#10b981;}
+
+        .mg-empty{text-align:center;padding:4rem 2rem;color:var(--text-light);}
+        .mg-empty i{font-size:4rem;display:block;margin-bottom:1rem;opacity:0.5;}
+        .mg-empty h3{margin-bottom:0.5rem;color:var(--text-main);}
+
+        .mg-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;}
+        .mg-modal.show{display:flex;}
+        .mg-modal-content{background:var(--bg-white);border-radius:16px;padding:2rem;max-width:500px;width:90%;max-height:90vh;overflow-y:auto;}
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="mg-hero">
+        <div class="container">
+            <h1>🌱 My Garden</h1>
+            <p>Track your plants and get personalized care reminders</p>
+            <button class="btn" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);margin-top:1rem;" onclick="openAddModal()"><i class="bi bi-plus-lg"></i> Add Plant</button>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Stats -->
+        <div class="mg-stats" id="gardenStats"></div>
+
+        <!-- Reminders -->
+        <div class="mg-section">
+            <h2><i class="bi bi-bell"></i> Care Reminders</h2>
+            <div class="mg-reminders" id="remindersList">
+                <p style="color:var(--text-light);text-align:center;padding:1rem;">Loading reminders...</p>
+            </div>
+        </div>
+
+        <!-- My Plants -->
+        <div class="mg-section">
+            <h2><i class="bi bi-flower1"></i> My Plants</h2>
+            <div class="mg-grid" id="plantsGrid"></div>
+        </div>
+    </div>
+
+    <!-- Add Plant Modal -->
+    <div class="mg-modal" id="addModal">
+        <div class="mg-modal-content">
+            <h2 style="margin-bottom:1rem;">Add Plant to Garden</h2>
+            <div class="form-group">
+                <label class="form-label">Select Flower</label>
+                <select class="form-input" id="flowerSelect"></select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Nickname (optional)</label>
+                <input type="text" class="form-input" id="plantNickname" placeholder="e.g., My favorite rose">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Location (optional)</label>
+                <input type="text" class="form-input" id="plantLocation" placeholder="e.g., Living room, Garden bed">
+            </div>
+            <div style="display:flex;gap:0.75rem;margin-top:1.5rem;">
+                <button class="btn btn-outline" onclick="closeAddModal()" style="flex:1;">Cancel</button>
+                <button class="btn btn-primary" onclick="addPlantToGarden()" style="flex:1;">Add to Garden</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Care Modal -->
+    <div class="mg-modal" id="careModal">
+        <div class="mg-modal-content">
+            <h2 style="margin-bottom:1rem;">Log Care Activity</h2>
+            <div class="form-group">
+                <label class="form-label">Care Type</label>
+                <select class="form-input" id="careType">
+                    <option value="water">💧 Water</option>
+                    <option value="fertilize">🍃 Fertilize</option>
+                    <option value="prune">✂️ Prune</option>
+                    <option value="repot">🪴 Repot</option>
+                    <option value="treat">💊 Treat</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Notes (optional)</label>
+                <input type="text" class="form-input" id="careNotes" placeholder="e.g., Used fertilizer A">
+            </div>
+            <div style="display:flex;gap:0.75rem;margin-top:1.5rem;">
+                <button class="btn btn-outline" onclick="closeCareModal()" style="flex:1;">Cancel</button>
+                <button class="btn btn-primary" onclick="logCareActivity()" style="flex:1;">Log Activity</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script>
+        let gardenPlants = [];
+        let currentGardenId = null;
+        let allFlowers = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('flower-token')) {
+                document.getElementById('plantsGrid').innerHTML = '<div class="mg-empty"><i class="bi bi-lock"></i><h3>Sign In Required</h3><p>Please sign in to access your garden.</p><a href="login.html" class="btn btn-primary">Sign In</a></div>';
+                return;
+            }
+            loadGarden();
+            loadReminders();
+            loadFlowers();
+        });
+
+        // ─── Load Garden ─────────────────────────────────────────────
+        async function loadGarden() {
+            try {
+                const res = await fetch('/api/garden', { headers: authHeaders() });
+                gardenPlants = await res.json();
+                renderPlants();
+                updateStats();
+            } catch { gardenPlants = []; renderPlants(); }
+        }
+
+        function renderPlants() {
+            const grid = document.getElementById('plantsGrid');
+            if (!gardenPlants.length) {
+                grid.innerHTML = '<div class="mg-empty"><i class="bi bi-flower1"></i><h3>Your Garden is Empty</h3><p>Add flowers to start tracking their care.</p><button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-plus-lg"></i> Add Your First Plant</button></div>';
+                return;
+            }
+
+            grid.innerHTML = gardenPlants.map(p => `
+                <div class="mg-plant-card">
+                    <div class="mg-plant-img">
+                        <img src="${p.image || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop'}" alt="${p.common_name}" loading="lazy">
+                        <span class="mg-plant-status ${p.status === 'healthy' ? 'healthy' : 'attention'}">${p.status === 'healthy' ? 'Healthy' : 'Needs Attention'}</span>
+                    </div>
+                    <div class="mg-plant-body">
+                        <div class="mg-plant-name">${escapeHtml(p.common_name)}</div>
+                        ${p.nickname ? `<div class="mg-plant-nickname">"${escapeHtml(p.nickname)}"</div>` : ''}
+                        <div class="mg-plant-meta">
+                            <span><i class="bi bi-geo-alt"></i> ${escapeHtml(p.location || 'Not set')}</span>
+                            <span><i class="bi bi-calendar"></i> ${p.date_added ? new Date(p.date_added).toLocaleDateString() : ''}</span>
+                        </div>
+                        <div style="font-size:0.8rem;color:var(--text-light);margin-bottom:0.75rem;">
+                            💧 Last watered: ${p.last_watered ? timeAgo(p.last_watered) : 'Never'}
+                        </div>
+                        <div class="mg-plant-actions">
+                            <button class="btn btn-outline btn-sm" onclick="openCareModal('${p.id}')"><i class="bi bi-check2-circle"></i> Log Care</button>
+                            <a href="care-guide-detail.html?slug=${p.slug || ''}" class="btn btn-outline btn-sm"><i class="bi bi-book"></i> Guide</a>
+                            <button class="btn btn-sm" style="color:var(--error-color);" onclick="removePlant('${p.id}')"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            const total = gardenPlants.length;
+            const healthy = gardenPlants.filter(p => p.status === 'healthy').length;
+            const needsAttention = total - healthy;
+
+            document.getElementById('gardenStats').innerHTML = `
+                <div class="mg-stat"><div class="icon">🌱</div><div class="num">${total}</div><div class="label">Total Plants</div></div>
+                <div class="mg-stat"><div class="icon">💚</div><div class="num">${healthy}</div><div class="label">Healthy</div></div>
+                <div class="mg-stat"><div class="icon">⚠️</div><div class="num">${needsAttention}</div><div class="label">Need Attention</div></div>
+            `;
+        }
+
+        // ─── Load Reminders ──────────────────────────────────────────
+        async function loadReminders() {
+            try {
+                const res = await fetch('/api/garden/reminders', { headers: authHeaders() });
+                const reminders = await res.json();
+                const el = document.getElementById('remindersList');
+
+                if (!reminders.length) {
+                    el.innerHTML = '<p style="color:var(--text-light);text-align:center;padding:1rem;">No reminders yet. Add plants to your garden!</p>';
+                    return;
+                }
+
+                el.innerHTML = reminders.map(r => `
+                    <div class="mg-reminder-item">
+                        <div class="mg-reminder-icon ${r.water_status}">
+                            <i class="bi bi-${r.water_status === 'overdue' ? 'exclamation-triangle' : r.water_status === 'due' ? 'clock' : 'check-circle'}"></i>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(r.common_name)}</div>
+                            <div style="font-size:0.8rem;color:var(--text-light);">
+                                ${r.water_status === 'overdue' ? 'Water now!' : r.water_status === 'due' ? 'Water soon' : 'Watered recently'}
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline" onclick="quickWater('${r.id}')">💧 Water</button>
+                    </div>
+                `).join('');
+            } catch {}
+        }
+
+        // ─── Load Flowers for Modal ──────────────────────────────────
+        async function loadFlowers() {
+            try {
+                const res = await fetch('/api/flowers?limit=50');
+                const data = await res.json();
+                allFlowers = data.flowers || [];
+                const select = document.getElementById('flowerSelect');
+                select.innerHTML = allFlowers.map(f => `<option value="${f.id}">${f.common_name} (${f.scientific_name || ''})</option>`).join('');
+            } catch {}
+        }
+
+        // ─── Add Plant ───────────────────────────────────────────────
+        function openAddModal() {
+            document.getElementById('addModal').classList.add('show');
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').classList.remove('show');
+        }
+
+        async function addPlantToGarden() {
+            const flowerId = document.getElementById('flowerSelect').value;
+            const nickname = document.getElementById('plantNickname').value;
+            const location = document.getElementById('plantLocation').value;
+
+            if (!flowerId) return alert('Please select a flower');
+
+            try {
+                const res = await fetch('/api/garden', {
+                    method: 'POST',
+                    headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ flower_id: flowerId, nickname, location })
+                });
+                if (res.ok) {
+                    closeAddModal();
+                    document.getElementById('plantNickname').value = '';
+                    document.getElementById('plantLocation').value = '';
+                    loadGarden();
+                    loadReminders();
+                } else {
+                    const data = await res.json();
+                    alert(data.error || 'Failed to add plant');
+                }
+            } catch { alert('Failed to add plant'); }
+        }
+
+        // ─── Remove Plant ────────────────────────────────────────────
+        async function removePlant(id) {
+            if (!confirm('Remove this plant from your garden?')) return;
+            try {
+                await fetch(`/api/garden/${id}`, { method: 'DELETE', headers: authHeaders() });
+                loadGarden();
+                loadReminders();
+            } catch {}
+        }
+
+        // ─── Log Care ────────────────────────────────────────────────
+        function openCareModal(id) {
+            currentGardenId = id;
+            document.getElementById('careModal').classList.add('show');
+        }
+
+        function closeCareModal() {
+            document.getElementById('careModal').classList.remove('show');
+            currentGardenId = null;
+        }
+
+        async function logCareActivity() {
+            const careType = document.getElementById('careType').value;
+            const notes = document.getElementById('careNotes').value;
+
+            try {
+                await fetch(`/api/garden/${currentGardenId}/care`, {
+                    method: 'POST',
+                    headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ care_type: careType, notes })
+                });
+                closeCareModal();
+                loadGarden();
+                loadReminders();
+            } catch {}
+        }
+
+        async function quickWater(id) {
+            try {
+                await fetch(`/api/garden/${id}/care`, {
+                    method: 'POST',
+                    headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ care_type: 'water' })
+                });
+                loadGarden();
+                loadReminders();
+            } catch {}
+        }
+
+        function authHeaders() {
+            return { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') };
+        }
+
+        function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+            if (seconds < 60) return 'just now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+            return Math.floor(seconds / 86400) + 'd ago';
+        }
+    </script>
+</body>
+</html>
