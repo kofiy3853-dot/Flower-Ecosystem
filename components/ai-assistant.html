@@ -1,170 +1,112 @@
 <!-- AI Assistant Floating Widget -->
 <div id="aiAssistant" style="position:fixed;bottom:24px;right:24px;z-index:1000;">
-    <!-- Chat Toggle Button -->
-    <button id="aiToggle" onclick="toggleAiChat()" style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--primary-color),#be185d);color:white;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(216,68,124,0.4);display:flex;align-items:center;justify-content:center;font-size:1.5rem;transition:transform 0.3s;">
+    <button id="aiToggle" style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--primary-color),#be185d);color:white;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(216,68,124,0.4);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">
         <i class="bi bi-robot"></i>
     </button>
-
-    <!-- Chat Window -->
     <div id="aiChatWindow" style="display:none;position:absolute;bottom:70px;right:0;width:380px;height:500px;background:var(--bg-white);border:1px solid var(--border-color);border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.15);overflow:hidden;flex-direction:column;">
-        <!-- Header -->
         <div style="background:linear-gradient(135deg,var(--primary-color),#be185d);color:white;padding:1rem 1.25rem;display:flex;justify-content:space-between;align-items:center;">
             <div style="display:flex;align-items:center;gap:0.75rem;">
-                <div style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;">
-                    <i class="bi bi-robot"></i>
-                </div>
-                <div>
-                    <div style="font-weight:600;font-size:0.95rem;">Flora AI Assistant</div>
-                    <div style="font-size:0.75rem;opacity:0.8;">Ask me anything about flowers</div>
-                </div>
+                <div style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;"><i class="bi bi-robot"></i></div>
+                <div><div style="font-weight:600;">Flora AI Assistant</div><div style="font-size:0.75rem;opacity:0.8;">Ask me about flowers</div></div>
             </div>
-            <button onclick="toggleAiChat()" style="background:none;border:none;color:white;font-size:1.2rem;cursor:pointer;opacity:0.8;">
-                <i class="bi bi-x-lg"></i>
-            </button>
+            <button id="aiCloseBtn" style="background:none;border:none;color:white;font-size:1.2rem;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
         </div>
-
-        <!-- Messages -->
         <div id="aiMessages" style="flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.75rem;">
-            <div class="ai-message ai-bot" style="display:flex;gap:0.5rem;">
-                <div style="width:28px;height:28px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <i class="bi bi-robot" style="color:var(--primary-color);font-size:0.8rem;"></i>
-                </div>
-                <div style="background:var(--bg-light);padding:0.75rem 1rem;border-radius:12px;border-top-left-radius:4px;max-width:85%;font-size:0.9rem;line-height:1.5;">
-                    Hi! I'm Flora, your flower assistant. How can I help you today?
-                </div>
+            <div style="display:flex;gap:0.5rem;">
+                <div style="width:28px;height:28px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-robot" style="color:var(--primary-color);font-size:0.8rem;"></i></div>
+                <div style="background:var(--bg-light);padding:0.75rem 1rem;border-radius:12px;border-top-left-radius:4px;max-width:85%;font-size:0.9rem;line-height:1.5;">Hi! I'm Flora. How can I help you today?</div>
             </div>
         </div>
-
-        <!-- Quick Actions -->
         <div style="padding:0.5rem 1rem;display:flex;gap:0.4rem;flex-wrap:wrap;border-top:1px solid var(--border-light);">
-            <button onclick="sendQuickMsg('What flowers are best for weddings?')" style="padding:0.35rem 0.6rem;border:1px solid var(--border-color);border-radius:16px;background:var(--bg-white);font-size:0.75rem;cursor:pointer;color:var(--text-main);white-space:nowrap;">Wedding flowers</button>
-            <button onclick="sendQuickMsg('How do I care for roses?')" style="padding:0.35rem 0.6rem;border:1px solid var(--border-color);border-radius:16px;background:var(--bg-white);font-size:0.75rem;cursor:pointer;color:var(--text-main);white-space:nowrap;">Rose care</button>
-            <button onclick="sendQuickMsg('Suggest an arrangement for a birthday')" style="padding:0.35rem 0.6rem;border:1px solid var(--border-color);border-radius:16px;background:var(--bg-white);font-size:0.75rem;cursor:pointer;color:var(--text-main);white-space:nowrap;">Birthday ideas</button>
+            <button class="ai-quick-btn" data-msg="What flowers are best for weddings?">Wedding flowers</button>
+            <button class="ai-quick-btn" data-msg="How do I care for roses?">Rose care</button>
+            <button class="ai-quick-btn" data-msg="Suggest a birthday arrangement">Birthday ideas</button>
         </div>
-
-        <!-- Input -->
         <div style="padding:0.75rem 1rem;border-top:1px solid var(--border-color);display:flex;gap:0.5rem;">
             <input type="text" id="aiInput" placeholder="Type your question..." style="flex:1;padding:0.6rem 1rem;border:1px solid var(--border-color);border-radius:20px;font-size:0.9rem;outline:none;">
-            <button onclick="sendAiMessage()" style="width:36px;height:36px;border-radius:50%;background:var(--primary-color);color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
-                <i class="bi bi-send-fill" style="font-size:0.8rem;"></i>
-            </button>
+            <button id="aiSendBtn" style="width:36px;height:36px;border-radius:50%;background:var(--primary-color);color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="bi bi-send-fill" style="font-size:0.8rem;"></i></button>
         </div>
     </div>
 </div>
 
 <style>
-    .ai-msg-user { display:flex; justify-content:flex-end; }
-    .ai-msg-user div { background:var(--primary-color); color:white; padding:0.75rem 1rem; border-radius:12px; border-top-right-radius:4px; max-width:85%; font-size:0.9rem; line-height:1.5; }
-    .ai-msg-bot { display:flex; gap:0.5rem; }
-    .ai-msg-bot div.bot-bubble { background:var(--bg-light); padding:0.75rem 1rem; border-radius:12px; border-top-left-radius:4px; max-width:85%; font-size:0.9rem; line-height:1.5; }
-    .ai-typing { display:flex; gap:4px; padding:0.5rem 0; }
-    .ai-typing span { width:6px; height:6px; background:var(--text-muted); border-radius:50%; animation:aiTyping 1.4s infinite; }
-    .ai-typing span:nth-child(2) { animation-delay:0.2s; }
-    .ai-typing span:nth-child(3) { animation-delay:0.4s; }
-    @keyframes aiTyping { 0%,60%,100%{transform:translateY(0);} 30%{transform:translateY(-4px);} }
-    @media(max-width:480px) {
-        #aiChatWindow { width:calc(100vw - 32px); right:-12px; height:70vh; }
-    }
+.ai-msg-user{display:flex;justify-content:flex-end}.ai-msg-user div{background:var(--primary-color);color:white;padding:0.75rem 1rem;border-radius:12px;border-top-right-radius:4px;max-width:85%;font-size:0.9rem;line-height:1.5}
+.ai-msg-bot{display:flex;gap:0.5rem}.ai-msg-bot .bot-bubble{background:var(--bg-light);padding:0.75rem 1rem;border-radius:12px;border-top-left-radius:4px;max-width:85%;font-size:0.9rem;line-height:1.5}
+.ai-typing{display:flex;gap:4px;padding:0.5rem 0}.ai-typing span{width:6px;height:6px;background:var(--text-muted);border-radius:50%;animation:aiT 1.4s infinite}.ai-typing span:nth-child(2){animation-delay:.2s}.ai-typing span:nth-child(3){animation-delay:.4s}
+@keyframes aiT{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+.ai-quick-btn{padding:0.35rem 0.6rem;border:1px solid var(--border-color);border-radius:16px;background:var(--bg-white);font-size:0.75rem;cursor:pointer;color:var(--text-main);white-space:nowrap}
+.ai-quick-btn:hover{border-color:var(--primary-color);color:var(--primary-color)}
+@media(max-width:480px){#aiChatWindow{width:calc(100vw - 32px);right:-12px;height:70vh}}
 </style>
 
 <script>
-(function() {
-    let chatOpen = false;
+var aiChatOpen = false;
 
-    window.toggleAiChat = function() {
-        chatOpen = !chatOpen;
-        const win = document.getElementById('aiChatWindow');
-        const btn = document.getElementById('aiToggle');
-        if (!win || !btn) return;
-        win.style.display = chatOpen ? 'flex' : 'none';
-        btn.innerHTML = chatOpen ? '<i class="bi bi-x-lg"></i>' : '<i class="bi bi-robot"></i>';
-        if (chatOpen) {
-            const inp = document.getElementById('aiInput');
-            if (inp) inp.focus();
-        }
+document.getElementById('aiToggle').onclick = function() {
+    aiChatOpen = !aiChatOpen;
+    document.getElementById('aiChatWindow').style.display = aiChatOpen ? 'flex' : 'none';
+    document.getElementById('aiToggle').innerHTML = aiChatOpen ? '<i class="bi bi-x-lg"></i>' : '<i class="bi bi-robot"></i>';
+    if (aiChatOpen) document.getElementById('aiInput').focus();
+};
+
+document.getElementById('aiCloseBtn').onclick = function() {
+    aiChatOpen = false;
+    document.getElementById('aiChatWindow').style.display = 'none';
+    document.getElementById('aiToggle').innerHTML = '<i class="bi bi-robot"></i>';
+};
+
+document.getElementById('aiSendBtn').onclick = function() { aiSendMsg(); };
+document.getElementById('aiInput').onkeydown = function(e) { if (e.key === 'Enter') aiSendMsg(); };
+
+document.querySelectorAll('.ai-quick-btn').forEach(function(btn) {
+    btn.onclick = function() {
+        document.getElementById('aiInput').value = btn.dataset.msg;
+        aiSendMsg();
     };
+});
 
-    window.sendQuickMsg = function(msg) {
-        const inp = document.getElementById('aiInput');
-        if (inp) inp.value = msg;
-        sendAiMessage();
-    };
+function aiSendMsg() {
+    var inp = document.getElementById('aiInput');
+    var msg = inp.value.trim();
+    if (!msg) return;
+    aiAddMsg(msg, 'user');
+    inp.value = '';
 
-    window.sendAiMessage = function() {
-        const inp = document.getElementById('aiInput');
-        const msg = inp ? inp.value.trim() : '';
-        if (!msg) return;
+    var typing = document.createElement('div');
+    typing.className = 'ai-msg-bot';
+    typing.id = 'aiTyping';
+    typing.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-robot" style="color:var(--primary-color);font-size:0.8rem;"></i></div><div class="ai-typing"><span></span><span></span><span></span></div>';
+    document.getElementById('aiMessages').appendChild(typing);
+    var ms = document.getElementById('aiMessages'); ms.scrollTop = ms.scrollHeight;
 
-        addChatMsg(msg, 'user');
-        inp.value = '';
+    setTimeout(function() {
+        var el = document.getElementById('aiTyping'); if (el) el.remove();
+        aiAddMsg(aiReply(msg), 'bot');
+    }, 600 + Math.random() * 800);
+}
 
-        // Typing indicator
-        const typingEl = document.createElement('div');
-        typingEl.className = 'ai-msg-bot';
-        typingEl.id = 'aiTyping';
-        typingEl.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-robot" style="color:var(--primary-color);font-size:0.8rem;"></i></div><div class="ai-typing"><span></span><span></span><span></span></div>';
-        document.getElementById('aiMessages').appendChild(typingEl);
-        scrollChat();
-
-        setTimeout(() => {
-            const el = document.getElementById('aiTyping');
-            if (el) el.remove();
-            const reply = getAiReply(msg);
-            addChatMsg(reply, 'bot');
-        }, 600 + Math.random() * 800);
-    };
-
-    function addChatMsg(text, sender) {
-        const container = document.getElementById('aiMessages');
-        if (!container) return;
-        const div = document.createElement('div');
-
-        if (sender === 'user') {
-            div.className = 'ai-msg-user';
-            div.innerHTML = '<div>' + escapeAi(text) + '</div>';
-        } else {
-            div.className = 'ai-msg-bot';
-            div.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-robot" style="color:var(--primary-color);font-size:0.8rem;"></i></div><div class="bot-bubble">' + text + '</div>';
-        }
-
-        container.appendChild(div);
-        scrollChat();
+function aiAddMsg(text, sender) {
+    var c = document.getElementById('aiMessages');
+    var d = document.createElement('div');
+    if (sender === 'user') {
+        d.className = 'ai-msg-user';
+        var t = document.createElement('div'); t.textContent = text; d.appendChild(t);
+    } else {
+        d.className = 'ai-msg-bot';
+        d.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-robot" style="color:var(--primary-color);font-size:0.8rem;"></i></div><div class="bot-bubble">' + text + '</div>';
     }
+    c.appendChild(d);
+    c.scrollTop = c.scrollHeight;
+}
 
-    function scrollChat() {
-        const el = document.getElementById('aiMessages');
-        if (el) el.scrollTop = el.scrollHeight;
-    }
-
-    function escapeAi(s) {
-        const d = document.createElement('div');
-        d.textContent = s;
-        return d.innerHTML;
-    }
-
-    function getAiReply(q) {
-        const lower = q.toLowerCase();
-
-        if (lower.includes('wedding') || lower.includes('bridal')) {
-            return 'For weddings, popular choices include:<br><br>🌹 <b>Roses</b> - Classic symbol of love<br>🌸 <b>Peonies</b> - Romance and prosperity<br>💮 <b>Lilies</b> - Purity and elegance<br><br>Check our <a href="marketplace.html" style="color:var(--primary-color);">marketplace</a> for wedding collections!';
-        }
-        if (lower.includes('rose') && (lower.includes('care') || lower.includes('water') || lower.includes('grow'))) {
-            return '<b>Rose care tips:</b><br><br>💧 Water every 2-3 days<br>✂️ Cut stems at 45° angle<br>🌡️ Keep at 65-75°F<br>🍃 Remove leaves below waterline<br><br>See our <a href="care-guides.html" style="color:var(--primary-color);">Care Guides</a> for more!';
-        }
-        if (lower.includes('birthday')) {
-            return 'Great birthday ideas:<br><br>🌻 <b>Sunflowers</b> - Bright and cheerful<br>🌷 <b>Tulips</b> - Spring freshness<br>🌺 <b>Gerberas</b> - Fun and colorful<br><br>Browse <a href="arrangements.html" style="color:var(--primary-color);">arrangements</a> for inspiration!';
-        }
-        if (lower.includes('price') || lower.includes('cost') || lower.includes('cheap')) {
-            return 'Our price ranges:<br><br>💐 Budget: GHS 20-50<br>🌹 Mid-range: GHS 50-150<br>👑 Premium: GHS 150-500+<br><br>Check <a href="deals.html" style="color:var(--primary-color);">deals</a> for current offers!';
-        }
-        if (lower.includes('product') || lower.includes('buy') || lower.includes('shop')) {
-            return 'Popular categories:<br><br>🌹 <a href="marketplace.html?category=roses" style="color:var(--primary-color);">Roses</a><br>💐 <a href="marketplace.html?category=bouquets" style="color:var(--primary-color);">Bouquets</a><br>🌱 <a href="marketplace.html?category=plants" style="color:var(--primary-color);">Plants</a><br><br>What are you looking for?';
-        }
-        if (lower.includes('care') || lower.includes('maintain')) {
-            return '<b>General care tips:</b><br><br>💧 Water regularly<br>☀️ Provide proper sunlight<br>✂️ Remove dead flowers<br>🧪 Use flower food<br><br>Visit <a href="care-guides.html" style="color:var(--primary-color);">Care Guides</a> for specific advice!';
-        }
-
-        return 'Thanks for your question! I can help with:<br><br>🌸 Flower recommendations<br>💐 Arrangement ideas<br>💧 Care tips<br>🛒 Product suggestions<br><br>Could you tell me more?';
-    }
-})();
+function aiReply(q) {
+    var l = q.toLowerCase();
+    if (l.includes('wedding') || l.includes('bridal')) return 'For weddings:<br><br>🌹 <b>Roses</b> - Classic love<br>🌸 <b>Peonies</b> - Romance<br>💮 <b>Lilies</b> - Elegance<br><br>Check <a href="marketplace.html" style="color:var(--primary-color);">marketplace</a>!';
+    if (l.includes('rose') && (l.includes('care') || l.includes('water'))) return '<b>Rose care:</b><br><br>💧 Water every 2-3 days<br>✂️ Cut at 45° angle<br>🌡️ Keep 65-75°F<br><br>See <a href="care-guides.html" style="color:var(--primary-color);">Care Guides</a>!';
+    if (l.includes('birthday')) return 'Birthday ideas:<br><br>🌻 <b>Sunflowers</b> - Cheerful<br>🌷 <b>Tulips</b> - Fresh<br>🌺 <b>Gerberas</b> - Fun<br><br>Browse <a href="arrangements.html" style="color:var(--primary-color);">arrangements</a>!';
+    if (l.includes('price') || l.includes('cost')) return 'Prices:<br><br>💐 Budget: GHS 20-50<br>🌹 Mid: GHS 50-150<br>👑 Premium: GHS 150+<br><br>Check <a href="deals.html" style="color:var(--primary-color);">deals</a>!';
+    if (l.includes('product') || l.includes('buy') || l.includes('shop')) return 'Categories:<br><br>🌹 <a href="marketplace.html" style="color:var(--primary-color);">Roses</a><br>💐 <a href="marketplace.html" style="color:var(--primary-color);">Bouquets</a><br>🌱 <a href="marketplace.html" style="color:var(--primary-color);">Plants</a>';
+    if (l.includes('care') || l.includes('maintain')) return '<b>Care tips:</b><br><br>💧 Water regularly<br>☀️ Proper sunlight<br>✂️ Remove dead flowers<br><br>See <a href="care-guides.html" style="color:var(--primary-color);">Care Guides</a>!';
+    return 'I can help with:<br><br>🌸 Flower recommendations<br>💐 Arrangement ideas<br>💧 Care tips<br>🛒 Products<br><br>What do you need?';
+}
 </script>
