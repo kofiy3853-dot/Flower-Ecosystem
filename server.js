@@ -241,25 +241,25 @@ pool.query('SELECT 1')
                 }
 
                 // Seed Super Admin
-                const superAdminExists = await pool.query("SELECT id, email FROM auth.users WHERE role = 'SUPERADMIN' LIMIT 1");
-                if (!superAdminExists.rows.length) {
-                    const superAdminPassword = process.env.SUPERADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
-                    if (!superAdminPassword) {
-                        console.error('SEED FAILED: No password for super admin');
-                        return;
+                try {
+                    const superAdminExists = await pool.query("SELECT id, email FROM auth.users WHERE role = 'SUPERADMIN' LIMIT 1");
+                    if (!superAdminExists.rows.length) {
+                        const superAdminPassword = process.env.SUPERADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+                        if (superAdminPassword && superAdminPassword.length >= 12) {
+                            const hash = await bcrypt.hash(superAdminPassword, 12);
+                            await pool.query(
+                                "INSERT INTO auth.users (first_name, last_name, email, password_hash, role) VALUES ('Super', 'Admin', $1, $2, 'SUPERADMIN')",
+                                [SUPERADMIN_EMAIL, hash]
+                            );
+                            console.log(`SUCCESS: Super Admin seeded → ${SUPERADMIN_EMAIL}`);
+                        } else {
+                            console.log('Super Admin skipped: No valid password set (SUPERADMIN_PASSWORD or ADMIN_PASSWORD)');
+                        }
+                    } else {
+                        console.log(`Super Admin already exists: ${superAdminExists.rows[0].email} (id: ${superAdminExists.rows[0].id})`);
                     }
-                    if (superAdminPassword.length < 12) {
-                        console.error(`SEED FAILED: SUPERADMIN_PASSWORD is ${superAdminPassword.length} chars (minimum 12)`);
-                        return;
-                    }
-                    const hash = await bcrypt.hash(superAdminPassword, 12);
-                    await pool.query(
-                        "INSERT INTO auth.users (first_name, last_name, email, password_hash, role) VALUES ('Super', 'Admin', $1, $2, 'SUPERADMIN')",
-                        [SUPERADMIN_EMAIL, hash]
-                    );
-                    console.log(`SUCCESS: Super Admin seeded → ${SUPERADMIN_EMAIL}`);
-                } else {
-                    console.log(`Super Admin already exists: ${superAdminExists.rows[0].email} (id: ${superAdminExists.rows[0].id})`);
+                } catch (e) {
+                    console.log('Super Admin seed error:', e.message);
                 }
             } else {
                 console.warn('auth.users table does not exist — run db-init.js first');
