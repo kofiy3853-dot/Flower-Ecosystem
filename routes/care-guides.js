@@ -68,7 +68,7 @@ router.get('/:id', asyncHandler(async (req, res) => {
             const r = await pool.query(`
                 SELECT g.*, cc.name AS category_name, cc.slug AS category_slug, cc.icon AS category_icon
                 FROM learning.care_guides g LEFT JOIN learning.care_categories cc ON cc.id = g.category_id
-                WHERE g.id = $1 OR g.slug = $1`, [id]);
+                WHERE g.slug = $1 OR g.id::text = $1`, [id]);
             if (r.rows.length) {
                 await pool.query('UPDATE learning.care_guides SET views = views + 1 WHERE id = $1', [r.rows[0].id]);
                 const tips = await pool.query('SELECT tip_text, tip_type FROM learning.care_tips WHERE guide_id = $1 ORDER BY sort_order', [r.rows[0].id]);

@@ -191,10 +191,20 @@ function initComponents() {
     // Load AI Assistant into body
     if (!document.getElementById('aiAssistant') && !window.location.pathname.includes('admin')) {
         fetch('/components/ai-assistant.html').then(r => r.text()).then(html => {
-            document.body.insertAdjacentHTML('beforeend', html);
+            const scriptMatch = html.match(/<script>([\s\S]*?)<\/script>/i);
+            const htmlContent = html.replace(/<script>[\s\S]*?<\/script>/i, '');
+            
+            document.body.insertAdjacentHTML('beforeend', htmlContent);
+            
+            if (scriptMatch && scriptMatch[1]) {
+                const script = document.createElement('script');
+                script.textContent = scriptMatch[1];
+                document.body.appendChild(script);
+            }
+
             // Initialize AI assistant after DOM update
             setTimeout(() => {
-                if (typeof initAIAssistant === 'function') initAIAssistant();
+                if (typeof window.initAIAssistant === 'function') window.initAIAssistant();
             }, 200);
         }).catch(() => {});
     }
