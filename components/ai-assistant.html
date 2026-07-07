@@ -42,28 +42,46 @@
 <script>
 var aiChatOpen = false;
 
-document.getElementById('aiToggle').onclick = function() {
-    aiChatOpen = !aiChatOpen;
-    document.getElementById('aiChatWindow').style.display = aiChatOpen ? 'flex' : 'none';
-    document.getElementById('aiToggle').innerHTML = aiChatOpen ? '<i class="bi bi-x-lg"></i>' : '<i class="bi bi-robot"></i>';
-    if (aiChatOpen) document.getElementById('aiInput').focus();
-};
+function initAIAssistant() {
+    var toggle = document.getElementById('aiToggle');
+    var closeBtn = document.getElementById('aiCloseBtn');
+    var sendBtn = document.getElementById('aiSendBtn');
+    var input = document.getElementById('aiInput');
 
-document.getElementById('aiCloseBtn').onclick = function() {
-    aiChatOpen = false;
-    document.getElementById('aiChatWindow').style.display = 'none';
-    document.getElementById('aiToggle').innerHTML = '<i class="bi bi-robot"></i>';
-};
+    if (toggle) {
+        toggle.onclick = function() {
+            aiChatOpen = !aiChatOpen;
+            document.getElementById('aiChatWindow').style.display = aiChatOpen ? 'flex' : 'none';
+            toggle.innerHTML = aiChatOpen ? '<i class="bi bi-x-lg"></i>' : '<i class="bi bi-robot"></i>';
+            if (aiChatOpen && input) input.focus();
+        };
+    }
 
-document.getElementById('aiSendBtn').onclick = function() { aiSendMsg(); };
-document.getElementById('aiInput').onkeydown = function(e) { if (e.key === 'Enter') aiSendMsg(); };
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            aiChatOpen = false;
+            document.getElementById('aiChatWindow').style.display = 'none';
+            if (toggle) toggle.innerHTML = '<i class="bi bi-robot"></i>';
+        };
+    }
 
-document.querySelectorAll('.ai-quick-btn').forEach(function(btn) {
-    btn.onclick = function() {
-        document.getElementById('aiInput').value = btn.dataset.msg;
-        aiSendMsg();
-    };
-});
+    if (sendBtn) sendBtn.onclick = function() { aiSendMsg(); };
+    if (input) input.onkeydown = function(e) { if (e.key === 'Enter') aiSendMsg(); };
+
+    document.querySelectorAll('.ai-quick-btn').forEach(function(btn) {
+        btn.onclick = function() {
+            if (input) input.value = btn.dataset.msg;
+            aiSendMsg();
+        };
+    });
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAIAssistant);
+} else {
+    setTimeout(initAIAssistant, 100);
+}
 
 function aiSendMsg() {
     var inp = document.getElementById('aiInput');

@@ -192,6 +192,10 @@ function initComponents() {
     if (!document.getElementById('aiAssistant') && !window.location.pathname.includes('admin')) {
         fetch('/components/ai-assistant.html').then(r => r.text()).then(html => {
             document.body.insertAdjacentHTML('beforeend', html);
+            // Initialize AI assistant after DOM update
+            setTimeout(() => {
+                if (typeof initAIAssistant === 'function') initAIAssistant();
+            }, 200);
         }).catch(() => {});
     }
 }
