@@ -196,6 +196,7 @@ if (!Number.isFinite(PG_PORT) || PG_PORT < 1 || PG_PORT > 65535) {
 }
 
 const ADMIN_EMAIL = 'admin@flower.com';
+const SUPERADMIN_EMAIL = 'superadmin@flower.com';
 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ADMIN_EMAIL)) {
     console.error('CRITICAL: Invalid admin seed email');
     process.exit(1);
@@ -211,6 +212,8 @@ pool.query('SELECT 1')
             if (tableExists.rows[0].exists) {
                 await pool.query("ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS location VARCHAR(255)");
                 await pool.query("ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS description TEXT");
+
+                // Seed Admin
                 const adminExists = await pool.query("SELECT id, email FROM auth.users WHERE role = 'ADMIN' LIMIT 1");
                 if (!adminExists.rows.length) {
                     const adminPassword = process.env.ADMIN_PASSWORD;
@@ -235,6 +238,28 @@ pool.query('SELECT 1')
                     console.log(`SUCCESS: Admin seeded → ${ADMIN_EMAIL}`);
                 } else {
                     console.log(`Admin already exists: ${adminExists.rows[0].email} (id: ${adminExists.rows[0].id})`);
+                }
+
+                // Seed Super Admin
+                const superAdminExists = await pool.query("SELECT id, email FROM auth.users WHERE role = 'SUPERADMIN' LIMIT 1");
+                if (!superAdminExists.rows.length) {
+                    const superAdminPassword = process.env.SUPERADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+                    if (!superAdminPassword) {
+                        console.error('SEED FAILED: No password for super admin');
+                        return;
+                    }
+                    if (superAdminPassword.length < 12) {
+                        console.error(`SEED FAILED: SUPERADMIN_PASSWORD is ${superAdminPassword.length} chars (minimum 12)`);
+                        return;
+                    }
+                    const hash = await bcrypt.hash(superAdminPassword, 12);
+                    await pool.query(
+                        "INSERT INTO auth.users (first_name, last_name, email, password_hash, role) VALUES ('Super', 'Admin', $1, $2, 'SUPERADMIN')",
+                        [SUPERADMIN_EMAIL, hash]
+                    );
+                    console.log(`SUCCESS: Super Admin seeded → ${SUPERADMIN_EMAIL}`);
+                } else {
+                    console.log(`Super Admin already exists: ${superAdminExists.rows[0].email} (id: ${superAdminExists.rows[0].id})`);
                 }
             } else {
                 console.warn('auth.users table does not exist — run db-init.js first');
