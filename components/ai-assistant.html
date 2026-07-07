@@ -41,6 +41,7 @@
 
 <script>
 var aiChatOpen = false;
+var conversationHistory = [];
 
 function initAIAssistant() {
     var toggle = document.getElementById('aiToggle');
@@ -87,7 +88,9 @@ function aiSendMsg() {
     var inp = document.getElementById('aiInput');
     var msg = inp.value.trim();
     if (!msg) return;
+    
     aiAddMsg(msg, 'user');
+    conversationHistory.push({ role: 'user', content: msg });
     inp.value = '';
 
     var typing = document.createElement('div');
@@ -97,10 +100,25 @@ function aiSendMsg() {
     document.getElementById('aiMessages').appendChild(typing);
     var ms = document.getElementById('aiMessages'); ms.scrollTop = ms.scrollHeight;
 
-    setTimeout(function() {
+    fetch('/api/openai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: conversationHistory })
+    })
+    .then(r => r.json())
+    .then(data => {
         var el = document.getElementById('aiTyping'); if (el) el.remove();
-        aiAddMsg(aiReply(msg), 'bot');
-    }, 600 + Math.random() * 800);
+        if (data.error) {
+            aiAddMsg('<i>Sorry, ' + data.error + '</i>', 'bot');
+        } else {
+            conversationHistory.push({ role: 'assistant', content: data.reply });
+            aiAddMsg(data.reply, 'bot');
+        }
+    })
+    .catch(err => {
+        var el = document.getElementById('aiTyping'); if (el) el.remove();
+        aiAddMsg('<i>Sorry, I cannot connect right now.</i>', 'bot');
+    });
 }
 
 function aiAddMsg(text, sender) {
@@ -115,16 +133,5 @@ function aiAddMsg(text, sender) {
     }
     c.appendChild(d);
     c.scrollTop = c.scrollHeight;
-}
-
-function aiReply(q) {
-    var l = q.toLowerCase();
-    if (l.includes('wedding') || l.includes('bridal')) return 'For weddings:<br><br>🌹 <b>Roses</b> - Classic love<br>🌸 <b>Peonies</b> - Romance<br>💮 <b>Lilies</b> - Elegance<br><br>Check <a href="marketplace.html" style="color:var(--primary-color);">marketplace</a>!';
-    if (l.includes('rose') && (l.includes('care') || l.includes('water'))) return '<b>Rose care:</b><br><br>💧 Water every 2-3 days<br>✂️ Cut at 45° angle<br>🌡️ Keep 65-75°F<br><br>See <a href="care-guides.html" style="color:var(--primary-color);">Care Guides</a>!';
-    if (l.includes('birthday')) return 'Birthday ideas:<br><br>🌻 <b>Sunflowers</b> - Cheerful<br>🌷 <b>Tulips</b> - Fresh<br>🌺 <b>Gerberas</b> - Fun<br><br>Browse <a href="arrangements.html" style="color:var(--primary-color);">arrangements</a>!';
-    if (l.includes('price') || l.includes('cost')) return 'Prices:<br><br>💐 Budget: GHS 20-50<br>🌹 Mid: GHS 50-150<br>👑 Premium: GHS 150+<br><br>Check <a href="deals.html" style="color:var(--primary-color);">deals</a>!';
-    if (l.includes('product') || l.includes('buy') || l.includes('shop')) return 'Categories:<br><br>🌹 <a href="marketplace.html" style="color:var(--primary-color);">Roses</a><br>💐 <a href="marketplace.html" style="color:var(--primary-color);">Bouquets</a><br>🌱 <a href="marketplace.html" style="color:var(--primary-color);">Plants</a>';
-    if (l.includes('care') || l.includes('maintain')) return '<b>Care tips:</b><br><br>💧 Water regularly<br>☀️ Proper sunlight<br>✂️ Remove dead flowers<br><br>See <a href="care-guides.html" style="color:var(--primary-color);">Care Guides</a>!';
-    return 'I can help with:<br><br>🌸 Flower recommendations<br>💐 Arrangement ideas<br>💧 Care tips<br>🛒 Products<br><br>What do you need?';
 }
 </script>

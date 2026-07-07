@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.append('image', selectedFile);
 
     try {
-      const resp = await fetch('/api/openai/analyze-flower', {
+      const resp = await fetch('/api/openai/flower-expert', {
         method: 'POST',
         body: form,
       });
