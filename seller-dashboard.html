@@ -96,9 +96,52 @@
                         <button class="btn" onclick="navigateToAddProduct()" style="background:var(--bg-white); color:var(--primary-color); border:none; font-weight:600; padding:0.75rem 1.5rem; border-radius:50px; box-shadow:0 4px 15px rgba(0,0,0,0.15); cursor:pointer; display:flex; align-items:center; gap:0.5rem; z-index:2; position:relative;"><i class="bi bi-plus-lg"></i> Add New Product</button>
                     </div>
                     <div class="stats-grid" id="statsGrid"></div>
+
+                    <!-- Quick Actions -->
+                    <div class="section-card" style="margin-bottom:1.5rem;">
+                        <h3><i class="bi bi-lightning" style="color:var(--accent-gold)"></i> Quick Actions</h3>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.75rem;">
+                            <button class="btn btn-outline" onclick="navigateToAddProduct()" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                                <i class="bi bi-plus-circle" style="font-size:1.5rem;color:var(--primary-color);"></i> Add Product
+                            </button>
+                            <a href="messages.html" class="btn btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                                <i class="bi bi-chat-dots" style="font-size:1.5rem;color:var(--primary-color);"></i> Messages
+                            </a>
+                            <a href="create-listing.html" class="btn btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                                <i class="bi bi-megaphone" style="font-size:1.5rem;color:var(--primary-color);"></i> Create Listing
+                            </a>
+                            <a href="create-event.html" class="btn btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                                <i class="bi bi-calendar-plus" style="font-size:1.5rem;color:var(--primary-color);"></i> Host Event
+                            </a>
+                        </div>
+                    </div>
+
                     <div class="grid-2">
-                        <div class="section-card"><h3>Recent Orders</h3><div id="recentOrders"></div></div>
-                        <div class="section-card"><h3>Latest Reviews</h3><div id="latestReviews"></div></div>
+                        <div class="section-card">
+                            <h3>Recent Orders</h3>
+                            <div id="recentOrders"></div>
+                        </div>
+                        <div class="section-card">
+                            <h3>Latest Reviews</h3>
+                            <div id="latestReviews"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2" style="margin-top:1.5rem;">
+                        <div class="section-card">
+                            <h3><i class="bi bi-exclamation-triangle" style="color:#e67e22"></i> Low Stock Alerts</h3>
+                            <div id="lowStockAlerts"></div>
+                        </div>
+                        <div class="section-card">
+                            <h3><i class="bi bi-trophy" style="color:var(--accent-gold)"></i> Top Products</h3>
+                            <div id="topProducts"></div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Messages Preview -->
+                    <div class="section-card" style="margin-top:1.5rem;">
+                        <h3><i class="bi bi-chat-dots" style="color:var(--primary-color)"></i> Recent Messages</h3>
+                        <div id="recentMessages"></div>
                     </div>
                 </div>
 

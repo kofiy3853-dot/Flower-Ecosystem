@@ -138,6 +138,67 @@ async function loadDashboard() {
             </div>
         `).join('') : '<div class="empty-state"><p>No reviews yet</p></div>';
     } catch {}
+
+    // Low Stock Alerts
+    try {
+        const products = await fetch('/api/seller/products', { headers: authHeaders() }).then(r => r.json());
+        const productList = Array.isArray(products) ? products : (products.products || []);
+        const lowStock = productList.filter(p => p.stock_quantity <= 10 && p.stock_quantity > 0);
+        const outOfStock = productList.filter(p => p.stock_quantity === 0);
+        const alerts = [...outStock.map(p => ({...p, type: 'out'})), ...lowStock.map(p => ({...p, type: 'low'}))].slice(0, 5);
+
+        const el = document.getElementById('lowStockAlerts');
+        if (el) el.innerHTML = alerts.length ? alerts.map(p => `
+            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);">
+                <div style="width:40px;height:40px;border-radius:8px;background:${p.type === 'out' ? 'rgba(220,38,38,0.1)' : 'rgba(230,126,34,0.1)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="bi bi-${p.type === 'out' ? 'x-circle' : 'exclamation-triangle'}" style="color:${p.type === 'out' ? '#dc2626' : '#e67e22'};"></i>
+                </div>
+                <div style="flex:1;">
+                    <div style="font-weight:500;font-size:0.88rem;">${escapeHtml(p.name || 'Product')}</div>
+                    <div style="font-size:0.78rem;color:${p.type === 'out' ? '#dc2626' : '#e67e22'};">${p.type === 'out' ? 'Out of stock' : p.stock_quantity + ' left'}</div>
+                </div>
+                <a href="create-listing.html?id=${p.id}" class="btn btn-sm btn-outline">Restock</a>
+            </div>
+        `).join('') : '<p style="color:var(--text-light);text-align:center;padding:1.5rem;">All products well stocked</p>';
+    } catch {}
+
+    // Top Products
+    try {
+        const products = await fetch('/api/seller/products', { headers: authHeaders() }).then(r => r.json());
+        const productList = Array.isArray(products) ? products : (products.products || []);
+        const sorted = [...productList].sort((a, b) => (b.sales || b.sold || 0) - (a.sales || a.sold || 0)).slice(0, 5);
+
+        const el = document.getElementById('topProducts');
+        if (el) el.innerHTML = sorted.length ? sorted.map((p, i) => `
+            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);">
+                <div style="width:24px;height:24px;border-radius:50%;background:${i < 3 ? 'var(--accent-gold)' : 'var(--bg-light)'};display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:${i < 3 ? 'white' : 'var(--text-muted)'};">${i + 1}</div>
+                <div style="flex:1;">
+                    <div style="font-weight:500;font-size:0.88rem;">${escapeHtml(p.name || 'Product')}</div>
+                    <div style="font-size:0.78rem;color:var(--text-light);">${p.sales || p.sold || 0} sold</div>
+                </div>
+                <div style="font-weight:600;color:var(--primary-color);">GHS ${Number(p.price || 0).toFixed(2)}</div>
+            </div>
+        `).join('') : '<p style="color:var(--text-light);text-align:center;padding:1.5rem;">No sales data yet</p>';
+    } catch {}
+
+    // Recent Messages
+    try {
+        const messages = await fetch('/api/messages?limit=3', { headers: authHeaders() }).then(r => r.json());
+        const msgList = Array.isArray(messages) ? messages : (messages.messages || []);
+        const el = document.getElementById('recentMessages');
+        if (el) el.innerHTML = msgList.length ? msgList.map(m => `
+            <div style="display:flex;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);cursor:pointer;" onclick="window.location.href='messages.html'">
+                <div style="width:36px;height:36px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    ${(m.sender_name || 'U')[0].toUpperCase()}
+                </div>
+                <div style="flex:1;">
+                    <div style="font-weight:500;font-size:0.88rem;">${escapeHtml(m.sender_name || 'User')}</div>
+                    <div style="font-size:0.82rem;color:var(--text-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(m.message || m.content || '')}</div>
+                </div>
+                <div style="font-size:0.72rem;color:var(--text-muted);white-space:nowrap;">${m.created_at ? timeAgo(m.created_at) : ''}</div>
+            </div>
+        `).join('') : '<p style="color:var(--text-light);text-align:center;padding:1.5rem;">No messages yet</p>';
+    } catch {}
 }
 
 let allProducts = [];
