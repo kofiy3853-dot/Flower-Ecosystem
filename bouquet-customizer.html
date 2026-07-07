@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Design your own custom bouquet - Choose flowers, colors, wrapping, and more.">
+    <title>Bouquet Customizer | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .bc-hero{background:linear-gradient(135deg,#831843 0%,#be185d 50%,#9d174d 100%);padding:3rem 0 2rem;color:white;text-align:center;}
+        .bc-hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3vw,2.4rem);margin-bottom:0.5rem;}
+        .bc-hero p{opacity:0.85;font-size:0.95rem;}
+
+        .bc-layout{display:grid;grid-template-columns:1fr 340px;gap:2rem;margin-top:-1.5rem;position:relative;z-index:10;}
+        .bc-main{min-width:0;}
+        .bc-sidebar{position:sticky;top:80px;}
+
+        .bc-progress{display:flex;justify-content:space-between;margin-bottom:2rem;position:relative;}
+        .bc-progress::before{content:'';position:absolute;top:18px;left:0;right:0;height:3px;background:var(--border-color);}
+        .bc-progress-step{display:flex;flex-direction:column;align-items:center;z-index:1;}
+        .bc-step-num{width:36px;height:36px;border-radius:50%;background:var(--bg-white);border:3px solid var(--border-color);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.85rem;transition:all 0.3s;}
+        .bc-progress-step.active .bc-step-num{border-color:var(--primary-color);color:var(--primary-color);background:var(--primary-light);}
+        .bc-progress-step.done .bc-step-num{border-color:var(--accent-green);background:var(--accent-green);color:white;}
+        .bc-step-label{font-size:0.7rem;color:var(--text-muted);margin-top:0.3rem;text-align:center;}
+        .bc-progress-step.active .bc-step-label{color:var(--primary-color);font-weight:500;}
+
+        .bc-step{display:none;padding:1.5rem;background:var(--bg-white);border:1px solid var(--border-color);border-radius:var(--radius-md);}
+        .bc-step.active{display:block;}
+        .bc-step h2{font-size:1.2rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.5rem;}
+        .bc-step h2 i{color:var(--primary-color);}
+        .bc-step-desc{color:var(--text-light);font-size:0.9rem;margin-bottom:1.5rem;}
+
+        .bc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;}
+        .bc-card{border:2px solid var(--border-color);border-radius:12px;padding:1rem;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bg-white);}
+        .bc-card:hover{border-color:var(--primary-color);transform:translateY(-2px);}
+        .bc-card.selected{border-color:var(--primary-color);background:var(--primary-light);}
+        .bc-card-img{height:100px;border-radius:8px;overflow:hidden;margin-bottom:0.5rem;background:var(--bg-light);display:flex;align-items:center;justify-content:center;font-size:2rem;}
+        .bc-card-img img{width:100%;height:100%;object-fit:cover;}
+        .bc-card-name{font-weight:500;font-size:0.88rem;margin-bottom:0.15rem;}
+        .bc-card-price{font-size:0.82rem;color:var(--primary-color);font-weight:600;}
+
+        .bc-flower-item{display:flex;align-items:center;gap:1rem;padding:1rem;border:1px solid var(--border-color);border-radius:12px;margin-bottom:0.75rem;transition:all 0.2s;}
+        .bc-flower-item:hover{border-color:var(--primary-color);}
+        .bc-flower-img{width:60px;height:60px;border-radius:8px;overflow:hidden;flex-shrink:0;}
+        .bc-flower-img img{width:100%;height:100%;object-fit:cover;}
+        .bc-flower-info{flex:1;}
+        .bc-flower-name{font-weight:500;font-size:0.9rem;}
+        .bc-flower-price{font-size:0.82rem;color:var(--primary-color);}
+        .bc-qty{display:flex;align-items:center;gap:0.5rem;}
+        .bc-qty button{width:28px;height:28px;border-radius:50%;border:1px solid var(--border-color);background:var(--bg-white);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+        .bc-qty span{font-weight:600;min-width:20px;text-align:center;}
+
+        .bc-colors{display:flex;gap:0.75rem;flex-wrap:wrap;}
+        .bc-color{width:44px;height:44px;border-radius:50%;border:3px solid var(--border-color);cursor:pointer;transition:all 0.2s;}
+        .bc-color:hover{transform:scale(1.1);}
+        .bc-color.selected{border-color:var(--primary-color);box-shadow:0 0 0 3px var(--primary-light);}
+
+        .bc-nav{display:flex;justify-content:space-between;padding-top:1.5rem;margin-top:1.5rem;border-top:1px solid var(--border-color);}
+
+        /* Sidebar */
+        .bc-preview{background:var(--bg-white);border:1px solid var(--border-color);border-radius:var(--radius-md);overflow:hidden;}
+        .bc-preview-img{height:250px;background:var(--bg-light);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+        .bc-preview-img img{width:100%;height:100%;object-fit:cover;}
+        .bc-preview-body{padding:1.25rem;}
+        .bc-summary-row{display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border-light);font-size:0.88rem;}
+        .bc-summary-row:last-child{border-bottom:none;}
+        .bc-summary-row .label{color:var(--text-light);}
+        .bc-summary-row .value{font-weight:600;}
+        .bc-summary-total{display:flex;justify-content:space-between;padding:0.75rem 0;font-size:1.1rem;font-weight:700;border-top:2px solid var(--border-color);margin-top:0.5rem;}
+
+        @media(max-width:768px){
+            .bc-layout{grid-template-columns:1fr;}
+            .bc-sidebar{position:static;order:-1;}
+            .bc-grid{grid-template-columns:repeat(2,1fr);}
+        }
+        @media(max-width:480px){
+            .bc-grid{grid-template-columns:1fr 1fr;}
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="bc-hero">
+        <div class="container">
+            <h1>💐 Bouquet Customizer</h1>
+            <p>Design your perfect bouquet step by step</p>
+        </div>
+    </section>
+
+    <div class="container" style="margin-top:1.5rem;">
+        <div class="bc-layout">
+            <!-- Main Content -->
+            <div class="bc-main">
+                <!-- Progress -->
+                <div class="bc-progress" id="bcProgress"></div>
+
+                <!-- Step 1: Occasion -->
+                <div class="bc-step active" data-step="1">
+                    <h2><i class="bi bi-gift"></i> Choose Occasion</h2>
+                    <p class="bc-step-desc">What's the occasion for this bouquet?</p>
+                    <div class="bc-grid" id="occasionGrid"></div>
+                </div>
+
+                <!-- Step 2: Style -->
+                <div class="bc-step" data-step="2">
+                    <h2><i class="bi bi-palette"></i> Bouquet Style</h2>
+                    <p class="bc-step-desc">Choose a style for your arrangement</p>
+                    <div class="bc-grid" id="styleGrid"></div>
+                </div>
+
+                <!-- Step 3: Flowers -->
+                <div class="bc-step" data-step="3">
+                    <h2><i class="bi bi-flower1"></i> Choose Flowers</h2>
+                    <p class="bc-step-desc">Select flowers and quantities for your bouquet</p>
+                    <div id="flowerList"></div>
+                </div>
+
+                <!-- Step 4: Colors -->
+                <div class="bc-step" data-step="4">
+                    <h2><i class="bi bi-droplet"></i> Choose Colors</h2>
+                    <p class="bc-step-desc">Select your preferred color theme</p>
+                    <div class="bc-colors" id="colorGrid"></div>
+                </div>
+
+                <!-- Step 5: Greenery -->
+                <div class="bc-step" data-step="5">
+                    <h2><i class="bi bi-leaf"></i> Greenery</h2>
+                    <p class="bc-step-desc">Add greenery to complement your flowers</p>
+                    <div class="bc-grid" id="greeneryGrid"></div>
+                </div>
+
+                <!-- Step 6: Wrapping -->
+                <div class="bc-step" data-step="6">
+                    <h2><i class="bi bi-box"></i> Wrapping</h2>
+                    <p class="bc-step-desc">Choose how to wrap your bouquet</p>
+                    <div class="bc-grid" id="wrappingGrid"></div>
+                </div>
+
+                <!-- Step 7: Ribbon -->
+                <div class="bc-step" data-step="7">
+                    <h2><i class="bi bi-bookmark"></i> Ribbon</h2>
+                    <p class="bc-step-desc">Add a finishing touch with a ribbon</p>
+                    <div class="bc-grid" id="ribbonGrid"></div>
+                    <div id="ribbonColors" style="margin-top:1rem;display:none;">
+                        <p style="font-size:0.9rem;font-weight:500;margin-bottom:0.5rem;">Ribbon Color</p>
+                        <div class="bc-colors" id="ribbonColorGrid"></div>
+                    </div>
+                </div>
+
+                <!-- Step 8: Extras -->
+                <div class="bc-step" data-step="8">
+                    <h2><i class="bi bi-plus-circle"></i> Extras</h2>
+                    <p class="bc-step-desc">Add optional extras to your order</p>
+                    <div class="bc-grid" id="extrasGrid"></div>
+                </div>
+
+                <!-- Step 9: Preview -->
+                <div class="bc-step" data-step="9">
+                    <h2><i class="bi bi-eye"></i> Preview Your Bouquet</h2>
+                    <p class="bc-step-desc">Review your custom creation</p>
+                    <div id="previewContent"></div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="bc-nav">
+                    <button class="btn btn-outline" id="bcPrevBtn" onclick="bcPrev()" style="display:none;">
+                        <i class="bi bi-arrow-left"></i> Back
+                    </button>
+                    <div style="flex:1;"></div>
+                    <button class="btn btn-primary" id="bcNextBtn" onclick="bcNext()">
+                        Next <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="bc-sidebar">
+                <div class="bc-preview">
+                    <div class="bc-preview-img" id="previewImg">
+                        <img src="https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=400&auto=format&fit=crop" alt="Bouquet Preview">
+                    </div>
+                    <div class="bc-preview-body">
+                        <h3 style="font-size:1rem;margin-bottom:1rem;">Order Summary</h3>
+                        <div id="summaryContent">
+                            <p style="color:var(--text-light);font-size:0.9rem;">Start customizing to see your summary</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script>
+        let bcStep = 1;
+        const bcTotalSteps = 9;
+        let bcData = {
+            occasion: null, style: null, flowers: [], colors: [],
+            greenery: null, wrapping: null, ribbon: null, ribbonColor: null, extras: []
+        };
+        let availableFlowers = [];
+        let styles = [], wrappings = [], ribbons = [], extras = [];
+
+        const occasions = [
+            { id: 'wedding', name: 'Wedding', icon: '💍', desc: 'Elegant arrangements for your special day' },
+            { id: 'birthday', name: 'Birthday', icon: '🎂', desc: 'Celebrate with colorful blooms' },
+            { id: 'anniversary', name: 'Anniversary', icon: '💕', desc: 'Romantic flowers for love' },
+            { id: 'valentine', name: "Valentine's Day", icon: '❤️', desc: 'Express your love' },
+            { id: 'graduation', name: 'Graduation', icon: '🎓', desc: 'Celebrate achievement' },
+            { id: 'mother', name: "Mother's Day", icon: '👩', desc: 'Honor mom with flowers' },
+            { id: 'sympathy', name: 'Sympathy', icon: '🙏', desc: 'Thoughtful arrangements' },
+            { id: 'congratulations', name: 'Congratulations', icon: '🎉', desc: 'Celebrate success' },
+            { id: 'baby', name: 'New Baby', icon: '👶', desc: 'Welcome new life' },
+            { id: 'corporate', name: 'Corporate', icon: '🏢', desc: 'Professional events' },
+            { id: 'custom', name: 'Custom', icon: '✨', desc: 'Create something unique' }
+        ];
+
+        const colors = [
+            { name: 'White', hex: '#ffffff' }, { name: 'Red', hex: '#ef4444' },
+            { name: 'Pink', hex: '#ec4899' }, { name: 'Purple', hex: '#8b5cf6' },
+            { name: 'Yellow', hex: '#eab308' }, { name: 'Orange', hex: '#f97316' },
+            { name: 'Blue', hex: '#3b82f6' }, { name: 'Mixed', hex: 'linear-gradient(135deg,#ef4444,#eab308,#3b82f6)' }
+        ];
+
+        const greenery = [
+            { id: 'eucalyptus', name: 'Eucalyptus', price: 3.00 },
+            { id: 'fern', name: 'Fern', price: 2.50 },
+            { id: 'ruscus', name: 'Ruscus', price: 2.00 },
+            { id: 'leather-leaf', name: 'Leather Leaf', price: 1.50 },
+            { id: 'ivy', name: 'Ivy', price: 2.00 }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProgress();
+            renderOccasions();
+            loadStyles();
+            loadWrappings();
+            loadRibbons();
+            loadExtras();
+            loadFlowers();
+        });
+
+        // ─── Progress ────────────────────────────────────────────────
+        function renderProgress() {
+            const el = document.getElementById('bcProgress');
+            el.innerHTML = Array.from({length: bcTotalSteps}, (_, i) => {
+                const step = i + 1;
+                let cls = 'bc-progress-step';
+                if (step < bcStep) cls += ' done';
+                else if (step === bcStep) cls += ' active';
+                return `<div class="${cls}"><div class="bc-step-num">${step < bcStep ? '✓' : step}</div><div class="bc-step-label">${['Occasion','Style','Flowers','Colors','Greenery','Wrapping','Ribbon','Extras','Preview'][i]}</div></div>`;
+            }).join('');
+        }
+
+        // ─── Navigation ──────────────────────────────────────────────
+        function bcNext() {
+            if (bcStep < bcTotalSteps) {
+                document.querySelector(`.bc-step[data-step="${bcStep}"]`).classList.remove('active');
+                bcStep++;
+                document.querySelector(`.bc-step[data-step="${bcStep}"]`).classList.add('active');
+                document.getElementById('bcPrevBtn').style.display = bcStep > 1 ? 'flex' : 'none';
+                document.getElementById('bcNextBtn').innerHTML = bcStep === bcTotalSteps ? '<i class="bi bi-cart-check"></i> Add to Cart' : 'Next <i class="bi bi-arrow-right"></i>';
+                if (bcStep === bcTotalSteps) renderPreview();
+                renderProgress();
+                updateSummary();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                addToCart();
+            }
+        }
+
+        function bcPrev() {
+            if (bcStep > 1) {
+                document.querySelector(`.bc-step[data-step="${bcStep}"]`).classList.remove('active');
+                bcStep--;
+                document.querySelector(`.bc-step[data-step="${bcStep}"]`).classList.add('active');
+                document.getElementById('bcPrevBtn').style.display = bcStep > 1 ? 'flex' : 'none';
+                document.getElementById('bcNextBtn').innerHTML = 'Next <i class="bi bi-arrow-right"></i>';
+                renderProgress();
+                updateSummary();
+            }
+        }
+
+        // ─── Occasions ───────────────────────────────────────────────
+        function renderOccasions() {
+            document.getElementById('occasionGrid').innerHTML = occasions.map(o => `
+                <div class="bc-card${bcData.occasion?.id === o.id ? ' selected' : ''}" onclick="selectOccasion('${o.id}')">
+                    <div class="bc-card-img">${o.icon}</div>
+                    <div class="bc-card-name">${o.name}</div>
+                    <div class="bc-card-price">${o.desc}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectOccasion(id) {
+            bcData.occasion = occasions.find(o => o.id === id);
+            renderOccasions();
+            updateSummary();
+        }
+
+        // ─── Styles ──────────────────────────────────────────────────
+        async function loadStyles() {
+            try {
+                const res = await fetch('/api/bouquet/styles');
+                styles = await res.json();
+            } catch { styles = []; }
+            renderStyles();
+        }
+
+        function renderStyles() {
+            document.getElementById('styleGrid').innerHTML = styles.map(s => `
+                <div class="bc-card${bcData.style?.id === s.id ? ' selected' : ''}" onclick="selectStyle('${s.id}')">
+                    <div class="bc-card-img"><img src="${s.image_url || 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=200&auto=format&fit=crop'}" alt="${s.name}" loading="lazy"></div>
+                    <div class="bc-card-name">${s.name}</div>
+                    <div class="bc-card-price">+GHS ${Number(s.base_price || 0).toFixed(2)}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectStyle(id) {
+            bcData.style = styles.find(s => s.id === id);
+            renderStyles();
+            updateSummary();
+        }
+
+        // ─── Flowers ─────────────────────────────────────────────────
+        async function loadFlowers() {
+            try {
+                const res = await fetch('/api/bouquet/flowers');
+                availableFlowers = await res.json();
+            } catch { availableFlowers = []; }
+            renderFlowers();
+        }
+
+        function renderFlowers() {
+            document.getElementById('flowerList').innerHTML = availableFlowers.length ? availableFlowers.map(f => {
+                const qty = bcData.flowers.find(x => x.id === f.id)?.quantity || 0;
+                return `
+                    <div class="bc-flower-item">
+                        <div class="bc-flower-img"><img src="${f.image_url || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=100&auto=format&fit=crop'}" alt="${f.name}" loading="lazy"></div>
+                        <div class="bc-flower-info">
+                            <div class="bc-flower-name">${f.name}</div>
+                            <div class="bc-flower-price">GHS ${Number(f.price || 0).toFixed(2)} per stem</div>
+                        </div>
+                        <div class="bc-qty">
+                            <button onclick="updateFlowerQty('${f.id}', -1)" ${qty === 0 ? 'disabled' : ''}>-</button>
+                            <span>${qty}</span>
+                            <button onclick="updateFlowerQty('${f.id}', 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            }).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No flowers available</p>';
+        }
+
+        function updateFlowerQty(id, delta) {
+            const flower = availableFlowers.find(f => f.id === id);
+            if (!flower) return;
+            const existing = bcData.flowers.find(x => x.id === id);
+            if (existing) {
+                existing.quantity = Math.max(0, existing.quantity + delta);
+                if (existing.quantity === 0) bcData.flowers = bcData.flowers.filter(x => x.id !== id);
+            } else if (delta > 0) {
+                bcData.flowers.push({ id: flower.id, name: flower.name, price: flower.price, quantity: 1 });
+            }
+            renderFlowers();
+            updateSummary();
+        }
+
+        // ─── Colors ──────────────────────────────────────────────────
+        function renderColors() {
+            document.getElementById('colorGrid').innerHTML = colors.map(c => `
+                <div class="bc-color${bcData.colors.includes(c.name) ? ' selected' : ''}" style="background:${c.hex};" onclick="toggleColor('${c.name}')" title="${c.name}"></div>
+            `).join('');
+        }
+
+        function toggleColor(name) {
+            const idx = bcData.colors.indexOf(name);
+            if (idx >= 0) bcData.colors.splice(idx, 1);
+            else bcData.colors.push(name);
+            renderColors();
+            updateSummary();
+        }
+
+        // ─── Greenery ────────────────────────────────────────────────
+        function renderGreenery() {
+            document.getElementById('greeneryGrid').innerHTML = greenery.map(g => `
+                <div class="bc-card${bcData.greenery?.id === g.id ? ' selected' : ''}" onclick="selectGreenery('${g.id}')">
+                    <div class="bc-card-img">🌿</div>
+                    <div class="bc-card-name">${g.name}</div>
+                    <div class="bc-card-price">+GHS ${g.price.toFixed(2)}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectGreenery(id) {
+            bcData.greenery = bcData.greenery?.id === id ? null : greenery.find(g => g.id === id);
+            renderGreenery();
+            updateSummary();
+        }
+
+        // ─── Wrappings ───────────────────────────────────────────────
+        async function loadWrappings() {
+            try {
+                const res = await fetch('/api/bouquet/wrappings');
+                wrappings = await res.json();
+            } catch { wrappings = []; }
+            renderWrappings();
+        }
+
+        function renderWrappings() {
+            document.getElementById('wrappingGrid').innerHTML = wrappings.map(w => `
+                <div class="bc-card${bcData.wrapping?.id === w.id ? ' selected' : ''}" onclick="selectWrapping('${w.id}')">
+                    <div class="bc-card-img">📦</div>
+                    <div class="bc-card-name">${w.name}</div>
+                    <div class="bc-card-price">+GHS ${Number(w.price || 0).toFixed(2)}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectWrapping(id) {
+            bcData.wrapping = wrappings.find(w => w.id === id);
+            renderWrappings();
+            updateSummary();
+        }
+
+        // ─── Ribbons ─────────────────────────────────────────────────
+        async function loadRibbons() {
+            try {
+                const res = await fetch('/api/bouquet/ribbons');
+                ribbons = await res.json();
+            } catch { ribbons = []; }
+            renderRibbons();
+        }
+
+        function renderRibbons() {
+            document.getElementById('ribbonGrid').innerHTML = ribbons.map(r => `
+                <div class="bc-card${bcData.ribbon?.id === r.id ? ' selected' : ''}" onclick="selectRibbon('${r.id}')">
+                    <div class="bc-card-img">🎀</div>
+                    <div class="bc-card-name">${r.name}</div>
+                    <div class="bc-card-price">+GHS ${Number(r.price || 0).toFixed(2)}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectRibbon(id) {
+            bcData.ribbon = ribbons.find(r => r.id === id);
+            renderRibbons();
+            if (bcData.ribbon?.colors?.length) {
+                document.getElementById('ribbonColors').style.display = 'block';
+                document.getElementById('ribbonColorGrid').innerHTML = bcData.ribbon.colors.map(c => `
+                    <div class="bc-color${bcData.ribbonColor === c ? ' selected' : ''}" style="background:${getColorHex(c)};" onclick="selectRibbonColor('${c}')"></div>
+                `).join('');
+            } else {
+                document.getElementById('ribbonColors').style.display = 'none';
+            }
+            updateSummary();
+        }
+
+        function selectRibbonColor(color) {
+            bcData.ribbonColor = color;
+            document.querySelectorAll('#ribbonColorGrid .bc-color').forEach(c => c.classList.toggle('selected', c.title === color));
+            updateSummary();
+        }
+
+        function getColorHex(name) {
+            const map = { 'White': '#ffffff', 'Red': '#ef4444', 'Gold': '#d4af37', 'Silver': '#c0c0c0', 'Pink': '#ec4899', 'Black': '#1f2937', 'Ivory': '#fffff0', 'Natural': '#d2b48c' };
+            return map[name] || '#cccccc';
+        }
+
+        // ─── Extras ──────────────────────────────────────────────────
+        async function loadExtras() {
+            try {
+                const res = await fetch('/api/bouquet/extras');
+                extras = await res.json();
+            } catch { extras = []; }
+            renderExtras();
+        }
+
+        function renderExtras() {
+            document.getElementById('extrasGrid').innerHTML = extras.map(e => {
+                const selected = bcData.extras.find(x => x.id === e.id);
+                return `
+                    <div class="bc-card${selected ? ' selected' : ''}" onclick="toggleExtra('${e.id}')">
+                        <div class="bc-card-img">🎁</div>
+                        <div class="bc-card-name">${e.name}</div>
+                        <div class="bc-card-price">+GHS ${Number(e.price || 0).toFixed(2)}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleExtra(id) {
+            const existing = bcData.extras.find(x => x.id === id);
+            if (existing) bcData.extras = bcData.extras.filter(x => x.id !== id);
+            else {
+                const extra = extras.find(e => e.id === id);
+                if (extra) bcData.extras.push(extra);
+            }
+            renderExtras();
+            updateSummary();
+        }
+
+        // ─── Preview ─────────────────────────────────────────────────
+        function renderPreview() {
+            const flowerList = bcData.flowers.map(f => `${f.quantity}x ${f.name}`).join(', ') || 'None selected';
+            const colorList = bcData.colors.join(', ') || 'None selected';
+
+            document.getElementById('previewContent').innerHTML = `
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+                    <div>
+                        <h4 style="margin-bottom:0.75rem;">Your Bouquet Details</h4>
+                        <div style="background:var(--bg-light);border-radius:12px;padding:1.25rem;">
+                            <div class="bc-summary-row"><span class="label">Occasion</span><span class="value">${bcData.occasion?.name || '-'}</span></div>
+                            <div class="bc-summary-row"><span class="label">Style</span><span class="value">${bcData.style?.name || '-'}</span></div>
+                            <div class="bc-summary-row"><span class="label">Flowers</span><span class="value">${flowerList}</span></div>
+                            <div class="bc-summary-row"><span class="label">Colors</span><span class="value">${colorList}</span></div>
+                            <div class="bc-summary-row"><span class="label">Greenery</span><span class="value">${bcData.greenery?.name || 'None'}</span></div>
+                            <div class="bc-summary-row"><span class="label">Wrapping</span><span class="value">${bcData.wrapping?.name || 'None'}</span></div>
+                            <div class="bc-summary-row"><span class="label">Ribbon</span><span class="value">${bcData.ribbon?.name || 'None'} ${bcData.ribbonColor ? '(' + bcData.ribbonColor + ')' : ''}</span></div>
+                            <div class="bc-summary-row"><span class="label">Extras</span><span class="value">${bcData.extras.map(e => e.name).join(', ') || 'None'}</span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom:0.75rem;">Delivery Estimate</h4>
+                        <div style="background:var(--bg-light);border-radius:12px;padding:1.25rem;">
+                            <div class="bc-summary-row"><span class="label">Completion</span><span class="value">2-3 hours</span></div>
+                            <div class="bc-summary-row"><span class="label">Delivery</span><span class="value">Same day</span></div>
+                            <div class="bc-summary-row"><span class="label">Total Stems</span><span class="value">${bcData.flowers.reduce((s, f) => s + f.quantity, 0)}</span></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ─── Summary ─────────────────────────────────────────────────
+        function updateSummary() {
+            const flowersTotal = bcData.flowers.reduce((s, f) => s + (f.price * f.quantity), 0);
+            const stylePrice = bcData.style?.base_price || 0;
+            const wrappingPrice = bcData.wrapping?.price || 0;
+            const ribbonPrice = bcData.ribbon?.price || 0;
+            const extrasTotal = bcData.extras.reduce((s, e) => s + (e.price || 0), 0);
+            const deliveryFee = flowersTotal > 50 ? 0 : 10;
+            const total = stylePrice + flowersTotal + wrappingPrice + ribbonPrice + extrasTotal + deliveryFee;
+
+            let html = '';
+            if (bcData.occasion) html += `<div class="bc-summary-row"><span class="label">Occasion</span><span class="value">${bcData.occasion.name}</span></div>`;
+            if (bcData.style) html += `<div class="bc-summary-row"><span class="label">Style</span><span class="value">${bcData.style.name}</span></div>`;
+            if (bcData.flowers.length) html += `<div class="bc-summary-row"><span class="label">Flowers (${bcData.flowers.reduce((s,f) => s+f.quantity, 0)} stems)</span><span class="value">GHS ${flowersTotal.toFixed(2)}</span></div>`;
+            if (bcData.wrapping) html += `<div class="bc-summary-row"><span class="label">Wrapping</span><span class="value">GHS ${wrappingPrice.toFixed(2)}</span></div>`;
+            if (bcData.ribbon) html += `<div class="bc-summary-row"><span class="label">Ribbon</span><span class="value">GHS ${ribbonPrice.toFixed(2)}</span></div>`;
+            if (bcData.extras.length) html += `<div class="bc-summary-row"><span class="label">Extras</span><span class="value">GHS ${extrasTotal.toFixed(2)}</span></div>`;
+            html += `<div class="bc-summary-row"><span class="label">Delivery</span><span class="value">${deliveryFee === 0 ? 'Free' : 'GHS ' + deliveryFee.toFixed(2)}</span></div>`;
+            html += `<div class="bc-summary-total"><span>Total</span><span style="color:var(--primary-color);">GHS ${total.toFixed(2)}</span></div>`;
+
+            document.getElementById('summaryContent').innerHTML = html || '<p style="color:var(--text-light);font-size:0.9rem;">Start customizing to see your summary</p>';
+        }
+
+        function addToCart() {
+            if (!localStorage.getItem('flower-token')) {
+                if (typeof openAuthModal === 'function') openAuthModal('login');
+                else window.location.href = 'login.html';
+                return;
+            }
+            alert('Bouquet added to cart!');
+            window.location.href = 'cart.html';
+        }
+
+        renderColors();
+        renderGreenery();
+    </script>
+</body>
+</html>
