@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Research Article | Flower Ecosystem Research Hub">
+    <title>Research Article | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .rd-hero { padding:2rem 0; background:var(--bg-light); }
+        .rd-breadcrumb { font-size:0.85rem; color:var(--text-light); margin-bottom:1rem; }
+        .rd-breadcrumb a { color:var(--text-light); text-decoration:none; }
+        .rd-breadcrumb a:hover { color:#2563eb; }
+
+        .rd-layout { display:grid; grid-template-columns:1fr 320px; gap:2.5rem; align-items:start; }
+        .rd-main { min-width:0; }
+        .rd-sidebar { position:sticky; top:100px; }
+
+        .rd-title { font-size:1.75rem; line-height:1.3; margin-bottom:1rem; }
+        .rd-meta { display:flex; gap:1rem; flex-wrap:wrap; font-size:0.88rem; color:var(--text-light); margin-bottom:1.5rem; }
+        .rd-meta span { display:flex; align-items:center; gap:0.3rem; }
+        .rd-meta a { color:#2563eb; text-decoration:none; }
+
+        .rd-actions { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:2rem; }
+        .rd-actions .btn { font-size:0.85rem; padding:0.45rem 0.85rem; border-radius:50px; }
+
+        .rd-section { margin-bottom:2rem; }
+        .rd-section h3 { font-size:1.15rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+        .rd-section h3 i { color:#2563eb; }
+
+        .rd-abstract { background:var(--bg-light); border-left:4px solid #2563eb; padding:1.25rem 1.5rem; border-radius:0 10px 10px 0; font-size:0.95rem; line-height:1.8; color:var(--text-main); }
+
+        .rd-findings { display:grid; gap:0.75rem; }
+        .rd-finding { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; padding:1rem 1.25rem; display:flex; gap:0.75rem; align-items:flex-start; }
+        .rd-finding-num { width:28px; height:28px; background:#2563eb; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; flex-shrink:0; }
+        .rd-finding-text { font-size:0.92rem; line-height:1.6; }
+
+        .rd-methodology { background:var(--bg-light); border-radius:10px; padding:1.25rem; font-size:0.92rem; line-height:1.7; color:var(--text-light); }
+
+        .rd-keywords { display:flex; gap:0.5rem; flex-wrap:wrap; }
+        .rd-keyword { padding:0.3rem 0.75rem; background:rgba(37,99,235,0.08); color:#2563eb; border-radius:50px; font-size:0.82rem; font-weight:500; }
+
+        .rd-authors-list { display:grid; gap:0.75rem; }
+        .rd-author { display:flex; gap:0.75rem; align-items:center; padding:0.75rem; background:var(--bg-light); border-radius:10px; }
+        .rd-author-avatar { width:44px; height:44px; border-radius:50%; background:#2563eb; color:white; display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0; }
+        .rd-author-name { font-weight:600; font-size:0.9rem; }
+        .rd-author-info { font-size:0.8rem; color:var(--text-light); }
+
+        .rd-sidebar-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; margin-bottom:1.25rem; }
+        .rd-sidebar-card h4 { font-size:0.95rem; margin-bottom:0.75rem; }
+
+        .rd-related { display:grid; gap:0.75rem; }
+        .rd-related-item { text-decoration:none; color:inherit; padding:0.75rem; border:1px solid var(--border-color); border-radius:8px; transition:all 0.2s; }
+        .rd-related-item:hover { border-color:#2563eb; background:rgba(37,99,235,0.03); }
+        .rd-related-title { font-weight:600; font-size:0.85rem; margin-bottom:0.2rem; }
+        .rd-related-meta { font-size:0.75rem; color:var(--text-light); }
+
+        .rd-connections { display:grid; gap:0.5rem; }
+        .rd-connection { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; text-decoration:none; color:var(--text-main); font-size:0.85rem; transition:all 0.2s; }
+        .rd-connection:hover { border-color:#2563eb; color:#2563eb; }
+        .rd-connection i { font-size:1rem; }
+
+        .rd-references { list-style:none; padding:0; }
+        .rd-references li { padding:0.5rem 0; border-bottom:1px solid var(--border-light); font-size:0.88rem; color:var(--text-light); line-height:1.5; }
+
+        .rd-empty { text-align:center; padding:4rem 2rem; }
+        .rd-empty i { font-size:4rem; color:var(--text-light); opacity:0.5; display:block; margin-bottom:1rem; }
+
+        @media(max-width:900px) {
+            .rd-layout { grid-template-columns:1fr; }
+            .rd-sidebar { position:static; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="rd-hero">
+        <div class="container">
+            <nav class="rd-breadcrumb">
+                <a href="index.html">Home</a> / <a href="research.html">Research</a> / <span id="bcTitle">Loading...</span>
+            </nav>
+        </div>
+    </section>
+
+    <section class="section-padding" style="padding-top:1.5rem;">
+        <div class="container">
+            <div id="rdEmpty" class="rd-empty" style="display:none;">
+                <i class="bi bi-journal-x"></i>
+                <h2>Research Not Found</h2>
+                <p style="color:var(--text-light);">This article may have been removed or is not yet published.</p>
+                <a href="research.html" class="btn btn-primary" style="background:#2563eb;">Browse Research</a>
+            </div>
+
+            <div id="rdContent" class="rd-layout" style="display:none;">
+                <!-- Main Content -->
+                <div class="rd-main">
+                    <h1 class="rd-title" id="rdTitle"></h1>
+                    <div class="rd-meta" id="rdMeta"></div>
+                    <div class="rd-actions" id="rdActions"></div>
+
+                    <!-- Abstract -->
+                    <div class="rd-section" id="rdAbstractSection">
+                        <h3><i class="bi bi-file-text"></i> Abstract</h3>
+                        <div class="rd-abstract" id="rdAbstract"></div>
+                    </div>
+
+                    <!-- Key Findings -->
+                    <div class="rd-section" id="rdFindingsSection" style="display:none;">
+                        <h3><i class="bi bi-lightbulb"></i> Key Findings</h3>
+                        <div class="rd-findings" id="rdFindings"></div>
+                    </div>
+
+                    <!-- Methodology -->
+                    <div class="rd-section" id="rdMethodSection" style="display:none;">
+                        <h3><i class="bi bi-bezier2"></i> Methodology</h3>
+                        <div class="rd-methodology" id="rdMethodology"></div>
+                    </div>
+
+                    <!-- Practical Applications -->
+                    <div class="rd-section" id="rdAppsSection" style="display:none;">
+                        <h3><i class="bi bi-tools"></i> Practical Applications</h3>
+                        <div id="rdApps" style="font-size:0.92rem;line-height:1.7;color:var(--text-light);"></div>
+                    </div>
+
+                    <!-- Keywords -->
+                    <div class="rd-section" id="rdKeywordsSection" style="display:none;">
+                        <h3><i class="bi bi-tags"></i> Keywords</h3>
+                        <div class="rd-keywords" id="rdKeywords"></div>
+                    </div>
+
+                    <!-- Authors -->
+                    <div class="rd-section" id="rdAuthorsSection" style="display:none;">
+                        <h3><i class="bi bi-people"></i> Authors</h3>
+                        <div class="rd-authors-list" id="rdAuthors"></div>
+                    </div>
+
+                    <!-- References -->
+                    <div class="rd-section" id="rdRefsSection" style="display:none;">
+                        <h3><i class="bi bi-book"></i> References</h3>
+                        <ul class="rd-references" id="rdReferences"></ul>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="rd-sidebar">
+                    <!-- Actions -->
+                    <div class="rd-sidebar-card">
+                        <h4>Actions</h4>
+                        <div style="display:grid;gap:0.5rem;">
+                            <button class="btn btn-outline" id="bookmarkBtn" onclick="toggleBookmark()" style="width:100%;justify-content:center;"><i class="bi bi-bookmark"></i> Bookmark</button>
+                            <button class="btn btn-outline" onclick="shareArticle()" style="width:100%;justify-content:center;"><i class="bi bi-share"></i> Share</button>
+                            <button class="btn btn-outline" onclick="citeArticle()" style="width:100%;justify-content:center;"><i class="bi bi-quote"></i> Cite</button>
+                        </div>
+                    </div>
+
+                    <!-- Article Info -->
+                    <div class="rd-sidebar-card">
+                        <h4>Article Info</h4>
+                        <div id="rdInfo" style="font-size:0.85rem;color:var(--text-light);"></div>
+                    </div>
+
+                    <!-- Related Research -->
+                    <div class="rd-sidebar-card" id="rdRelatedSection" style="display:none;">
+                        <h4>Related Research</h4>
+                        <div class="rd-related" id="rdRelated"></div>
+                    </div>
+
+                    <!-- Connect -->
+                    <div class="rd-sidebar-card">
+                        <h4>Explore</h4>
+                        <div class="rd-connections" id="rdConnections"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        let article = null;
+
+        function getToken() { return localStorage.getItem('flower-token'); }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const slug = params.get('slug');
+            if (!slug) { showEmpty(); return; }
+            loadArticle(slug);
+        });
+
+        async function loadArticle(slug) {
+            try {
+                const res = await fetch(`/api/research/${slug}`);
+                if (!res.ok) throw new Error('Not found');
+                article = await res.json();
+            } catch { showEmpty(); return; }
+
+            document.title = `${article.title} | Research Hub`;
+            document.getElementById('bcTitle').textContent = article.title?.slice(0, 60) + (article.title?.length > 60 ? '...' : '');
+            document.getElementById('rdContent').style.display = 'grid';
+
+            // Title
+            document.getElementById('rdTitle').textContent = article.title;
+
+            // Meta
+            const date = article.publication_date ? new Date(article.publication_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+            const authors = Array.isArray(article.author_details) ? article.author_details : [];
+            const authorNames = authors.map(a => a.name).join(', ');
+            document.getElementById('rdMeta').innerHTML = `
+                ${authorNames ? `<span><i class="bi bi-person"></i> ${escapeHtml(authorNames)}</span>` : ''}
+                ${article.institution_name ? `<span><i class="bi bi-building"></i> ${escapeHtml(article.institution_name)}</span>` : ''}
+                ${date ? `<span><i class="bi bi-calendar"></i> ${date}</span>` : ''}
+                ${article.journal ? `<span><i class="bi bi-journal"></i> ${escapeHtml(article.journal)}</span>` : ''}
+                ${article.doi ? `<span><i class="bi bi-link-45deg"></i> <a href="https://doi.org/${article.doi}" target="_blank">${article.doi}</a></span>` : ''}
+            `;
+
+            // Actions
+            document.getElementById('rdActions').innerHTML = `
+                <button class="btn btn-outline" onclick="toggleBookmark()"><i class="bi bi-bookmark" id="bookmarkIcon"></i> Bookmark</button>
+                <button class="btn btn-outline" onclick="shareArticle()"><i class="bi bi-share"></i> Share</button>
+                <button class="btn btn-outline" onclick="citeArticle()"><i class="bi bi-quote"></i> Cite</button>
+                ${article.pdf_path ? `<a href="${article.pdf_path}" class="btn btn-primary" style="background:#2563eb;" download><i class="bi bi-download"></i> Download PDF</a>` : ''}
+            `;
+
+            // Abstract
+            if (article.abstract) {
+                document.getElementById('rdAbstract').textContent = article.abstract;
+            } else {
+                document.getElementById('rdAbstractSection').style.display = 'none';
+            }
+
+            // Key Findings
+            let findings = article.key_findings;
+            if (typeof findings === 'string') { try { findings = JSON.parse(findings); } catch { findings = null; } }
+            if (findings?.length) {
+                document.getElementById('rdFindingsSection').style.display = 'block';
+                document.getElementById('rdFindings').innerHTML = findings.map((f, i) => `
+                    <div class="rd-finding">
+                        <div class="rd-finding-num">${i + 1}</div>
+                        <div class="rd-finding-text">${escapeHtml(f)}</div>
+                    </div>
+                `).join('');
+            }
+
+            // Methodology
+            if (article.methodology) {
+                document.getElementById('rdMethodSection').style.display = 'block';
+                document.getElementById('rdMethodology').textContent = article.methodology;
+            }
+
+            // Practical Applications
+            if (article.practical_apps) {
+                document.getElementById('rdAppsSection').style.display = 'block';
+                document.getElementById('rdApps').textContent = article.practical_apps;
+            }
+
+            // Keywords
+            let keywords = article.keywords;
+            if (typeof keywords === 'string') { try { keywords = JSON.parse(keywords); } catch { keywords = null; } }
+            if (keywords?.length) {
+                document.getElementById('rdKeywordsSection').style.display = 'block';
+                document.getElementById('rdKeywords').innerHTML = keywords.map(k => `<span class="rd-keyword">${escapeHtml(k)}</span>`).join('');
+            }
+
+            // Authors
+            if (authors.length) {
+                document.getElementById('rdAuthorsSection').style.display = 'block';
+                document.getElementById('rdAuthors').innerHTML = authors.map(a => `
+                    <div class="rd-author">
+                        <div class="rd-author-avatar">${(a.name || 'A').charAt(0).toUpperCase()}</div>
+                        <div>
+                            <div class="rd-author-name">${escapeHtml(a.name)}</div>
+                            ${a.institution ? `<div class="rd-author-info">${escapeHtml(a.institution)}</div>` : ''}
+                            ${a.bio ? `<div class="rd-author-info" style="margin-top:0.25rem;">${escapeHtml(a.bio).slice(0, 120)}${a.bio.length > 120 ? '...' : ''}</div>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // References
+            let refs = article.references_list;
+            if (typeof refs === 'string') { try { refs = JSON.parse(refs); } catch { refs = null; } }
+            if (refs?.length) {
+                document.getElementById('rdRefsSection').style.display = 'block';
+                document.getElementById('rdReferences').innerHTML = refs.map(r => `<li>${escapeHtml(r)}</li>`).join('');
+            }
+
+            // Sidebar Info
+            document.getElementById('rdInfo').innerHTML = `
+                <div style="display:grid;gap:0.5rem;">
+                    ${article.category_name ? `<div><strong>Category:</strong> ${article.category_icon || ''} ${escapeHtml(article.category_name)}</div>` : ''}
+                    ${date ? `<div><strong>Published:</strong> ${date}</div>` : ''}
+                    ${article.journal ? `<div><strong>Journal:</strong> ${escapeHtml(article.journal)}</div>` : ''}
+                    ${article.doi ? `<div><strong>DOI:</strong> <a href="https://doi.org/${article.doi}" target="_blank" style="color:#2563eb;">${article.doi}</a></div>` : ''}
+                    <div><strong>Views:</strong> ${(article.views || 0).toLocaleString()}</div>
+                    <div><strong>Bookmarks:</strong> ${(article.bookmark_count || 0).toLocaleString()}</div>
+                </div>
+            `;
+
+            // Related
+            const related = article.related || [];
+            if (related.length) {
+                document.getElementById('rdRelatedSection').style.display = 'block';
+                document.getElementById('rdRelated').innerHTML = related.map(r => `
+                    <a href="research-detail.html?slug=${r.slug || r.id}" class="rd-related-item">
+                        <div class="rd-related-title">${escapeHtml(r.title)}</div>
+                        <div class="rd-related-meta">${r.category_icon || ''} ${escapeHtml(r.category_name || '')} · ${r.publication_date ? new Date(r.publication_date).getFullYear() : ''}</div>
+                    </a>
+                `).join('');
+            }
+
+            // Connections
+            const flowerName = (article.title || '').match(/(?:rose|tulip|orchid|lily|sunflower|carnation|daisy)/i)?.[0] || 'flowers';
+            document.getElementById('rdConnections').innerHTML = `
+                <a href="flower-encyclopedia.html" class="rd-connection"><i class="bi bi-book" style="color:#2563eb;"></i> Encyclopedia</a>
+                <a href="care-guides-hub.html" class="rd-connection"><i class="bi bi-heart-pulse" style="color:#10b981;"></i> Care Guides</a>
+                <a href="learning.html" class="rd-connection"><i class="bi bi-mortarboard" style="color:#8b5cf6;"></i> Courses</a>
+                <a href="marketplace.html?q=${encodeURIComponent(flowerName)}" class="rd-connection"><i class="bi bi-bag" style="color:#f59e0b;"></i> Shop Products</a>
+                <a href="discussions.html" class="rd-connection"><i class="bi bi-chat-dots" style="color:#ec4899;"></i> Discussions</a>
+            `;
+        }
+
+        function showEmpty() {
+            document.getElementById('rdEmpty').style.display = 'block';
+            document.getElementById('rdContent').style.display = 'none';
+        }
+
+        // ─── Actions ────────────────────────────────────────────────
+        async function toggleBookmark() {
+            const token = getToken();
+            if (!token) { window.location.href = 'login.html'; return; }
+            if (!article) return;
+            try {
+                const res = await fetch(`/api/research/bookmarks/${article.id}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token, 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const data = await res.json();
+                const icon = document.getElementById('bookmarkIcon');
+                if (data.bookmarked) {
+                    icon.classList.replace('bi-bookmark', 'bi-bookmark-fill');
+                } else {
+                    icon.classList.replace('bi-bookmark-fill', 'bi-bookmark');
+                }
+            } catch {}
+        }
+
+        function shareArticle() {
+            if (!article) return;
+            const text = `${article.title} — Flower Ecosystem Research Hub`;
+            if (navigator.share) {
+                navigator.share({ title: article.title, text, url: window.location.href });
+            } else if (navigator.clipboard) {
+                navigator.clipboard.writeText(text + '\n' + window.location.href);
+                alert('Link copied to clipboard!');
+            }
+        }
+
+        function citeArticle() {
+            if (!article) return;
+            const authors = Array.isArray(article.author_details) ? article.author_details.map(a => a.name).join(', ') : 'Unknown';
+            const year = article.publication_date ? new Date(article.publication_date).getFullYear() : 'n.d.';
+            const citation = `${authors} (${year}). ${article.title}. ${article.journal || ''}${article.doi ? '. DOI: ' + article.doi : ''}.`;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(citation);
+                alert('Citation copied to clipboard!');
+            }
+        }
+
+        function escapeHtml(s) {
+            if (typeof s !== 'string') return String(s || '');
+            const d = document.createElement('div');
+            d.appendChild(document.createTextNode(s));
+            return d.innerHTML;
+        }
+    </script>
+</body>
+</html>

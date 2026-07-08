@@ -104,6 +104,11 @@
                             <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=100&auto=format&fit=crop" alt="Instructor" id="instructorImg">
                             <span>By <strong id="courseInstructor">Instructor</strong></span>
                         </div>
+                        <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
+                            <button class="btn btn-outline" style="font-size:0.82rem;padding:0.4rem 0.75rem;border-color:rgba(255,255,255,0.3);color:white;" onclick="shareCourse()"><i class="bi bi-share"></i> Share</button>
+                            <button class="btn btn-outline" style="font-size:0.82rem;padding:0.4rem 0.75rem;border-color:rgba(255,255,255,0.3);color:white;" onclick="bookmarkCourse()"><i class="bi bi-bookmark" id="bookmarkIcon"></i> Save</button>
+                            <button class="btn btn-outline" style="font-size:0.82rem;padding:0.4rem 0.75rem;border-color:rgba(255,255,255,0.3);color:white;display:none;" id="certBtn" onclick="downloadCertificate()"><i class="bi bi-award"></i> Certificate</button>
+                        </div>
                         <div class="progress-bar-wrap" id="progressWrap" style="display:none;">
                             <div class="progress-bar-fill" id="progressFill" style="width:0%;"></div>
                         </div>
@@ -169,6 +174,10 @@
                         <ul id="learnList" style="line-height:2;"></ul>
                         <h4 style="margin-top:1.5rem; font-family:'Playfair Display',serif;">Skills You'll Gain</h4>
                         <div id="skillsList" style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem;"></div>
+                        <h4 style="margin-top:1.5rem; font-family:'Playfair Display',serif;">Requirements</h4>
+                        <ul id="requirementsList" style="line-height:2;color:var(--text-light);font-size:0.92rem;"></ul>
+                        <h4 style="margin-top:1.5rem; font-family:'Playfair Display',serif;">Who This Course Is For</h4>
+                        <ul id="audienceList" style="line-height:2;color:var(--text-light);font-size:0.92rem;"></ul>
                     </div>
 
                     <div id="tab-instructor" class="tab-panel" style="display:none;">
@@ -310,8 +319,10 @@
                         enrollBtn.disabled = true;
                         await window.api.enrollCourse(courseId);
                         if (window.invalidateEnrollmentCache) window.invalidateEnrollmentCache();
-                        alert('Successfully enrolled in course!');
-                        window.location.href = 'student-dashboard.html?tab=courses';
+                        enrollBtn.innerHTML = '<i class="bi bi-play-circle"></i> Start Learning';
+                        enrollBtn.onclick = () => window.location.href = 'student-dashboard.html?tab=courses';
+                        document.getElementById('progressCard').style.display = 'block';
+                        alert('Successfully enrolled! You can now start learning.');
                     } catch (err) {
                         enrollBtn.innerHTML = originalText;
                         enrollBtn.disabled = false;
@@ -349,6 +360,138 @@
             document.getElementById('skillsList').innerHTML = skills.map(s =>
                 `<span style="padding:0.4rem 0.9rem;border-radius:50px;font-size:0.82rem;font-weight:500;background:var(--primary-light);color:var(--primary-color);">${s}</span>`
             ).join('');
+
+            // Requirements
+            const requirements = course.requirements || [
+                'No prior experience needed for beginner courses',
+                'Basic computer skills and internet access',
+                'A willingness to learn and practice',
+                'For advanced courses: completion of prerequisite levels'
+            ];
+            document.getElementById('requirementsList').innerHTML = requirements.map(r =>
+                `<li><i class="bi bi-check2" style="color:var(--primary-color);margin-right:0.5rem;"></i>${escapeHtml(r)}</li>`
+            ).join('');
+
+            // Target Audience
+            const audience = course.audience || [
+                'Beginners interested in floral design',
+                'Aspiring florists and flower shop owners',
+                'Event planners looking to add floral skills',
+                'Anyone who wants to create beautiful arrangements'
+            ];
+            document.getElementById('audienceList').innerHTML = audience.map(a =>
+                `<li><i class="bi bi-person" style="color:var(--primary-color);margin-right:0.5rem;"></i>${escapeHtml(a)}</li>`
+            ).join('');
+
+            // Share course
+            window.shareCourse = function() {
+                const text = `${course.title} — Learn floral design on Flower Ecosystem`;
+                if (navigator.share) {
+                    navigator.share({ title: course.title, text, url: window.location.href });
+                } else if (navigator.clipboard) {
+                    navigator.clipboard.writeText(text + '\n' + window.location.href);
+                    alert('Link copied to clipboard!');
+                }
+            };
+
+            // Bookmark course
+            window.bookmarkCourse = async function() {
+                const token = localStorage.getItem('flower-token');
+                if (!token) { openAuthModal('login'); return; }
+                const icon = document.getElementById('bookmarkIcon');
+                const isSaved = icon.classList.contains('bi-bookmark-fill');
+                icon.classList.toggle('bi-bookmark');
+                icon.classList.toggle('bi-bookmark-fill');
+                // Store locally
+                let saved = JSON.parse(localStorage.getItem('saved-courses') || '[]');
+                if (isSaved) {
+                    saved = saved.filter(s => s.id !== courseId);
+                } else {
+                    saved.push({ id: courseId, title: course.title, thumbnail: course.thumbnail || course.thumbnail_url });
+                }
+                localStorage.setItem('saved-courses', JSON.stringify(saved));
+            };
+
+            // Download certificate
+            window.downloadCertificate = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = 800;
+                canvas.height = 600;
+                const ctx = canvas.getContext('2d');
+
+                // Background
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, 800, 600);
+
+                // Border
+                ctx.strokeStyle = '#ec4899';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(20, 20, 760, 560);
+                ctx.strokeStyle = '#fce7f3';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(30, 30, 740, 540);
+
+                // Title
+                ctx.fillStyle = '#831843';
+                ctx.font = 'bold 32px Playfair Display, serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Certificate of Completion', 400, 100);
+
+                // Subtitle
+                ctx.fillStyle = '#666';
+                ctx.font = '16px Poppins, sans-serif';
+                ctx.fillText('Flower Ecosystem Learning Center', 400, 135);
+
+                // Line
+                ctx.strokeStyle = '#ec4899';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(200, 160);
+                ctx.lineTo(600, 160);
+                ctx.stroke();
+
+                // "This certifies that"
+                ctx.fillStyle = '#888';
+                ctx.font = '14px Poppins, sans-serif';
+                ctx.fillText('This certifies that', 400, 200);
+
+                // Student name
+                ctx.fillStyle = '#1a1a2e';
+                ctx.font = 'bold 28px Playfair Display, serif';
+                const studentName = localStorage.getItem('flower-user-name') || 'Valued Student';
+                ctx.fillText(studentName, 400, 250);
+
+                // "has successfully completed"
+                ctx.fillStyle = '#888';
+                ctx.font = '14px Poppins, sans-serif';
+                ctx.fillText('has successfully completed the course', 400, 290);
+
+                // Course name
+                ctx.fillStyle = '#ec4899';
+                ctx.font = 'bold 22px Playfair Display, serif';
+                ctx.fillText(course.title, 400, 340);
+
+                // Date
+                ctx.fillStyle = '#888';
+                ctx.font = '14px Poppins, sans-serif';
+                ctx.fillText(`Completed on ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, 400, 400);
+
+                // Instructor
+                ctx.fillStyle = '#666';
+                ctx.font = '13px Poppins, sans-serif';
+                ctx.fillText(`Instructor: ${course.instructor || 'Expert Instructor'}`, 400, 440);
+
+                // Footer
+                ctx.fillStyle = '#ccc';
+                ctx.font = '11px Poppins, sans-serif';
+                ctx.fillText('Flower Ecosystem — flower-ecosystem.onrender.com', 400, 540);
+
+                // Download
+                const link = document.createElement('a');
+                link.download = `certificate-${course.title.toLowerCase().replace(/\s+/g, '-')}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            };
 
             // Instructor
             document.getElementById('instructorSection').innerHTML = `

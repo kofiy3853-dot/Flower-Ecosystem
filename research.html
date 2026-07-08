@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Floriculture Research Hub — Explore scientific research, industry insights, and innovations in flowers and horticulture.">
+    <title>Floriculture Research Hub | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        .res-hero { background:linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #3b82f6 100%); padding:5rem 0 3rem; color:white; position:relative; overflow:hidden; }
+        .res-hero::before { content:''; position:absolute; top:-40%; right:-10%; width:500px; height:500px; background:rgba(255,255,255,0.06); border-radius:50%; }
+        .res-hero h1 { color:white; font-size:clamp(2rem, 4vw, 2.8rem); margin-bottom:0.5rem; }
+        .res-hero p { color:rgba(255,255,255,0.85); max-width:600px; margin:0 auto 1.5rem; }
+        .res-hero-btns { display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap; }
+        .res-hero-btns .btn { padding:0.65rem 1.5rem; border-radius:50px; }
+        .btn-white-blue { background:white; color:#1e3a5f; border:none; font-weight:600; }
+        .btn-outline-white { background:transparent; color:white; border:1.5px solid rgba(255,255,255,0.5); }
+        .btn-outline-white:hover { background:rgba(255,255,255,0.15); border-color:white; }
+
+        .res-search { background:var(--bg-white); border-radius:16px; padding:1.5rem; box-shadow:0 10px 40px rgba(0,0,0,0.1); margin:-2rem auto 2rem; max-width:800px; position:relative; z-index:10; }
+        .res-search-bar { display:flex; gap:0.5rem; }
+        .res-search-bar input { flex:1; padding:0.85rem 1.25rem; border:1px solid var(--border-color); border-radius:12px; font-size:1rem; outline:none; }
+        .res-search-bar input:focus { border-color:#2563eb; }
+
+        .res-cats { display:grid; grid-template-columns:repeat(5, 1fr); gap:1rem; margin:2rem 0; }
+        .res-cat { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; cursor:pointer; transition:all 0.3s; text-decoration:none; color:inherit; }
+        .res-cat:hover { transform:translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,0.08); border-color:#2563eb; }
+        .res-cat-icon { font-size:2rem; margin-bottom:0.5rem; }
+        .res-cat-name { font-weight:600; font-size:0.9rem; }
+
+        .res-section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+        .res-section-header h2 { margin:0; }
+
+        .res-featured { display:grid; grid-template-columns:repeat(auto-fill, minmax(350px, 1fr)); gap:1.5rem; }
+        .res-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; overflow:hidden; transition:all 0.3s; text-decoration:none; color:inherit; display:flex; flex-direction:column; }
+        .res-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); }
+        .res-card-img { height:180px; overflow:hidden; position:relative; }
+        .res-card-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .res-card:hover .res-card-img img { transform:scale(1.05); }
+        .res-card-badge { position:absolute; top:0.75rem; left:0.75rem; background:rgba(37,99,235,0.9); color:white; padding:0.2rem 0.6rem; border-radius:6px; font-size:0.7rem; font-weight:600; }
+        .res-card-body { padding:1.25rem; flex:1; display:flex; flex-direction:column; }
+        .res-card-title { font-weight:600; font-size:1.05rem; margin-bottom:0.5rem; line-height:1.4; }
+        .res-card-meta { display:flex; gap:0.75rem; font-size:0.8rem; color:var(--text-light); margin-bottom:0.5rem; flex-wrap:wrap; }
+        .res-card-abstract { font-size:0.85rem; color:var(--text-light); line-height:1.6; flex:1; margin-bottom:0.75rem; }
+        .res-card-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid var(--border-light); }
+        .res-card-authors { font-size:0.8rem; color:var(--text-light); }
+        .res-card-stats { display:flex; gap:0.75rem; font-size:0.78rem; color:var(--text-muted); }
+        .res-card-stats span { display:flex; align-items:center; gap:0.25rem; }
+
+        .res-latest { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:1.25rem; }
+
+        .res-library-filters { display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+        .res-filter { padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.85rem; background:var(--bg-white); cursor:pointer; transition:all 0.2s; }
+        .res-filter:hover, .res-filter.active { border-color:#2563eb; color:#2563eb; background:rgba(37,99,235,0.05); }
+
+        .res-empty { text-align:center; padding:3rem; color:var(--text-light); }
+        .res-empty i { font-size:3rem; display:block; margin-bottom:1rem; opacity:0.5; }
+
+        .res-ai-section { background:linear-gradient(135deg, #eff6ff, #dbeafe); border-radius:16px; padding:2rem; margin:2rem 0; display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:center; }
+        .res-ai-input { display:flex; gap:0.5rem; }
+        .res-ai-input input { flex:1; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:10px; font-size:0.95rem; }
+        .res-ai-result { background:white; border-radius:12px; padding:1.25rem; border:1px solid var(--border-color); min-height:100px; }
+
+        @media(max-width:768px) {
+            .res-cats { grid-template-columns:repeat(2, 1fr); }
+            .res-featured { grid-template-columns:1fr; }
+            .res-ai-section { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <section class="res-hero">
+        <div class="container" style="position:relative;z-index:1;">
+            <h1><i class="bi bi-microscope"></i> Floriculture Research Hub</h1>
+            <p>Explore scientific research, industry insights, and innovations shaping the future of flowers and horticulture.</p>
+            <div class="res-hero-btns">
+                <a href="#library" class="btn btn-white-blue"><i class="bi bi-journal-text"></i> Browse Research</a>
+                <a href="#submit" class="btn btn-outline-white"><i class="bi bi-upload"></i> Submit Research</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="res-search">
+            <div class="res-search-bar">
+                <input type="text" id="resSearch" placeholder="Search research papers, topics, or authors...">
+                <button class="btn btn-primary" style="background:#2563eb;" onclick="searchResearch()"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <section class="section-padding" style="padding-bottom:0;">
+        <div class="container">
+            <div class="res-section-header">
+                <h2><i class="bi bi-grid" style="color:#2563eb;"></i> Research Categories</h2>
+            </div>
+            <div class="res-cats" id="categoryGrid"></div>
+        </div>
+    </section>
+
+    <!-- AI Research Assistant -->
+    <section class="section-padding" style="padding-top:1rem;">
+        <div class="container">
+            <div class="res-ai-section">
+                <div>
+                    <h2 style="margin-bottom:0.5rem;"><i class="bi bi-robot" style="color:#2563eb;"></i> AI Research Assistant</h2>
+                    <p style="color:var(--text-light);margin-bottom:1rem;">Ask questions about floriculture research and get AI-powered summaries.</p>
+                    <div class="res-ai-input">
+                        <input type="text" id="aiQuestion" placeholder="e.g., What research exists on drought-resistant roses?">
+                        <button class="btn btn-primary" style="background:#2563eb;" onclick="askAI()"><i class="bi bi-send"></i></button>
+                    </div>
+                </div>
+                <div class="res-ai-result" id="aiResult">
+                    <p style="color:var(--text-light);font-size:0.9rem;">Ask a question to get started. The AI will search our research database and provide summaries with links to relevant papers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Research -->
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container">
+            <div class="res-section-header">
+                <h2><i class="bi bi-star" style="color:#f59e0b;"></i> Featured Research</h2>
+                <a href="#library" style="color:#2563eb;font-size:0.9rem;">View All →</a>
+            </div>
+            <div class="res-featured" id="featuredGrid"></div>
+        </div>
+    </section>
+
+    <!-- Latest Publications -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="res-section-header">
+                <h2><i class="bi bi-clock-history" style="color:#2563eb;"></i> Latest Publications</h2>
+            </div>
+            <div class="res-latest" id="latestGrid"></div>
+        </div>
+    </section>
+
+    <!-- Research Library -->
+    <section class="section-padding" id="library">
+        <div class="container">
+            <div class="res-section-header">
+                <h2><i class="bi bi-book" style="color:#2563eb;"></i> Research Library</h2>
+                <span id="resultCount" style="font-size:0.9rem;color:var(--text-light);"></span>
+            </div>
+            <div class="res-library-filters" id="libraryFilters">
+                <button class="res-filter active" onclick="filterLibrary('all', this)">All</button>
+            </div>
+            <div class="res-featured" id="libraryGrid"></div>
+            <div id="loadMore" style="text-align:center;margin-top:1.5rem;display:none;">
+                <button class="btn btn-outline" onclick="loadMore()">Load More</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Submit Research -->
+    <section class="section-padding bg-light" id="submit">
+        <div class="container" style="max-width:700px;">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h2><i class="bi bi-upload" style="color:#2563eb;"></i> Submit Research</h2>
+                <p style="color:var(--text-light);">Share your findings with the floriculture community. Submissions require admin approval.</p>
+            </div>
+            <form id="submitForm" style="background:var(--bg-white);border-radius:16px;padding:2rem;border:1px solid var(--border-color);">
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-weight:500;margin-bottom:0.4rem;font-size:0.9rem;">Title *</label>
+                    <input type="text" id="subTitle" required style="width:100%;padding:0.7rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.95rem;">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-weight:500;margin-bottom:0.4rem;font-size:0.9rem;">Abstract *</label>
+                    <textarea id="subAbstract" required rows="4" style="width:100%;padding:0.7rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.95rem;resize:vertical;"></textarea>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                    <div>
+                        <label style="display:block;font-weight:500;margin-bottom:0.4rem;font-size:0.9rem;">Category</label>
+                        <select id="subCategory" style="width:100%;padding:0.7rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.95rem;"></select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-weight:500;margin-bottom:0.4rem;font-size:0.9rem;">Publication Date</label>
+                        <input type="date" id="subDate" style="width:100%;padding:0.7rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.95rem;">
+                    </div>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-weight:500;margin-bottom:0.4rem;font-size:0.9rem;">DOI (optional)</label>
+                    <input type="text" id="subDoi" placeholder="10.xxxx/xxxxx" style="width:100%;padding:0.7rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.95rem;">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-weight:500;margin-bottom:0.4rem;font-size:0.9rem;">Journal (optional)</label>
+                    <input type="text" id="subJournal" style="width:100%;padding:0.7rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.95rem;">
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-weight:500;margin-bottom:0.4rem;font-size:0.9rem;">Methodology</label>
+                    <textarea id="subMethodology" rows="3" style="width:100%;padding:0.7rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.95rem;resize:vertical;"></textarea>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-weight:500;margin-bottom:0.4rem;font-size:0.9rem;">Key Findings (one per line)</label>
+                    <textarea id="subFindings" rows="3" placeholder="Finding 1&#10;Finding 2&#10;Finding 3" style="width:100%;padding:0.7rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.95rem;resize:vertical;"></textarea>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-weight:500;margin-bottom:0.4rem;font-size:0.9rem;">Practical Applications</label>
+                    <textarea id="subApps" rows="3" style="width:100%;padding:0.7rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.95rem;resize:vertical;"></textarea>
+                </div>
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:block;font-weight:500;margin-bottom:0.4rem;font-size:0.9rem;">Keywords (comma-separated)</label>
+                    <input type="text" id="subKeywords" placeholder="roses, breeding, disease resistance" style="width:100%;padding:0.7rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.95rem;">
+                </div>
+                <button type="submit" class="btn btn-primary" style="background:#2563eb;width:100%;padding:0.8rem;">Submit for Review</button>
+                <p id="submitMsg" style="text-align:center;margin-top:1rem;font-size:0.9rem;display:none;"></p>
+            </form>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        let currentLibraryPage = 1;
+        let currentLibraryCategory = '';
+        let currentLibraryQuery = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCategories();
+            loadFeatured();
+            loadLatest();
+            loadLibrary();
+            loadSubmitCategories();
+
+            document.getElementById('resSearch')?.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') searchResearch();
+            });
+
+            document.getElementById('submitForm')?.addEventListener('submit', submitResearch);
+        });
+
+        function getToken() { return localStorage.getItem('flower-token'); }
+
+        // ─── Categories ──────────────────────────────────────────────
+        async function loadCategories() {
+            try {
+                const res = await fetch('/api/research/categories');
+                const cats = await res.json();
+                document.getElementById('categoryGrid').innerHTML = cats.map(c => `
+                    <a class="res-cat" onclick="filterLibrary('${c.slug}', null); document.getElementById('library').scrollIntoView({behavior:'smooth'}); return false;">
+                        <div class="res-cat-icon">${c.icon || '📄'}</div>
+                        <div class="res-cat-name">${c.name}</div>
+                    </a>
+                `).join('');
+            } catch {}
+        }
+
+        // ─── Featured ────────────────────────────────────────────────
+        async function loadFeatured() {
+            try {
+                const res = await fetch('/api/research/featured');
+                const articles = await res.json();
+                renderCards(articles, 'featuredGrid');
+            } catch {}
+        }
+
+        // ─── Latest ──────────────────────────────────────────────────
+        async function loadLatest() {
+            try {
+                const res = await fetch('/api/research/latest');
+                const articles = await res.json();
+                renderCards(articles, 'latestGrid');
+            } catch {}
+        }
+
+        // ─── Library ─────────────────────────────────────────────────
+        async function loadLibrary(page = 1) {
+            const q = document.getElementById('resSearch')?.value?.trim() || currentLibraryQuery;
+            let url = `/api/research?page=${page}&limit=12`;
+            if (q) url += `&q=${encodeURIComponent(q)}`;
+            if (currentLibraryCategory && currentLibraryCategory !== 'all') url += `&category=${currentLibraryCategory}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                const grid = document.getElementById('libraryGrid');
+
+                if (page === 1) grid.innerHTML = '';
+
+                if (!data.articles?.length && page === 1) {
+                    grid.innerHTML = '<div class="res-empty"><i class="bi bi-journal-x"></i><p>No research articles found.</p></div>';
+                    document.getElementById('loadMore').style.display = 'none';
+                    return;
+                }
+
+                grid.innerHTML += data.articles.map(a => renderCard(a)).join('');
+                document.getElementById('loadMore').style.display = data.pages > page ? 'block' : 'none';
+                document.getElementById('resultCount').textContent = `${data.total} articles found`;
+                currentLibraryPage = page;
+            } catch {}
+        }
+
+        function loadMore() { loadLibrary(currentLibraryPage + 1); }
+
+        function searchResearch() {
+            currentLibraryQuery = document.getElementById('resSearch')?.value?.trim() || '';
+            currentLibraryPage = 1;
+            loadLibrary(1);
+        }
+
+        function filterLibrary(cat, el) {
+            currentLibraryCategory = cat;
+            currentLibraryPage = 1;
+            document.querySelectorAll('.res-filter').forEach(f => f.classList.remove('active'));
+            if (el) el.classList.add('active');
+            loadLibrary(1);
+        }
+
+        // ─── Render ──────────────────────────────────────────────────
+        function renderCards(articles, containerId) {
+            const grid = document.getElementById(containerId);
+            if (!grid || !articles?.length) { if (grid) grid.innerHTML = ''; return; }
+            grid.innerHTML = articles.map(a => renderCard(a)).join('');
+        }
+
+        function renderCard(a) {
+            const authors = Array.isArray(a.authors) ? a.authors : [];
+            const authorNames = authors.map(n => typeof n === 'string' ? n : n.name || '').filter(Boolean).join(', ');
+            const date = a.publication_date ? new Date(a.publication_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+            return `
+                <a href="research-detail.html?slug=${a.slug || a.id}" class="res-card">
+                    <div class="res-card-img">
+                        <img src="${a.cover_image || 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?q=400&auto=format&fit=crop'}" alt="${a.title}" loading="lazy">
+                        ${a.category_name ? `<span class="res-card-badge">${a.category_icon || ''} ${a.category_name}</span>` : ''}
+                    </div>
+                    <div class="res-card-body">
+                        <div class="res-card-title">${escapeHtml(a.title)}</div>
+                        <div class="res-card-meta">
+                            ${authorNames ? `<span><i class="bi bi-person"></i> ${escapeHtml(authorNames.slice(0, 60))}</span>` : ''}
+                            ${a.institution_name ? `<span><i class="bi bi-building"></i> ${escapeHtml(a.institution_name)}</span>` : ''}
+                        </div>
+                        <div class="res-card-abstract">${escapeHtml((a.abstract_preview || a.abstract || '').slice(0, 180))}${(a.abstract_preview || '').length > 180 ? '...' : ''}</div>
+                        <div class="res-card-footer">
+                            <div class="res-card-stats">
+                                ${date ? `<span><i class="bi bi-calendar"></i> ${date}</span>` : ''}
+                                ${a.views ? `<span><i class="bi bi-eye"></i> ${a.views}</span>` : ''}
+                                ${a.bookmark_count ? `<span><i class="bi bi-bookmark"></i> ${a.bookmark_count}</span>` : ''}
+                            </div>
+                            <span style="color:#2563eb;font-size:0.82rem;font-weight:500;">Read →</span>
+                        </div>
+                    </div>
+                </a>`;
+        }
+
+        // ─── AI Assistant ────────────────────────────────────────────
+        async function askAI() {
+            const q = document.getElementById('aiQuestion')?.value?.trim();
+            if (!q) return;
+            const resultEl = document.getElementById('aiResult');
+            resultEl.innerHTML = '<p style="color:var(--text-light);"><span class="spinner" style="display:inline-block;width:16px;height:16px;border:2px solid var(--border-color);border-top-color:#2563eb;border-radius:50%;animation:spin 0.8s linear infinite;"></span> Searching research database...</p>';
+
+            try {
+                const res = await fetch(`/api/research?q=${encodeURIComponent(q)}&limit=5`);
+                const data = await res.json();
+                if (!data.articles?.length) {
+                    resultEl.innerHTML = '<p style="color:var(--text-light);">No research articles found matching your query. Try different keywords.</p>';
+                    return;
+                }
+                let html = `<p style="font-weight:600;margin-bottom:0.75rem;">Found ${data.articles.length} relevant articles:</p>`;
+                data.articles.forEach(a => {
+                    const authors = Array.isArray(a.authors) ? a.authors.join(', ') : '';
+                    html += `<div style="padding:0.75rem 0;border-bottom:1px solid var(--border-light);">
+                        <a href="research-detail.html?slug=${a.slug || a.id}" style="font-weight:500;color:#2563eb;text-decoration:none;">${escapeHtml(a.title)}</a>
+                        ${authors ? `<p style="font-size:0.8rem;color:var(--text-light);margin:0.2rem 0 0;">${escapeHtml(authors)}</p>` : ''}
+                    </div>`;
+                });
+                resultEl.innerHTML = html;
+            } catch {
+                resultEl.innerHTML = '<p style="color:var(--error-color);">Failed to search. Please try again.</p>';
+            }
+        }
+
+        // ─── Submit ──────────────────────────────────────────────────
+        async function loadSubmitCategories() {
+            try {
+                const res = await fetch('/api/research/categories');
+                const cats = await res.json();
+                const sel = document.getElementById('subCategory');
+                if (sel) sel.innerHTML = '<option value="">Select category</option>' + cats.map(c => `<option value="${c.id}">${c.icon || ''} ${c.name}</option>`).join('');
+            } catch {}
+        }
+
+        async function submitResearch(e) {
+            e.preventDefault();
+            const token = getToken();
+            if (!token) { window.location.href = 'login.html'; return; }
+
+            const findings = document.getElementById('subFindings')?.value?.split('\n').filter(Boolean);
+            const keywords = document.getElementById('subKeywords')?.value?.split(',').map(k => k.trim()).filter(Boolean);
+
+            try {
+                const res = await fetch('/api/research', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token, 'X-Requested-With': 'XMLHttpRequest' },
+                    body: JSON.stringify({
+                        title: document.getElementById('subTitle')?.value,
+                        abstract: document.getElementById('subAbstract')?.value,
+                        category_id: document.getElementById('subCategory')?.value || null,
+                        publication_date: document.getElementById('subDate')?.value || null,
+                        doi: document.getElementById('subDoi')?.value || null,
+                        journal: document.getElementById('subJournal')?.value || null,
+                        methodology: document.getElementById('subMethodology')?.value || null,
+                        key_findings: findings?.length ? findings : null,
+                        practical_apps: document.getElementById('subApps')?.value || null,
+                        keywords: keywords?.length ? keywords : null
+                    })
+                });
+                const msg = document.getElementById('submitMsg');
+                if (res.ok) {
+                    msg.textContent = 'Research submitted successfully! It will appear after admin approval.';
+                    msg.style.color = 'var(--accent-green)';
+                    msg.style.display = 'block';
+                    e.target.reset();
+                } else {
+                    const err = await res.json().catch(() => ({}));
+                    msg.textContent = err.error || 'Submission failed.';
+                    msg.style.color = 'var(--error-color)';
+                    msg.style.display = 'block';
+                }
+            } catch {
+                const msg = document.getElementById('submitMsg');
+                msg.textContent = 'Network error. Please try again.';
+                msg.style.color = 'var(--error-color)';
+                msg.style.display = 'block';
+            }
+        }
+
+        function escapeHtml(s) {
+            if (typeof s !== 'string') return String(s || '');
+            const d = document.createElement('div');
+            d.appendChild(document.createTextNode(s));
+            return d.innerHTML;
+        }
+    </script>
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+</body>
+</html>

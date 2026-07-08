@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse floral design courses — bouquet design, wedding floristry, event decoration, and professional techniques.">
+    <title>Floral Design Courses | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .fdc-hero { background:linear-gradient(135deg,#831843,#be185d 50%,#ec4899); padding:4rem 0 2.5rem; color:white; }
+        .fdc-hero h1 { color:white; font-size:clamp(1.8rem,3.5vw,2.5rem); margin-bottom:0.5rem; }
+        .fdc-hero p { color:rgba(255,255,255,0.85); max-width:600px; margin-bottom:1.5rem; }
+        .fdc-hero-btns { display:flex; gap:0.75rem; flex-wrap:wrap; }
+        .fdc-hero-btns .btn { padding:0.6rem 1.25rem; border-radius:50px; }
+        .btn-white-pink { background:white; color:#831843; border:none; font-weight:600; }
+        .btn-outline-white { background:transparent; color:white; border:1.5px solid rgba(255,255,255,0.5); }
+
+        /* Stats */
+        .fdc-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin:-1.5rem auto 2rem; max-width:900px; position:relative; z-index:10; }
+        .fdc-stat { background:var(--bg-white); border-radius:12px; padding:1.25rem; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.08); border:1px solid var(--border-color); }
+        .fdc-stat-value { font-size:1.5rem; font-weight:700; color:#ec4899; }
+        .fdc-stat-label { font-size:0.8rem; color:var(--text-light); margin-top:0.2rem; }
+
+        /* Search */
+        .fdc-search { background:var(--bg-white); border-radius:12px; padding:1rem; box-shadow:0 4px 15px rgba(0,0,0,0.06); margin-bottom:1.5rem; display:flex; gap:0.5rem; }
+        .fdc-search input { flex:1; border:1px solid var(--border-color); border-radius:8px; padding:0.7rem 1rem; font-size:0.95rem; outline:none; }
+        .fdc-search input:focus { border-color:#ec4899; }
+
+        /* Layout */
+        .fdc-layout { display:grid; grid-template-columns:260px 1fr; gap:1.5rem; align-items:start; }
+
+        /* Sidebar */
+        .fdc-sidebar { position:sticky; top:90px; }
+        .fdc-filter-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; margin-bottom:1rem; }
+        .fdc-filter-card h4 { font-size:0.88rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
+        .fdc-filter-option { display:flex; align-items:center; gap:0.5rem; padding:0.35rem 0; font-size:0.85rem; cursor:pointer; color:var(--text-main); }
+        .fdc-filter-option input { accent-color:#ec4899; }
+        .fdc-filter-option:hover { color:#ec4899; }
+        .fdc-filter-rating { display:flex; align-items:center; gap:0.3rem; padding:0.3rem 0; font-size:0.85rem; cursor:pointer; }
+        .fdc-filter-rating:hover { color:#ec4899; }
+        .fdc-filter-select { width:100%; padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.85rem; background:var(--bg-white); }
+        .fdc-clear-btn { width:100%; padding:0.5rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-white); cursor:pointer; font-size:0.82rem; color:var(--text-light); transition:all 0.2s; }
+        .fdc-clear-btn:hover { border-color:#ec4899; color:#ec4899; }
+
+        /* Toolbar */
+        .fdc-toolbar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; }
+        .fdc-result-count { font-size:0.9rem; color:var(--text-light); }
+        .fdc-sort { display:flex; align-items:center; gap:0.5rem; }
+        .fdc-sort label { font-size:0.82rem; color:var(--text-light); white-space:nowrap; }
+        .fdc-sort select { padding:0.4rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.82rem; }
+        .fdc-view-toggle { display:flex; background:var(--bg-light); border-radius:6px; padding:0.15rem; }
+        .fdc-view-btn { padding:0.35rem 0.6rem; border:none; background:none; border-radius:4px; cursor:pointer; font-size:0.85rem; color:var(--text-light); }
+        .fdc-view-btn.active { background:var(--bg-white); color:var(--text-main); box-shadow:var(--shadow-xs); }
+
+        /* Skills */
+        .fdc-skills { display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+        .fdc-skill { padding:0.35rem 0.7rem; border:1px solid var(--border-color); border-radius:50px; font-size:0.78rem; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; }
+        .fdc-skill:hover, .fdc-skill.active { border-color:#ec4899; color:#ec4899; background:#fdf2f8; }
+
+        /* Course Grid */
+        .fdc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.25rem; }
+        .fdc-grid.list-view { grid-template-columns:1fr; }
+        .fdc-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; overflow:hidden; transition:all 0.3s; text-decoration:none; color:inherit; display:flex; flex-direction:column; position:relative; }
+        .fdc-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); }
+        .fdc-card-img { height:170px; overflow:hidden; position:relative; }
+        .fdc-card-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .fdc-card:hover .fdc-card-img img { transform:scale(1.05); }
+        .fdc-card-badge { position:absolute; top:0.75rem; left:0.75rem; padding:0.2rem 0.5rem; border-radius:5px; font-size:0.68rem; font-weight:600; }
+        .fdc-card-save { position:absolute; top:0.75rem; right:0.75rem; width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.9); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.9rem; color:var(--text-light); transition:all 0.2s; }
+        .fdc-card-save:hover, .fdc-card-save.saved { color:#ec4899; }
+        .fdc-card-hover { position:absolute; inset:0; background:rgba(0,0,0,0.6); display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s; padding:1rem; }
+        .fdc-card:hover .fdc-card-hover { opacity:1; }
+        .fdc-card-hover p { color:white; font-size:0.82rem; text-align:center; margin-bottom:0.75rem; line-height:1.5; }
+        .fdc-card-body { padding:1.25rem; flex:1; display:flex; flex-direction:column; }
+        .fdc-card-category { font-size:0.68rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:#ec4899; margin-bottom:0.3rem; }
+        .fdc-card-title { font-size:1rem; font-weight:600; margin-bottom:0.4rem; line-height:1.3; }
+        .fdc-card-instructor { display:flex; align-items:center; gap:0.4rem; font-size:0.8rem; color:var(--text-light); margin-bottom:0.4rem; }
+        .fdc-card-instructor-avatar { width:22px; height:22px; border-radius:50%; background:#fce7f3; display:flex; align-items:center; justify-content:center; font-size:0.55rem; color:#ec4899; }
+        .fdc-card-rating { display:flex; align-items:center; gap:0.3rem; font-size:0.82rem; margin-bottom:0.4rem; }
+        .fdc-card-rating .stars { color:#f59e0b; }
+        .fdc-card-rating .count { color:var(--text-muted); }
+        .fdc-card-meta { display:flex; gap:0.6rem; font-size:0.75rem; color:var(--text-light); margin-bottom:0.5rem; flex-wrap:wrap; }
+        .fdc-card-meta span { display:flex; align-items:center; gap:0.2rem; }
+        .fdc-card-skills { display:flex; gap:0.3rem; flex-wrap:wrap; margin-top:auto; margin-bottom:0.5rem; }
+        .fdc-card-skill { font-size:0.68rem; padding:0.15rem 0.45rem; background:var(--bg-light); border-radius:4px; color:var(--text-muted); }
+        .fdc-card-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid var(--border-light); }
+        .fdc-card-price { font-weight:700; font-size:1.05rem; color:#ec4899; }
+        .fdc-card-price.free { color:var(--accent-green); }
+        .fdc-card-enroll { padding:0.45rem 1rem; background:#ec4899; color:white; border:none; border-radius:8px; font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+        .fdc-card-enroll:hover { background:#be185d; }
+
+        /* Featured */
+        .fdc-featured { background:linear-gradient(135deg,#fdf2f8,#fce7f3); border-radius:16px; padding:2rem; margin-bottom:2rem; display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:center; }
+        .fdc-featured-badge { display:inline-flex; align-items:center; gap:0.3rem; background:#ec4899; color:white; padding:0.25rem 0.75rem; border-radius:50px; font-size:0.75rem; font-weight:600; margin-bottom:0.75rem; }
+        .fdc-featured h2 { font-size:1.5rem; margin-bottom:0.5rem; }
+        .fdc-featured p { color:var(--text-light); margin-bottom:1rem; line-height:1.6; }
+        .fdc-featured-img { border-radius:12px; overflow:hidden; }
+        .fdc-featured-img img { width:100%; height:280px; object-fit:cover; }
+
+        /* Learning Path */
+        .fdc-path { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem; }
+        .fdc-path h3 { font-size:1rem; margin-bottom:1rem; }
+        .fdc-path-steps { display:flex; align-items:center; gap:0; }
+        .fdc-path-step { flex:1; text-align:center; padding:0.75rem; background:var(--bg-light); border-radius:8px; font-size:0.82rem; font-weight:500; cursor:pointer; transition:all 0.2s; }
+        .fdc-path-step:hover { background:#fdf2f8; color:#ec4899; }
+        .fdc-path-arrow { font-size:1.2rem; color:var(--text-muted); flex-shrink:0; padding:0 0.25rem; }
+
+        /* Pagination */
+        .fdc-pagination { display:flex; justify-content:center; gap:0.25rem; margin-top:1.5rem; }
+        .fdc-page-btn { padding:0.4rem 0.75rem; border:1px solid var(--border-color); border-radius:6px; font-size:0.85rem; cursor:pointer; background:var(--bg-white); }
+        .fdc-page-btn.active { background:#ec4899; color:white; border-color:#ec4899; }
+
+        /* Mobile Filter */
+        .fdc-mobile-filter { display:none; }
+        .fdc-filter-drawer { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; display:none; }
+        .fdc-filter-drawer.open { display:block; }
+        .fdc-filter-panel { position:absolute; bottom:0; left:0; right:0; background:var(--bg-white); border-radius:16px 16px 0 0; max-height:85vh; overflow-y:auto; padding:1.5rem; }
+
+        @media(max-width:900px) {
+            .fdc-layout { grid-template-columns:1fr; }
+            .fdc-sidebar { display:none; }
+            .fdc-mobile-filter { display:inline-flex; }
+            .fdc-featured { grid-template-columns:1fr; }
+            .fdc-stats { grid-template-columns:repeat(2,1fr); }
+        }
+        @media(max-width:640px) {
+            .fdc-grid { grid-template-columns:1fr; }
+            .fdc-path-steps { flex-direction:column; }
+            .fdc-path-arrow { transform:rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="fdc-hero">
+        <div class="container">
+            <nav style="font-size:0.85rem;margin-bottom:1rem;color:rgba(255,255,255,0.6);">
+                <a href="learning.html" style="color:rgba(255,255,255,0.6);text-decoration:none;">Learning</a>
+                <span style="margin:0 0.5rem;">/</span>
+                <a href="floral-design.html" style="color:rgba(255,255,255,0.6);text-decoration:none;">Floral Design</a>
+                <span style="margin:0 0.5rem;">/</span>
+                <span style="color:white;">Courses</span>
+            </nav>
+            <h1>Floral Design Courses</h1>
+            <p>Learn bouquet design, event decoration, wedding floristry, and professional floral techniques from experienced instructors.</p>
+            <div class="fdc-hero-btns">
+                <a href="#courses" class="btn btn-white-pink"><i class="bi bi-collection-play"></i> Browse Courses</a>
+                <a href="#path" class="btn btn-outline-white"><i class="bi bi-diagram-3"></i> Learning Path</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="container">
+        <div class="fdc-stats">
+            <div class="fdc-stat"><div class="fdc-stat-value" id="statCourses">0</div><div class="fdc-stat-label">Courses</div></div>
+            <div class="fdc-stat"><div class="fdc-stat-value" id="statStudents">0</div><div class="fdc-stat-label">Students</div></div>
+            <div class="fdc-stat"><div class="fdc-stat-value" id="statRating">0</div><div class="fdc-stat-label">Avg Rating</div></div>
+            <div class="fdc-stat"><div class="fdc-stat-value">✓</div><div class="fdc-stat-label">Certificates</div></div>
+        </div>
+    </div>
+
+    <section class="section-padding" style="padding-top:0;" id="courses">
+        <div class="container">
+            <!-- Search -->
+            <div class="fdc-search">
+                <input type="text" id="searchInput" placeholder="Search floral design courses..." onkeydown="if(event.key==='Enter')applyFilters()">
+                <button class="btn btn-primary" style="background:#ec4899;" onclick="applyFilters()"><i class="bi bi-search"></i></button>
+                <button class="btn btn-outline fdc-mobile-filter" onclick="openFilters()"><i class="bi bi-funnel"></i> Filters</button>
+            </div>
+
+            <!-- Popular Skills -->
+            <div class="fdc-skills" id="skillsTags"></div>
+
+            <!-- Featured Course -->
+            <div class="fdc-featured" id="featuredSection" style="display:none;"></div>
+
+            <!-- Learning Path -->
+            <div class="fdc-path" id="path">
+                <h3><i class="bi bi-diagram-3" style="color:#ec4899;"></i> Learning Path</h3>
+                <div class="fdc-path-steps">
+                    <div class="fdc-path-step" onclick="filterByLevel('Beginner')">🌱 Beginner</div>
+                    <div class="fdc-path-arrow">→</div>
+                    <div class="fdc-path-step" onclick="filterByLevel('Intermediate')">🌿 Intermediate</div>
+                    <div class="fdc-path-arrow">→</div>
+                    <div class="fdc-path-step" onclick="filterByLevel('Advanced')">🌳 Advanced</div>
+                    <div class="fdc-path-arrow">→</div>
+                    <div class="fdc-path-step" onclick="filterByLevel('Professional')">🏆 Professional</div>
+                </div>
+            </div>
+
+            <!-- Layout -->
+            <div class="fdc-layout">
+                <!-- Sidebar -->
+                <aside class="fdc-sidebar" id="sidebarFilters">
+                    <div class="fdc-filter-card">
+                        <h4><i class="bi bi-bar-chart"></i> Difficulty</h4>
+                        <label class="fdc-filter-option"><input type="checkbox" value="Beginner" onchange="applyFilters()"> Beginner</label>
+                        <label class="fdc-filter-option"><input type="checkbox" value="Intermediate" onchange="applyFilters()"> Intermediate</label>
+                        <label class="fdc-filter-option"><input type="checkbox" value="Advanced" onchange="applyFilters()"> Advanced</label>
+                        <label class="fdc-filter-option"><input type="checkbox" value="Professional" onchange="applyFilters()"> Professional</label>
+                    </div>
+                    <div class="fdc-filter-card">
+                        <h4><i class="bi bi-clock"></i> Duration</h4>
+                        <label class="fdc-filter-option"><input type="checkbox" data-filter="duration" value="short" onchange="applyFilters()"> Under 2 Hours</label>
+                        <label class="fdc-filter-option"><input type="checkbox" data-filter="duration" value="medium" onchange="applyFilters()"> 2–5 Hours</label>
+                        <label class="fdc-filter-option"><input type="checkbox" data-filter="duration" value="long" onchange="applyFilters()"> 5–10 Hours</label>
+                        <label class="fdc-filter-option"><input type="checkbox" data-filter="duration" value="extended" onchange="applyFilters()"> 10+ Hours</label>
+                    </div>
+                    <div class="fdc-filter-card">
+                        <h4><i class="bi bi-tag"></i> Price</h4>
+                        <label class="fdc-filter-option"><input type="radio" name="price" value="all" checked onchange="applyFilters()"> All</label>
+                        <label class="fdc-filter-option"><input type="radio" name="price" value="free" onchange="applyFilters()"> Free</label>
+                        <label class="fdc-filter-option"><input type="radio" name="price" value="paid" onchange="applyFilters()"> Paid</label>
+                    </div>
+                    <div class="fdc-filter-card">
+                        <h4><i class="bi bi-award"></i> Certificate</h4>
+                        <label class="fdc-filter-option"><input type="checkbox" value="certificate" onchange="applyFilters()"> Certificate Available</label>
+                    </div>
+                    <div class="fdc-filter-card">
+                        <h4><i class="bi bi-star"></i> Rating</h4>
+                        <div class="fdc-filter-rating" onclick="filterByRating(4.5)"><span style="color:#f59e0b;">★★★★★</span> 4.5+</div>
+                        <div class="fdc-filter-rating" onclick="filterByRating(4)"><span style="color:#f59e0b;">★★★★</span><span style="color:var(--border-color);">★</span> 4.0+</div>
+                        <div class="fdc-filter-rating" onclick="filterByRating(3)"><span style="color:#f59e0b;">★★★</span><span style="color:var(--border-color);">★★</span> 3.0+</div>
+                    </div>
+                    <div class="fdc-filter-card">
+                        <h4><i class="bi bi-person"></i> Instructor</h4>
+                        <select class="fdc-filter-select" id="instructorFilter" onchange="applyFilters()">
+                            <option value="">All Instructors</option>
+                        </select>
+                    </div>
+                    <button class="fdc-clear-btn" onclick="clearAllFilters()"><i class="bi bi-x-circle"></i> Clear All Filters</button>
+                </aside>
+
+                <!-- Main Content -->
+                <div>
+                    <div class="fdc-toolbar">
+                        <span class="fdc-result-count" id="resultCount"></span>
+                        <div style="display:flex;gap:0.75rem;align-items:center;">
+                            <div class="fdc-view-toggle">
+                                <button class="fdc-view-btn active" onclick="setView('grid',this)"><i class="bi bi-grid-3x3-gap"></i></button>
+                                <button class="fdc-view-btn" onclick="setView('list',this)"><i class="bi bi-list"></i></button>
+                            </div>
+                            <div class="fdc-sort">
+                                <label>Sort:</label>
+                                <select id="sortSelect" onchange="applyFilters()">
+                                    <option value="popular">Most Popular</option>
+                                    <option value="rating">Highest Rated</option>
+                                    <option value="newest">Newest</option>
+                                    <option value="price_asc">Price: Low to High</option>
+                                    <option value="price_desc">Price: High to Low</option>
+                                    <option value="duration">Shortest Duration</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fdc-grid" id="courseGrid"></div>
+                    <div class="fdc-pagination" id="pagination"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile Filter Drawer -->
+    <div class="fdc-filter-drawer" id="filterDrawer" onclick="closeFilters()">
+        <div class="fdc-filter-panel" onclick="event.stopPropagation()">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <h3 style="margin:0;">Filters</h3>
+                <button onclick="closeFilters()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">×</button>
+            </div>
+            <div id="mobileFilters"></div>
+            <button class="btn btn-primary" style="background:#ec4899;width:100%;margin-top:1rem;" onclick="applyFilters();closeFilters();">Apply Filters</button>
+        </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        let allCourses = [];
+        let filtered = [];
+        let currentPage = 1;
+        const perPage = 12;
+        let minRating = 0;
+        let selectedLevel = '';
+        let currentView = 'grid';
+
+        const SKILLS = ['Bouquet Design', 'Color Theory', 'Wedding Flowers', 'Event Decoration', 'Table Centerpieces', 'Hand-Tied Bouquets', 'Floral Wiring', 'Foam Techniques'];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSkills();
+            loadCourses();
+        });
+
+        function renderSkills() {
+            document.getElementById('skillsTags').innerHTML = SKILLS.map(s =>
+                `<button class="fdc-skill" onclick="toggleSkill(this,'${s}')">${s}</button>`
+            ).join('');
+        }
+
+        function toggleSkill(el, skill) {
+            el.classList.toggle('active');
+            applyFilters();
+        }
+
+        async function loadCourses() {
+            try {
+                const res = await fetch('/api/courses?category=floral-design&limit=50');
+                const data = await res.json();
+                allCourses = Array.isArray(data) ? data : (data.courses || []);
+            } catch { allCourses = []; }
+
+            // Stats
+            document.getElementById('statCourses').textContent = allCourses.length;
+            const totalStudents = allCourses.reduce((s, c) => s + (c.students || 0), 0);
+            document.getElementById('statStudents').textContent = totalStudents.toLocaleString();
+            const avgRating = allCourses.length ? (allCourses.reduce((s, c) => s + (c.rating || 0), 0) / allCourses.length).toFixed(1) : '0';
+            document.getElementById('statRating').textContent = avgRating + '★';
+
+            // Populate instructor filter
+            const instructors = [...new Set(allCourses.map(c => c.instructor).filter(Boolean))];
+            const sel = document.getElementById('instructorFilter');
+            instructors.forEach(i => { const o = document.createElement('option'); o.value = i; o.textContent = i; sel.appendChild(o); });
+
+            // Featured
+            const featured = allCourses.find(c => c.is_featured || c.rating >= 4.8) || allCourses[0];
+            if (featured) renderFeatured(featured);
+
+            filtered = [...allCourses];
+            renderCourses();
+        }
+
+        function renderFeatured(c) {
+            const el = document.getElementById('featuredSection');
+            el.style.display = 'grid';
+            el.innerHTML = `
+                <div>
+                    <div class="fdc-featured-badge"><i class="bi bi-star-fill"></i> Featured Course</div>
+                    <h2>${c.title}</h2>
+                    <p>${(c.description || '').slice(0, 200)}</p>
+                    <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
+                        <span style="color:#f59e0b;">${'★'.repeat(Math.round(c.rating || 0))}${'☆'.repeat(5 - Math.round(c.rating || 0))} ${c.rating || 0}</span>
+                        <span style="font-size:0.85rem;color:var(--text-light);">${c.students || 0} students</span>
+                        <span style="font-size:0.85rem;color:var(--text-light);">${c.duration || ''}</span>
+                    </div>
+                    <div style="display:flex;gap:0.75rem;">
+                        <a href="course-detail.html?id=${c.id}" class="btn" style="background:#ec4899;color:white;">Enroll Now</a>
+                        <a href="course-detail.html?id=${c.id}" class="btn btn-outline">Learn More</a>
+                    </div>
+                </div>
+                <div class="fdc-featured-img">
+                    <img src="${c.thumbnail || c.thumbnail_url || 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=600&auto=format&fit=crop'}" alt="${c.title}">
+                </div>
+            `;
+        }
+
+        function applyFilters() {
+            const q = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+            const sort = document.getElementById('sortSelect')?.value || 'popular';
+            const priceFilter = document.querySelector('input[name="price"]:checked')?.value || 'all';
+            const levels = [...document.querySelectorAll('.fdc-sidebar input[type="checkbox"]:not([data-filter])')].filter(i => i.checked).map(i => i.value);
+            const certificate = document.querySelector('.fdc-sidebar input[value="certificate"]')?.checked;
+            const instructor = document.getElementById('instructorFilter')?.value || '';
+            const activeSkills = [...document.querySelectorAll('.fdc-skill.active')].map(s => s.textContent);
+
+            filtered = allCourses.filter(c => {
+                if (q && !`${c.title} ${c.description} ${c.instructor}`.toLowerCase().includes(q)) return false;
+                if (levels.length && !levels.includes(c.level)) return false;
+                if (priceFilter === 'free' && !c.is_free && c.price > 0) return false;
+                if (priceFilter === 'paid' && (c.is_free || !c.price)) return false;
+                if (certificate && !c.certificate_available) return false;
+                if (minRating && (c.rating || 0) < minRating) return false;
+                if (instructor && c.instructor !== instructor) return false;
+                if (activeSkills.length && !(c.skills || []).some(s => activeSkills.includes(s))) return false;
+                return true;
+            });
+
+            // Sort
+            if (sort === 'popular') filtered.sort((a, b) => (b.students || 0) - (a.students || 0));
+            else if (sort === 'rating') filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            else if (sort === 'newest') filtered.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+            else if (sort === 'price_asc') filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
+            else if (sort === 'price_desc') filtered.sort((a, b) => (b.price || 0) - (a.price || 0));
+
+            currentPage = 1;
+            renderCourses();
+        }
+
+        function renderCourses() {
+            const grid = document.getElementById('courseGrid');
+            const start = (currentPage - 1) * perPage;
+            const pageItems = filtered.slice(start, start + perPage);
+
+            document.getElementById('resultCount').textContent = `${filtered.length} course${filtered.length !== 1 ? 's' : ''} found`;
+
+            if (!pageItems.length) {
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-light);"><i class="bi bi-search" style="font-size:2.5rem;display:block;margin-bottom:0.75rem;opacity:0.4;"></i><p>No courses match your filters.</p><button class="btn btn-outline btn-sm" onclick="clearAllFilters()" style="margin-top:0.5rem;">Clear Filters</button></div>';
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+
+            grid.innerHTML = pageItems.map(c => {
+                const skills = c.skills || [];
+                return `
+                <a href="course-detail.html?id=${c.id}" class="fdc-card">
+                    <div class="fdc-card-img">
+                        <img src="${c.thumbnail || c.thumbnail_url || 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=400&auto=format&fit=crop'}" alt="${c.title}" loading="lazy">
+                        ${c.level ? `<span class="fdc-card-badge" style="background:#ec4899;color:white;">${c.level}</span>` : ''}
+                        ${c.is_free ? '<span class="fdc-card-badge" style="background:#059669;color:white;right:3rem;left:auto;">Free</span>' : ''}
+                        <button class="fdc-card-save" onclick="event.preventDefault();event.stopPropagation();" title="Save"><i class="bi bi-heart"></i></button>
+                        <div class="fdc-card-hover">
+                            <p>${(c.description || '').slice(0, 120)}...</p>
+                            <span class="btn btn-sm" style="background:white;color:#ec4899;">Preview Course</span>
+                        </div>
+                    </div>
+                    <div class="fdc-card-body">
+                        <div class="fdc-card-category">${c.category || 'Floral Design'}</div>
+                        <div class="fdc-card-title">${c.title}</div>
+                        <div class="fdc-card-instructor">
+                            <div class="fdc-card-instructor-avatar">${(c.instructor || 'I').charAt(0)}</div>
+                            ${c.instructor || 'Expert Instructor'}
+                        </div>
+                        <div class="fdc-card-rating">
+                            <span class="stars">${'★'.repeat(Math.round(c.rating || 0))}${'☆'.repeat(5 - Math.round(c.rating || 0))}</span>
+                            <span>${(c.rating || 0).toFixed(1)}</span>
+                            <span class="count">(${c.students || 0})</span>
+                        </div>
+                        <div class="fdc-card-meta">
+                            ${c.duration ? `<span><i class="bi bi-clock"></i> ${c.duration}</span>` : ''}
+                            ${c.lessons ? `<span><i class="bi bi-collection-play"></i> ${c.lessons} lessons</span>` : ''}
+                            ${c.certificate_available ? '<span><i class="bi bi-award"></i> Certificate</span>' : ''}
+                        </div>
+                        ${skills.length ? `<div class="fdc-card-skills">${skills.slice(0, 3).map(s => `<span class="fdc-card-skill">${s}</span>`).join('')}</div>` : ''}
+                        <div class="fdc-card-footer">
+                            <span class="fdc-card-price ${c.is_free || !c.price ? 'free' : ''}">${c.is_free || !c.price ? 'Free' : (c.currency || 'GHS') + ' ' + c.price}</span>
+                            <span class="fdc-card-enroll">Enroll Now</span>
+                        </div>
+                    </div>
+                </a>`;
+            }).join('');
+
+            // Pagination
+            const totalPages = Math.ceil(filtered.length / perPage);
+            const pag = document.getElementById('pagination');
+            if (totalPages <= 1) { pag.innerHTML = ''; return; }
+            let html = '';
+            if (currentPage > 1) html += `<button class="fdc-page-btn" onclick="goPage(${currentPage - 1})">←</button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="fdc-page-btn${i === currentPage ? ' active' : ''}" onclick="goPage(${i})">${i}</button>`;
+            }
+            if (currentPage < totalPages) html += `<button class="fdc-page-btn" onclick="goPage(${currentPage + 1})">→</button>`;
+            pag.innerHTML = html;
+        }
+
+        function goPage(p) { currentPage = p; renderCourses(); window.scrollTo({ top: 300, behavior: 'smooth' }); }
+
+        function filterByLevel(level) {
+            document.querySelectorAll('.fdc-sidebar input[type="checkbox"]:not([data-filter])').forEach(i => { i.checked = i.value === level; });
+            applyFilters();
+        }
+
+        function filterByRating(r) { minRating = r; applyFilters(); }
+
+        function setView(view, el) {
+            currentView = view;
+            document.querySelectorAll('.fdc-view-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('courseGrid').classList.toggle('list-view', view === 'list');
+        }
+
+        function clearAllFilters() {
+            document.getElementById('searchInput').value = '';
+            document.querySelectorAll('.fdc-sidebar input[type="checkbox"]').forEach(i => i.checked = false);
+            document.querySelector('input[name="price"][value="all"]').checked = true;
+            document.getElementById('instructorFilter').value = '';
+            document.querySelectorAll('.fdc-skill').forEach(s => s.classList.remove('active'));
+            minRating = 0;
+            selectedLevel = '';
+            applyFilters();
+        }
+
+        function openFilters() {
+            const drawer = document.getElementById('filterDrawer');
+            document.getElementById('mobileFilters').innerHTML = document.getElementById('sidebarFilters').innerHTML;
+            drawer.classList.add('open');
+        }
+
+        function closeFilters() { document.getElementById('filterDrawer').classList.remove('open'); }
+    </script>
+</body>
+</html>
