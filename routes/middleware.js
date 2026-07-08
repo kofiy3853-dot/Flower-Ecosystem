@@ -120,6 +120,9 @@ async function loadBlacklistFromDb() {
 // Hydrate on startup (non-blocking)
 loadBlacklistFromDb();
 
+// Periodic refresh every 5 minutes to catch blacklists from other processes
+setInterval(() => loadBlacklistFromDb(), 5 * 60 * 1000);
+
 async function blacklistUserTokens(userId) {
     try {
         const userHash = crypto.createHash('sha256').update(`user:${userId}`).digest('hex');
@@ -300,14 +303,6 @@ async function requireAuth(req, res, next) {
         if (blacklistedTokens.has(userHash)) {
             return res.status(401).json({ error: 'Token has been revoked' });
         }
-        // DB fallback for user-level blacklist after restart
-        try {
-            const r = await pool.query('SELECT 1 FROM auth.token_blacklist WHERE user_id = $1 AND token_hash = $2 AND expires_at > CURRENT_TIMESTAMP', [decoded.id, userHash]);
-            if (r.rows.length) {
-                blacklistedTokens.add(userHash);
-                return res.status(401).json({ error: 'Token has been revoked' });
-            }
-        } catch {}
         next();
     } catch {
         res.status(401).json({ error: 'Invalid or expired token' });

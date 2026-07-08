@@ -420,22 +420,70 @@ router.post('/chat', express.json(), asyncHandler(async (req, res) => {
         return res.status(400).json({ error: 'messages array is required' });
     }
 
-    const systemPrompt = {
-        role: 'system',
-        content: `You are Flora, the friendly and knowledgeable AI assistant for Flower Ecosystem. 
+    try {
+        let productContext = '';
+        if (await dbAvailable()) {
+            try {
+                const productRes = await pool.query(`
+                    SELECT p.id, p.name, p.price, 
+                           (SELECT image_url FROM marketplace.product_images pi WHERE pi.product_id = p.id ORDER BY sort_order ASC LIMIT 1) as image_url 
+                    FROM marketplace.products p 
+                    WHERE p.is_active = true 
+                    LIMIT 20
+                `);
+                
+                if (productRes.rows.length > 0) {
+                    productContext = '\n\nHere is a list of our currently available marketplace products:\n';
+                    productRes.rows.forEach(p => {
+                        productContext += `- Name: ${p.name}, Price: $${p.price}, ID: ${p.id}, ImageURL: ${p.image_url || ''}\n`;
+                    });
+                    productContext += `\nIf the user asks for flower recommendations, arrangements, or wants to buy flowers, YOU MUST suggest products from this list. When suggesting a product, use the EXACT following HTML format so they can see the image and click the link:
+<div style="margin-top:8px; margin-bottom:12px; background:var(--bg-white); border:1px solid var(--border-color); border-radius:8px; padding:8px;">
+  <img src="[ImageURL]" style="width:100%; border-radius:4px; margin-bottom:8px; object-fit:cover; max-height:150px;" alt="[Name]" />
+  <p style="margin:0; font-size:0.95rem;"><strong><a href="product-detail.html?id=[ID]" style="color:var(--primary-color); text-decoration:none;">[Name]</a></strong> - $[Price]</p>
+</div>
+Do not use markdown links for these products, ONLY use this HTML snippet structure!`;
+                }
+            } catch (err) {
+                console.error('Failed to fetch products for chat context:', err.message);
+            }
+        }
+
+        const systemPrompt = {
+            role: 'system',
+            content: `You are Flora, the friendly and knowledgeable AI assistant for Flower Ecosystem. 
 You are an expert botanist, florist, and horticulturist. 
 Keep your answers concise, helpful, and friendly. 
-Format your responses using basic HTML tags (like <b>, <i>, <br>, <ul>, <li>, and <a>) for readability in our chat widget. 
-If asked about buying flowers, encourage users to check our marketplace. 
-If asked about care, give practical, concise advice.`
-    };
+Format your responses using basic HTML tags (like <b>, <i>, <br>, <ul>, <li>, and <a>) for readability in our chat widget.${productContext}
 
-    // Keep only the last 10 messages to save context limit and costs
-    const recentMessages = userMessages.slice(-10);
+**BROWSER NAVIGATION**:
+If the user explicitly asks you to "take me to", "go to", "navigate to", or "show me where to find" a specific flower, category, or page, you have the power to redirect their browser.
+To do this, you MUST output the exact string [NAVIGATE:url] at the very end of your message.
+Available routes:
+- marketplace.html (For shopping/buying general flowers)
+- learning.html (For care guides and learning)
+- my-garden.html (To view their garden)
+- profile.html (To view their profile)
+- product-detail.html?id=[ID] (To view a specific product from the list above)
 
-    try {
-        const content = await callOpenRouter([systemPrompt, ...recentMessages], 800);
-        res.json({ reply: content });
+Example:
+User: Take me to the marketplace!
+Flora: Taking you to the marketplace right now! [NAVIGATE:marketplace.html]`
+        };
+
+        // Keep only the last 10 messages to save context limit and costs
+        const recentMessages = userMessages.slice(-10);
+
+        let content = await callOpenRouter([systemPrompt, ...recentMessages], 800);
+        
+        let navigateTo = null;
+        const navMatch = content.match(/\[NAVIGATE:(.*?)\]/);
+        if (navMatch) {
+            navigateTo = navMatch[1].trim();
+            content = content.replace(/\[NAVIGATE:.*?\]/g, '').trim();
+        }
+
+        res.json({ reply: content, navigateTo });
     } catch (error) {
         console.error('AI chat error:', error.message);
         res.status(500).json({ error: 'Failed to communicate with AI. Please try again.' });

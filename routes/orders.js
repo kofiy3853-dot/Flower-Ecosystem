@@ -54,6 +54,7 @@ router.post('/', requireAuth, rateLimiter(10, 60000), asyncHandler(async (req, r
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
+        await client.query('SET TRANSACTION ISOLATION LEVEL SERIALIZABLE');
 
         for (const item of items.rows) {
             const stockUpdate = await client.query(
@@ -94,6 +95,9 @@ router.post('/', requireAuth, rateLimiter(10, 60000), asyncHandler(async (req, r
         res.status(201).json(order.rows[0]);
     } catch (err) {
         await client.query('ROLLBACK');
+        if (err.code === '40001') {
+            return res.status(409).json({ error: 'Order conflict — please retry' });
+        }
         throw err;
     } finally {
         client.release();

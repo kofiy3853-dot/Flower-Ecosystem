@@ -20,15 +20,19 @@ app.use(require('helmet')({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://unpkg.com"],
+            // 'unsafe-inline' kept for ~741 inline onclick handlers across HTML pages
+            // TODO: migrate inline handlers to addEventListener to remove 'unsafe-inline'
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://unpkg.com"],
             scriptSrcAttr: ["'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://unpkg.com"],
             fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://unpkg.com"],
-            imgSrc: ["'self'", "data:", "https:", "http:", "blob:"],
-            mediaSrc: ["'self'", "blob:", "https:", "http:", "data:"],
-            connectSrc: ["'self'", "https:", "http:"],
-            frameSrc: ["'self'", "https:"],
+            imgSrc: ["'self'", "data:", "https:", "blob:"],
+            mediaSrc: ["'self'", "blob:", "https:", "data:"],
+            connectSrc: ["'self'", "https:"],
+            frameSrc: ["'self'"],
             objectSrc: ["'none'"],
+            baseUri: ["'self'"],
+            formAction: ["'self'"],
         }
     },
     crossOriginEmbedderPolicy: false,

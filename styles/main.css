@@ -47,16 +47,16 @@
 }
 
 :root.dark-mode {
-    --text-main: #fdfdfa;
-    --text-light: #c6c7c4;
-    --text-muted: #8e8e8e;
-    --bg-main: #24191a;
-    --bg-main-rgb: 36, 25, 26;
-    --bg-white: #3a2d2f;
-    --bg-light: #3a2d2f;
-    --bg-dark: #1c1c1e;
-    --border-color: #564144;
-    --border-light: #400013;
+    --text-main: #ffffff;
+    --text-light: #d1d5db;
+    --text-muted: #9ca3af;
+    --bg-main: #0a0a0a;
+    --bg-main-rgb: 10, 10, 10;
+    --bg-white: #171717;
+    --bg-light: #171717;
+    --bg-dark: #000000;
+    --border-color: #262626;
+    --border-light: #1a1a1a;
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);

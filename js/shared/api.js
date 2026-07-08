@@ -102,6 +102,7 @@ async function apiFetch(url, fallbackKey) {
             const data = await res.json();
             return data;
         }
+        console.warn('API fallback:', url, res.status);
     } catch (_) { }
     try {
         const res = await fetch(`data/${fallbackKey}.json`);
@@ -111,7 +112,7 @@ async function apiFetch(url, fallbackKey) {
 }
 
 function apiFetchWithBody(url, method, body) {
-    const headers = { 
+    const headers = {
         'Content-Type': 'application/json',
         'X-Requested-With': 'XMLHttpRequest'
     };
@@ -119,7 +120,13 @@ function apiFetchWithBody(url, method, body) {
     if (token) headers['Authorization'] = 'Bearer ' + token;
     return fetch(url, { method, headers, body: body ? JSON.stringify(body) : undefined })
         .then(async res => {
-            const data = await res.json();
+            let data;
+            try {
+                data = await res.json();
+            } catch {
+                const text = await res.text().catch(() => '');
+                throw new Error(text.slice(0, 200) || `Request failed (${res.status})`);
+            }
             if (!res.ok) throw new Error(data.error || 'Request failed');
             return data;
         });

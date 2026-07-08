@@ -113,6 +113,12 @@ function aiSendMsg() {
         } else {
             conversationHistory.push({ role: 'assistant', content: data.reply });
             aiAddMsg(data.reply, 'bot');
+            
+            if (data.navigateTo) {
+                setTimeout(() => {
+                    window.location.href = data.navigateTo;
+                }, 1500);
+            }
         }
     })
     .catch(err => {
