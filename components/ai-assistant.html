@@ -30,8 +30,25 @@
             </div>
         </div>
 
-        <!-- Quick actions -->
-        <div style="padding:0.5rem 1rem;display:flex;gap:0.4rem;flex-wrap:wrap;border-top:1px solid var(--border-light);">
+        <!-- Emotion picker -->
+        <div id="aiEmotionRow" style="padding:0.5rem 1rem 0.25rem;border-top:1px solid var(--border-light);">
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.3rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">How are you feeling?</div>
+            <div style="display:flex;gap:0.3rem;flex-wrap:wrap;">
+                <button class="ai-emotion-btn" data-emotion="sad"       data-msg="I'm feeling sad and could use some comfort. What flowers would help?" title="Sad">😢</button>
+                <button class="ai-emotion-btn" data-emotion="happy"     data-msg="I'm feeling really happy and joyful today! What flowers match my mood?" title="Happy">😊</button>
+                <button class="ai-emotion-btn" data-emotion="love"      data-msg="I'm feeling romantic and in love. What flowers should I get?" title="In Love">😍</button>
+                <button class="ai-emotion-btn" data-emotion="heartbreak" data-msg="I'm going through heartbreak and need something to lift my spirits." title="Heartbroken">💔</button>
+                <button class="ai-emotion-btn" data-emotion="stressed"  data-msg="I'm feeling very stressed and anxious. What flowers can help me relax?" title="Stressed">😰</button>
+                <button class="ai-emotion-btn" data-emotion="celebrate" data-msg="I'm celebrating something special! What flowers fit a celebration?" title="Celebrating">🎉</button>
+                <button class="ai-emotion-btn" data-emotion="grateful"  data-msg="I'm feeling grateful and want to express my appreciation with flowers." title="Grateful">🙏</button>
+                <button class="ai-emotion-btn" data-emotion="tired"     data-msg="I'm feeling burned out and tired. What calming flowers do you recommend?" title="Tired">😴</button>
+                <button class="ai-emotion-btn" data-emotion="hopeful"   data-msg="I'm starting fresh and feeling hopeful. What flowers represent new beginnings?" title="Hopeful">🌱</button>
+                <button class="ai-emotion-btn" data-emotion="missing"   data-msg="I'm missing someone dear to me. What flowers can I send them?" title="Missing someone">🕊️</button>
+            </div>
+        </div>
+
+        <!-- Quick topic actions -->
+        <div style="padding:0.3rem 1rem 0.5rem;display:flex;gap:0.4rem;flex-wrap:wrap;">
             <button class="ai-quick-btn" data-msg="What flowers are best for weddings?">Wedding flowers</button>
             <button class="ai-quick-btn" data-msg="How do I care for roses?">Rose care</button>
             <button class="ai-quick-btn" data-msg="Suggest a birthday arrangement">Birthday ideas</button>
@@ -59,7 +76,10 @@
 @keyframes aiT{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
 .ai-quick-btn{padding:0.35rem 0.6rem;border:1px solid var(--border-color);border-radius:16px;background:var(--bg-white);font-size:0.75rem;cursor:pointer;color:var(--text-main);white-space:nowrap}
 .ai-quick-btn:hover{border-color:var(--primary-color);color:var(--primary-color)}
-@media(max-width:480px){#aiChatWindow{width:calc(100vw - 32px);right:-12px;height:70vh}}
+.ai-emotion-btn{font-size:1.25rem;padding:0.25rem 0.35rem;border:2px solid transparent;border-radius:10px;background:transparent;cursor:pointer;transition:all 0.18s;line-height:1;}
+.ai-emotion-btn:hover{background:var(--bg-light);border-color:var(--border-color);transform:scale(1.2);}
+.ai-emotion-btn.active{background:var(--primary-light,#fce7f3);border-color:var(--primary-color);transform:scale(1.15);}
+@media(max-width:480px){#aiChatWindow{width:calc(100vw - 32px);right:-12px;height:75vh}}
 
 /* Mic recording pulse */
 #aiMicBtn.recording {
@@ -287,11 +307,25 @@ function initAIAssistant() {
         };
     }
 
-    // Quick action buttons
+    // Quick topic buttons
     document.querySelectorAll('.ai-quick-btn').forEach(function(btn) {
         btn.onclick = function() {
             if (input) input.value = btn.dataset.msg;
             aiSendMsg();
+        };
+    });
+
+    // Emotion buttons
+    document.querySelectorAll('.ai-emotion-btn').forEach(function(btn) {
+        btn.onclick = function() {
+            // Highlight selected emotion
+            document.querySelectorAll('.ai-emotion-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            // Put message in input and send
+            if (input) input.value = btn.dataset.msg;
+            aiSendMsg();
+            // Remove highlight after a moment
+            setTimeout(() => btn.classList.remove('active'), 2000);
         };
     });
 }
