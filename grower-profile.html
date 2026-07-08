@@ -264,6 +264,7 @@
     <script src="js/shared/cart.js?v=3.0"></script>
     <script>
         let growerId = '';
+        let farmData = null;
 
         function switchTab(tab) {
             document.querySelectorAll('.gp-tab').forEach(t => t.classList.remove('active'));
@@ -273,10 +274,14 @@
         }
 
         function renderStars(r) {
-            const f = Math.floor(r);
+            const f = Math.floor(Number(r) || 0);
             let s = '';
             for (let i = 0; i < f; i++) s += '<i class="bi bi-star-fill"></i>';
             for (let i = f; i < 5; i++) s += '<i class="bi bi-star"></i>';
+            return s;
+        }
+
+        function getToken() { return localStorage.getItem('flower-token'); }
             return s;
         }
 
@@ -286,74 +291,77 @@
             if (!id) { window.location.href = 'growers.html'; return; }
             growerId = id;
 
-            const floristsData = await api.fetchFlorists();
-            const growers = (Array.isArray(floristsData) ? floristsData : (floristsData?.florists || [])).map((f, i) => ({
-                ...f,
-                location: ['Eastern Region', 'Ashanti Region', 'Greater Accra', 'Central Region'][i % 4],
-                rating: (4 + Math.random()).toFixed(1),
-                reviews: Math.floor(Math.random() * 100) + 10,
-                products: f.products || Math.floor(Math.random() * 30) + 5,
-                verified: true,
-                img: f.image || `https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=400&auto=format&fit=crop`
-            }));
+            // Fetch farm data from API
+            try {
+                const res = await fetch('/api/grower/farms/' + id);
+                if (!res.ok) throw new Error('Not found');
+                farmData = await res.json();
+            } catch {
+                // Fallback to florists API
+                try {
+                    const floristsData = await api.fetchFlorists();
+                    const growers = Array.isArray(floristsData) ? floristsData : (floristsData?.florists || []);
+                    farmData = growers.find(x => x.id === id);
+                } catch {}
+            }
 
-            const g = growers.find(x => x.id === id);
-            if (!g) {
-                document.getElementById('gpName').textContent = 'Grower Not Found';
+            if (!farmData) {
+                document.getElementById('gpName').textContent = 'Farm Not Found';
+                document.getElementById('gpDesc').textContent = 'This farm profile could not be loaded.';
                 return;
             }
 
+            const g = farmData;
+            const specialties = g.specialties || [];
+            const avgRating = Number(g.avg_rating || g.rating) || 0;
+            const reviewCount = g.review_count || 0;
+
             // Banner
-            document.getElementById('gpBannerImg').src = g.img || 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=1200&auto=format&fit=crop';
+            document.getElementById('gpBannerImg').src = g.cover_image || g.img || 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=1200&auto=format&fit=crop';
 
             // Avatar
             const avatar = document.getElementById('gpAvatar');
-            if (g.image) {
-                avatar.src = g.image;
+            if (g.logo_url || g.image) {
+                avatar.src = g.logo_url || g.image;
             } else {
                 avatar.outerHTML = '<div class="gp-avatar-placeholder">🌱</div>';
             }
 
             // Name & Info
-            document.title = `${g.name} — Grower Profile`;
-            document.getElementById('gpName').textContent = g.name;
-            document.getElementById('gpDesc').textContent = g.description || 'We are a trusted flower farm growing premium roses, sunflowers, and exotic blooms for florists and wholesalers across Ghana.';
-            document.getElementById('gpVerified').style.display = 'inline-flex';
+            document.title = `${g.farm_name || g.name || 'Farm'} — Flower Farm Profile`;
+            document.getElementById('gpName').textContent = g.farm_name || g.name || 'Farm';
+            document.getElementById('gpDesc').textContent = g.description || 'A trusted flower farm growing premium blooms.';
+            if (g.is_verified || g.verified) document.getElementById('gpVerified').style.display = 'inline-flex';
 
             // Meta
             document.getElementById('gpMeta').innerHTML = `
-                <span><i class="bi bi-geo-alt"></i> ${g.location}</span>
-                <span><i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${g.rating} (${g.reviews} reviews)</span>
-                <span><i class="bi bi-flower1"></i> ${g.products} Varieties</span>
-                <span><i class="bi bi-clock"></i> ${Math.floor(Math.random() * 20) + 5} Years Operating</span>
+                <span><i class="bi bi-geo-alt"></i> ${g.location || 'Location not set'}</span>
+                <span><i class="bi bi-star-fill" style="color:#f59e0b;"></i> ${avgRating.toFixed(1)} (${reviewCount} reviews)</span>
+                ${specialties.length ? `<span><i class="bi bi-flower1"></i> ${specialties.slice(0, 3).join(', ')}</span>` : ''}
+                ${g.years_in_operation ? `<span><i class="bi bi-clock"></i> ${g.years_in_operation}+ Years</span>` : ''}
             `;
 
             // Stats
             document.getElementById('gpStats').innerHTML = `
-                <div class="gp-stat"><div class="gp-stat-value">${g.products}</div><div class="gp-stat-label">Varieties</div></div>
-                <div class="gp-stat"><div class="gp-stat-value">${g.reviews}</div><div class="gp-stat-label">Reviews</div></div>
-                <div class="gp-stat"><div class="gp-stat-value">${g.rating}</div><div class="gp-stat-label">Rating</div></div>
-                <div class="gp-stat"><div class="gp-stat-value">${Math.floor(Math.random() * 500) + 100}</div><div class="gp-stat-label">Orders Fulfilled</div></div>
+                <div class="gp-stat"><div class="gp-stat-value">${g.total_sales || specialties.length || 0}</div><div class="gp-stat-label">Products</div></div>
+                <div class="gp-stat"><div class="gp-stat-value">${reviewCount}</div><div class="gp-stat-label">Reviews</div></div>
+                <div class="gp-stat"><div class="gp-stat-value">${avgRating.toFixed(1)}</div><div class="gp-stat-label">Rating</div></div>
+                <div class="gp-stat"><div class="gp-stat-value">${g.follower_count || 0}</div><div class="gp-stat-label">Followers</div></div>
             `;
 
             // Varieties
-            const varieties = [
-                { icon: '🌹', name: 'Roses', count: Math.floor(Math.random() * 20) + 5 },
-                { icon: '🌻', name: 'Sunflowers', count: Math.floor(Math.random() * 15) + 3 },
-                { icon: '🌷', name: 'Tulips', count: Math.floor(Math.random() * 10) + 2 },
-                { icon: '🌺', name: 'Orchids', count: Math.floor(Math.random() * 8) + 2 },
-                { icon: '🌸', name: 'Cherry Blossoms', count: Math.floor(Math.random() * 5) + 1 },
-                { icon: '🌼', name: 'Daisies', count: Math.floor(Math.random() * 12) + 3 },
-                { icon: '🪻', name: 'Lavender', count: Math.floor(Math.random() * 8) + 2 },
-                { icon: '🌿', name: 'Foliage', count: Math.floor(Math.random() * 15) + 5 }
-            ];
-            document.getElementById('gpVarieties').innerHTML = varieties.map(v => `
-                <a href="marketplace?category=${v.name.toLowerCase()}" class="gp-variety">
-                    <div class="gp-variety-icon">${v.icon}</div>
-                    <div class="gp-variety-name">${v.name}</div>
-                    <div class="gp-variety-count">${v.count} varieties</div>
+            const flowerEmojis = { rose: '🌹', sunflower: '🌻', tulip: '🌷', orchid: '🌺', cherry: '🌸', daisy: '🌼', lavender: '🪻', lily: '🌺', carnation: '🌺', peony: '🌸' };
+            function getEmoji(name) {
+                const lower = (name || '').toLowerCase();
+                for (const [k, v] of Object.entries(flowerEmojis)) { if (lower.includes(k)) return v; }
+                return '🌸';
+            }
+            document.getElementById('gpVarieties').innerHTML = specialties.map(s => `
+                <a href="marketplace?q=${encodeURIComponent(s)}" class="gp-variety">
+                    <div class="gp-variety-icon">${getEmoji(s)}</div>
+                    <div class="gp-variety-name">${s}</div>
                 </a>
-            `).join('');
+            `).join('') || '<p style="color:var(--text-light);">No varieties listed yet.</p>';
 
             // Harvest Calendar
             const months = [
@@ -371,16 +379,17 @@
                 </div>
             `).join('');
 
-            // Wholesale Pricing
-            document.getElementById('gpPricing').innerHTML = `
-                <table style="width:100%;border-collapse:collapse;">
-                    <tr style="border-bottom:1px solid var(--border-color);"><th style="text-align:left;padding:0.75rem 0;font-size:0.9rem;">Variety</th><th style="text-align:right;padding:0.75rem 0;font-size:0.9rem;">Stem Price</th><th style="text-align:right;padding:0.75rem 0;font-size:0.9rem;">500+ Stems</th></tr>
-                    <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:0.75rem 0;">Roses</td><td style="text-align:right;">GHS 2.50</td><td style="text-align:right;color:#10b981;">GHS 2.00</td></tr>
-                    <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:0.75rem 0;">Sunflowers</td><td style="text-align:right;">GHS 3.00</td><td style="text-align:right;color:#10b981;">GHS 2.40</td></tr>
-                    <tr style="border-bottom:1px solid var(--border-light);"><td style="padding:0.75rem 0;">Orchids</td><td style="text-align:right;">GHS 5.00</td><td style="text-align:right;color:#10b981;">GHS 4.00</td></tr>
-                    <tr><td style="padding:0.75rem 0;">Lilies</td><td style="text-align:right;">GHS 3.50</td><td style="text-align:right;color:#10b981;">GHS 2.80</td></tr>
-                </table>
-            `;
+            // Wholesale Pricing — from products if available
+            const products = g.products || [];
+            if (products.length) {
+                document.getElementById('gpPricing').innerHTML = `
+                    <table style="width:100%;border-collapse:collapse;">
+                        <tr style="border-bottom:1px solid var(--border-color);"><th style="text-align:left;padding:0.75rem 0;font-size:0.9rem;">Product</th><th style="text-align:right;padding:0.75rem 0;font-size:0.9rem;">Price</th></tr>
+                        ${products.slice(0, 6).map(p => `<tr style="border-bottom:1px solid var(--border-light);"><td style="padding:0.75rem 0;">${p.flower_name || p.name || 'Flower'}</td><td style="text-align:right;">$${Number(p.price_per_unit || p.price || 0).toFixed(2)}</td></tr>`).join('')}
+                    </table>`;
+            } else {
+                document.getElementById('gpPricing').innerHTML = '<p style="color:var(--text-light);">Contact farm for wholesale pricing.</p>';
+            }
 
             // Sustainability
             const sustain = [
@@ -400,46 +409,44 @@
             `).join('');
 
             // Certifications
-            const certs = [
-                { icon: '🏅', name: 'Organic Certified' },
-                { icon: '📦', name: 'Export Certified' },
-                { icon: '✅', name: 'Good Agricultural Practices' }
-            ];
-            document.getElementById('gpCerts').innerHTML = certs.map(c => `
-                <div class="gp-cert">
-                    <div class="gp-cert-icon">${c.icon}</div>
-                    <div class="gp-cert-name">${c.name}</div>
-                </div>
-            `).join('');
+            const certs = g.certifications || [];
+            const defaultCerts = ['Certified Grower'];
+            const displayCerts = certs.length ? certs : (g.organic_certified ? ['Organic Certified', 'Certified Grower'] : defaultCerts);
+            const certIcons = { organic: '🌿', export: '📦', gap: '✅', fair: '🤝', certified: '🏅' };
+            document.getElementById('gpCerts').innerHTML = displayCerts.map(c => {
+                const icon = Object.entries(certIcons).find(([k]) => c.toLowerCase().includes(k))?.[1] || '🏅';
+                return `<div class="gp-cert"><div class="gp-cert-icon">${icon}</div><div class="gp-cert-name">${c}</div></div>`;
+            }).join('');
 
             // Gallery
-            const gallery = [
-                g.img || 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=400&auto=format&fit=crop',
+            const gallery = g.gallery || [];
+            const defaultGallery = [
+                'https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=400&auto=format&fit=crop',
                 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?q=400&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=400&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?q=400&auto=format&fit=crop',
-                'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=400&auto=format&fit=crop',
                 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=400&auto=format&fit=crop'
             ];
-            document.getElementById('gpGallery').innerHTML = gallery.map(img => `
+            const galleryImages = gallery.length ? gallery.map(img => img.image_url) : defaultGallery;
+            document.getElementById('gpGallery').innerHTML = galleryImages.map(img => `
                 <div class="gp-gallery-item"><img src="${img}" alt="Farm" loading="lazy"></div>
             `).join('');
 
             // Reviews
-            const reviews = [
-                { author: 'Bloom Garden', rating: 5, text: 'Excellent quality roses. Fresh and delivered on time. Will order again!', date: '1 week ago' },
-                { author: 'Floral Designs Ltd', rating: 5, text: 'Best sunflowers in the region. Consistent quality every order.', date: '2 weeks ago' },
-                { author: 'Event Masters', rating: 4, text: 'Great variety and competitive wholesale prices. Recommended.', date: '1 month ago' }
-            ];
-            document.getElementById('gpReviews').innerHTML = reviews.map(r => `
-                <div class="gp-review">
-                    <div class="gp-review-header">
-                        <div class="gp-review-author">${r.author}</div>
-                        <div class="gp-review-stars">${renderStars(r.rating)}</div>
+            const reviews = g.reviews || [];
+            if (reviews.length) {
+                document.getElementById('gpReviews').innerHTML = reviews.map(r => `
+                    <div class="gp-review">
+                        <div class="gp-review-header">
+                            <div class="gp-review-author">${r.reviewer_name || 'Anonymous'}</div>
+                            <div class="gp-review-stars">${renderStars(r.rating)}</div>
+                        </div>
+                        ${r.title ? `<div style="font-weight:600;font-size:0.88rem;margin-bottom:0.25rem;">${r.title}</div>` : ''}
+                        <div class="gp-review-text">"${r.comment || ''}"</div>
+                        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;">${new Date(r.created_at).toLocaleDateString()}</div>
                     </div>
-                    <div class="gp-review-text">"${r.text}"</div>
-                </div>
-            `).join('');
+                `).join('');
+            } else {
+                document.getElementById('gpReviews').innerHTML = '<p style="color:var(--text-light);padding:1rem;">No reviews yet. Be the first to review this farm!</p>';
+            }
 
             // About
             document.getElementById('gpAbout').textContent = g.description || 'We are a family-owned flower farm established in 2005, specializing in premium roses and exotic blooms. Our 50-acre farm uses sustainable farming practices and supplies fresh flowers to florists and wholesalers across Ghana.';
@@ -450,21 +457,29 @@
             document.getElementById('gpDeliveryAbout').innerHTML = areas.map(a => `<span style="background:#e8f5e9;padding:0.4rem 0.75rem;border-radius:8px;font-size:0.82rem;display:inline-flex;align-items:center;gap:0.3rem;margin:0.25rem;"><i class="bi bi-geo-alt"></i> ${a}</span>`).join('');
 
             // Hours
-            const hours = [
+            const hours = g.business_hours || [
                 { day: 'Monday – Friday', time: '6:00 AM – 4:00 PM' },
                 { day: 'Saturday', time: '7:00 AM – 2:00 PM' },
                 { day: 'Sunday', time: 'Closed' }
             ];
-            document.getElementById('gpHours').innerHTML = hours.map(h => `
+            document.getElementById('gpHours').innerHTML = (Array.isArray(hours) ? hours : []).map(h => `
                 <div class="gp-hours-row"><span>${h.day}</span><span>${h.time}</span></div>
-            `).join('');
+            `).join('') || '<p style="color:var(--text-light);">Contact farm for hours.</p>';
 
             // Contact
+            const phone = g.phone || g.business_phone || '+233 20 555 0201';
+            const email = g.email_contact || g.email || `info@${(g.farm_name || 'farm').toLowerCase().replace(/\s+/g, '')}.com`;
+            const website = g.website || '';
+            const social = [];
+            if (g.social_instagram) social.push(`<a href="${g.social_instagram}" target="_blank" style="color:#10b981;text-decoration:none;"><i class="bi bi-instagram"></i> Instagram</a>`);
+            if (g.social_facebook) social.push(`<a href="${g.social_facebook}" target="_blank" style="color:#10b981;text-decoration:none;"><i class="bi bi-facebook"></i> Facebook</a>`);
+
             document.getElementById('gpContactInfo').innerHTML = `
-                <div class="gp-contact-item"><i class="bi bi-telephone"></i><span>+233 20 555 0201</span></div>
-                <div class="gp-contact-item"><i class="bi bi-envelope"></i><span>info@${g.name.toLowerCase().replace(/\s+/g, '')}farm.com</span></div>
-                <div class="gp-contact-item"><i class="bi bi-whatsapp"></i><a href="https://wa.me/233205550201" style="color:#10b981;text-decoration:none;">Chat on WhatsApp</a></div>
-                <div class="gp-contact-item"><i class="bi bi-geo-alt"></i><span>${g.location}</span></div>
+                <div class="gp-contact-item"><i class="bi bi-telephone"></i><span>${phone}</span></div>
+                <div class="gp-contact-item"><i class="bi bi-envelope"></i><span>${email}</span></div>
+                ${website ? `<div class="gp-contact-item"><i class="bi bi-globe"></i><a href="${website}" target="_blank" style="color:#10b981;text-decoration:none;">${website}</a></div>` : ''}
+                <div class="gp-contact-item"><i class="bi bi-geo-alt"></i><span>${g.location || 'Location not set'}</span></div>
+                ${social.length ? `<div class="gp-contact-item"><i class="bi bi-share"></i><div style="display:flex;gap:1rem;">${social.join('')}</div></div>` : ''}
             `;
 
             // Contact button
@@ -479,11 +494,24 @@
             });
 
             // Follow
-            document.getElementById('gpFollowBtn').addEventListener('click', function() {
-                this.classList.toggle('active');
-                const icon = this.querySelector('i');
-                icon.classList.toggle('bi-heart');
-                icon.classList.toggle('bi-heart-fill');
+            document.getElementById('gpFollowBtn').addEventListener('click', async function() {
+                const token = getToken();
+                if (!token) { window.location.href = 'login.html'; return; }
+                try {
+                    const res = await fetch(`/api/grower/farms/${id}/follow`, {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + token, 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    const data = await res.json();
+                    const icon = this.querySelector('i');
+                    if (data.following) {
+                        icon.classList.replace('bi-heart', 'bi-heart-fill');
+                        this.innerHTML = '<i class="bi bi-heart-fill"></i> Following';
+                    } else {
+                        icon.classList.replace('bi-heart-fill', 'bi-heart');
+                        this.innerHTML = '<i class="bi bi-heart"></i> Follow';
+                    }
+                } catch {}
             });
 
             // Shop

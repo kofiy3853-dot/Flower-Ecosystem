@@ -215,4 +215,213 @@ router.delete('/listings/:id', requireAuth, asyncHandler(async (req, res) => {
     res.json({ message: 'Listing deleted' });
 }));
 
+// =============================================================================
+// PUBLIC FARM ROUTES — Flower Farm Marketplace
+// =============================================================================
+
+// GET /api/farms — list all farms (public)
+router.get('/farms', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    const { q, location, specialty, organic, tours, workshops, delivery, wholesale, sort = 'rating', page = 1, limit = 20 } = req.query;
+    const pg = Math.max(1, parseInt(page, 10) || 1);
+    const lim = Math.min(50, Math.max(1, parseInt(limit, 10) || 20));
+    const offset = (pg - 1) * lim;
+
+    try {
+        const conditions = [];
+        const values = [];
+        let idx = 1;
+
+        if (q) { conditions.push(`(p.farm_name ILIKE $${idx} OR p.description ILIKE $${idx} OR p.location ILIKE $${idx} OR $${idx} = ANY(p.specialties))`); values.push(`%${q}%`); idx++; }
+        if (location) { conditions.push(`p.location ILIKE $${idx}`); values.push(`%${location}%`); idx++; }
+        if (specialty) { conditions.push(`$${idx} = ANY(p.specialties)`); values.push(specialty); idx++; }
+        if (organic === 'true') { conditions.push(`p.organic_certified = true`); }
+        if (tours === 'true') { conditions.push(`p.farm_tours = true`); }
+        if (workshops === 'true') { conditions.push(`p.workshops = true`); }
+        if (delivery === 'true') { conditions.push(`p.delivery_available = true`); }
+        if (wholesale === 'true') { conditions.push(`p.wholesale_available = true`); }
+
+        const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
+        const sortMap = { rating: 'p.rating DESC', name: 'p.farm_name ASC', newest: 'p.created_at DESC', products: 'p.total_sales DESC' };
+        const orderBy = sortMap[sort] || 'p.rating DESC';
+
+        const countR = await pool.query(`SELECT COUNT(*) FROM growers.profiles p ${where}`, values);
+        const total = parseInt(countR.rows[0].count) || 0;
+
+        values.push(lim, offset);
+        const r = await pool.query(`
+            SELECT p.*, u.first_name || ' ' || u.last_name AS owner_name,
+                   (SELECT COUNT(*) FROM growers.farm_followers WHERE grower_id = p.id) AS follower_count,
+                   (SELECT COUNT(*) FROM growers.farm_reviews WHERE grower_id = p.id) AS review_count,
+                   (SELECT COALESCE(AVG(rating), 0) FROM growers.farm_reviews WHERE grower_id = p.id) AS avg_rating
+            FROM growers.profiles p
+            LEFT JOIN auth.users u ON u.id = p.user_id
+            ${where}
+            ORDER BY ${orderBy}
+            LIMIT $${idx} OFFSET $${idx + 1}`, values);
+
+        res.json({ farms: r.rows, total, page: pg, limit: lim, pages: Math.ceil(total / lim) });
+    } catch (err) {
+        console.error('Farms query error:', err.message);
+        res.json({ farms: [], total: 0, page: 1, limit: lim, pages: 0 });
+    }
+}));
+
+// GET /api/farms/featured — featured farms
+router.get('/farms/featured', asyncHandler(async (_, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    try {
+        const r = await pool.query(`
+            SELECT p.*, u.first_name || ' ' || u.last_name AS owner_name,
+                   (SELECT COUNT(*) FROM growers.farm_reviews WHERE grower_id = p.id) AS review_count
+            FROM growers.profiles p
+            LEFT JOIN auth.users u ON u.id = p.user_id
+            WHERE p.is_verified = true OR p.rating >= 4.5
+            ORDER BY p.rating DESC LIMIT 6`);
+        res.json(r.rows);
+    } catch { res.json([]); }
+}));
+
+// GET /api/farms/recent — recently added farms
+router.get('/farms/recent', asyncHandler(async (_, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    try {
+        const r = await pool.query(`
+            SELECT p.*, u.first_name || ' ' || u.last_name AS owner_name
+            FROM growers.profiles p
+            LEFT JOIN auth.users u ON u.id = p.user_id
+            ORDER BY p.created_at DESC LIMIT 6`);
+        res.json(r.rows);
+    } catch { res.json([]); }
+}));
+
+// GET /api/farms/:id — farm detail (public)
+router.get('/farms/:id', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(404).json({ error: 'Farm not found' });
+    try {
+        const r = await pool.query(`
+            SELECT p.*, u.first_name || ' ' || u.last_name AS owner_name, u.email AS owner_email,
+                   (SELECT COUNT(*) FROM growers.farm_followers WHERE grower_id = p.id) AS follower_count,
+                   (SELECT COUNT(*) FROM growers.farm_reviews WHERE grower_id = p.id) AS review_count,
+                   (SELECT COALESCE(AVG(rating), 0) FROM growers.farm_reviews WHERE grower_id = p.id) AS avg_rating
+            FROM growers.profiles p
+            LEFT JOIN auth.users u ON u.id = p.user_id
+            WHERE p.id = $1`, [req.params.id]);
+        if (!r.rows.length) return res.status(404).json({ error: 'Farm not found' });
+
+        const farm = r.rows[0];
+
+        // Fetch related data in parallel
+        const [services, gallery, events, products, reviews] = await Promise.all([
+            pool.query('SELECT * FROM growers.farm_services WHERE grower_id = $1 AND is_active = true ORDER BY service_name', [req.params.id]).catch(() => ({ rows: [] })),
+            pool.query('SELECT * FROM growers.farm_gallery WHERE grower_id = $1 ORDER BY sort_order', [req.params.id]).catch(() => ({ rows: [] })),
+            pool.query('SELECT * FROM growers.farm_events WHERE grower_id = $1 AND is_active = true AND event_date > NOW() ORDER BY event_date LIMIT 10', [req.params.id]).catch(() => ({ rows: [] })),
+            pool.query('SELECT * FROM growers.listings WHERE grower_id = $1 AND is_active = true ORDER BY created_at DESC LIMIT 20', [req.params.id]).catch(() => ({ rows: [] })),
+            pool.query(`SELECT fr.*, u.first_name || ' ' || u.last_name AS reviewer_name, u.profile_image AS reviewer_avatar
+                FROM growers.farm_reviews fr
+                LEFT JOIN auth.users u ON u.id = fr.user_id
+                WHERE fr.grower_id = $1 ORDER BY fr.created_at DESC LIMIT 20`, [req.params.id]).catch(() => ({ rows: [] }))
+        ]);
+
+        farm.services = services.rows;
+        farm.gallery = gallery.rows;
+        farm.events = events.rows;
+        farm.products = products.rows;
+        farm.reviews = reviews.rows;
+
+        res.json(farm);
+    } catch (err) {
+        console.error('Farm detail error:', err.message);
+        res.status(404).json({ error: 'Farm not found' });
+    }
+}));
+
+// POST /api/farms/:id/follow — follow/unfollow farm
+router.post('/farms/:id/follow', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const existing = await pool.query('SELECT id FROM growers.farm_followers WHERE grower_id = $1 AND user_id = $2', [req.params.id, req.user.id]);
+    if (existing.rows.length) {
+        await pool.query('DELETE FROM growers.farm_followers WHERE grower_id = $1 AND user_id = $2', [req.params.id, req.user.id]);
+        await pool.query('UPDATE growers.profiles SET follower_count = GREATEST(follower_count - 1, 0) WHERE id = $1', [req.params.id]);
+        res.json({ following: false });
+    } else {
+        await pool.query('INSERT INTO growers.farm_followers (grower_id, user_id) VALUES ($1, $2)', [req.params.id, req.user.id]);
+        await pool.query('UPDATE growers.profiles SET follower_count = follower_count + 1 WHERE id = $1', [req.params.id]);
+        res.json({ following: true });
+    }
+}));
+
+// GET /api/farms/:id/reviews — get reviews
+router.get('/farms/:id/reviews', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    const { page = 1, limit = 20 } = req.query;
+    const pg = Math.max(1, parseInt(page, 10) || 1);
+    const lim = Math.min(50, parseInt(limit, 10) || 20);
+    const offset = (pg - 1) * lim;
+
+    const r = await pool.query(`
+        SELECT fr.*, u.first_name || ' ' || u.last_name AS reviewer_name, u.profile_image AS reviewer_avatar
+        FROM growers.farm_reviews fr
+        LEFT JOIN auth.users u ON u.id = fr.user_id
+        WHERE fr.grower_id = $1
+        ORDER BY fr.created_at DESC
+        LIMIT $2 OFFSET $3`, [req.params.id, lim, offset]);
+    res.json(r.rows);
+}));
+
+// POST /api/farms/:id/reviews — add review
+router.post('/farms/:id/reviews', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { rating, title, comment, visit_type } = req.body;
+    if (!rating || rating < 1 || rating > 5) return res.status(400).json({ error: 'Rating 1-5 required' });
+
+    const r = await pool.query(
+        `INSERT INTO growers.farm_reviews (grower_id, user_id, rating, title, comment, visit_type)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         ON CONFLICT (grower_id, user_id) DO UPDATE SET rating = $3, title = $4, comment = $5, visit_type = $6
+         RETURNING *`,
+        [req.params.id, req.user.id, rating, title || null, comment || null, visit_type || null]
+    );
+
+    // Update farm average rating
+    await pool.query(`UPDATE growers.profiles SET rating = (SELECT COALESCE(AVG(rating), 0) FROM growers.farm_reviews WHERE grower_id = $1) WHERE id = $1`, [req.params.id]);
+
+    res.status(201).json(r.rows[0]);
+}));
+
+// GET /api/farms/:id/services — get services
+router.get('/farms/:id/services', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    const r = await pool.query('SELECT * FROM growers.farm_services WHERE grower_id = $1 AND is_active = true ORDER BY service_name', [req.params.id]);
+    res.json(r.rows);
+}));
+
+// GET /api/farms/:id/gallery — get gallery
+router.get('/farms/:id/gallery', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    const r = await pool.query('SELECT * FROM growers.farm_gallery WHERE grower_id = $1 ORDER BY sort_order', [req.params.id]);
+    res.json(r.rows);
+}));
+
+// GET /api/farms/:id/events — get events
+router.get('/farms/:id/events', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    const r = await pool.query(
+        'SELECT * FROM growers.farm_events WHERE grower_id = $1 AND is_active = true AND event_date > NOW() ORDER BY event_date LIMIT 20',
+        [req.params.id]
+    );
+    res.json(r.rows);
+}));
+
+// POST /api/farms/:id/events/:eventId/register — register for event
+router.post('/farms/:id/events/:eventId/register', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const event = await pool.query('SELECT * FROM growers.farm_events WHERE id = $1 AND grower_id = $2', [req.params.eventId, req.params.id]);
+    if (!event.rows.length) return res.status(404).json({ error: 'Event not found' });
+    const ev = event.rows[0];
+    if (ev.capacity && ev.registered >= ev.capacity) return res.status(400).json({ error: 'Event is full' });
+    await pool.query('UPDATE growers.farm_events SET registered = registered + 1 WHERE id = $1', [req.params.eventId]);
+    res.json({ message: 'Registered successfully' });
+}));
+
 module.exports = router;

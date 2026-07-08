@@ -3,38 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Buy fresh flowers directly from trusted growers and flower farms on Flower Ecosystem.">
-    <title>Grower Directory | Flower Ecosystem</title>
+    <meta name="description" content="Discover flower farms, buy fresh flowers directly from growers, book farm tours, and connect with trusted flower producers.">
+    <title>Flower Farms — Find & Buy Direct | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/main.css?v=3.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        /* Hero */
-        .grw-hero { background:linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%); padding:5rem 0 3rem; }
-        .grw-hero-inner { text-align:center; max-width:700px; margin:0 auto; }
-        .grw-hero h1 { font-size:clamp(2rem, 4vw, 2.8rem); margin-bottom:0.5rem; }
-        .grw-hero p { color:var(--text-light); font-size:1.05rem; margin-bottom:1.5rem; }
-        .grw-search { display:flex; background:var(--bg-white); border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); overflow:hidden; max-width:600px; margin:0 auto 1.5rem; }
+        .grw-hero { background:linear-gradient(135deg, #065f46 0%, #10b981 50%, #34d399 100%); padding:5rem 0 3rem; position:relative; overflow:hidden; }
+        .grw-hero::before { content:''; position:absolute; top:-50%; right:-10%; width:500px; height:500px; background:rgba(255,255,255,0.06); border-radius:50%; }
+        .grw-hero::after { content:''; position:absolute; bottom:-30%; left:-5%; width:300px; height:300px; background:rgba(255,255,255,0.04); border-radius:50%; }
+        .grw-hero-inner { text-align:center; max-width:700px; margin:0 auto; position:relative; z-index:1; }
+        .grw-hero h1 { font-size:clamp(2rem, 4vw, 2.8rem); margin-bottom:0.5rem; color:white; }
+        .grw-hero p { color:rgba(255,255,255,0.85); font-size:1.05rem; margin-bottom:1.5rem; }
+        .grw-hero-btns { display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap; margin-bottom:1.5rem; }
+        .grw-hero-btns .btn { padding:0.65rem 1.5rem; border-radius:50px; font-size:0.9rem; }
+        .btn-white-green { background:white; color:#065f46; border:none; font-weight:600; }
+        .btn-white-green:hover { background:rgba(255,255,255,0.9); }
+        .btn-outline-white { background:transparent; color:white; border:1.5px solid rgba(255,255,255,0.5); }
+        .btn-outline-white:hover { background:rgba(255,255,255,0.15); border-color:white; }
+        .grw-search { display:flex; background:var(--bg-white); border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15); overflow:hidden; max-width:600px; margin:0 auto 1.5rem; }
         .grw-search input { flex:1; border:none; padding:1rem 1.25rem; font-size:1rem; outline:none; }
         .grw-search button { background:#10b981; color:white; border:none; padding:1rem 1.5rem; cursor:pointer; }
         .grw-pills { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; }
-        .grw-pill { padding:0.5rem 1rem; border-radius:50px; background:var(--bg-white); border:1px solid var(--border-color); color:var(--text-main); font-size:0.85rem; cursor:pointer; transition:all 0.2s; }
-        .grw-pill:hover, .grw-pill.active { background:#10b981; color:white; border-color:#10b981; }
+        .grw-pill { padding:0.5rem 1rem; border-radius:50px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); color:white; font-size:0.85rem; cursor:pointer; transition:all 0.2s; }
+        .grw-pill:hover, .grw-pill.active { background:white; color:#065f46; border-color:white; }
 
-        /* Filter Bar */
-        .grw-filter-bar { background:var(--bg-white); border-bottom:1px solid var(--border-color); padding:1rem 0; }
+        .grw-filter-bar { background:var(--bg-white); border-bottom:1px solid var(--border-color); padding:1rem 0; position:sticky; top:0; z-index:50; }
         .grw-filters { display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; }
         .grw-filter { padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.85rem; background:var(--bg-white); }
+        .grw-filter-toggle { display:flex; align-items:center; gap:0.4rem; padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.85rem; background:var(--bg-white); cursor:pointer; transition:all 0.2s; }
+        .grw-filter-toggle.active { background:#10b981; color:white; border-color:#10b981; }
         .grw-count { font-size:0.9rem; color:var(--text-light); margin-left:auto; }
 
-        /* Provider Cards */
+        .section-header-flex { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+        .section-header-flex h2 { margin:0; }
+
+        .grw-map-container { height:400px; border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--border-color); margin-bottom:2rem; }
+
         .grw-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(340px, 1fr)); gap:1.5rem; }
         .grw-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; overflow:hidden; transition:all 0.3s; }
         .grw-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); }
-        .grw-card-banner { height:140px; overflow:hidden; position:relative; }
+        .grw-card-banner { height:160px; overflow:hidden; position:relative; }
         .grw-card-banner img { width:100%; height:100%; object-fit:cover; }
         .grw-card-verified { position:absolute; top:0.75rem; right:0.75rem; background:#10b981; color:white; padding:0.2rem 0.6rem; border-radius:6px; font-size:0.7rem; font-weight:600; display:flex; align-items:center; gap:0.3rem; }
         .grw-card-fav { position:absolute; top:0.75rem; left:0.75rem; background:var(--bg-white); border:none; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
@@ -54,47 +64,55 @@
         .grw-card-badge { font-size:0.7rem; padding:0.15rem 0.5rem; border-radius:4px; font-weight:500; }
         .grw-card-badge.wholesale { background:#fff3cd; color:#856404; }
         .grw-card-badge.organic { background:#d4edda; color:#155724; }
-        .grw-card-badge.export { background:#cce5ff; color:#004085; }
+        .grw-card-badge.tours { background:#cce5ff; color:#004085; }
+        .grw-card-badge.workshops { background:#e8daef; color:#6c3483; }
+        .grw-card-badge.delivery { background:#d5f5e3; color:#1e8449; }
         .grw-card-footer { display:flex; gap:0.5rem; padding-top:0.75rem; border-top:1px solid var(--border-light); }
         .grw-card-footer .btn { flex:1; }
 
-        /* CTA */
         .grw-cta { background:linear-gradient(135deg, #10b981, #059669); border-radius:16px; padding:3rem; text-align:center; color:white; margin:2rem 0; }
         .grw-cta h2 { color:white; margin-bottom:0.5rem; }
         .grw-cta p { color:rgba(255,255,255,0.85); margin-bottom:1.5rem; max-width:500px; margin-left:auto; margin-right:auto; }
 
-        /* Season Calendar */
         .season-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem; margin:2rem 0; }
         .season-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; }
         .season-month { font-weight:600; font-size:0.9rem; margin-bottom:0.5rem; color:#10b981; }
         .season-flowers { font-size:0.85rem; color:var(--text-light); }
 
+        .empty-farms { text-align:center; padding:3rem; grid-column:1/-1; }
+        .empty-farms i { font-size:3rem; color:var(--text-light); display:block; margin-bottom:1rem; }
+
         @media (max-width:768px) {
             .grw-grid { grid-template-columns:1fr; }
             .season-grid { grid-template-columns:repeat(2, 1fr); }
+            .grw-map-container { height:250px; }
         }
     </style>
 </head>
 <body>
-
     <div id="header-container"></div>
 
     <!-- Hero -->
     <section class="grw-hero">
         <div class="container">
             <div class="grw-hero-inner reveal-up">
-                <h1>Buy Fresh Flowers Directly from Trusted Growers</h1>
-                <p>Connect with flower farms supplying fresh flowers, rare species, and wholesale orders.</p>
+                <h1><i class="bi bi-flower1"></i> Discover Flower Farms</h1>
+                <p>Connect with trusted growers, explore beautiful farms, and buy fresh flowers directly from the source.</p>
+                <div class="grw-hero-btns">
+                    <a href="#farms-section" class="btn btn-white-green"><i class="bi bi-search"></i> Find a Farm</a>
+                    <a href="sell.html" class="btn btn-outline-white"><i class="bi bi-plus-lg"></i> Become a Grower</a>
+                </div>
                 <div class="grw-search">
-                    <input type="text" id="growerSearch" placeholder="Search farm, flower type, location...">
-                    <button onclick="searchGrowers()"><i class="bi bi-search"></i></button>
+                    <input type="text" id="growerSearch" placeholder="Search farms, flowers, or locations...">
+                    <button onclick="applyFilters()"><i class="bi bi-search"></i></button>
                 </div>
                 <div class="grw-pills">
                     <button class="grw-pill active" onclick="filterType(this, 'all')">All Farms</button>
-                    <button class="grw-pill" onclick="filterType(this, 'roses')">Roses</button>
-                    <button class="grw-pill" onclick="filterType(this, 'sunflowers')">Sunflowers</button>
-                    <button class="grw-pill" onclick="filterType(this, 'orchids')">Orchids</button>
-                    <button class="grw-pill" onclick="filterType(this, 'tropical')">Tropical</button>
+                    <button class="grw-pill" onclick="filterType(this, 'roses')">🌹 Roses</button>
+                    <button class="grw-pill" onclick="filterType(this, 'sunflowers')">🌻 Sunflowers</button>
+                    <button class="grw-pill" onclick="filterType(this, 'orchids')">🌺 Orchids</button>
+                    <button class="grw-pill" onclick="filterType(this, 'tropical')">🌴 Tropical</button>
+                    <button class="grw-pill" onclick="filterType(this, 'organic')">🌿 Organic</button>
                 </div>
             </div>
         </div>
@@ -105,20 +123,20 @@
         <div class="container">
             <div class="grw-filters">
                 <select class="grw-filter" id="locationFilter" onchange="applyFilters()">
-                    <option value="all">All Locations</option>
-                    <option value="eastern">Eastern Region</option>
-                    <option value="ashanti">Ashanti Region</option>
-                    <option value="greater-accra">Greater Accra</option>
+                    <option value="">All Locations</option>
+                    <option value="Eastern Region">Eastern Region</option>
+                    <option value="Ashanti Region">Ashanti Region</option>
+                    <option value="Greater Accra">Greater Accra</option>
+                    <option value="Central Region">Central Region</option>
+                    <option value="Western Region">Western Region</option>
                 </select>
-                <select class="grw-filter" id="certFilter" onchange="applyFilters()">
-                    <option value="all">All Certifications</option>
-                    <option value="organic">Organic</option>
-                    <option value="export">Export Certified</option>
-                    <option value="gap">Good Agricultural Practices</option>
-                </select>
+                <button class="grw-filter-toggle" id="filterTours" onclick="toggleFilter(this, 'tours')"><i class="bi bi-geo-alt"></i> Farm Tours</button>
+                <button class="grw-filter-toggle" id="filterWorkshops" onclick="toggleFilter(this, 'workshops')"><i class="bi bi-easel"></i> Workshops</button>
+                <button class="grw-filter-toggle" id="filterDelivery" onclick="toggleFilter(this, 'delivery')"><i class="bi bi-truck"></i> Delivery</button>
+                <button class="grw-filter-toggle" id="filterWholesale" onclick="toggleFilter(this, 'wholesale')"><i class="bi bi-box-seam"></i> Wholesale</button>
                 <select class="grw-filter" id="sortFilter" onchange="applyFilters()">
                     <option value="rating">Top Rated</option>
-                    <option value="products">Most Varieties</option>
+                    <option value="newest">Newest</option>
                     <option value="name">Name A-Z</option>
                 </select>
                 <span class="grw-count" id="growerCount"></span>
@@ -126,15 +144,49 @@
         </div>
     </div>
 
-    <!-- Growers -->
-    <section class="section-padding">
+    <!-- Map -->
+    <section class="section-padding" style="padding-bottom:0;">
         <div class="container">
+            <div class="section-header-flex">
+                <h2><i class="bi bi-map" style="color:#10b981;"></i> Farm Map</h2>
+            </div>
+            <div class="grw-map-container" id="farmMap"></div>
+        </div>
+    </section>
+
+    <!-- Featured Farms -->
+    <section class="section-padding" id="farms-section">
+        <div class="container">
+            <div class="section-header-flex">
+                <h2><i class="bi bi-star" style="color:#f59e0b;"></i> Featured Farms</h2>
+                <a href="#" onclick="showAllFarms(); return false;" style="color:#10b981;font-size:0.9rem;">View All →</a>
+            </div>
+            <div class="grw-grid" id="featuredGrid"></div>
+        </div>
+    </section>
+
+    <!-- All Farms -->
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container">
+            <div class="section-header-flex">
+                <h2><i class="bi bi-grid" style="color:#10b981;"></i> All Flower Farms</h2>
+            </div>
             <div class="grw-grid" id="growerGrid"></div>
         </div>
     </section>
 
+    <!-- Recently Added -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="section-header-flex">
+                <h2><i class="bi bi-clock-history" style="color:#10b981;"></i> Recently Added</h2>
+            </div>
+            <div class="grw-grid" id="recentGrid"></div>
+        </div>
+    </section>
+
     <!-- Seasonal Calendar -->
-    <section class="section-padding bg-light" style="padding-top:2rem;">
+    <section class="section-padding">
         <div class="container">
             <div style="text-align:center;margin-bottom:1.5rem;">
                 <span class="subtitle">SEASONAL</span>
@@ -157,110 +209,129 @@
 
     <div id="footer-container"></div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/auth.js?v=3.4"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
     <script src="js/shared/api.js?v=4.0"></script>
     <script>
-        let growers = [];
+        let allFarms = [];
         let filtered = [];
         let activeType = 'all';
+        let activeFilters = { tours: false, workshops: false, delivery: false, wholesale: false };
+        let map = null;
+        let markers = [];
 
         async function initGrowers() {
-            try {
-                const data = await fetch('/api/products/list/florists').then(r => r.json());
-                growers = (data.florists || data || []).map((f, i) => ({
-                    ...f,
-                    varieties: ['Roses', 'Sunflowers', 'Orchids', 'Tulips', 'Lilies', 'Tropical'][i % 6] ? [['Roses','Sunflowers'], ['Orchids','Tulips'], ['Lilies','Tropical'], ['Roses','Lilies'], ['Sunflowers','Orchids'], ['Tropical','Tulips']][i % 6] : ['Roses'],
-                    location: ['Eastern Region', 'Ashanti Region', 'Greater Accra', 'Central Region'][i % 4],
-                    rating: (4 + Math.random()).toFixed(1),
-                    reviews: Math.floor(Math.random() * 100) + 10,
-                    products: f.products || Math.floor(Math.random() * 30) + 5,
-                    verified: true,
-                    wholesale: i % 3 === 0,
-                    organic: i % 4 === 0,
-                    exportCert: i % 5 === 0,
-                    img: f.image || `https://images.unsplash.com/photo-${['1464226184884-fa280b87c399','1574943320219-553eb213f72d','1416879595882-3373a0480b5b','1585320806297-9794b3e4eeae'][i % 4]}?q=400&auto=format&fit=crop`
-                }));
-            } catch { growers = []; }
-            filtered = [...growers];
-            renderGrowers();
+            await Promise.all([loadFeatured(), loadAllFarms(), loadRecent()]);
             renderSeasons();
+            initMap();
+        }
+
+        async function loadFeatured() {
+            try {
+                const data = await fetch('/api/grower/farms/featured').then(r => r.json());
+                renderFarmGrid('featuredGrid', Array.isArray(data) ? data.slice(0, 6) : []);
+            } catch { document.getElementById('featuredGrid').innerHTML = ''; }
+        }
+
+        async function loadAllFarms() {
+            try {
+                const params = new URLSearchParams();
+                const q = document.getElementById('growerSearch')?.value?.trim();
+                const loc = document.getElementById('locationFilter')?.value;
+                const sort = document.getElementById('sortFilter')?.value;
+                if (q) params.set('q', q);
+                if (loc) params.set('location', loc);
+                if (sort) params.set('sort', sort);
+                if (activeFilters.tours) params.set('tours', 'true');
+                if (activeFilters.workshops) params.set('workshops', 'true');
+                if (activeFilters.delivery) params.set('delivery', 'true');
+                if (activeFilters.wholesale) params.set('wholesale', 'true');
+                if (activeType !== 'all') params.set('specialty', activeType);
+
+                const data = await fetch('/api/grower/farms?' + params).then(r => r.json());
+                allFarms = data.farms || [];
+                filtered = [...allFarms];
+                renderFarmGrid('growerGrid', filtered);
+                document.getElementById('growerCount').textContent = `${filtered.length} farm${filtered.length !== 1 ? 's' : ''} found`;
+                updateMapMarkers();
+            } catch {
+                allFarms = [];
+                filtered = [];
+                renderFarmGrid('growerGrid', []);
+            }
+        }
+
+        async function loadRecent() {
+            try {
+                const data = await fetch('/api/grower/farms/recent').then(r => r.json());
+                renderFarmGrid('recentGrid', Array.isArray(data) ? data.slice(0, 6) : []);
+            } catch { document.getElementById('recentGrid').innerHTML = ''; }
         }
 
         function filterType(el, type) {
             document.querySelectorAll('.grw-pill').forEach(p => p.classList.remove('active'));
             el.classList.add('active');
             activeType = type;
-            applyFilters();
+            loadAllFarms();
         }
 
-        function searchGrowers() { applyFilters(); }
-
-        function applyFilters() {
-            const q = document.getElementById('growerSearch').value.toLowerCase();
-            const location = document.getElementById('locationFilter').value;
-            const cert = document.getElementById('certFilter').value;
-            const sort = document.getElementById('sortFilter').value;
-
-            filtered = growers.filter(g => {
-                if (q && !`${g.name} ${g.varieties.join(' ')} ${g.location}`.toLowerCase().includes(q)) return false;
-                if (activeType !== 'all' && !g.varieties.some(v => v.toLowerCase().includes(activeType))) return false;
-                if (location !== 'all' && g.location.toLowerCase().replace(/\s+/g, '-') !== location) return false;
-                if (cert === 'organic' && !g.organic) return false;
-                if (cert === 'export' && !g.exportCert) return false;
-                return true;
-            });
-
-            if (sort === 'rating') filtered.sort((a, b) => Number(b.rating) - Number(a.rating));
-            else if (sort === 'products') filtered.sort((a, b) => (b.products || 0) - (a.products || 0));
-            else if (sort === 'name') filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-
-            renderGrowers();
+        function toggleFilter(el, key) {
+            activeFilters[key] = !activeFilters[key];
+            el.classList.toggle('active');
+            loadAllFarms();
         }
 
-        function renderGrowers() {
-            const grid = document.getElementById('growerGrid');
-            document.getElementById('growerCount').textContent = `${filtered.length} farm${filtered.length !== 1 ? 's' : ''} found`;
+        function applyFilters() { loadAllFarms(); }
 
-            if (!filtered.length) {
-                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;"><i class="bi bi-tree" style="font-size:3rem;color:var(--text-light);display:block;margin-bottom:1rem;"></i><h3>No farms found</h3><p style="color:var(--text-light);">Try adjusting your search or filters.</p></div>';
+        function showAllFarms() {
+            document.getElementById('farms-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderFarmGrid(containerId, farms) {
+            const grid = document.getElementById(containerId);
+            if (!farms.length) {
+                grid.innerHTML = '<div class="empty-farms"><i class="bi bi-tree"></i><h3>No farms found</h3><p>Try adjusting your search or filters.</p></div>';
                 return;
             }
-
-            grid.innerHTML = filtered.map(g => {
-                const initials = (g.name || 'G').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+            grid.innerHTML = farms.map(f => {
+                const initials = (f.farm_name || 'F').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+                const specialties = f.specialties || [];
+                const avgRating = f.avg_rating || f.rating || 0;
+                const reviewCount = f.review_count || 0;
                 return `
                 <div class="grw-card">
                     <div class="grw-card-banner">
-                        <img src="${g.img || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 140%22><rect fill=%22%23d4edda%22 width=%22400%22 height=%22140%22/><text x=%22200%22 y=%2280%22 text-anchor=%22middle%22 fill=%22%2310b981%22 font-size=%2240%22>🌱</text></svg>'}" alt="${g.name}" loading="lazy">
-                        ${g.verified ? '<div class="grw-card-verified"><i class="bi bi-patch-check-fill"></i> Verified Grower</div>' : ''}
+                        <img src="${f.cover_image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 160%22><rect fill=%22%23d4edda%22 width=%22400%22 height=%22160%22/><text x=%22200%22 y=%2290%22 text-anchor=%22middle%22 fill=%22%2310b981%22 font-size=%2248%22>🌱</text></svg>'}" alt="${f.farm_name}" loading="lazy">
+                        ${f.is_verified ? '<div class="grw-card-verified"><i class="bi bi-patch-check-fill"></i> Verified</div>' : ''}
                         <button class="grw-card-fav" onclick="event.stopPropagation()"><i class="bi bi-heart"></i></button>
                     </div>
                     <div class="grw-card-body">
                         <div class="grw-card-header">
-                            ${g.image ? `<div class="grw-card-avatar"><img src="${g.image}" alt="${g.name}"></div>` : `<div class="grw-card-avatar-placeholder">🌱</div>`}
+                            ${f.logo_url ? `<div class="grw-card-avatar"><img src="${f.logo_url}" alt="${f.farm_name}"></div>` : `<div class="grw-card-avatar-placeholder">${initials}</div>`}
                             <div>
-                                <div class="grw-card-name">${g.name}</div>
-                                <div class="grw-card-rating">${renderStars(g.rating)} <span>(${g.reviews})</span></div>
+                                <div class="grw-card-name">${f.farm_name}</div>
+                                <div class="grw-card-rating">${renderStars(avgRating)} <span>(${reviewCount})</span></div>
                             </div>
                         </div>
-                        <div class="grw-card-location"><i class="bi bi-geo-alt"></i> ${g.location}</div>
-                        <div class="grw-card-varieties">
-                            ${g.varieties.map(v => `<span class="grw-card-variety">${v}</span>`).join('')}
-                        </div>
+                        <div class="grw-card-location"><i class="bi bi-geo-alt"></i> ${f.location || 'Location not set'}</div>
+                        ${specialties.length ? `<div class="grw-card-varieties">${specialties.slice(0, 4).map(s => `<span class="grw-card-variety">${s}</span>`).join('')}</div>` : ''}
                         <div class="grw-card-meta">
-                            <span><i class="bi bi-flower1"></i> ${g.products} Varieties</span>
+                            ${f.years_in_operation ? `<span><i class="bi bi-calendar3"></i> ${f.years_in_operation}+ years</span>` : ''}
+                            <span><i class="bi bi-people"></i> ${f.follower_count || 0} followers</span>
                         </div>
                         <div class="grw-card-badges">
-                            ${g.wholesale ? '<span class="grw-card-badge wholesale">Wholesale</span>' : ''}
-                            ${g.organic ? '<span class="grw-card-badge organic">Organic</span>' : ''}
-                            ${g.exportCert ? '<span class="grw-card-badge export">Export Certified</span>' : ''}
+                            ${f.organic_certified ? '<span class="grw-card-badge organic">🌿 Organic</span>' : ''}
+                            ${f.farm_tours ? '<span class="grw-card-badge tours">🚶 Tours</span>' : ''}
+                            ${f.workshops ? '<span class="grw-card-badge workshops">🎓 Workshops</span>' : ''}
+                            ${f.delivery_available ? '<span class="grw-card-badge delivery">🚚 Delivery</span>' : ''}
+                            ${f.wholesale_available ? '<span class="grw-card-badge wholesale">📦 Wholesale</span>' : ''}
                         </div>
                         <div class="grw-card-footer">
-                            <a href="florist-profile.html?id=${g.id}" class="btn btn-outline btn-sm">View Farm</a>
-                            <a href="florist-profile.html?id=${g.id}" class="btn btn-primary btn-sm" style="background:#10b981;">Visit Store</a>
+                            <a href="grower-profile.html?id=${f.id}" class="btn btn-outline btn-sm">View Farm</a>
+                            <a href="grower-profile.html?id=${f.id}" class="btn btn-sm" style="background:#10b981;color:white;">Shop Flowers</a>
                         </div>
                     </div>
                 </div>`;
@@ -292,6 +363,48 @@
                 </div>
             `).join('');
         }
+
+        function initMap() {
+            try {
+                map = L.map('farmMap').setView([7.9465, -1.0232], 7);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+                updateMapMarkers();
+            } catch (e) {
+                console.warn('Map init failed:', e);
+                document.getElementById('farmMap').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-light);"><i class="bi bi-map" style="font-size:2rem;margin-right:0.5rem;"></i> Map unavailable</div>';
+            }
+        }
+
+        function updateMapMarkers() {
+            if (!map) return;
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+            const farmIcon = L.divIcon({ html: '<div style="background:#10b981;color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.3);">🌱</div>', className: '', iconSize: [28, 28], iconAnchor: [14, 14] });
+            filtered.forEach(f => {
+                if (!f.latitude || !f.longitude) return;
+                const marker = L.marker([f.latitude, f.longitude], { icon: farmIcon }).addTo(map);
+                marker.bindPopup(`
+                    <div style="min-width:180px;">
+                        <strong>${f.farm_name}</strong><br>
+                        <small style="color:#666;">${f.location || ''}</small><br>
+                        <small>⭐ ${(Number(f.avg_rating || f.rating) || 0).toFixed(1)}</small><br>
+                        <a href="grower-profile.html?id=${f.id}" style="color:#10b981;font-size:0.85rem;">View Farm →</a>
+                    </div>
+                `);
+                markers.push(marker);
+            });
+            if (markers.length) {
+                const group = L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.1));
+            }
+        }
+
+        // Search on Enter
+        document.getElementById('growerSearch')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') applyFilters();
+        });
 
         initGrowers();
     </script>

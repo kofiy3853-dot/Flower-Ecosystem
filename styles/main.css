@@ -2670,13 +2670,13 @@ h3 { font-size: 1.15rem; margin-bottom: 0.5rem; font-weight: 600; }
 
 
 /* =============================================================================
-   FOOTER (Base Layout & Light Theme)
+   FOOTER (Base Layout & Dark Theme)
 ============================================================================= */
 .footer {
-    background: var(--bg-white);
-    color: var(--text-main);
+    background: #0d0b0a;
+    color: rgba(255, 255, 255, 0.75);
     padding-top: 4rem;
-    border-top: 1px solid var(--border-color);
+    border-top: none;
 }
 
 .footer-grid {
@@ -2684,12 +2684,12 @@ h3 { font-size: 1.15rem; margin-bottom: 0.5rem; font-weight: 600; }
     grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
     gap: 3rem;
     padding-bottom: 3rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .footer-brand h2 {
     font-size: 1.35rem;
-    color: var(--text-main);
+    color: white;
     margin-bottom: 0.75rem;
     font-weight: 700;
 }
@@ -2697,7 +2697,7 @@ h3 { font-size: 1.15rem; margin-bottom: 0.5rem; font-weight: 600; }
 .footer-brand p {
     font-size: 0.875rem;
     line-height: 1.7;
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.55);
     margin-bottom: 1.5rem;
 }
 
@@ -2710,12 +2710,12 @@ h3 { font-size: 1.15rem; margin-bottom: 0.5rem; font-weight: 600; }
     width: 36px;
     height: 36px;
     border-radius: var(--radius-sm);
-    background: var(--bg-light);
-    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.6);
     font-size: 0.95rem;
     transition: all 0.2s ease;
 }
@@ -2731,7 +2731,7 @@ h3 { font-size: 1.15rem; margin-bottom: 0.5rem; font-weight: 600; }
     font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.45);
     font-weight: 700;
     margin-bottom: 1.25rem;
     font-family: var(--font-sans);
@@ -2745,12 +2745,12 @@ h3 { font-size: 1.15rem; margin-bottom: 0.5rem; font-weight: 600; }
 
 .footer-links a {
     font-size: 0.875rem;
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.6);
     transition: color 0.2s;
 }
 
 .footer-links a:hover {
-    color: var(--primary-color);
+    color: white;
 }
 
 .footer-bottom {
@@ -2767,7 +2767,7 @@ h3 { font-size: 1.15rem; margin-bottom: 0.5rem; font-weight: 600; }
 
 .footer-bottom-content p {
     font-size: 0.875rem;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.35);
 }
 
 .footer-legal {
@@ -2775,16 +2775,16 @@ h3 { font-size: 1.15rem; margin-bottom: 0.5rem; font-weight: 600; }
     gap: 0.5rem;
     align-items: center;
     font-size: 0.875rem;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.35);
 }
 
 .footer-legal a {
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.4);
     transition: color 0.2s;
 }
 
 .footer-legal a:hover {
-    color: var(--primary-color);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 /* =============================================================================

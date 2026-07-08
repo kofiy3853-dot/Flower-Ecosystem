@@ -171,8 +171,7 @@
             if (token) {
                 try {
                     const body = {};
-                    const cid = sessionStorage.getItem('cart-coupon-id');
-                    if (cid && discount > 0) { body.coupon_id = cid; body.discount_amount = discount; }
+                    if (appliedCoupon && discount > 0) { body.coupon_code = appliedCoupon; }
                     const res = await fetch('/api/orders', {
                         method: 'POST',
                         headers: authHeaders(),
@@ -278,6 +277,12 @@
         document.getElementById('confEmail').textContent = order.shipping.email;
         document.getElementById('confAddress').textContent = `${order.shipping.address}, ${order.shipping.city} ${order.shipping.zipCode}`;
         document.getElementById('confDate').textContent = order.dateFormatted;
+
+        // Calculate estimated delivery (3-5 business days from now)
+        const deliveryDate = new Date();
+        deliveryDate.setDate(deliveryDate.getDate() + 5);
+        document.getElementById('confDelivery').textContent = deliveryDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
     }

@@ -70,10 +70,32 @@
             <div class="search-suggestions" id="globalSearchSuggestions" style="display:none;"></div>
         </div>
         <div class="nav-actions">
-            <a href="cart.html" class="nav-link cart-link" aria-label="Shopping Cart" title="Shopping Cart">
-                <i class="bi bi-cart"></i>
-                <span class="cart-count" id="globalCartCount">0</span>
-            </a>
+            <div class="cart-dropdown-wrap" id="cartDropdownWrap">
+                <a href="cart.html" class="nav-link cart-link" aria-label="Shopping Cart" title="Shopping Cart">
+                    <i class="bi bi-cart"></i>
+                    <span class="cart-count" id="globalCartCount">0</span>
+                </a>
+                <div class="mini-cart" id="miniCart">
+                    <div class="mini-cart-header">
+                        <h4>Shopping Cart</h4>
+                        <span class="mini-cart-count" id="miniCartCount">0 items</span>
+                    </div>
+                    <div class="mini-cart-items" id="miniCartItems">
+                        <div class="mini-cart-empty">
+                            <i class="bi bi-cart-x" style="font-size:2rem;opacity:0.4;display:block;margin-bottom:0.5rem;"></i>
+                            <p>Your cart is empty</p>
+                        </div>
+                    </div>
+                    <div class="mini-cart-footer" id="miniCartFooter" style="display:none;">
+                        <div class="mini-cart-total">
+                            <span>Total</span>
+                            <span id="miniCartTotal">GHS 0.00</span>
+                        </div>
+                        <a href="cart.html" class="btn btn-primary" style="width:100%;justify-content:center;">View Cart</a>
+                        <a href="checkout.html" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:0.5rem;">Checkout</a>
+                    </div>
+                </div>
+            </div>
             <a href="notifications.html" class="nav-link notification-link" aria-label="Notifications" title="Notifications" id="globalNotificationLink">
                 <i class="bi bi-bell"></i>
                 <span class="notification-badge" id="globalNotifBadge" style="display:none;">0</span>

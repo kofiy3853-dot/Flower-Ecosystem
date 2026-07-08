@@ -140,6 +140,13 @@ app.get('/reviews', (_, res) => res.sendFile(path.join(__dirname, 'reviews.html'
 app.get('/members', (_, res) => res.sendFile(path.join(__dirname, 'members.html')));
 app.get('/showcase', (_, res) => res.sendFile(path.join(__dirname, 'showcase.html')));
 app.get('/clubs', (_, res) => res.sendFile(path.join(__dirname, 'clubs.html')));
+app.get('/growers', (_, res) => res.sendFile(path.join(__dirname, 'growers.html')));
+app.get('/learning', (_, res) => res.sendFile(path.join(__dirname, 'learning.html')));
+app.get('/community', (_, res) => res.sendFile(path.join(__dirname, 'community.html')));
+app.get('/research', (_, res) => res.sendFile(path.join(__dirname, 'research.html')));
+app.get('/research/:slug', (_, res) => res.sendFile(path.join(__dirname, 'research-detail.html')));
+app.get('/floral-design', (_, res) => res.sendFile(path.join(__dirname, 'floral-design.html')));
+app.get('/floral-design/courses', (_, res) => res.sendFile(path.join(__dirname, 'floral-design-courses.html')));
 
 // ─── Detail pages ──────────────────────────────────────────────────────────
 
@@ -340,6 +347,7 @@ app.use('/api', require('./routes/care-guides-enhanced'));
 app.use('/api', require('./routes/bouquet-customizer'));
 app.use('/api', require('./routes/my-garden'));
 app.use('/api', require('./routes/category-images'));
+app.use('/api/research', require('./routes/research'));
 
 // ─── Error handling ────────────────────────────────────────────────────────
 

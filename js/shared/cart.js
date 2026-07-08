@@ -24,6 +24,59 @@ function updateAllBadges() {
         void el.offsetWidth;
         el.style.animation = 'pulse 0.5s ease';
     });
+    renderMiniCart();
+}
+
+function renderMiniCart() {
+    const cart = getCart();
+    const itemsEl = document.getElementById('miniCartItems');
+    const footerEl = document.getElementById('miniCartFooter');
+    const countEl = document.getElementById('miniCartCount');
+    const totalEl = document.getElementById('miniCartTotal');
+
+    if (!itemsEl) return;
+
+    if (!cart.length) {
+        itemsEl.innerHTML = '<div class="mini-cart-empty"><i class="bi bi-cart-x" style="font-size:2rem;opacity:0.4;display:block;margin-bottom:0.5rem;"></i><p>Your cart is empty</p></div>';
+        if (footerEl) footerEl.style.display = 'none';
+        if (countEl) countEl.textContent = '0 items';
+        return;
+    }
+
+    const totalItems = cart.reduce((s, i) => s + (i.qty || 1), 0);
+    const totalPrice = cart.reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0);
+
+    if (countEl) countEl.textContent = `${totalItems} item${totalItems !== 1 ? 's' : ''}`;
+
+    itemsEl.innerHTML = cart.slice(0, 5).map((item, idx) => `
+        <div class="mini-cart-item">
+            <div class="mini-cart-item-img">
+                <img src="${item.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 50 50%22><rect fill=%22%23fce7f0%22 width=%2250%22 height=%2250%22/><text x=%2225%22 y=%2230%22 text-anchor=%22middle%22 fill=%22%23d8447c%22 font-size=%2218%22>✿</text></svg>'}" alt="${item.name || ''}">
+            </div>
+            <div class="mini-cart-item-info">
+                <div class="mini-cart-item-name">${item.name || 'Item'}</div>
+                <div class="mini-cart-item-price">GHS ${(item.price || 0).toFixed(2)}</div>
+                <div class="mini-cart-item-qty">Qty: ${item.qty || 1}</div>
+            </div>
+            <button class="mini-cart-item-remove" onclick="removeMiniCartItem(${idx})" title="Remove"><i class="bi bi-x"></i></button>
+        </div>
+    `).join('') + (cart.length > 5 ? `<div style="text-align:center;padding:0.5rem;font-size:0.8rem;color:var(--text-light);">+ ${cart.length - 5} more items</div>` : '');
+
+    if (footerEl) {
+        footerEl.style.display = 'block';
+        if (totalEl) totalEl.textContent = `GHS ${totalPrice.toFixed(2)}`;
+    }
+}
+
+function removeMiniCartItem(idx) {
+    const cart = getCart();
+    const item = cart[idx];
+    if (item?.cartItemId && isLoggedIn()) {
+        serverRemoveCartItem(item.cartItemId).catch(() => {});
+    }
+    cart.splice(idx, 1);
+    saveCart(cart);
+    updateAllBadges();
 }
 
 function isLoggedIn() {

@@ -73,6 +73,7 @@
         @media(max-width:480px){
             .enc-grid{grid-template-columns:1fr;}
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -437,37 +438,51 @@
             reader.onload = (e) => {
                 document.getElementById('aiUpload').innerHTML = `
                     <img src="${e.target.result}" style="max-height:150px;border-radius:8px;margin-bottom:0.5rem;">
-                    <p style="font-size:0.85rem;">Analyzing...</p>
+                    <p style="font-size:0.85rem;"><span class="spinner" style="display:inline-block;width:16px;height:16px;border:2px solid var(--border-color);border-top-color:var(--primary-color);border-radius:50%;animation:spin 0.8s linear infinite;"></span> Analyzing with AI...</p>
                 `;
             };
             reader.readAsDataURL(file);
 
-            // Simulate AI identification (in production, call OpenAI Vision API)
-            setTimeout(() => {
-                const flowers = [
-                    { name: 'Rose', scientific: 'Rosa', care: 'Intermediate', sun: 'Full Sun', water: 'Regular', desc: 'Classic flowering plant known for beautiful blooms and fragrance.' },
-                    { name: 'Sunflower', scientific: 'Helianthus annuus', care: 'Easy', sun: 'Full Sun', water: 'Regular', desc: 'Bright, cheerful flower that follows the sun.' },
-                    { name: 'Tulip', scientific: 'Tulipa', care: 'Easy', sun: 'Full Sun', water: 'Moderate', desc: 'Spring-blooming bulb flower in many colors.' },
-                    { name: 'Orchid', scientific: 'Orchidaceae', care: 'Advanced', sun: 'Indirect', water: 'Low', desc: 'Exotic flower known for stunning beauty.' },
-                    { name: 'Lily', scientific: 'Lilium', care: 'Intermediate', sun: 'Full Sun', water: 'Regular', desc: 'Elegant flower with large, dramatic blooms.' }
-                ];
+            // Use real AI API
+            const form = new FormData();
+            form.append('image', file);
 
-                const result = flowers[Math.floor(Math.random() * flowers.length)];
+            try {
+                const resp = await fetch('/api/openai/flower-expert', { method: 'POST', body: form });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    throw new Error(err.error || 'Identification failed');
+                }
+                const data = await resp.json();
+                if (data.error) throw new Error(data.error);
+
+                const ai = data.ai || {};
+                const confidence = ((ai.confidence || 0) * 100).toFixed(0);
 
                 document.getElementById('aiUpload').innerHTML = `
                     <img src="${URL.createObjectURL(file)}" style="max-height:150px;border-radius:8px;margin-bottom:0.5rem;">
-                    <p style="font-size:0.85rem;color:var(--accent-green);"><i class="bi bi-check-circle"></i> Identified!</p>
+                    <p style="font-size:0.85rem;color:var(--accent-green);"><i class="bi bi-check-circle"></i> Identified! (${confidence}% confidence)</p>
                 `;
 
-                document.getElementById('aiFlowerName').textContent = result.name;
-                document.getElementById('aiScientificName').textContent = result.scientific;
-                document.getElementById('aiDescription').textContent = result.desc;
-                document.getElementById('aiCareLevel').textContent = result.care;
-                document.getElementById('aiSunlight').textContent = result.sun;
-                document.getElementById('aiWater').textContent = result.water;
-                document.getElementById('aiViewDetails').href = `flower-detail.html?slug=${result.name.toLowerCase()}`;
+                document.getElementById('aiFlowerName').textContent = ai.flowerName || 'Unknown Flower';
+                document.getElementById('aiScientificName').textContent = ai.scientificName || '';
+                document.getElementById('aiDescription').textContent = ai.description || 'No description available.';
+                document.getElementById('aiCareLevel').textContent = ai.careGuide?.difficulty || 'Easy';
+                document.getElementById('aiSunlight').textContent = ai.careGuide?.sunlight || 'Sun';
+                document.getElementById('aiWater').textContent = ai.careGuide?.water || 'Regular';
+
+                // Link to encyclopedia if flower exists, otherwise to AI scanner
+                const slug = (ai.flowerName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                document.getElementById('aiViewDetails').href = `flower-detail.html?slug=${slug}`;
                 document.getElementById('aiResult').classList.add('show');
-            }, 1500);
+            } catch (err) {
+                document.getElementById('aiUpload').innerHTML = `
+                    <i class="bi bi-camera"></i>
+                    <p><strong>Upload Flower Photo</strong></p>
+                    <p style="font-size:0.8rem;color:var(--error-color);">${err.message || 'Failed to identify. Try again.'}</p>
+                    <input type="file" id="aiFileInput" accept="image/*" style="display:none;" onchange="identifyFlower(this.files[0])">
+                `;
+            }
         }
 
         function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }

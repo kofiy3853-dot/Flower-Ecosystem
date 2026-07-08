@@ -148,9 +148,6 @@
 
             function render() {
                 const activeStatuses = ['pending', 'confirmed', 'processing', 'shipped'];
-
-            function render() {
-                const activeStatuses = ['pending', 'confirmed', 'processing', 'shipped'];
                 let filtered = allOrders;
                 if (filter === 'active') filtered = allOrders.filter(o => activeStatuses.includes(o.status?.toLowerCase()));
                 else if (filter === 'completed') filtered = allOrders.filter(o => o.status?.toLowerCase() === 'delivered');
