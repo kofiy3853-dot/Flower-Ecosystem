@@ -3,28 +3,51 @@
     <button id="aiToggle" style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--primary-color),#be185d);color:white;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(216,68,124,0.4);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">
         <i class="bi bi-robot"></i>
     </button>
-    <div id="aiChatWindow" style="display:none;position:absolute;bottom:70px;right:0;width:380px;height:500px;background:var(--bg-white);border:1px solid var(--border-color);border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.15);overflow:hidden;flex-direction:column;">
+    <div id="aiChatWindow" style="display:none;position:absolute;bottom:70px;right:0;width:380px;height:520px;background:var(--bg-white);border:1px solid var(--border-color);border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.15);overflow:hidden;flex-direction:column;">
+        <!-- Header -->
         <div style="background:linear-gradient(135deg,var(--primary-color),#be185d);color:white;padding:1rem 1.25rem;display:flex;justify-content:space-between;align-items:center;">
             <div style="display:flex;align-items:center;gap:0.75rem;">
                 <div style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;"><i class="bi bi-robot"></i></div>
-                <div><div style="font-weight:600;">Flora AI Assistant</div><div style="font-size:0.75rem;opacity:0.8;">Ask me about flowers</div></div>
+                <div>
+                    <div style="font-weight:600;">Flora AI Assistant</div>
+                    <div id="aiStatusText" style="font-size:0.75rem;opacity:0.8;">Ask me about flowers</div>
+                </div>
             </div>
-            <button id="aiCloseBtn" style="background:none;border:none;color:white;font-size:1.2rem;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+            <div style="display:flex;gap:0.4rem;align-items:center;">
+                <!-- Voice output toggle -->
+                <button id="aiSpeakToggle" title="Toggle voice responses" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;border-radius:50%;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.85rem;transition:all 0.2s;">
+                    <i class="bi bi-volume-up-fill"></i>
+                </button>
+                <button id="aiCloseBtn" style="background:none;border:none;color:white;font-size:1.2rem;cursor:pointer;"><i class="bi bi-x-lg"></i></button>
+            </div>
         </div>
+
+        <!-- Messages -->
         <div id="aiMessages" style="flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.75rem;">
             <div style="display:flex;gap:0.5rem;">
                 <div style="width:28px;height:28px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-robot" style="color:var(--primary-color);font-size:0.8rem;"></i></div>
                 <div style="background:var(--bg-light);padding:0.75rem 1rem;border-radius:12px;border-top-left-radius:4px;max-width:85%;font-size:0.9rem;line-height:1.5;">Hi! I'm Flora. How can I help you today?</div>
             </div>
         </div>
+
+        <!-- Quick actions -->
         <div style="padding:0.5rem 1rem;display:flex;gap:0.4rem;flex-wrap:wrap;border-top:1px solid var(--border-light);">
             <button class="ai-quick-btn" data-msg="What flowers are best for weddings?">Wedding flowers</button>
             <button class="ai-quick-btn" data-msg="How do I care for roses?">Rose care</button>
             <button class="ai-quick-btn" data-msg="Suggest a birthday arrangement">Birthday ideas</button>
         </div>
-        <div style="padding:0.75rem 1rem;border-top:1px solid var(--border-color);display:flex;gap:0.5rem;">
-            <input type="text" id="aiInput" placeholder="Type your question..." style="flex:1;padding:0.6rem 1rem;border:1px solid var(--border-color);border-radius:20px;font-size:0.9rem;outline:none;">
-            <button id="aiSendBtn" style="width:36px;height:36px;border-radius:50%;background:var(--primary-color);color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="bi bi-send-fill" style="font-size:0.8rem;"></i></button>
+
+        <!-- Input bar -->
+        <div style="padding:0.75rem 1rem;border-top:1px solid var(--border-color);display:flex;gap:0.5rem;align-items:center;">
+            <input type="text" id="aiInput" placeholder="Type or speak your question..." style="flex:1;padding:0.6rem 1rem;border:1px solid var(--border-color);border-radius:20px;font-size:0.9rem;outline:none;background:var(--bg-white);color:var(--text-main);">
+            <!-- Mic button -->
+            <button id="aiMicBtn" title="Speak" style="width:36px;height:36px;border-radius:50%;background:var(--bg-light);color:var(--text-main);border:1px solid var(--border-color);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;">
+                <i class="bi bi-mic-fill" style="font-size:0.85rem;"></i>
+            </button>
+            <!-- Send button -->
+            <button id="aiSendBtn" style="width:36px;height:36px;border-radius:50%;background:var(--primary-color);color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="bi bi-send-fill" style="font-size:0.8rem;"></i>
+            </button>
         </div>
     </div>
 </div>
@@ -37,23 +60,170 @@
 .ai-quick-btn{padding:0.35rem 0.6rem;border:1px solid var(--border-color);border-radius:16px;background:var(--bg-white);font-size:0.75rem;cursor:pointer;color:var(--text-main);white-space:nowrap}
 .ai-quick-btn:hover{border-color:var(--primary-color);color:var(--primary-color)}
 @media(max-width:480px){#aiChatWindow{width:calc(100vw - 32px);right:-12px;height:70vh}}
+
+/* Mic recording pulse */
+#aiMicBtn.recording {
+    background: #ef4444 !important;
+    color: white !important;
+    border-color: #ef4444 !important;
+    animation: micPulse 1s ease-in-out infinite;
+}
+@keyframes micPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+    50%       { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+}
+
+/* Voice speaker muted state */
+#aiSpeakToggle.muted {
+    background: rgba(255,255,255,0.05) !important;
+    opacity: 0.5;
+}
+
+/* Speaking pulse on bot avatar */
+.ai-speaking-avatar {
+    animation: speakPulse 0.6s ease-in-out infinite alternate;
+}
+@keyframes speakPulse {
+    from { box-shadow: 0 0 0 0 rgba(216,68,124,0.4); }
+    to   { box-shadow: 0 0 0 6px rgba(216,68,124,0); }
+}
 </style>
 
 <script>
 var aiChatOpen = sessionStorage.getItem('floraAiOpen') === 'true';
 var conversationHistory = JSON.parse(sessionStorage.getItem('floraAiHistory') || '[]');
+var aiVoiceEnabled = sessionStorage.getItem('floraAiVoice') !== 'false'; // on by default
+var aiRecognition = null;
+var aiIsRecording = false;
+var aiCurrentUtterance = null;
 
+// ── Speech Recognition setup ─────────────────────────────────────────────────
+var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+var aiSpeechSupported = !!SpeechRecognition;
+
+// ── Speech Synthesis ─────────────────────────────────────────────────────────
+function aiSpeak(text) {
+    if (!aiVoiceEnabled || !window.speechSynthesis) return;
+    // Strip HTML tags for clean speech
+    var clean = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!clean) return;
+
+    window.speechSynthesis.cancel(); // stop any current speech
+    var utter = new SpeechSynthesisUtterance(clean);
+    utter.lang = 'en-US';
+    utter.rate = 1.05;
+    utter.pitch = 1.1;
+    utter.volume = 1;
+
+    // Prefer a natural female voice if available
+    var voices = window.speechSynthesis.getVoices();
+    var preferred = voices.find(v => /female|woman|zira|samantha|victoria|karen|moira|fiona/i.test(v.name))
+                 || voices.find(v => v.lang === 'en-US')
+                 || voices[0];
+    if (preferred) utter.voice = preferred;
+
+    // Show speaking animation on last bot avatar
+    var avatars = document.querySelectorAll('.ai-msg-bot > div:first-child');
+    var lastAvatar = avatars[avatars.length - 1];
+    if (lastAvatar) lastAvatar.classList.add('ai-speaking-avatar');
+
+    utter.onend = function() {
+        if (lastAvatar) lastAvatar.classList.remove('ai-speaking-avatar');
+    };
+    utter.onerror = function() {
+        if (lastAvatar) lastAvatar.classList.remove('ai-speaking-avatar');
+    };
+
+    aiCurrentUtterance = utter;
+    window.speechSynthesis.speak(utter);
+}
+
+// Voices load async — trigger a warm-up
+if (window.speechSynthesis) {
+    window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
+    window.speechSynthesis.getVoices();
+}
+
+// ── Voice Input ───────────────────────────────────────────────────────────────
+function aiStartRecording() {
+    if (!aiSpeechSupported) {
+        aiShowStatus('Voice input not supported in this browser', 2000);
+        return;
+    }
+    if (aiIsRecording) { aiStopRecording(); return; }
+
+    aiRecognition = new SpeechRecognition();
+    aiRecognition.lang = 'en-US';
+    aiRecognition.interimResults = true;
+    aiRecognition.maxAlternatives = 1;
+    aiRecognition.continuous = false;
+
+    var micBtn = document.getElementById('aiMicBtn');
+    var input  = document.getElementById('aiInput');
+
+    aiIsRecording = true;
+    micBtn.classList.add('recording');
+    aiShowStatus('🎤 Listening...', 0);
+    if (window.speechSynthesis) window.speechSynthesis.cancel(); // stop Flora while user speaks
+
+    aiRecognition.onresult = function(e) {
+        var transcript = e.results[0][0].transcript;
+        input.value = transcript;
+        if (e.results[0].isFinal) {
+            aiStopRecording();
+            setTimeout(aiSendMsg, 200); // auto-send on final result
+        }
+    };
+
+    aiRecognition.onerror = function(e) {
+        aiStopRecording();
+        var msg = e.error === 'not-allowed' ? 'Microphone access denied' : 'Could not understand. Try again.';
+        aiShowStatus(msg, 3000);
+    };
+
+    aiRecognition.onend = function() {
+        aiStopRecording();
+    };
+
+    aiRecognition.start();
+}
+
+function aiStopRecording() {
+    if (aiRecognition) { try { aiRecognition.stop(); } catch(e) {} aiRecognition = null; }
+    aiIsRecording = false;
+    var micBtn = document.getElementById('aiMicBtn');
+    if (micBtn) micBtn.classList.remove('recording');
+    aiShowStatus('Ask me about flowers', 0);
+}
+
+// ── Status text helper ────────────────────────────────────────────────────────
+var aiStatusTimer = null;
+function aiShowStatus(msg, duration) {
+    var el = document.getElementById('aiStatusText');
+    if (!el) return;
+    el.textContent = msg;
+    if (aiStatusTimer) clearTimeout(aiStatusTimer);
+    if (duration > 0) {
+        aiStatusTimer = setTimeout(function() { el.textContent = 'Ask me about flowers'; }, duration);
+    }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
 function initAIAssistant() {
-    var toggle = document.getElementById('aiToggle');
-    var closeBtn = document.getElementById('aiCloseBtn');
-    var sendBtn = document.getElementById('aiSendBtn');
-    var input = document.getElementById('aiInput');
+    var toggle      = document.getElementById('aiToggle');
+    var closeBtn    = document.getElementById('aiCloseBtn');
+    var sendBtn     = document.getElementById('aiSendBtn');
+    var micBtn      = document.getElementById('aiMicBtn');
+    var speakToggle = document.getElementById('aiSpeakToggle');
+    var input       = document.getElementById('aiInput');
 
+    // Restore open state
     if (aiChatOpen && toggle) {
         document.getElementById('aiChatWindow').style.display = 'flex';
         toggle.innerHTML = '<i class="bi bi-x-lg"></i>';
     }
 
+    // Restore chat history
     var c = document.getElementById('aiMessages');
     if (conversationHistory.length > 0) {
         c.innerHTML = '';
@@ -63,6 +233,14 @@ function initAIAssistant() {
         setTimeout(() => c.scrollTop = c.scrollHeight, 100);
     }
 
+    // Voice output toggle state
+    if (!aiVoiceEnabled && speakToggle) speakToggle.classList.add('muted');
+    if (!aiSpeechSupported && micBtn) {
+        micBtn.style.opacity = '0.4';
+        micBtn.title = 'Voice input not supported in this browser';
+    }
+
+    // Toggle chat open/close
     if (toggle) {
         toggle.onclick = function() {
             aiChatOpen = !aiChatOpen;
@@ -70,21 +248,46 @@ function initAIAssistant() {
             document.getElementById('aiChatWindow').style.display = aiChatOpen ? 'flex' : 'none';
             toggle.innerHTML = aiChatOpen ? '<i class="bi bi-x-lg"></i>' : '<i class="bi bi-robot"></i>';
             if (aiChatOpen && input) input.focus();
+            if (!aiChatOpen && window.speechSynthesis) window.speechSynthesis.cancel();
         };
     }
 
+    // Close button
     if (closeBtn) {
         closeBtn.onclick = function() {
             aiChatOpen = false;
             sessionStorage.setItem('floraAiOpen', 'false');
             document.getElementById('aiChatWindow').style.display = 'none';
             if (toggle) toggle.innerHTML = '<i class="bi bi-robot"></i>';
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
         };
     }
 
+    // Send button
     if (sendBtn) sendBtn.onclick = function() { aiSendMsg(); };
+
+    // Enter key to send
     if (input) input.onkeydown = function(e) { if (e.key === 'Enter') aiSendMsg(); };
 
+    // Mic button
+    if (micBtn) micBtn.onclick = function() { aiStartRecording(); };
+
+    // Voice output toggle
+    if (speakToggle) {
+        speakToggle.onclick = function() {
+            aiVoiceEnabled = !aiVoiceEnabled;
+            sessionStorage.setItem('floraAiVoice', aiVoiceEnabled);
+            speakToggle.classList.toggle('muted', !aiVoiceEnabled);
+            speakToggle.title = aiVoiceEnabled ? 'Voice responses ON' : 'Voice responses OFF';
+            speakToggle.innerHTML = aiVoiceEnabled
+                ? '<i class="bi bi-volume-up-fill"></i>'
+                : '<i class="bi bi-volume-mute-fill"></i>';
+            if (!aiVoiceEnabled && window.speechSynthesis) window.speechSynthesis.cancel();
+            aiShowStatus(aiVoiceEnabled ? 'Voice responses ON 🔊' : 'Voice responses OFF 🔇', 2000);
+        };
+    }
+
+    // Quick action buttons
     document.querySelectorAll('.ai-quick-btn').forEach(function(btn) {
         btn.onclick = function() {
             if (input) input.value = btn.dataset.msg;
@@ -100,16 +303,18 @@ if (document.readyState === 'loading') {
     setTimeout(initAIAssistant, 100);
 }
 
+// ── Send message ──────────────────────────────────────────────────────────────
 function aiSendMsg() {
     var inp = document.getElementById('aiInput');
     var msg = inp.value.trim();
     if (!msg) return;
-    
+
     aiAddMsg(msg, 'user');
     conversationHistory.push({ role: 'user', content: msg });
     sessionStorage.setItem('floraAiHistory', JSON.stringify(conversationHistory));
     inp.value = '';
 
+    // Typing indicator
     var typing = document.createElement('div');
     typing.className = 'ai-msg-bot';
     typing.id = 'aiTyping';
@@ -131,11 +336,12 @@ function aiSendMsg() {
             conversationHistory.push({ role: 'assistant', content: data.reply });
             sessionStorage.setItem('floraAiHistory', JSON.stringify(conversationHistory));
             aiAddMsg(data.reply, 'bot');
-            
+
+            // 🔊 Speak the reply
+            aiSpeak(data.reply);
+
             if (data.navigateTo) {
-                setTimeout(() => {
-                    window.location.href = data.navigateTo;
-                }, 1500);
+                setTimeout(() => { window.location.href = data.navigateTo; }, 1500);
             }
         }
     })
@@ -145,6 +351,7 @@ function aiSendMsg() {
     });
 }
 
+// ── Render message ────────────────────────────────────────────────────────────
 function aiAddMsg(text, sender, skipScroll) {
     var c = document.getElementById('aiMessages');
     var d = document.createElement('div');
