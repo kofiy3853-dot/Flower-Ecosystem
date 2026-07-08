@@ -67,6 +67,29 @@ CREATE TABLE IF NOT EXISTS learning.id_videos (
     duration        VARCHAR(50)
 );
 
+-- =============================================================================
+-- AI Flower Identification — History & Saved Results
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS learning.flower_identifications (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id         UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    uploaded_image  TEXT,
+    flower_name     VARCHAR(255),
+    scientific_name VARCHAR(255),
+    confidence      NUMERIC(5,2),
+    category        VARCHAR(100),
+    family          VARCHAR(100),
+    origin          VARCHAR(255),
+    care_guide      JSONB,
+    ai_result       JSONB,
+    saved_to_garden BOOLEAN DEFAULT FALSE,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_flower_id_user ON learning.flower_identifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_flower_id_created ON learning.flower_identifications(created_at DESC);
+
 -- Seed sample topics if table is empty
 DO $$
 BEGIN

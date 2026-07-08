@@ -17,13 +17,13 @@
         .sd-welcome h2{color:white;margin-bottom:0.25rem;}
         .sd-welcome p{opacity:0.85;}
         .sd-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
-        .sd-stat{background:white;border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;text-align:center;}
+        .sd-stat{background:var(--bg-white);border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;text-align:center;}
         .sd-stat .icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 0.5rem;font-size:1.25rem;}
         .sd-stat .num{font-size:1.5rem;font-weight:700;color:var(--text-main);}
         .sd-stat .label{font-size:0.8rem;color:var(--text-light);}
         .sd-section{margin-bottom:1.5rem;}
         .sd-section h3{font-size:1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;}
-        .sd-progress-card{background:white;border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;margin-bottom:0.75rem;display:flex;gap:1rem;align-items:center;transition:all 0.2s;}
+        .sd-progress-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;margin-bottom:0.75rem;display:flex;gap:1rem;align-items:center;transition:all 0.2s;}
         .sd-progress-card:hover{border-color:var(--primary-color);}
         .sd-progress-img{width:80px;height:60px;border-radius:8px;overflow:hidden;flex-shrink:0;}
         .sd-progress-img img{width:100%;height:100%;object-fit:cover;}
@@ -32,7 +32,7 @@
         .sd-progress-info p{font-size:0.8rem;color:var(--text-light);}
         .sd-progress-bar{background:var(--border-color);border-radius:6px;height:6px;overflow:hidden;margin-top:0.5rem;}
         .sd-progress-fill{height:100%;background:var(--primary-color);border-radius:6px;}
-        .sd-calendar{background:white;border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;}
+        .sd-calendar{background:var(--bg-white);border:1px solid var(--border-color);border-radius:12px;padding:1.25rem;}
         .sd-calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
         .sd-calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0.25rem;text-align:center;font-size:0.82rem;}
         .sd-calendar-day{padding:0.5rem;border-radius:6px;cursor:pointer;}
@@ -198,7 +198,7 @@
                 <!-- Settings -->
                 <div id="section-settings" class="section" style="display:none;">
                     <h1 style="margin-bottom:1.5rem;">Settings</h1>
-                    <div style="background:white;border:1px solid var(--border-color);border-radius:12px;padding:1.5rem;">
+                    <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:12px;padding:1.5rem;">
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
                             <div class="form-group"><label style="font-weight:500;font-size:0.85rem;display:block;margin-bottom:0.35rem;">Full Name</label><input type="text" id="sdNameInput" class="form-input" style="width:100%;padding:0.65rem;border:1px solid var(--border-color);border-radius:8px;"></div>
                             <div class="form-group"><label style="font-weight:500;font-size:0.85rem;display:block;margin-bottom:0.35rem;">Email</label><input type="email" id="sdEmailInput" class="form-input" style="width:100%;padding:0.65rem;border:1px solid var(--border-color);border-radius:8px;" disabled></div>

@@ -40,8 +40,8 @@
 </style>
 
 <script>
-var aiChatOpen = false;
-var conversationHistory = [];
+var aiChatOpen = sessionStorage.getItem('floraAiOpen') === 'true';
+var conversationHistory = JSON.parse(sessionStorage.getItem('floraAiHistory') || '[]');
 
 function initAIAssistant() {
     var toggle = document.getElementById('aiToggle');
@@ -49,9 +49,24 @@ function initAIAssistant() {
     var sendBtn = document.getElementById('aiSendBtn');
     var input = document.getElementById('aiInput');
 
+    if (aiChatOpen && toggle) {
+        document.getElementById('aiChatWindow').style.display = 'flex';
+        toggle.innerHTML = '<i class="bi bi-x-lg"></i>';
+    }
+
+    var c = document.getElementById('aiMessages');
+    if (conversationHistory.length > 0) {
+        c.innerHTML = '';
+        conversationHistory.forEach(msg => {
+            aiAddMsg(msg.content, msg.role === 'user' ? 'user' : 'bot', true);
+        });
+        setTimeout(() => c.scrollTop = c.scrollHeight, 100);
+    }
+
     if (toggle) {
         toggle.onclick = function() {
             aiChatOpen = !aiChatOpen;
+            sessionStorage.setItem('floraAiOpen', aiChatOpen);
             document.getElementById('aiChatWindow').style.display = aiChatOpen ? 'flex' : 'none';
             toggle.innerHTML = aiChatOpen ? '<i class="bi bi-x-lg"></i>' : '<i class="bi bi-robot"></i>';
             if (aiChatOpen && input) input.focus();
@@ -61,6 +76,7 @@ function initAIAssistant() {
     if (closeBtn) {
         closeBtn.onclick = function() {
             aiChatOpen = false;
+            sessionStorage.setItem('floraAiOpen', 'false');
             document.getElementById('aiChatWindow').style.display = 'none';
             if (toggle) toggle.innerHTML = '<i class="bi bi-robot"></i>';
         };
@@ -91,6 +107,7 @@ function aiSendMsg() {
     
     aiAddMsg(msg, 'user');
     conversationHistory.push({ role: 'user', content: msg });
+    sessionStorage.setItem('floraAiHistory', JSON.stringify(conversationHistory));
     inp.value = '';
 
     var typing = document.createElement('div');
@@ -112,6 +129,7 @@ function aiSendMsg() {
             aiAddMsg('<i>Sorry, ' + data.error + '</i>', 'bot');
         } else {
             conversationHistory.push({ role: 'assistant', content: data.reply });
+            sessionStorage.setItem('floraAiHistory', JSON.stringify(conversationHistory));
             aiAddMsg(data.reply, 'bot');
             
             if (data.navigateTo) {
@@ -127,7 +145,7 @@ function aiSendMsg() {
     });
 }
 
-function aiAddMsg(text, sender) {
+function aiAddMsg(text, sender, skipScroll) {
     var c = document.getElementById('aiMessages');
     var d = document.createElement('div');
     if (sender === 'user') {
@@ -138,6 +156,6 @@ function aiAddMsg(text, sender) {
         d.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-robot" style="color:var(--primary-color);font-size:0.8rem;"></i></div><div class="bot-bubble">' + text + '</div>';
     }
     c.appendChild(d);
-    c.scrollTop = c.scrollHeight;
+    if (!skipScroll) c.scrollTop = c.scrollHeight;
 }
 </script>

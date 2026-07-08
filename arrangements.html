@@ -18,7 +18,7 @@
         .arr-hero h1 { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 0.5rem; }
         .arr-hero p { color: var(--text-light); font-size: 1.05rem; margin-bottom: 1.5rem; }
         .arr-hero-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-        .arr-search { display: flex; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
+        .arr-search { display: flex; background:var(--bg-white); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
         .arr-search input { flex: 1; border: none; padding: 1rem 1.25rem; font-size: 1rem; outline: none; }
         .arr-search button { background: var(--primary-color); color: white; border: none; padding: 1rem 1.5rem; cursor: pointer; }
         .arr-hero-img { border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
@@ -31,13 +31,13 @@
 
         /* Featured Cards */
         .featured-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-        .featured-card { background: white; border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; transition: all 0.3s; position: relative; }
+        .featured-card { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; transition: all 0.3s; position: relative; }
         .featured-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
         .featured-img { height: 220px; overflow: hidden; position: relative; }
         .featured-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         .featured-card:hover .featured-img img { transform: scale(1.08); }
         .featured-badge { position: absolute; top: 0.75rem; left: 0.75rem; background: var(--primary-color); color: white; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.7rem; font-weight: 600; }
-        .featured-wishlist { position: absolute; top: 0.75rem; right: 0.75rem; background: white; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .featured-wishlist { position: absolute; top: 0.75rem; right: 0.75rem; background:var(--bg-white); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .featured-body { padding: 1.25rem; }
         .featured-name { font-weight: 600; font-size: 1rem; margin-bottom: 0.25rem; }
         .featured-florist { font-size: 0.8rem; color: var(--primary-color); margin-bottom: 0.25rem; }
@@ -52,14 +52,14 @@
 
         /* Occasion Grid */
         .occasion-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
-        .occasion-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; text-decoration: none; color: inherit; transition: all 0.3s; }
+        .occasion-card { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; text-decoration: none; color: inherit; transition: all 0.3s; }
         .occasion-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-color: var(--primary-color); }
         .occasion-icon { font-size: 2rem; margin-bottom: 0.5rem; }
         .occasion-name { font-size: 0.9rem; font-weight: 500; }
 
         /* Style Grid */
         .style-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; }
-        .style-card { background: white; border: 1px solid var(--border-color); border-radius: 10px; padding: 1rem; text-align: center; text-decoration: none; color: inherit; transition: all 0.2s; font-size: 0.9rem; font-weight: 500; }
+        .style-card { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 10px; padding: 1rem; text-align: center; text-decoration: none; color: inherit; transition: all 0.2s; font-size: 0.9rem; font-weight: 500; }
         .style-card:hover { border-color: var(--primary-color); background: var(--primary-light); }
 
         /* Color Grid */
@@ -79,19 +79,19 @@
         .builder-step .step-line { width: 30px; height: 2px; background: var(--border-color); }
         .builder-content { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; }
         .builder-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-        .builder-option { background: white; border: 2px solid var(--border-color); border-radius: 10px; padding: 1rem; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .builder-option { background:var(--bg-white); border: 2px solid var(--border-color); border-radius: 10px; padding: 1rem; text-align: center; cursor: pointer; transition: all 0.2s; }
         .builder-option:hover, .builder-option.selected { border-color: var(--primary-color); background: var(--primary-light); }
         .builder-option-icon { font-size: 1.5rem; margin-bottom: 0.35rem; }
         .builder-option-name { font-size: 0.85rem; font-weight: 500; }
         .builder-option-price { font-size: 0.75rem; color: var(--primary-color); }
-        .builder-preview { background: white; border-radius: 12px; padding: 1.5rem; position: sticky; top: 100px; }
+        .builder-preview { background:var(--bg-white); border-radius: 12px; padding: 1.5rem; position: sticky; top: 100px; }
         .builder-preview h4 { margin-bottom: 1rem; }
         .builder-preview-item { display: flex; justify-content: space-between; padding: 0.5rem 0; font-size: 0.85rem; border-bottom: 1px solid var(--border-light); }
         .builder-preview-total { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--border-color); color: var(--primary-color); }
 
         /* Florists Scroll */
         .florists-scroll { display: flex; gap: 1.25rem; overflow-x: auto; padding: 1rem 0; scrollbar-width: thin; }
-        .florist-card { min-width: 200px; background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; flex-shrink: 0; text-decoration: none; color: inherit; }
+        .florist-card { min-width: 200px; background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; flex-shrink: 0; text-decoration: none; color: inherit; }
         .florist-avatar { width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 0.75rem; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--primary-color); }
         .florist-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem; }
         .florist-rating { font-size: 0.8rem; color: #f59e0b; }
@@ -99,7 +99,7 @@
 
         /* Reviews */
         .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-        .review-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; }
+        .review-card { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; }
         .review-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
         .review-author { font-weight: 600; font-size: 0.9rem; }
         .review-rating { color: #f59e0b; font-size: 0.85rem; }
@@ -107,7 +107,7 @@
         .review-product { font-size: 0.75rem; color: var(--primary-color); margin-top: 0.5rem; }
 
         /* FAQ */
-        .faq-item { background: white; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 0.75rem; overflow: hidden; }
+        .faq-item { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 0.75rem; overflow: hidden; }
         .faq-question { padding: 1rem 1.25rem; font-weight: 500; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
         .faq-question:hover { background: var(--bg-light); }
         .faq-answer { padding: 0 1.25rem 1rem; font-size: 0.9rem; color: var(--text-light); line-height: 1.6; display: none; }
@@ -289,7 +289,7 @@
                         <!-- Step 5: Summary -->
                         <div class="builder-step-content" id="step5" style="display:none;">
                             <h3 style="margin-bottom:1rem;">Your Custom Arrangement</h3>
-                            <div id="builderSummary" style="background:white;border-radius:12px;padding:1.5rem;"></div>
+                            <div id="builderSummary" style="background:var(--bg-white);border-radius:12px;padding:1.5rem;"></div>
                             <button class="btn btn-primary w-100" style="margin-top:1rem;" onclick="addBuilderToCart()">Add to Cart</button>
                         </div>
 
@@ -342,7 +342,7 @@
                 <h2>Need a Custom Arrangement?</h2>
                 <p>Work with our expert florists to create something unique for your special occasion.</p>
                 <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
-                    <a href="florists.html" class="btn" style="background:white;color:var(--primary-color);">Find a Florist</a>
+                    <a href="florists.html" class="btn" style="background:var(--bg-white);color:var(--primary-color);">Find a Florist</a>
                     <a href="marketplace.html" class="btn" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);">Browse Marketplace</a>
                 </div>
             </div>

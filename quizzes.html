@@ -20,7 +20,7 @@
         .quiz-stat strong{font-size:1.5rem;display:block;}
         .quiz-stat span{font-size:0.85rem;opacity:0.8;}
         .quiz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;}
-        .quiz-card{background:white;border:1px solid var(--border-color);border-radius:14px;overflow:hidden;transition:all 0.3s;}
+        .quiz-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:14px;overflow:hidden;transition:all 0.3s;}
         .quiz-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.1);}
         .quiz-card-header{background:linear-gradient(135deg,var(--primary-light),#fce7f0);padding:1.25rem;text-align:center;}
         .quiz-card-header i{font-size:2.5rem;color:var(--primary-color);margin-bottom:0.5rem;display:block;}
@@ -33,14 +33,14 @@
         .quiz-timer{position:fixed;top:0;left:0;right:0;background:var(--primary-color);color:white;padding:0.75rem;display:none;justify-content:space-between;align-items:center;z-index:1000;font-weight:600;}
         .quiz-timer.active{display:flex;}
         .quiz-container{max-width:800px;margin:0 auto;padding:2rem 0;}
-        .quiz-question{background:white;border:1px solid var(--border-color);border-radius:12px;padding:1.5rem;margin-bottom:1.25rem;}
+        .quiz-question{background:var(--bg-white);border:1px solid var(--border-color);border-radius:12px;padding:1.5rem;margin-bottom:1.25rem;}
         .quiz-question h3{font-size:1rem;margin-bottom:1rem;}
         .quiz-option{display:block;padding:0.75rem 1rem;border:2px solid var(--border-color);border-radius:8px;margin-bottom:0.5rem;cursor:pointer;transition:all 0.2s;font-size:0.9rem;}
         .quiz-option:hover{border-color:var(--primary-color);background:rgba(216,68,124,0.05);}
         .quiz-option.selected{border-color:var(--primary-color);background:rgba(216,68,124,0.1);}
         .quiz-option.correct{border-color:#10b981;background:rgba(16,185,129,0.1);}
         .quiz-option.incorrect{border-color:#e74c3c;background:rgba(231,76,60,0.1);}
-        .quiz-result{text-align:center;padding:3rem;background:white;border:1px solid var(--border-color);border-radius:14px;margin-top:2rem;}
+        .quiz-result{text-align:center;padding:3rem;background:var(--bg-white);border:1px solid var(--border-color);border-radius:14px;margin-top:2rem;}
         .quiz-result .score{font-size:4rem;font-weight:700;color:var(--primary-color);}
         .quiz-result .feedback{font-size:1.1rem;color:var(--text-light);margin:1rem 0;}
         .quiz-nav{display:flex;justify-content:space-between;margin-top:1.5rem;}
@@ -52,7 +52,7 @@
 
     <div class="quiz-timer" id="quizTimer">
         <span><i class="bi bi-clock"></i> Time Remaining: <span id="timerDisplay">15:00</span></span>
-        <button class="btn btn-sm" style="background:white;color:var(--primary-color);" onclick="submitQuiz()">Submit Quiz</button>
+        <button class="btn btn-sm" style="background:var(--bg-white);color:var(--primary-color);" onclick="submitQuiz()">Submit Quiz</button>
     </div>
 
     <section class="quiz-hero" id="quizHero">

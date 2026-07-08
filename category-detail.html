@@ -22,13 +22,13 @@
         .cat-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, transparent 60%); display: flex; flex-direction: column; justify-content: center; padding: 3rem; }
         .cat-hero h1 { color: white; font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: 0.5rem; }
         .cat-hero p { color: rgba(255,255,255,0.85); font-size: 1.05rem; max-width: 500px; margin-bottom: 1.5rem; line-height: 1.6; }
-        .cat-hero-search { display: flex; background: white; border-radius: 10px; overflow: hidden; max-width: 400px; }
+        .cat-hero-search { display: flex; background:var(--bg-white); border-radius: 10px; overflow: hidden; max-width: 400px; }
         .cat-hero-search input { flex: 1; border: none; padding: 0.75rem 1rem; font-size: 0.9rem; outline: none; }
         .cat-hero-search button { background: var(--primary-color); color: white; border: none; padding: 0.75rem 1.25rem; cursor: pointer; }
 
         /* Quick Facts */
         .facts-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
-        .fact-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; }
+        .fact-card { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; }
         .fact-icon { font-size: 1.5rem; margin-bottom: 0.35rem; color: var(--primary-color); }
         .fact-value { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
         .fact-label { font-size: 0.8rem; color: var(--text-light); }
@@ -36,7 +36,7 @@
         /* Layout */
         .cat-layout { display: grid; grid-template-columns: 260px 1fr; gap: 2rem; }
         .cat-sidebar { position: sticky; top: 80px; height: fit-content; max-height: calc(100vh - 100px); overflow-y: auto; }
-        .filter-group { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+        .filter-group { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
         .filter-group h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
         .filter-group h4 i { color: var(--primary-color); }
         .filter-option { display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0; font-size: 0.88rem; cursor: pointer; }
@@ -57,13 +57,13 @@
 
         /* Product Grid */
         .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
-        .p-card { background: white; border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; transition: all 0.3s; position: relative; }
+        .p-card { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; transition: all 0.3s; position: relative; }
         .p-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
         .p-card-img { height: 200px; overflow: hidden; position: relative; }
         .p-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         .p-card:hover .p-card-img img { transform: scale(1.08); }
         .p-card-badge { position: absolute; top: 0.75rem; left: 0.75rem; background: var(--primary-color); color: white; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.7rem; font-weight: 600; }
-        .p-card-wishlist { position: absolute; top: 0.75rem; right: 0.75rem; background: white; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .p-card-wishlist { position: absolute; top: 0.75rem; right: 0.75rem; background:var(--bg-white); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .p-card-body { padding: 1rem; }
         .p-card-seller { font-size: 0.78rem; color: var(--text-light); margin-bottom: 0.2rem; }
         .p-card-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.2rem; }
@@ -73,52 +73,52 @@
 
         /* Color Cards */
         .color-grid { display: flex; gap: 1rem; flex-wrap: wrap; }
-        .color-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; text-align: center; width: 120px; text-decoration: none; color: inherit; transition: all 0.3s; }
+        .color-card { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; text-align: center; width: 120px; text-decoration: none; color: inherit; transition: all 0.3s; }
         .color-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
         .color-dot { width: 50px; height: 50px; border-radius: 50%; margin: 0 auto 0.5rem; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
 
         /* Occasion Cards */
         .occ-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
-        .occ-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; text-decoration: none; color: inherit; transition: all 0.3s; }
+        .occ-card { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; text-decoration: none; color: inherit; transition: all 0.3s; }
         .occ-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-color: var(--primary-color); }
         .occ-icon { font-size: 2rem; margin-bottom: 0.5rem; }
         .occ-name { font-size: 0.9rem; font-weight: 500; }
 
         /* Florists */
         .florists-scroll { display: flex; gap: 1.25rem; overflow-x: auto; padding: 1rem 0; }
-        .florist-card { min-width: 200px; background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; flex-shrink: 0; text-decoration: none; color: inherit; }
+        .florist-card { min-width: 200px; background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; flex-shrink: 0; text-decoration: none; color: inherit; }
         .florist-avatar { width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 0.75rem; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--primary-color); }
 
         /* Care Guide */
         .care-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-        .care-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; }
+        .care-card { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; }
         .care-icon { font-size: 1.75rem; margin-bottom: 0.5rem; }
         .care-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.3rem; }
         .care-text { font-size: 0.8rem; color: var(--text-light); line-height: 1.5; }
 
         /* Meanings */
         .meanings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
-        .meaning-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; }
+        .meaning-card { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; }
         .meaning-icon { font-size: 2rem; margin-bottom: 0.5rem; }
         .meaning-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.2rem; }
         .meaning-text { font-size: 0.8rem; color: var(--text-light); }
 
         /* Collections */
         .coll-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
-        .coll-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; text-decoration: none; color: inherit; transition: all 0.3s; }
+        .coll-card { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; text-align: center; text-decoration: none; color: inherit; transition: all 0.3s; }
         .coll-card:hover { border-color: var(--primary-color); background: var(--primary-light); }
         .coll-icon { font-size: 1.5rem; margin-bottom: 0.35rem; }
         .coll-name { font-weight: 500; font-size: 0.9rem; }
 
         /* Reviews */
         .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-        .review-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; }
+        .review-card { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; }
         .review-rating { color: #f59e0b; margin-bottom: 0.5rem; }
         .review-text { font-size: 0.85rem; color: var(--text-light); line-height: 1.5; margin-bottom: 0.5rem; }
         .review-author { font-weight: 600; font-size: 0.85rem; }
 
         /* FAQ */
-        .faq-item { background: white; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 0.75rem; }
+        .faq-item { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 0.75rem; }
         .faq-q { padding: 1rem 1.25rem; font-weight: 500; cursor: pointer; display: flex; justify-content: space-between; }
         .faq-a { padding: 0 1.25rem 1rem; font-size: 0.9rem; color: var(--text-light); line-height: 1.6; display: none; }
         .faq-item.open .faq-a { display: block; }
@@ -126,16 +126,16 @@
 
         /* Related */
         .related-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; }
-        .related-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; text-align: center; text-decoration: none; color: inherit; transition: all 0.3s; }
+        .related-card { background:var(--bg-white); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; text-align: center; text-decoration: none; color: inherit; transition: all 0.3s; }
         .related-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
         .related-icon { font-size: 2rem; margin-bottom: 0.35rem; }
         .related-name { font-weight: 500; font-size: 0.85rem; }
 
         /* Mobile Filter */
-        .mobile-filter-btn { display: none; padding: 0.5rem 1rem; border: 1px solid var(--border-color); background: white; border-radius: 8px; font-size: 0.85rem; cursor: pointer; }
+        .mobile-filter-btn { display: none; padding: 0.5rem 1rem; border: 1px solid var(--border-color); background:var(--bg-white); border-radius: 8px; font-size: 0.85rem; cursor: pointer; }
         @media (max-width: 900px) {
             .cat-layout { grid-template-columns: 1fr; }
-            .cat-sidebar { display: none; position: fixed; top: 0; left: 0; width: 300px; height: 100vh; z-index: 1000; background: white; padding: 1rem; overflow-y: auto; box-shadow: 4px 0 20px rgba(0,0,0,0.15); }
+            .cat-sidebar { display: none; position: fixed; top: 0; left: 0; width: 300px; height: 100vh; z-index: 1000; background:var(--bg-white); padding: 1rem; overflow-y: auto; box-shadow: 4px 0 20px rgba(0,0,0,0.15); }
             .cat-sidebar.open { display: block; }
             .mobile-filter-btn { display: block; }
             .facts-grid { grid-template-columns: repeat(2, 1fr); }

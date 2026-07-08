@@ -1,13 +1,20 @@
+// js/ai-scanner.js — AI Flower Identification Center
+
 document.addEventListener('DOMContentLoaded', () => {
   const fileInput = document.getElementById('file-input');
+  const cameraInput = document.getElementById('camera-input');
   const uploadArea = document.getElementById('upload-area');
   const analyzeBtn = document.getElementById('analyze-btn');
   const resultSection = document.getElementById('result-section');
   const errorMsg = document.getElementById('error-msg');
   const loadingSection = document.getElementById('loading-section');
+  const historySection = document.getElementById('history-section');
+  const historyGrid = document.getElementById('history-grid');
+  const stickyActions = document.getElementById('sticky-actions');
 
   let selectedFile = null;
   let flowerKnowledge = [];
+  let currentResult = null;
 
   const flowerEmojis = {
     rose: '🌹', tulip: '🌷', lily: '🌺', sunflower: '🌻', daisy: '🌼',
@@ -22,16 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const careIcons = {
-    sunlight: 'bi-sun',
-    water: 'bi-droplet',
-    soil: 'bi-flower1',
-    temperature: 'bi-thermometer-half'
+    sunlight: 'bi-sun', water: 'bi-droplet', soil: 'bi-flower1',
+    temperature: 'bi-thermometer-half', pruning: 'bi-scissors'
   };
 
-  fetch('/api/knowledge/flowers')
-    .then(r => r.json())
-    .then(data => { flowerKnowledge = Array.isArray(data) ? data : []; })
-    .catch(() => {});
+  // Load flower knowledge for encyclopedia linking
+  fetch('/api/knowledge/flowers').then(r => r.json()).then(d => { flowerKnowledge = Array.isArray(d) ? d : []; }).catch(() => {});
 
   function getFlowerEmoji(name) {
     const lower = (name || '').toLowerCase();
@@ -41,6 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return '🌸';
   }
 
+  function getToken() { return localStorage.getItem('flower-token'); }
+
+  // ─── Upload handling ──────────────────────────────────────────────────
   const enableButton = () => {
     analyzeBtn.disabled = !selectedFile;
     const prompt = document.getElementById('upload-prompt');
@@ -56,41 +62,82 @@ document.addEventListener('DOMContentLoaded', () => {
       preview.src = '';
       preview.style.display = 'none';
       if (prompt) prompt.style.display = 'block';
-      uploadArea.style.padding = '3rem 2rem';
+      uploadArea.style.padding = '';
       uploadArea.style.borderStyle = 'dashed';
-      uploadArea.style.borderColor = 'var(--border-color)';
+      uploadArea.style.borderColor = '';
     }
   };
 
-  fileInput.addEventListener('change', (e) => {
-    selectedFile = e.target.files[0] || null;
+  function setFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    if (file.size > 10 * 1024 * 1024) {
+      showError('Image is too large. Maximum size is 10MB.');
+      return;
+    }
+    selectedFile = file;
     enableButton();
+  }
+
+  fileInput.addEventListener('change', (e) => { setFile(e.target.files[0]); });
+
+  // Camera capture
+  document.getElementById('camera-btn')?.addEventListener('click', () => cameraInput.click());
+  cameraInput.addEventListener('change', (e) => { setFile(e.target.files[0]); });
+
+  // Paste image
+  document.getElementById('paste-btn')?.addEventListener('click', async () => {
+    try {
+      const items = await navigator.clipboard.read();
+      for (const item of items) {
+        for (const type of item.types) {
+          if (type.startsWith('image/')) {
+            const blob = await item.getType(type);
+            setFile(new File([blob], 'pasted-image.png', { type }));
+            return;
+          }
+        }
+      }
+      showError('No image found in clipboard. Copy an image first.');
+    } catch { showError('Clipboard access denied. Paste with Ctrl+V instead.'); }
   });
 
-  uploadArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadArea.classList.add('dragover');
+  document.addEventListener('paste', (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        setFile(item.getAsFile());
+        return;
+      }
+    }
   });
-  uploadArea.addEventListener('dragleave', (e) => {
-    e.preventDefault();
-    uploadArea.classList.remove('dragover');
-  });
+
+  // Drag & drop
+  uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+  uploadArea.addEventListener('dragleave', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); });
   uploadArea.addEventListener('drop', (e) => {
     e.preventDefault();
     uploadArea.classList.remove('dragover');
-    const dt = e.dataTransfer;
-    if (dt.files && dt.files[0]) {
-      selectedFile = dt.files[0];
-      fileInput.files = dt.files;
+    if (e.dataTransfer.files?.[0]) {
+      selectedFile = e.dataTransfer.files[0];
+      fileInput.files = e.dataTransfer.files;
       enableButton();
     }
   });
 
+  // ─── Error display ────────────────────────────────────────────────────
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    errorMsg.style.display = 'block';
+  }
+
+  // ─── Analyze flower ───────────────────────────────────────────────────
   analyzeBtn.addEventListener('click', async () => {
     if (!selectedFile) return;
     errorMsg.style.display = 'none';
     resultSection.style.display = 'none';
-    if (loadingSection) loadingSection.style.display = 'block';
+    stickyActions.style.display = 'none';
+    loadingSection.style.display = 'block';
     analyzeBtn.innerHTML = '<span class="auth-spinner" style="margin-right:0.5rem;border-color:rgba(255,255,255,0.3);border-top-color:white;"></span> Analyzing...';
     analyzeBtn.disabled = true;
 
@@ -98,263 +145,364 @@ document.addEventListener('DOMContentLoaded', () => {
     form.append('image', selectedFile);
 
     try {
-      const resp = await fetch('/api/openai/flower-expert', {
-        method: 'POST',
-        body: form,
-      });
+      const resp = await fetch('/api/openai/flower-expert', { method: 'POST', body: form });
       if (!resp.ok) {
-        const errorData = await resp.json().catch(() => ({}));
-        throw new Error(errorData.error || errorData.details || 'Server error');
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(err.error || 'Server error');
       }
       const data = await resp.json();
       if (data.error) throw new Error(data.error);
 
-      const ai = data.ai || {};
-      const emoji = getFlowerEmoji(ai.flowerName);
-      const confidencePercent = ((ai.confidence || 0) * 100).toFixed(0);
-      const naturalPercent = ((ai.naturalConfidence || 0) * 100).toFixed(0);
-
-      let html = '';
-
-      // Section 1: Header
-      html += `
-        <div class="scanner-header" style="border-bottom:1px solid var(--border-color);padding-bottom:1.25rem;margin-bottom:1.25rem;">
-          <h2 style="font-size:1.5rem;margin-bottom:0.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
-            <span id="flower-name" style="color:var(--primary-color);">${emoji} ${ai.flowerName || 'Unknown Flower'}</span>
-            <span class="confidence-badge"><i class="bi bi-check-circle-fill"></i> <span id="confidence">${confidencePercent}</span>% Match</span>
-          </h2>
-          <p style="font-style:italic;color:var(--text-light);font-size:1.05rem;" id="scientific-name">${ai.scientificName || 'Unknown'}</p>
-        </div>`;
-
-      // Section 2: Basic Info Grid
-      html += `
-        <div class="scanner-info-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:1.5rem;">
-          <div class="info-tag"><i class="bi bi-tag" style="color:var(--primary-color);margin-right:0.5rem;"></i><strong>Category:</strong> <span id="category">${ai.category || 'Unknown'}</span></div>
-          <div class="info-tag"><i class="bi bi-flower1" style="color:var(--primary-color);margin-right:0.5rem;"></i><strong>Type:</strong> <span id="flower-type">${ai.flowerType || 'Unknown'}</span></div>
-          <div class="info-tag"><i class="bi bi-diagram-3" style="color:var(--primary-color);margin-right:0.5rem;"></i><strong>Family:</strong> <span>${ai.family || 'Unknown'}</span></div>
-          <div class="info-tag"><i class="bi bi-geo-alt" style="color:var(--primary-color);margin-right:0.5rem;"></i><strong>Origin:</strong> <span>${ai.origin || 'Unknown'}</span></div>
-        </div>`;
-
-      // Section 3: Description
-      if (ai.description) {
-        html += `
-          <div class="scanner-description" style="margin-bottom:1.5rem;">
-            <h3 style="font-size:1.1rem;margin-bottom:0.75rem;"><i class="bi bi-info-circle"></i> About This Flower</h3>
-            <p style="color:var(--text-light);line-height:1.7;font-size:0.95rem;">${ai.description}</p>
-          </div>`;
-      }
-
-      // Section 4: Uses
-      const useColumns = [
-        { title: 'Ornamental Uses', icon: 'bi-palette', items: ai.ornamentalUses },
-        { title: 'Perfume Uses', icon: 'bi-droplet-half', items: ai.perfumeUses },
-        { title: 'Medicinal Properties', icon: 'bi-heart-pulse', items: ai.medicinalProperties },
-        { title: 'Food Uses', icon: 'bi-cup-hot', items: ai.foodUses }
-      ];
-      const hasUses = useColumns.some(c => c.items && c.items.length);
-      if (hasUses) {
-        html += `<div class="scanner-uses" style="margin-bottom:1.5rem;">
-          <h3 style="font-size:1.1rem;margin-bottom:0.75rem;"><i class="bi bi-grid"></i> Uses & Benefits</h3>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">`;
-        useColumns.forEach(col => {
-          if (!col.items || !col.items.length) return;
-          html += `<div style="background:var(--bg-light);padding:1rem;border-radius:var(--radius-sm);border:1px solid var(--border-color);">
-            <h4 style="font-size:0.95rem;margin-bottom:0.5rem;color:var(--primary-color);"><i class="bi ${col.icon}"></i> ${col.title}</h4>
-            <ul class="feature-list" style="padding-left:0;">`;
-          col.items.forEach(item => {
-            html += `<li style="padding:0.4rem 0;font-size:0.9rem;"><i class="bi bi-check2-all" style="color:var(--accent-green);margin-right:0.4rem;"></i>${item}</li>`;
-          });
-          html += `</ul></div>`;
-        });
-        html += `</div></div>`;
-      }
-
-      // Section 5: Health Benefits
-      if (ai.healthBenefits && ai.healthBenefits.length) {
-        html += `
-          <div class="scanner-health" style="margin-bottom:1.5rem;">
-            <h3 style="font-size:1.1rem;margin-bottom:0.75rem;"><i class="bi bi-heart"></i> Health Benefits</h3>
-            <ul class="feature-list" style="padding-left:0;">`;
-        ai.healthBenefits.forEach(b => {
-          html += `<li><i class="bi bi-check2-circle" style="color:var(--accent-green);"></i> ${b}</li>`;
-        });
-        html += `</ul></div>`;
-      }
-
-      // Section 6: Where to Buy
-      if (data.marketplace && data.marketplace.products && data.marketplace.products.length) {
-        html += `
-          <div class="scanner-marketplace" style="margin-bottom:1.5rem;">
-            <h3 style="font-size:1.1rem;margin-bottom:0.75rem;"><i class="bi bi-bag"></i> Where to Buy</h3>
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;">`;
-        data.marketplace.products.forEach(prod => {
-          html += `<div style="background:var(--bg-light);padding:1rem;border-radius:var(--radius-sm);border:1px solid var(--border-color);text-align:center;">
-            ${prod.image ? `<img src="${prod.image}" alt="${prod.name}" style="width:100%;height:120px;object-fit:cover;border-radius:var(--radius-sm);margin-bottom:0.5rem;" />` : ''}
-            <p style="font-weight:600;font-size:0.95rem;margin-bottom:0.25rem;">${prod.name}</p>
-            ${prod.price ? `<p style="color:var(--primary-color);font-weight:700;margin-bottom:0.25rem;">$${Number(prod.price).toFixed(2)}</p>` : ''}
-            ${prod.seller_name || prod.seller ? `<p style="color:var(--text-light);font-size:0.85rem;"><i class="bi bi-shop"></i> ${prod.seller_name || prod.seller}</p>` : ''}
-          </div>`;
-        });
-        html += `</div></div>`;
-      }
-
-      // Section 7: Similar Flowers
-      if (ai.similarFlowers && ai.similarFlowers.length) {
-        html += `
-          <div class="scanner-similar" style="margin-bottom:1.5rem;">
-            <h3 style="font-size:1.1rem;margin-bottom:0.75rem;"><i class="bi bi-grid-3x3-gap"></i> Similar Flowers</h3>
-            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">`;
-        ai.similarFlowers.forEach(flower => {
-          const flowerLower = flower.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-          const fEmoji = getFlowerEmoji(flower);
-          html += `<a href="flower-knowledge.html?slug=${flowerLower}" style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.4rem 0.85rem;background:var(--bg-light);border:1px solid var(--border-color);border-radius:50px;text-decoration:none;color:var(--text-main);font-size:0.9rem;transition:all 0.2s;">${fEmoji} ${flower}</a>`;
-        });
-        html += `</div></div>`;
-      }
-
-      // Section 8: Natural vs Artificial
-      if (ai.isNatural !== undefined) {
-        const natLabel = ai.isNatural ? 'Natural' : 'Artificial';
-        const natColor = ai.isNatural ? 'var(--accent-green)' : 'var(--error-color)';
-        const natBg = ai.isNatural ? 'var(--accent-green-light)' : '#fee2e2';
-        html += `
-          <div class="scanner-authenticity" style="margin-bottom:1.5rem;background:var(--bg-light);padding:1.25rem;border-radius:var(--radius-sm);border:1px solid var(--border-color);">
-            <h3 style="font-size:1.1rem;margin-bottom:0.75rem;"><i class="bi bi-shield-check"></i> Authenticity Analysis</h3>
-            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;">
-              <span style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.85rem;border-radius:50px;font-weight:600;font-size:0.9rem;background:${natBg};color:${natColor};">
-                <i class="bi ${ai.isNatural ? 'bi-check-circle-fill' : 'bi-x-circle-fill'}"></i> ${natLabel}
-              </span>
-              <span style="font-size:0.9rem;color:var(--text-light);">${naturalPercent}% confidence</span>
-            </div>
-            <div style="background:var(--border-color);height:8px;border-radius:4px;overflow:hidden;margin-bottom:0.75rem;">
-              <div style="width:${naturalPercent}%;height:100%;background:${natColor};border-radius:4px;transition:width 0.5s;"></div>
-            </div>`;
-        if (ai.naturalReasons && ai.naturalReasons.length) {
-          html += `<ul class="feature-list" style="padding-left:0;margin-top:0.5rem;">`;
-          ai.naturalReasons.forEach(r => {
-            html += `<li><i class="bi bi-check2" style="color:var(--accent-green);"></i> ${r}</li>`;
-          });
-          html += `</ul>`;
-        }
-        if (ai.artificialReasons && ai.artificialReasons.length) {
-          html += `<ul class="feature-list" style="padding-left:0;margin-top:0.5rem;">`;
-          ai.artificialReasons.forEach(r => {
-            html += `<li><i class="bi bi-x" style="color:var(--error-color);"></i> ${r}</li>`;
-          });
-          html += `</ul>`;
-        }
-        html += `</div>`;
-      }
-
-      // Section 9: Care Guide
-      if (ai.careGuide) {
-        const care = ai.careGuide;
-        const careItems = [
-          { key: 'sunlight', label: 'Sunlight', icon: careIcons.sunlight, value: care.sunlight },
-          { key: 'water', label: 'Water', icon: careIcons.water, value: care.water },
-          { key: 'soil', label: 'Soil', icon: careIcons.soil, value: care.soil },
-          { key: 'temperature', label: 'Temperature', icon: careIcons.temperature, value: care.temperature }
-        ].filter(c => c.value);
-        if (careItems.length) {
-          html += `
-            <div class="scanner-care" style="margin-bottom:1.5rem;">
-              <h3 style="font-size:1.1rem;margin-bottom:0.75rem;"><i class="bi bi-calendar-check"></i> Care Guide</h3>
-              <div id="care-tips" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;">`;
-          careItems.forEach(item => {
-            html += `<div style="background:var(--bg-light);padding:1rem;border-radius:var(--radius-sm);border:1px solid var(--border-color);text-align:center;">
-              <i class="bi ${item.icon}" style="font-size:1.5rem;color:var(--primary-color);display:block;margin-bottom:0.5rem;"></i>
-              <p style="font-weight:600;font-size:0.9rem;margin-bottom:0.25rem;">${item.label}</p>
-              <p style="color:var(--text-light);font-size:0.9rem;">${item.value}</p>
-            </div>`;
-          });
-          html += `</div></div>`;
-        }
-      }
-
-      // Section 10: Learning Resources
-      if (data.articles && data.articles.length) {
-        html += `
-          <div class="scanner-articles" style="margin-bottom:1.5rem;">
-            <h3 style="font-size:1.1rem;margin-bottom:0.75rem;"><i class="bi bi-journal-text"></i> Learning Resources</h3>
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;">`;
-        data.articles.forEach(article => {
-          const articleUrl = article.slug ? `article-detail.html?id=${article.slug}` : '#';
-          html += `<a href="${articleUrl}" style="background:var(--bg-light);padding:1rem;border-radius:var(--radius-sm);border:1px solid var(--border-color);text-decoration:none;color:var(--text-main);transition:all 0.2s;display:block;">
-            <p style="font-weight:600;font-size:0.95rem;margin-bottom:0.25rem;">${article.title || 'Article'}</p>
-            ${article.excerpt ? `<p style="color:var(--text-light);font-size:0.85rem;margin:0;">${article.excerpt}</p>` : ''}
-            <span style="color:var(--primary-color);font-size:0.85rem;margin-top:0.5rem;display:inline-flex;align-items:center;gap:0.25rem;">Read more <i class="bi bi-arrow-right"></i></span>
-          </a>`;
-        });
-        html += `</div></div>`;
-      }
-
-      // Section 11: Community Questions
-      if (data.questions && data.questions.length) {
-        html += `
-          <div class="scanner-questions" style="margin-bottom:1.5rem;">
-            <h3 style="font-size:1.1rem;margin-bottom:0.75rem;"><i class="bi bi-chat-dots"></i> Community Questions</h3>
-            <ul style="list-style:none;padding:0;margin:0;">`;
-        data.questions.forEach(q => {
-          const qUrl = q.slug ? `question-detail.html?id=${q.slug}` : '#';
-          html += `<li style="padding:0.6rem 0;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:0.5rem;">
-            <i class="bi bi-question-circle" style="color:var(--primary-color);"></i>
-            <a href="${qUrl}" style="text-decoration:none;color:var(--text-main);font-size:0.95rem;flex:1;">${q.title || 'View Question'}</a>
-            ${q.answer_count ? `<span style="color:var(--text-light);font-size:0.8rem;white-space:nowrap;"><i class="bi bi-chat-left-text"></i> ${q.answer_count}</span>` : ''}
-          </li>`;
-        });
-        html += `</ul></div>`;
-      }
-
-      // Section 12: References
-      if (ai.references && ai.references.length) {
-        html += `
-          <div class="scanner-references" style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border-color);">
-            <details>
-              <summary style="cursor:pointer;font-size:1rem;font-weight:500;color:var(--text-light);display:flex;align-items:center;gap:0.5rem;">
-                <i class="bi bi-book"></i> References (${ai.references.length} sources)
-              </summary>
-              <ul style="list-style:none;padding:0;margin:0.75rem 0 0;">`;
-        ai.references.forEach(ref => {
-          html += `<li style="padding:0.3rem 0;font-size:0.9rem;color:var(--text-light);"><i class="bi bi-check2" style="color:var(--accent-green);margin-right:0.4rem;"></i>${ref}</li>`;
-        });
-        html += `</ul></details></div>`;
-      }
-
-      resultSection.innerHTML = html;
-      resultSection.style.display = 'block';
-      if (loadingSection) loadingSection.style.display = 'none';
-
-      // Add encyclopedia link at the end
-      const name = (ai.flowerName || '').toLowerCase();
-      const slug = name.replace(/[^a-z0-9]+/g, '-');
-      const match = flowerKnowledge.find(f =>
-        f.common_name.toLowerCase() === name ||
-        (f.scientific_name || '').toLowerCase() === name ||
-        f.common_name.toLowerCase().includes(name) ||
-        name.includes(f.common_name.toLowerCase())
-      );
-      const linkSlug = match ? match.slug : slug;
-      if (linkSlug) {
-        const linkHtml = `<div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border-color);text-align:center;">
-          <a href="flower-knowledge.html?slug=${linkSlug}" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.25rem;background:var(--bg-light);border-radius:10px;text-decoration:none;color:var(--primary-color);font-weight:500;font-size:0.9rem;">
-            <i class="bi bi-book"></i> Learn More in Flower Encyclopedia →
-          </a>
-        </div>`;
-        resultSection.innerHTML += linkHtml;
-      }
-
+      currentResult = data;
+      renderResult(data);
+      saveToHistory(data);
+      loadHistory();
     } catch (err) {
-      console.error('AI Scanner error:', err);
-      let msg = err.message || 'Failed to analyze image. Please try again.';
-      if (msg.includes('429') || msg.includes('Rate limit')) msg = 'Too many requests. Please wait a minute before trying again.';
-      if (msg.includes('not configured')) msg = 'AI service is not configured. Please contact support.';
-      if (msg.includes('too large')) msg = 'Image is too large. Please use an image under 4MB.';
-      errorMsg.textContent = msg;
-      errorMsg.style.display = 'block';
-      if (loadingSection) loadingSection.style.display = 'none';
+      let msg = err.message || 'Failed to analyze image.';
+      if (msg.includes('429') || msg.includes('Rate limit')) msg = 'Too many requests. Please wait a minute.';
+      if (msg.includes('not configured')) msg = 'AI service not configured.';
+      if (msg.includes('too large')) msg = 'Image too large. Use an image under 4MB.';
+      showError(msg);
     } finally {
+      loadingSection.style.display = 'none';
       analyzeBtn.innerHTML = '<i class="bi bi-stars" style="margin-right:0.5rem;"></i> Identify Flower';
       enableButton();
     }
   });
+
+  // ─── Render result ────────────────────────────────────────────────────
+  function renderResult(data) {
+    const ai = data.ai || {};
+    const emoji = getFlowerEmoji(ai.flowerName);
+    const confidencePercent = ((ai.confidence || 0) * 100).toFixed(0);
+    const naturalPercent = ((ai.naturalConfidence || 0) * 100).toFixed(0);
+
+    let html = '';
+
+    // Header with confidence badge
+    html += `<div class="scanner-result-card" style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:1.5rem;margin-top:1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;">
+        <div>
+          <h2 style="margin-bottom:0.25rem;color:var(--primary-color);">${emoji} ${ai.flowerName || 'Unknown Flower'}</h2>
+          <p style="color:var(--text-light);font-style:italic;margin:0;">${ai.scientificName || 'Unknown'}</p>
+        </div>
+        <span class="confidence-badge ${confidencePercent >= 80 ? 'high' : confidencePercent >= 50 ? 'medium' : 'low'}">
+          <span class="confidence-dot"></span> ${confidencePercent}% Match
+        </span>
+      </div>`;
+
+    // Basic info grid
+    html += `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0.75rem;margin-bottom:1.25rem;">
+      <div class="fact-card"><div class="fact-label">Category</div><div class="fact-value">${ai.category || 'Unknown'}</div></div>
+      <div class="fact-card"><div class="fact-label">Type</div><div class="fact-value">${ai.flowerType || 'Unknown'}</div></div>
+      <div class="fact-card"><div class="fact-label">Family</div><div class="fact-value">${ai.family || 'Unknown'}</div></div>
+      <div class="fact-card"><div class="fact-label">Origin</div><div class="fact-value">${ai.origin || 'Unknown'}</div></div>
+    </div>`;
+
+    // Quick facts
+    html += `<div class="quick-facts-grid">
+      <div class="fact-card"><div class="fact-label">Bloom Season</div><div class="fact-value">${ai.bloomSeason || 'Spring-Fall'}</div></div>
+      <div class="fact-card"><div class="fact-label">Colors</div><div class="fact-value">${ai.colors || 'Various'}</div></div>
+      <div class="fact-card"><div class="fact-label">Height</div><div class="fact-value">${ai.height || 'Varies'}</div></div>
+      <div class="fact-card"><div class="fact-label">Fragrance</div><div class="fact-value">${ai.fragrance || 'Mild'}</div></div>
+      <div class="fact-card"><div class="fact-label">Toxicity</div><div class="fact-value">${ai.toxicity || 'Check species'}</div></div>
+      <div class="fact-card"><div class="fact-label">Pollinator Friendly</div><div class="fact-value">${ai.pollinatorFriendly || 'Yes'}</div></div>
+      <div class="fact-card"><div class="fact-label">Difficulty</div><div class="fact-value">${ai.difficulty || 'Easy'}</div></div>
+      <div class="fact-card"><div class="fact-label">Indoor/Outdoor</div><div class="fact-value">${ai.indoorOutdoor || 'Outdoor'}</div></div>
+    </div>`;
+
+    // Description
+    if (ai.description) {
+      html += `<div class="scanner-description">${ai.description}</div>`;
+    }
+
+    // Uses & benefits
+    const useColumns = [
+      { title: 'Ornamental Uses', icon: 'bi-palette', items: ai.ornamentalUses },
+      { title: 'Perfume Uses', icon: 'bi-droplet-half', items: ai.perfumeUses },
+      { title: 'Medicinal Properties', icon: 'bi-heart-pulse', items: ai.medicinalProperties },
+      { title: 'Food Uses', icon: 'bi-cup-hot', items: ai.foodUses }
+    ];
+    if (useColumns.some(c => c.items?.length)) {
+      html += `<h3 style="font-size:1.05rem;margin:1.25rem 0 0.75rem;display:flex;align-items:center;gap:0.4rem;"><i class="bi bi-grid" style="color:var(--primary-color);"></i> Uses & Benefits</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.75rem;margin-bottom:1.25rem;">`;
+      useColumns.forEach(col => {
+        if (!col.items?.length) return;
+        html += `<div style="background:var(--bg-light);padding:1rem;border-radius:var(--radius-sm);border:1px solid var(--border-color);">
+          <h4 style="font-size:0.9rem;margin-bottom:0.5rem;color:var(--primary-color);"><i class="bi ${col.icon}"></i> ${col.title}</h4>
+          <ul style="list-style:none;padding:0;margin:0;">`;
+        col.items.forEach(item => { html += `<li style="padding:0.3rem 0;font-size:0.85rem;"><i class="bi bi-check2-all" style="color:var(--accent-green);margin-right:0.4rem;"></i>${item}</li>`; });
+        html += `</ul></div>`;
+      });
+      html += `</div>`;
+    }
+
+    // Health benefits
+    if (ai.healthBenefits?.length) {
+      html += `<h3 style="font-size:1.05rem;margin:1.25rem 0 0.75rem;display:flex;align-items:center;gap:0.4rem;"><i class="bi bi-heart" style="color:var(--primary-color);"></i> Health Benefits</h3>
+        <ul style="list-style:none;padding:0;margin:0 0 1.25rem;">`;
+      ai.healthBenefits.forEach(b => { html += `<li style="padding:0.4rem 0;font-size:0.9rem;"><i class="bi bi-check2-circle" style="color:var(--accent-green);margin-right:0.4rem;"></i>${b}</li>`; });
+      html += `</ul>`;
+    }
+
+    // Care guide
+    if (ai.careGuide) {
+      const care = ai.careGuide;
+      const careItems = [
+        { label: 'Sunlight', icon: careIcons.sunlight, value: care.sunlight },
+        { label: 'Water', icon: careIcons.water, value: care.water },
+        { label: 'Soil', icon: careIcons.soil, value: care.soil },
+        { label: 'Temperature', icon: careIcons.temperature, value: care.temperature },
+        { label: 'Pruning', icon: careIcons.pruning, value: care.pruning }
+      ].filter(c => c.value);
+      if (careItems.length) {
+        html += `<h3 style="font-size:1.05rem;margin:1.25rem 0 0.75rem;display:flex;align-items:center;gap:0.4rem;"><i class="bi bi-calendar-check" style="color:var(--primary-color);"></i> Care Recommendations</h3>
+          <div class="care-grid">`;
+        careItems.forEach(item => {
+          html += `<div class="care-card">
+            <div class="care-icon"><i class="bi ${item.icon}"></i></div>
+            <div class="care-label">${item.label}</div>
+            <div class="care-value">${item.value}</div>
+          </div>`;
+        });
+        html += `</div>`;
+        // Link to full care guide
+        const slug = (ai.flowerName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        html += `<div style="text-align:center;margin-bottom:1.25rem;"><a href="care-guides-hub.html?flower=${slug}" class="btn btn-outline" style="font-size:0.85rem;"><i class="bi bi-book"></i> View Full Care Guide</a></div>`;
+      }
+    }
+
+    // Plant health check
+    if (ai.isNatural === false || (ai.artificialReasons?.length > 0)) {
+      html += `<div class="health-check-card">
+        <h4><i class="bi bi-exclamation-triangle"></i> Authenticity Analysis</h4>
+        <p style="font-size:0.9rem;margin:0;">This appears to be an <strong>artificial</strong> flower (${naturalPercent}% natural confidence).</p>
+        <ul>${(ai.artificialReasons || []).map(r => `<li>${r}</li>`).join('')}</ul>
+      </div>`;
+    } else if (ai.naturalReasons?.length) {
+      html += `<div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:var(--radius-md);padding:1.25rem;margin:1.25rem 0;">
+        <h4 style="color:#065f46;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.4rem;"><i class="bi bi-shield-check"></i> Authenticity Verified</h4>
+        <p style="font-size:0.9rem;margin:0 0 0.5rem;">This appears to be a <strong>natural</strong> flower (${naturalPercent}% confidence).</p>
+        <ul style="padding-left:1.25rem;margin:0;">${ai.naturalReasons.map(r => `<li style="font-size:0.85rem;color:#065f46;">${r}</li>`).join('')}</ul>
+      </div>`;
+    }
+
+    // Similar flowers
+    if (ai.similarFlowers?.length) {
+      html += `<h3 style="font-size:1.05rem;margin:1.25rem 0 0.75rem;display:flex;align-items:center;gap:0.4rem;"><i class="bi bi-grid-3x3-gap" style="color:var(--primary-color);"></i> Similar Flowers</h3>
+        <div class="similar-flowers" style="margin-bottom:1.25rem;">`;
+      ai.similarFlowers.forEach(flower => {
+        const fLower = flower.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const fEmoji = getFlowerEmoji(flower);
+        html += `<a href="flower-knowledge.html?slug=${fLower}" class="similar-chip">${fEmoji} ${flower}</a>`;
+      });
+      html += `</div>`;
+    }
+
+    // Marketplace products
+    if (data.marketplace?.products?.length) {
+      html += `<h3 style="font-size:1.05rem;margin:1.25rem 0 0.75rem;display:flex;align-items:center;gap:0.4rem;"><i class="bi bi-bag" style="color:var(--primary-color);"></i> Shop Related Products</h3>
+        <div class="product-scroll" style="margin-bottom:1.25rem;">`;
+      data.marketplace.products.forEach(prod => {
+        html += `<div class="product-card">
+          ${prod.image ? `<img class="product-image" src="${prod.image}" alt="${prod.name}" />` : `<div class="product-image" style="display:flex;align-items:center;justify-content:center;font-size:2rem;">🌸</div>`}
+          <div class="product-info">
+            <div class="product-name">${prod.name}</div>
+            ${prod.price ? `<div class="product-price">$${Number(prod.price).toFixed(2)}</div>` : ''}
+            ${prod.seller_name ? `<div class="product-seller"><i class="bi bi-shop"></i> ${prod.seller_name}</div>` : ''}
+          </div>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    // Related courses
+    html += `<h3 style="font-size:1.05rem;margin:1.25rem 0 0.75rem;display:flex;align-items:center;gap:0.4rem;"><i class="bi bi-mortarboard" style="color:var(--primary-color);"></i> Related Courses</h3>
+      <div class="courses-grid" style="margin-bottom:1.25rem;">
+        <a href="learning.html" class="course-card"><h4>🌿 Flower Identification Basics</h4><p>Learn to identify common flowers by sight, scent, and touch.</p></a>
+        <a href="learning.html" class="course-card"><h4>🌹 Rose Care Masterclass</h4><p>Everything you need to know about growing and caring for roses.</p></a>
+        <a href="learning.html" class="course-card"><h4>🌱 Beginner Gardening</h4><p>Start your gardening journey with expert-led lessons.</p></a>
+      </div>`;
+
+    // Community discussions
+    if (data.questions?.length) {
+      html += `<h3 style="font-size:1.05rem;margin:1.25rem 0 0.75rem;display:flex;align-items:center;gap:0.4rem;"><i class="bi bi-chat-dots" style="color:var(--primary-color);"></i> Community Discussions</h3>
+        <ul class="question-list" style="margin-bottom:1.25rem;">`;
+      data.questions.forEach(q => {
+        const qUrl = q.slug ? `question-detail.html?id=${q.slug}` : '#';
+        html += `<li class="question-item">
+          <i class="bi bi-question-circle question-icon"></i>
+          <a href="${qUrl}" class="question-text" style="text-decoration:none;flex:1;">${q.title || 'View Question'}</a>
+          ${q.answer_count ? `<span style="color:var(--text-light);font-size:0.8rem;"><i class="bi bi-chat-left-text"></i> ${q.answer_count}</span>` : ''}
+        </li>`;
+      });
+      html += `</ul>`;
+    }
+
+    // Articles
+    if (data.articles?.length) {
+      html += `<h3 style="font-size:1.05rem;margin:1.25rem 0 0.75rem;display:flex;align-items:center;gap:0.4rem;"><i class="bi bi-journal-text" style="color:var(--primary-color);"></i> Learning Resources</h3>
+        <div class="articles-grid" style="margin-bottom:1.25rem;">`;
+      data.articles.forEach(article => {
+        const url = article.slug ? `article-detail.html?id=${article.slug}` : '#';
+        html += `<a href="${url}" class="article-card">
+          <div class="article-title">${article.title || 'Article'}</div>
+          ${article.excerpt ? `<div class="article-excerpt">${article.excerpt}</div>` : ''}
+        </a>`;
+      });
+      html += `</div>`;
+    }
+
+    // Care guides
+    if (data.careGuides?.length) {
+      html += `<h3 style="font-size:1.05rem;margin:1.25rem 0 0.75rem;display:flex;align-items:center;gap:0.4rem;"><i class="bi bi-heart-pulse" style="color:var(--primary-color);"></i> Care Guides</h3>
+        <div class="articles-grid" style="margin-bottom:1.25rem;">`;
+      data.careGuides.forEach(guide => {
+        const url = guide.slug ? `care-guide-detail.html?id=${guide.slug}` : '#';
+        html += `<a href="${url}" class="article-card">
+          <div class="article-title">${guide.title || 'Care Guide'}</div>
+          ${guide.excerpt ? `<div class="article-excerpt">${guide.excerpt}</div>` : ''}
+        </a>`;
+      });
+      html += `</div>`;
+    }
+
+    // References
+    if (ai.references?.length) {
+      html += `<details style="margin-top:1.25rem;">
+        <summary style="cursor:pointer;font-size:0.9rem;font-weight:500;color:var(--text-light);display:flex;align-items:center;gap:0.5rem;">
+          <i class="bi bi-book"></i> References (${ai.references.length} sources)
+        </summary>
+        <ul style="list-style:none;padding:0;margin:0.5rem 0 0;">`;
+      ai.references.forEach(ref => { html += `<li style="padding:0.3rem 0;font-size:0.85rem;color:var(--text-light);"><i class="bi bi-check2" style="color:var(--accent-green);margin-right:0.4rem;"></i>${ref}</li>`; });
+      html += `</ul></details>`;
+    }
+
+    // Action buttons
+    const slug = (ai.flowerName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const match = flowerKnowledge.find(f =>
+      f.common_name?.toLowerCase() === (ai.flowerName || '').toLowerCase() ||
+      (f.scientific_name || '').toLowerCase() === (ai.scientificName || '').toLowerCase() ||
+      f.common_name?.toLowerCase().includes((ai.flowerName || '').toLowerCase()) ||
+      (ai.flowerName || '').toLowerCase().includes(f.common_name?.toLowerCase() || '')
+    );
+    const encSlug = match ? match.slug : slug;
+
+    html += `<div class="action-bar">
+      <a href="flower-knowledge.html?slug=${encSlug}" class="btn btn-primary"><i class="bi bi-book"></i> Encyclopedia</a>
+      <button class="btn btn-outline" onclick="saveToGarden()"><i class="bi bi-plus-lg"></i> Save to Garden</button>
+      <button class="btn btn-outline" onclick="shareResult()"><i class="bi bi-share"></i> Share</button>
+      <a href="marketplace.html?q=${encodeURIComponent(ai.flowerName || '')}" class="btn btn-outline"><i class="bi bi-bag"></i> Buy</a>
+    </div>`;
+
+    html += `</div>`; // close result card
+
+    resultSection.innerHTML = html;
+    resultSection.style.display = 'block';
+    stickyActions.style.display = 'flex';
+  }
+
+  // ─── Save to history ──────────────────────────────────────────────────
+  async function saveToHistory(data) {
+    const token = getToken();
+    if (!token) return;
+    const ai = data.ai || {};
+    try {
+      await fetch('/api/identification/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token, 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify({
+          flower_name: ai.flowerName,
+          scientific_name: ai.scientificName,
+          confidence: ai.confidence,
+          category: ai.category,
+          family: ai.family,
+          origin: ai.origin,
+          care_guide: ai.careGuide,
+          ai_result: ai
+        })
+      });
+    } catch {}
+  }
+
+  // ─── Load history ─────────────────────────────────────────────────────
+  async function loadHistory() {
+    const token = getToken();
+    if (!token) { historySection.style.display = 'none'; return; }
+    try {
+      const res = await fetch('/api/identification/history?limit=6', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const items = await res.json();
+      if (!items.length) { historySection.style.display = 'none'; return; }
+      historySection.style.display = 'block';
+      historyGrid.innerHTML = items.map(item => {
+        const emoji = getFlowerEmoji(item.flower_name);
+        const date = new Date(item.created_at).toLocaleDateString();
+        return `<div class="history-card" onclick="viewHistory('${item.id}')">
+          <div style="height:140px;display:flex;align-items:center;justify-content:center;font-size:3rem;background:var(--bg-light);">${emoji}</div>
+          <div class="history-info">
+            <div class="history-name">${item.flower_name || 'Unknown'}</div>
+            <div class="history-date">${date}${item.confidence ? ` &bull; ${Math.round(item.confidence * 100)}%` : ''}</div>
+          </div>
+        </div>`;
+      }).join('');
+    } catch {}
+  }
+
+  // ─── Save to garden ───────────────────────────────────────────────────
+  window.saveToGarden = async function() {
+    const token = getToken();
+    if (!token) { window.location.href = 'login.html'; return; }
+    if (!currentResult?.ai) return;
+    const ai = currentResult.ai;
+    try {
+      const res = await fetch('/api/identification/save-to-garden', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token, 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify({ flower_name: ai.flowerName, image_url: currentResult.uploaded_image || null })
+      });
+      if (res.ok) {
+        showToast('Saved to My Garden!');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        showToast(err.error || 'Failed to save');
+      }
+    } catch { showToast('Failed to save'); }
+  };
+
+  // ─── Share ────────────────────────────────────────────────────────────
+  window.shareResult = function() {
+    if (!currentResult?.ai) return;
+    const ai = currentResult.ai;
+    const text = `I identified a ${ai.flowerName} (${ai.scientificName}) using Flower Ecosystem's AI Scanner! 🌸`;
+    if (navigator.share) {
+      navigator.share({ title: ai.flowerName, text, url: window.location.href });
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      showToast('Copied to clipboard!');
+    }
+  };
+
+  // ─── View history item ────────────────────────────────────────────────
+  window.viewHistory = function(id) {
+    // Reload the page — in a real app, this would load the saved result
+    showToast('Loading identification details...');
+  };
+
+  // ─── Toast helper ─────────────────────────────────────────────────────
+  function showToast(msg) {
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--text-main);color:white;padding:0.6rem 1.25rem;border-radius:50px;font-size:0.85rem;z-index:9999;animation:fadeInUp 0.3s;';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2500);
+  }
+
+  // ─── Sticky actions ───────────────────────────────────────────────────
+  document.getElementById('sticky-save')?.addEventListener('click', () => window.saveToGarden());
+  document.getElementById('sticky-share')?.addEventListener('click', () => window.shareResult());
+
+  // ─── Init ─────────────────────────────────────────────────────────────
+  loadHistory();
 });

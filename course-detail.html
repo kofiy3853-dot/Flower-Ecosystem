@@ -387,7 +387,7 @@
                 { q: 'What are the prerequisites?', a: 'No prior experience needed for beginner courses.' }
             ];
             document.getElementById('courseFaq').innerHTML = faqs.map((f, i) => `
-                <div class="faq-item${i === 0 ? ' open' : ''}" onclick="this.classList.toggle('open')" style="background:white;border:1px solid var(--border-color);border-radius:10px;margin-bottom:0.75rem;">
+                <div class="faq-item${i === 0 ? ' open' : ''}" onclick="this.classList.toggle('open')" style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;margin-bottom:0.75rem;">
                     <div class="faq-q" style="padding:1rem 1.25rem;font-weight:500;cursor:pointer;display:flex;justify-content:space-between;">${escapeHtml(f.q)} <i class="bi bi-chevron-down"></i></div>
                     <div class="faq-a" style="padding:0 1.25rem 1rem;font-size:0.9rem;color:var(--text-light);line-height:1.6;display:${i === 0 ? 'block' : 'none'};">${escapeHtml(f.a)}</div>
                 </div>

@@ -15,7 +15,7 @@
         .live-hero{background:linear-gradient(135deg,#0f3460 0%,#16213e 50%,#1a1a2e 100%);padding:5rem 0 3rem;color:white;text-align:center;}
         .live-hero h1{font-size:clamp(2rem,4vw,2.8rem);margin-bottom:0.5rem;}
         .live-hero p{opacity:0.85;font-size:1.05rem;max-width:600px;margin:0 auto 1.5rem;}
-        .live-search{display:flex;background:white;border-radius:12px;overflow:hidden;max-width:500px;margin:0 auto 1.5rem;}
+        .live-search{display:flex;background:var(--bg-white);border-radius:12px;overflow:hidden;max-width:500px;margin:0 auto 1.5rem;}
         .live-search input{flex:1;border:none;padding:1rem 1.25rem;font-size:1rem;outline:none;}
         .live-search button{background:var(--primary-color);color:white;border:none;padding:1rem 1.5rem;cursor:pointer;}
         .live-stats{display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;margin-top:1.5rem;}
@@ -24,10 +24,10 @@
         .live-stat span{font-size:0.85rem;opacity:0.8;}
         .live-now-card{background:linear-gradient(135deg,#e74c3c,#c0392b);color:white;border-radius:14px;padding:1.5rem;display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem;animation:pulse-live 2s infinite;}
         @keyframes pulse-live{0%,100%{box-shadow:0 0 0 0 rgba(231,76,60,0.4);}50%{box-shadow:0 0 0 8px rgba(231,76,60,0);}}
-        .live-dot{width:12px;height:12px;border-radius:50%;background:white;animation:blink 1s infinite;}
+        .live-dot{width:12px;height:12px;border-radius:50%;background:var(--bg-white);animation:blink 1s infinite;}
         @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
         .class-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;}
-        .class-card{background:white;border:1px solid var(--border-color);border-radius:14px;overflow:hidden;transition:all 0.3s;}
+        .class-card{background:var(--bg-white);border:1px solid var(--border-color);border-radius:14px;overflow:hidden;transition:all 0.3s;}
         .class-card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.1);}
         .class-card-banner{height:160px;overflow:hidden;position:relative;}
         .class-card-banner img{width:100%;height:100%;object-fit:cover;}
@@ -43,11 +43,11 @@
         .class-card-footer{display:flex;gap:0.5rem;padding-top:0.75rem;border-top:1px solid var(--border-light);}
         .class-card-footer .btn{flex:1;}
         .schedule-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0.75rem;}
-        .schedule-day{background:white;border:1px solid var(--border-color);border-radius:10px;padding:1rem;min-height:120px;}
+        .schedule-day{background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;min-height:120px;}
         .schedule-day h4{font-size:0.85rem;color:var(--primary-color);margin-bottom:0.5rem;}
         .schedule-item{background:var(--bg-light);border-radius:6px;padding:0.5rem;margin-bottom:0.5rem;font-size:0.78rem;}
         .schedule-item .time{font-weight:600;color:var(--primary-color);}
-        .recording-card{display:flex;gap:1rem;background:white;border:1px solid var(--border-color);border-radius:10px;padding:1rem;margin-bottom:0.75rem;align-items:center;}
+        .recording-card{display:flex;gap:1rem;background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;margin-bottom:0.75rem;align-items:center;}
         .recording-thumb{width:120px;height:80px;border-radius:8px;overflow:hidden;flex-shrink:0;}
         .recording-thumb img{width:100%;height:100%;object-fit:cover;}
         .recording-info{flex:1;}
@@ -184,7 +184,7 @@
                         <div style="font-weight:600;font-size:1.1rem;">${escapeHtml(liveNow.title)}</div>
                         <div style="opacity:0.9;font-size:0.9rem;">${escapeHtml(liveNow.instructor)} · Started 10 minutes ago · ${liveNow.enrolled} Participants</div>
                     </div>
-                    <button class="btn btn-lg" style="background:white;color:#e74c3c;font-weight:600;">Join Now</button>
+                    <button class="btn btn-lg" style="background:var(--bg-white);color:#e74c3c;font-weight:600;">Join Now</button>
                 </div>
             `;
 
@@ -247,7 +247,7 @@
 
             // FAQ
             document.getElementById('liveFaq').innerHTML = faqs.map((f, i) => `
-                <div class="faq-item${i === 0 ? ' open' : ''}" onclick="this.classList.toggle('open')" style="background:white;border:1px solid var(--border-color);border-radius:10px;margin-bottom:0.75rem;">
+                <div class="faq-item${i === 0 ? ' open' : ''}" onclick="this.classList.toggle('open')" style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;margin-bottom:0.75rem;">
                     <div class="faq-q" style="padding:1rem 1.25rem;font-weight:500;cursor:pointer;display:flex;justify-content:space-between;">${escapeHtml(f.q)} <i class="bi bi-chevron-down"></i></div>
                     <div class="faq-a" style="padding:0 1.25rem 1rem;font-size:0.9rem;color:var(--text-light);line-height:1.6;display:${i === 0 ? 'block' : 'none'};">${escapeHtml(f.a)}</div>
                 </div>
