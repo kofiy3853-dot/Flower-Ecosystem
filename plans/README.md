@@ -12,14 +12,14 @@ fully before starting, honor its STOP conditions, and update your row when done.
 | 002  | Fix token blacklist cleanup race condition | P2 | S | — | DONE |
 | 003  | Invalidate tokens on password change (covered by 001) | P1 | — | 001 | DONE |
 | 004  | Fix CSRF bypass on multipart form data | P2 | S | — | DONE |
-| 005  | Remove client-supplied discount_amount bypass | P1 | S | — | TODO |
-| 006  | Fix stock decrement race condition | P1 | S | 005 (if both touch orders.js) | TODO |
-| 007  | Add ownership checks to grower crop endpoints (IDOR) | P1 | S | — | TODO |
-| 008  | Prevent ordering of inactive/deleted products | P2 | S | 005/006 | TODO |
-| 009  | Fix cart split-brain mock vs DB | P2 | S | — | TODO |
-| 010  | Delete tracked test credential files (t.json etc.) | P2 | S | — | TODO |
-| 011  | Block SSRF via client-supplied imageUrl in AI routes | P2 | S | — | TODO |
-| 012  | Fix /api/messages mounted to wrong router | P2 | S | — | TODO |
+| 005  | Remove client-supplied discount_amount bypass | P1 | S | — | DONE |
+| 006  | Fix stock decrement race condition | P1 | S | 005 (if both touch orders.js) | DONE |
+| 007  | Add ownership checks to grower crop endpoints (IDOR) | P1 | S | — | DONE |
+| 008  | Prevent ordering of inactive/deleted products | P2 | S | 005/006 | DONE |
+| 009  | Fix cart split-brain mock vs DB | P2 | S | — | DONE |
+| 010  | Delete tracked test credential files (t.json etc.) | P2 | S | — | DONE |
+| 011  | Block SSRF via client-supplied imageUrl in AI routes | P2 | S | — | DONE |
+| 012  | Fix /api/messages mounted to wrong router | P2 | S | — | DONE |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
