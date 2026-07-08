@@ -2669,7 +2669,123 @@ h3 { font-size: 1.15rem; margin-bottom: 0.5rem; font-weight: 600; }
 }
 
 
-/* Footer — see upgrade block below */
+/* =============================================================================
+   FOOTER (Base Layout & Light Theme)
+============================================================================= */
+.footer {
+    background: var(--bg-white);
+    color: var(--text-main);
+    padding-top: 4rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 3rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.footer-brand h2 {
+    font-size: 1.35rem;
+    color: var(--text-main);
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+.footer-brand p {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+}
+
+.social-links {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.social-link {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.social-link:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.footer-links h4 {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    font-family: var(--font-sans);
+}
+
+.footer-links ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.footer-links a {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: var(--primary-color);
+}
+
+.footer-bottom {
+    padding: 1.5rem 0;
+}
+
+.footer-bottom-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.footer-bottom-content p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.footer-legal {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.footer-legal a {
+    color: var(--text-light);
+    transition: color 0.2s;
+}
+
+.footer-legal a:hover {
+    color: var(--primary-color);
+}
 
 /* =============================================================================
    FLORIST DIRECTORY GRID — base desktop layout
