@@ -224,9 +224,97 @@
                         <span class="subtitle">KEEP LEARNING</span>
                         <h2>Related Courses</h2>
                     </div>
-                    <a href="learning.html" class="btn btn-outline">View All ?</a>
+                    <a href="learning.html" class="btn btn-outline">View All →</a>
                 </div>
                 <div class="product-grid reveal-up" id="relatedGrid" style="margin-top:1.5rem;"></div>
+            </div>
+        </section>
+
+        <!-- Student Projects Gallery -->
+        <section class="section-padding" id="projectsSection">
+            <div class="container">
+                <div class="flex-between reveal-up">
+                    <div>
+                        <span class="subtitle">STUDENT WORK</span>
+                        <h2>Student Projects</h2>
+                    </div>
+                    <a href="showcase.html" class="btn btn-outline">View All →</a>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.5rem;" id="projectsGrid"></div>
+            </div>
+        </section>
+
+        <!-- Marketplace Integration -->
+        <section class="section-padding bg-light">
+            <div class="container">
+                <div class="flex-between reveal-up">
+                    <div>
+                        <span class="subtitle">COURSE MATERIALS</span>
+                        <h2>Shop Course Supplies</h2>
+                    </div>
+                    <a href="marketplace.html" class="btn btn-outline">Shop All →</a>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-top:1.5rem;" id="marketplaceGrid"></div>
+            </div>
+        </section>
+
+        <!-- Community Integration -->
+        <section class="section-padding">
+            <div class="container">
+                <div class="flex-between reveal-up">
+                    <div>
+                        <span class="subtitle">DISCUSS & CONNECT</span>
+                        <h2>Course Community</h2>
+                    </div>
+                    <a href="discussions.html" class="btn btn-outline">View All →</a>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-top:1.5rem;" id="communityGrid"></div>
+            </div>
+        </section>
+
+        <!-- AI Learning Assistant -->
+        <section class="section-padding bg-light">
+            <div class="container" style="max-width:700px;">
+                <div style="background:linear-gradient(135deg,#fdf2f8,#fce7f3);border-radius:16px;padding:2rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center;">
+                    <div>
+                        <h3 style="margin-bottom:0.5rem;"><i class="bi bi-robot" style="color:#ec4899;"></i> AI Learning Assistant</h3>
+                        <p style="color:var(--text-light);font-size:0.9rem;margin-bottom:1rem;">Ask questions about this course, prerequisites, or learning path.</p>
+                        <div style="display:flex;gap:0.5rem;">
+                            <input type="text" id="aiCourseQuestion" placeholder="e.g., Is this course right for me?" style="flex:1;padding:0.6rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.9rem;">
+                            <button class="btn btn-primary btn-sm" style="background:#ec4899;" onclick="askCourseAI()"><i class="bi bi-send"></i></button>
+                        </div>
+                    </div>
+                    <div style="background:white;border-radius:10px;padding:1.25rem;border:1px solid var(--border-color);min-height:100px;" id="aiCourseResult">
+                        <p style="color:var(--text-light);font-size:0.85rem;">Ask me about this course! I can help with prerequisites, duration, skills, and more.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Certificate Preview -->
+        <section class="section-padding">
+            <div class="container" style="max-width:700px;">
+                <div style="text-align:center;margin-bottom:1.5rem;">
+                    <span class="subtitle">CERTIFICATE</span>
+                    <h2>Course Certificate</h2>
+                    <p style="color:var(--text-light);">Earn a certificate upon completing all lessons and assessments.</p>
+                </div>
+                <div id="certPreview" style="background:white;border:2px solid var(--border-color);border-radius:12px;padding:2rem;text-align:center;position:relative;overflow:hidden;">
+                    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#ec4899,#8b5cf6);"></div>
+                    <div style="font-size:2rem;margin-bottom:0.5rem;">🏆</div>
+                    <h3 style="color:#831843;margin-bottom:0.25rem;">Certificate of Completion</h3>
+                    <p style="font-size:0.8rem;color:var(--text-light);margin-bottom:1rem;">Flower Ecosystem Learning Center</p>
+                    <div style="border-top:1px solid var(--border-color);border-bottom:1px solid var(--border-color);padding:1rem 0;margin-bottom:1rem;">
+                        <p style="font-size:0.8rem;color:var(--text-light);margin-bottom:0.5rem;">This certifies that</p>
+                        <p style="font-size:1.25rem;font-weight:700;color:var(--text-main);" id="certStudentName">Student Name</p>
+                        <p style="font-size:0.8rem;color:var(--text-light);margin:0.5rem 0;">has successfully completed</p>
+                        <p style="font-size:1.1rem;font-weight:600;color:#ec4899;" id="certCourseName">Course Name</p>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-light);">
+                        <span id="certDate">Date</span>
+                        <span id="certInstructor">Instructor</span>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -687,6 +775,99 @@
             } else {
                 grid.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:2rem 0;grid-column:1/-1;">More courses coming soon!</p>';
             }
+
+            // Student Projects
+            try {
+                const projRes = await fetch('/api/showcase?limit=4');
+                const projData = await projRes.json();
+                const projects = Array.isArray(projData) ? projData : (projData.projects || projData.items || []);
+                const projGrid = document.getElementById('projectsGrid');
+                if (projects.length) {
+                    projGrid.innerHTML = projects.slice(0, 4).map(p => `
+                        <div style="border-radius:10px;overflow:hidden;border:1px solid var(--border-color);">
+                            <img src="${p.image || p.thumbnail || 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=300&auto=format&fit=crop'}" alt="Student project" style="width:100%;height:160px;object-fit:cover;" loading="lazy">
+                            <div style="padding:0.75rem;">
+                                <div style="font-weight:500;font-size:0.85rem;">${escapeHtml(p.title || 'Student Project')}</div>
+                                <div style="font-size:0.75rem;color:var(--text-light);">by ${escapeHtml(p.author || p.student_name || 'Student')}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    projGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--text-light);padding:1rem;">Student projects coming soon!</p>';
+                }
+            } catch {}
+
+            // Marketplace - Course Supplies
+            const supplies = [
+                { name: 'Floral Foam', image: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=200&auto=format&fit=crop', price: 'GHS 15', category: 'Supplies' },
+                { name: 'Floral Wire', image: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=200&auto=format&fit=crop', price: 'GHS 8', category: 'Tools' },
+                { name: 'Pruning Shears', image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=200&auto=format&fit=crop', price: 'GHS 45', category: 'Tools' },
+                { name: 'Wrapping Paper', image: 'https://images.unsplash.com/photo-1455659817273-f96807779a8a?q=200&auto=format&fit=crop', price: 'GHS 12', category: 'Supplies' },
+                { name: 'Satin Ribbon', image: 'https://images.unsplash.com/photo-1470509037663-253afd7f0f51?q=200&auto=format&fit=crop', price: 'GHS 10', category: 'Supplies' }
+            ];
+            const mktGrid = document.getElementById('marketplaceGrid');
+            mktGrid.innerHTML = supplies.map(s => `
+                <a href="marketplace.html?q=${encodeURIComponent(s.name)}" style="background:white;border:1px solid var(--border-color);border-radius:10px;overflow:hidden;text-decoration:none;color:inherit;transition:all 0.2s;display:block;">
+                    <img src="${s.image}" alt="${s.name}" style="width:100%;height:120px;object-fit:cover;" loading="lazy">
+                    <div style="padding:0.75rem;">
+                        <div style="font-weight:500;font-size:0.85rem;margin-bottom:0.2rem;">${s.name}</div>
+                        <div style="font-size:0.78rem;color:var(--text-light);margin-bottom:0.3rem;">${s.category}</div>
+                        <div style="font-weight:600;color:#ec4899;font-size:0.9rem;">${s.price}</div>
+                    </div>
+                </a>
+            `).join('');
+
+            // Community Discussions
+            try {
+                const commRes = await fetch('/api/community/discussions?limit=3');
+                const commData = await commRes.json();
+                const discussions = commData.discussions || [];
+                const commGrid = document.getElementById('communityGrid');
+                if (discussions.length) {
+                    commGrid.innerHTML = discussions.slice(0, 3).map(d => `
+                        <a href="discussion-detail.html?id=${d.id}" style="background:white;border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-decoration:none;color:inherit;transition:all 0.2s;display:block;">
+                            <div style="font-weight:500;font-size:0.9rem;margin-bottom:0.3rem;">${escapeHtml(d.title)}</div>
+                            <div style="font-size:0.78rem;color:var(--text-light);margin-bottom:0.5rem;">${escapeHtml((d.excerpt || d.content || '').slice(0, 100))}</div>
+                            <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-muted);">
+                                <span><i class="bi bi-chat-dots"></i> ${d.reply_count || 0} replies</span>
+                                <span>${d.author_name || 'Student'}</span>
+                            </div>
+                        </a>
+                    `).join('');
+                } else {
+                    commGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--text-light);padding:1rem;">No discussions yet. Be the first to ask!</p>';
+                }
+            } catch {}
+
+            // AI Course Assistant
+            window.askCourseAI = async function() {
+                const q = document.getElementById('aiCourseQuestion')?.value?.trim();
+                if (!q) return;
+                const resultEl = document.getElementById('aiCourseResult');
+                resultEl.innerHTML = '<p style="color:var(--text-light);font-size:0.85rem;">Thinking...</p>';
+                try {
+                    const token = localStorage.getItem('flower-token');
+                    const res = await fetch('/api/openai/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': 'Bearer ' + token } : {}) },
+                        body: JSON.stringify({ messages: [
+                            { role: 'system', content: `You are a helpful learning assistant for Flower Ecosystem. The current course is "${course.title}" by ${course.instructor}. It's a ${course.level || 'beginner'} level course with ${courseLessons.length} lessons. Help students decide if this course is right for them.` },
+                            { role: 'user', content: q }
+                        ]})
+                    });
+                    const data = await res.json();
+                    resultEl.innerHTML = `<div style="font-size:0.88rem;line-height:1.6;">${(data.reply || data.message || 'I can help with questions about this course.').replace(/\n/g, '<br>')}</div>`;
+                } catch {
+                    resultEl.innerHTML = '<p style="color:var(--error-color);font-size:0.85rem;">Failed to get response.</p>';
+                }
+            };
+
+            // Certificate Preview
+            document.getElementById('certCourseName').textContent = course.title;
+            document.getElementById('certInstructor').textContent = course.instructor || 'Instructor';
+            document.getElementById('certDate').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+            const studentName = localStorage.getItem('flower-user-name') || 'Your Name';
+            document.getElementById('certStudentName').textContent = studentName;
         })();
     </script>
     <script>
