@@ -512,10 +512,21 @@
             // Gallery
             if (images.length) {
                 lightboxImages = images;
-                document.getElementById('pdMainImg').src = images[0];
+                const mainImg = document.getElementById('pdMainImg');
+                mainImg.src = images[0];
+                mainImg.onerror = function() {
+                    this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%23f3f4f6" width="400" height="300"/><text x="200" y="160" text-anchor="middle" fill="%239ca3af" font-size="16">Image not available</text></svg>';
+                };
                 document.getElementById('pdThumbs').innerHTML = images.map((url, i) =>
-                    `<img src="${escapeHtml(url)}" alt="Thumbnail" class="pd-thumb ${i === 0 ? 'active' : ''}" onclick="setMainImg('${escapeHtml(url)}', this); lightboxIndex = ${i};">`
+                    `<img src="${escapeHtml(url)}" alt="Thumbnail" class="pd-thumb ${i === 0 ? 'active' : ''}" onclick="setMainImg('${escapeHtml(url)}', this); lightboxIndex = ${i};" onerror="this.style.display='none'">`
                 ).join('');
+            } else if (p.image) {
+                // Fallback to single image
+                const mainImg = document.getElementById('pdMainImg');
+                mainImg.src = p.image;
+                mainImg.onerror = function() {
+                    this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%23f3f4f6" width="400" height="300"/><text x="200" y="160" text-anchor="middle" fill="%239ca3af" font-size="16">Image not available</text></svg>';
+                };
             }
 
             // Video
