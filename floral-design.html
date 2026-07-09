@@ -154,22 +154,22 @@
                 </div>
                 <div class="fd-hero-visual">
                     <div class="fd-hero-card">
-                        <div class="fd-hero-card-icon">ðŸ’</div>
+                        <div class="fd-hero-card-icon">💐</div>
                         <h3>Bouquet Design</h3>
                         <p>Learn to create stunning arrangements</p>
                     </div>
                     <div class="fd-hero-card">
-                        <div class="fd-hero-card-icon">ðŸŽ¨</div>
+                        <div class="fd-hero-card-icon">🎨</div>
                         <h3>Color Theory</h3>
                         <p>Master color harmony for flowers</p>
                     </div>
                     <div class="fd-hero-card">
-                        <div class="fd-hero-card-icon">ðŸ’’</div>
+                        <div class="fd-hero-card-icon">💒</div>
                         <h3>Wedding Design</h3>
                         <p>Professional event floristry</p>
                     </div>
                     <div class="fd-hero-card">
-                        <div class="fd-hero-card-icon">ðŸ†</div>
+                        <div class="fd-hero-card-icon">🏆</div>
                         <h3>Certification</h3>
                         <p>Earn recognized credentials</p>
                     </div>
@@ -374,7 +374,7 @@
                 const res = await fetch('/api/learning-paths?category=floral-design&limit=3');
                 const data = await res.json();
                 const paths = Array.isArray(data) ? data : (data.paths || []);
-                const icons = ['ðŸ’', 'ðŸŽ¨', 'ðŸ’’', '🌸', 'âœ‚ï¸', 'ðŸ '];
+                const icons = ['💐', '🎨', '💒', '🌸', 'âœ‚ï¸', 'ðŸ '];
                 const colors = ['#fce7f3', '#ede9fe', '#dbeafe', '#d1fae5', '#fef3c7', '#fee2e2'];
                 document.getElementById('pathGrid').innerHTML = paths.length ? paths.map((p, i) => `
                     <a href="learning-path.html?id=${p.id}" class="fd-path">
