@@ -1,6 +1,28 @@
 const router = require('express').Router();
 const { pool, asyncHandler, dbAvailable, requireAuth } = require('./middleware');
 
+// GET /api/messages — list conversations (used by community page)
+router.get('/', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    try {
+        const limit = parseInt(req.query.limit) || 10;
+        const r = await pool.query(
+            `SELECT DISTINCT
+                CASE WHEN sender_id = $1 THEN recipient_id ELSE sender_id END AS other_user_id,
+                MAX(created_at) AS last_message_at
+             FROM messages.messages
+             WHERE sender_id = $1 OR recipient_id = $1
+             GROUP BY other_user_id
+             ORDER BY last_message_at DESC
+             LIMIT $2`,
+            [req.user.id, limit]
+        ).catch(() => ({ rows: [] }));
+        res.json(r.rows);
+    } catch {
+        res.json([]);
+    }
+}));
+
 router.get('/conversations', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
     try {
