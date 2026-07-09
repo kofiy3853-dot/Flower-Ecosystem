@@ -110,6 +110,17 @@ function initUI() {
             }
         }
 
+        // Mobile Dropdown Toggle
+        const dropdownToggle = e.target.closest('.nav-dropdown > .dropdown-toggle');
+        if (dropdownToggle && window.innerWidth <= 768) {
+            e.preventDefault();
+            e.stopPropagation();
+            const parent = dropdownToggle.closest('.nav-dropdown');
+            if (parent) {
+                parent.classList.toggle('mobile-open');
+            }
+        }
+
         // Close mobile menu on link click
         if (e.target.closest('.nav-links a')) {
             const navLinks = document.querySelector('.nav-links');
