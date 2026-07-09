@@ -102,6 +102,7 @@ async function apiFetch(url, fallbackKey) {
             const data = await res.json();
             return data;
         }
+        if (res.status === 404) return null;
         console.warn('API fallback:', url, res.status);
     } catch (_) { }
     try {

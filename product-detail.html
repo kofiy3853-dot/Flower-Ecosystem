@@ -486,7 +486,7 @@
             let p;
             try {
                 p = await api.fetchProduct(id);
-                if (!p || p.error) throw new Error(p?.error || 'Not found');
+                if (!p || p.error || (Array.isArray(p) && p.length === 0)) throw new Error('Product not found');
             } catch (e) {
                 document.getElementById('pdTitle').textContent = 'Product Not Found';
                 document.getElementById('pdDesc').textContent = "The product you're looking for doesn't exist or has been removed.";
