@@ -35,6 +35,12 @@ services:
         value: Nharnah12345
       - key: CORS_ORIGIN
         value: https://flower-ecosystem.onrender.com
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
 
 databases:
   - name: flower-db

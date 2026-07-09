@@ -147,6 +147,9 @@ app.get('/research', (_, res) => res.sendFile(path.join(__dirname, 'research.htm
 app.get('/research/:slug', (_, res) => res.sendFile(path.join(__dirname, 'research-detail.html')));
 app.get('/floral-design', (_, res) => res.sendFile(path.join(__dirname, 'floral-design.html')));
 app.get('/floral-design/courses', (_, res) => res.sendFile(path.join(__dirname, 'floral-design-courses.html')));
+app.get('/course-marketplace', (_, res) => res.sendFile(path.join(__dirname, 'course-marketplace.html')));
+app.get('/flower-farming', (_, res) => res.sendFile(path.join(__dirname, 'flower-farming.html')));
+app.get('/lesson', (_, res) => res.sendFile(path.join(__dirname, 'lesson-viewer.html')));
 
 // ─── Detail pages ──────────────────────────────────────────────────────────
 

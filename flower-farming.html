@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Flower Farming Academy — Learn to grow flowers commercially, manage farms, and build a successful floriculture business.">
+    <title>Flower Farming Academy | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .ff-hero { background:linear-gradient(135deg,#065f46 0%,#059669 50%,#10b981 100%); padding:5rem 0 3.5rem; color:white; position:relative; overflow:hidden; }
+        .ff-hero::before { content:''; position:absolute; top:-30%; right:-5%; width:500px; height:500px; background:rgba(255,255,255,0.06); border-radius:50%; }
+        .ff-hero h1 { color:white; font-size:clamp(2rem,4vw,2.8rem); margin-bottom:0.5rem; }
+        .ff-hero p { color:rgba(255,255,255,0.85); max-width:600px; margin-bottom:1.5rem; }
+        .ff-hero-btns { display:flex; gap:0.75rem; flex-wrap:wrap; }
+        .ff-hero-btns .btn { padding:0.65rem 1.5rem; border-radius:50px; }
+        .btn-white-green { background:white; color:#065f46; border:none; font-weight:600; }
+
+        /* Stats */
+        .ff-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin:-1.5rem auto 2rem; max-width:900px; position:relative; z-index:10; }
+        .ff-stat { background:var(--bg-white); border-radius:12px; padding:1.25rem; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.08); border:1px solid var(--border-color); }
+        .ff-stat-value { font-size:1.5rem; font-weight:700; color:#059669; }
+        .ff-stat-label { font-size:0.8rem; color:var(--text-light); }
+
+        /* Search */
+        .ff-search { background:var(--bg-white); border-radius:12px; padding:1rem; box-shadow:0 4px 15px rgba(0,0,0,0.06); margin-bottom:1.5rem; display:flex; gap:0.5rem; }
+        .ff-search input { flex:1; border:1px solid var(--border-color); border-radius:8px; padding:0.7rem 1rem; font-size:0.95rem; outline:none; }
+        .ff-search input:focus { border-color:#059669; }
+
+        /* Section Headers */
+        .ff-section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+        .ff-section-header h2 { margin:0; }
+
+        /* Learning Path */
+        .ff-path { display:flex; align-items:center; gap:0; margin:2rem 0; overflow-x:auto; padding:1rem 0; }
+        .ff-path-step { flex:1; min-width:140px; text-align:center; padding:1rem; background:var(--bg-white); border:2px solid var(--border-color); border-radius:12px; font-size:0.85rem; font-weight:500; transition:all 0.3s; }
+        .ff-path-step:hover { border-color:#059669; transform:translateY(-2px); }
+        .ff-path-step.active { border-color:#059669; background:#ecfdf5; color:#059669; }
+        .ff-path-step .icon { font-size:1.5rem; margin-bottom:0.3rem; }
+        .ff-path-arrow { font-size:1.5rem; color:var(--text-muted); flex-shrink:0; padding:0 0.25rem; }
+
+        /* Categories */
+        .ff-categories { display:grid; grid-template-columns:repeat(5,1fr); gap:1rem; }
+        .ff-cat { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; cursor:pointer; transition:all 0.3s; text-decoration:none; color:inherit; }
+        .ff-cat:hover { transform:translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,0.08); border-color:#059669; }
+        .ff-cat-icon { font-size:2rem; margin-bottom:0.5rem; }
+        .ff-cat-name { font-weight:600; font-size:0.88rem; margin-bottom:0.2rem; }
+        .ff-cat-desc { font-size:0.75rem; color:var(--text-light); }
+
+        /* Courses */
+        .ff-courses { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.5rem; }
+        .ff-course { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; overflow:hidden; transition:all 0.3s; text-decoration:none; color:inherit; display:flex; flex-direction:column; }
+        .ff-course:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); }
+        .ff-course-img { height:170px; overflow:hidden; position:relative; }
+        .ff-course-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .ff-course:hover .ff-course-img img { transform:scale(1.05); }
+        .ff-course-badge { position:absolute; top:0.75rem; left:0.75rem; padding:0.2rem 0.5rem; border-radius:5px; font-size:0.68rem; font-weight:600; }
+        .ff-course-body { padding:1.25rem; flex:1; display:flex; flex-direction:column; }
+        .ff-course-category { font-size:0.68rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:#059669; margin-bottom:0.3rem; }
+        .ff-course-title { font-size:1.05rem; font-weight:600; margin-bottom:0.4rem; line-height:1.3; }
+        .ff-course-instructor { display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; color:var(--text-light); margin-bottom:0.4rem; }
+        .ff-course-instructor-avatar { width:22px; height:22px; border-radius:50%; background:#ecfdf5; display:flex; align-items:center; justify-content:center; font-size:0.55rem; color:#059669; }
+        .ff-course-rating { font-size:0.82rem; color:#f59e0b; }
+        .ff-course-meta { display:flex; gap:0.6rem; font-size:0.75rem; color:var(--text-light); margin-bottom:0.5rem; flex-wrap:wrap; }
+        .ff-course-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid var(--border-light); margin-top:auto; }
+        .ff-course-price { font-weight:700; font-size:1.05rem; color:#059669; }
+        .ff-course-price.free { color:var(--accent-green); }
+        .ff-course-enroll { padding:0.45rem 1rem; background:#059669; color:white; border:none; border-radius:8px; font-size:0.82rem; font-weight:600; }
+
+        /* Skills */
+        .ff-skills { display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+        .ff-skill { padding:0.35rem 0.7rem; border:1px solid var(--border-color); border-radius:50px; font-size:0.78rem; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; }
+        .ff-skill:hover, .ff-skill.active { border-color:#059669; color:#059669; background:#ecfdf5; }
+
+        /* Projects */
+        .ff-projects { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .ff-project { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; transition:all 0.3s; }
+        .ff-project:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); border-color:#059669; }
+        .ff-project-icon { font-size:2rem; margin-bottom:0.5rem; }
+        .ff-project h4 { font-size:0.9rem; margin-bottom:0.3rem; }
+        .ff-project p { font-size:0.78rem; color:var(--text-light); line-height:1.4; }
+
+        /* Instructors */
+        .ff-instructors { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1.25rem; }
+        .ff-instructor { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; padding:1.5rem; text-align:center; transition:all 0.3s; }
+        .ff-instructor:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
+        .ff-instructor-avatar { width:80px; height:80px; border-radius:50%; margin:0 auto 0.75rem; overflow:hidden; border:3px solid #d1fae5; }
+        .ff-instructor-avatar img { width:100%; height:100%; object-fit:cover; }
+        .ff-instructor h3 { font-size:1rem; margin-bottom:0.2rem; }
+        .ff-instructor p { font-size:0.82rem; color:var(--text-light); margin-bottom:0.5rem; }
+        .ff-instructor-stats { display:flex; justify-content:center; gap:1rem; font-size:0.78rem; color:var(--text-muted); }
+
+        /* Gallery */
+        .ff-gallery { display:grid; grid-template-columns:repeat(4,1fr); gap:0.75rem; }
+        .ff-gallery-item { border-radius:12px; overflow:hidden; aspect-ratio:1; cursor:pointer; }
+        .ff-gallery-item img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .ff-gallery-item:hover img { transform:scale(1.08); }
+
+        /* Resources */
+        .ff-resources { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; }
+        .ff-resource { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; cursor:pointer; transition:all 0.2s; text-decoration:none; color:inherit; }
+        .ff-resource:hover { border-color:#059669; transform:translateY(-2px); }
+        .ff-resource i { font-size:1.8rem; color:#059669; margin-bottom:0.5rem; display:block; }
+        .ff-resource h4 { font-size:0.88rem; margin-bottom:0.2rem; }
+        .ff-resource p { font-size:0.75rem; color:var(--text-light); }
+
+        /* AI */
+        .ff-ai { background:linear-gradient(135deg,#ecfdf5,#d1fae5); border-radius:16px; padding:2rem; display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:center; }
+        .ff-ai-input { display:flex; gap:0.5rem; }
+        .ff-ai-input input { flex:1; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:10px; font-size:0.95rem; }
+        .ff-ai-result { background:white; border-radius:12px; padding:1.25rem; border:1px solid var(--border-color); min-height:120px; }
+
+        /* Marketplace */
+        .ff-marketplace { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:1rem; }
+        .ff-mp-item { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; transition:all 0.2s; }
+        .ff-mp-item:hover { transform:translateY(-2px); box-shadow:var(--shadow-sm); border-color:#059669; }
+        .ff-mp-item img { width:100%; height:120px; object-fit:cover; }
+        .ff-mp-item .info { padding:0.75rem; }
+        .ff-mp-item .name { font-size:0.85rem; font-weight:500; }
+        .ff-mp-item .price { font-size:0.82rem; color:#059669; font-weight:600; }
+
+        @media(max-width:768px) {
+            .ff-categories { grid-template-columns:repeat(2,1fr); }
+            .ff-projects { grid-template-columns:repeat(2,1fr); }
+            .ff-gallery { grid-template-columns:repeat(2,1fr); }
+            .ff-ai { grid-template-columns:1fr; }
+            .ff-stats { grid-template-columns:repeat(2,1fr); }
+            .ff-path { flex-direction:column; }
+            .ff-path-arrow { transform:rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="ff-hero">
+        <div class="container">
+            <nav style="font-size:0.85rem;margin-bottom:1rem;color:rgba(255,255,255,0.6);">
+                <a href="learning.html" style="color:rgba(255,255,255,0.6);text-decoration:none;">Learning</a>
+                <span style="margin:0 0.5rem;">/</span>
+                <span style="color:white;">Flower Farming</span>
+            </nav>
+            <h1><i class="bi bi-seedling"></i> Flower Farming Academy</h1>
+            <p>Learn how to grow healthy flowers, manage a flower farm, and build a successful floriculture business.</p>
+            <div class="ff-hero-btns">
+                <a href="#courses" class="btn btn-white-green"><i class="bi bi-play-circle"></i> Start Learning</a>
+                <a href="#path" class="btn btn-outline-white"><i class="bi bi-diagram-3"></i> Learning Path</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="container">
+        <div class="ff-stats">
+            <div class="ff-stat"><div class="ff-stat-value" id="statCourses">0</div><div class="ff-stat-label">Courses</div></div>
+            <div class="ff-stat"><div class="ff-stat-value" id="statStudents">0</div><div class="ff-stat-label">Students</div></div>
+            <div class="ff-stat"><div class="ff-stat-value" id="statInstructors">0</div><div class="ff-stat-label">Instructors</div></div>
+            <div class="ff-stat"><div class="ff-stat-value">✓</div><div class="ff-stat-label">Certificates</div></div>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="container">
+        <div class="ff-search">
+            <input type="text" id="searchInput" placeholder="Search farming courses..." onkeydown="if(event.key==='Enter')applyFilters()">
+            <button class="btn btn-primary" style="background:#059669;" onclick="applyFilters()"><i class="bi bi-search"></i></button>
+        </div>
+    </div>
+
+    <!-- Popular Skills -->
+    <div class="container">
+        <div class="ff-skills" id="skillsTags"></div>
+    </div>
+
+    <!-- Learning Path -->
+    <section class="section-padding" style="padding-bottom:0;" id="path">
+        <div class="container">
+            <div class="ff-section-header">
+                <h2><i class="bi bi-diagram-3" style="color:#059669;"></i> Learning Path</h2>
+            </div>
+            <div class="ff-path">
+                <div class="ff-path-step active"><div class="icon">🌱</div><div>Soil & Seeds</div></div>
+                <div class="ff-path-arrow">→</div>
+                <div class="ff-path-step"><div class="icon">🌿</div><div>Cultivation</div></div>
+                <div class="ff-path-arrow">→</div>
+                <div class="ff-path-step"><div class="icon">🐛</div><div>Pest Management</div></div>
+                <div class="ff-path-arrow">→</div>
+                <div class="ff-path-step"><div class="icon">✂️</div><div>Harvesting</div></div>
+                <div class="ff-path-arrow">→</div>
+                <div class="ff-path-step"><div class="icon">🏢</div><div>Commercial Farming</div></div>
+                <div class="ff-path-arrow">→</div>
+                <div class="ff-path-step"><div class="icon">🏆</div><div>Professional</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="ff-section-header">
+                <h2><i class="bi bi-grid" style="color:#059669;"></i> Farming Categories</h2>
+            </div>
+            <div class="ff-categories" id="categoryGrid"></div>
+        </div>
+    </section>
+
+    <!-- Featured Courses -->
+    <section class="section-padding bg-light" id="courses">
+        <div class="container">
+            <div class="ff-section-header">
+                <h2><i class="bi bi-play-circle" style="color:#059669;"></i> Featured Courses</h2>
+                <a href="learning.html?category=farming" style="color:#059669;font-size:0.9rem;">View All →</a>
+            </div>
+            <div class="ff-courses" id="courseGrid"></div>
+        </div>
+    </section>
+
+    <!-- AI Assistant -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="ff-ai">
+                <div>
+                    <h2 style="margin-bottom:0.5rem;"><i class="bi bi-robot" style="color:#059669;"></i> AI Farm Assistant</h2>
+                    <p style="color:var(--text-light);margin-bottom:1rem;">Ask questions about flower farming, soil, irrigation, pests, and more.</p>
+                    <div class="ff-ai-input">
+                        <input type="text" id="aiQuestion" placeholder="e.g., Which flowers grow well in my climate?">
+                        <button class="btn btn-primary" style="background:#059669;" onclick="askAI()"><i class="bi bi-send"></i></button>
+                    </div>
+                </div>
+                <div class="ff-ai-result" id="aiResult">
+                    <p style="color:var(--text-light);font-size:0.9rem;">Ask me anything about flower farming! I can help with soil preparation, irrigation, pest control, and more.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Practical Projects -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="ff-section-header">
+                <h2><i class="bi bi-tools" style="color:#059669;"></i> Practical Projects</h2>
+            </div>
+            <div class="ff-projects">
+                <div class="ff-project">
+                    <div class="ff-project-icon">🌱</div>
+                    <h4>Prepare a Nursery</h4>
+                    <p>Set up seedling trays and prepare your first flower nursery.</p>
+                </div>
+                <div class="ff-project">
+                    <div class="ff-project-icon">🌻</div>
+                    <h4>Plant a Flower Bed</h4>
+                    <p>Design and plant your first outdoor flower bed.</p>
+                </div>
+                <div class="ff-project">
+                    <div class="ff-project-icon">🔍</div>
+                    <h4>Identify Diseases</h4>
+                    <p>Learn to identify 5 common flower diseases from photos.</p>
+                </div>
+                <div class="ff-project">
+                    <div class="ff-project-icon">💧</div>
+                    <h4>Design Irrigation</h4>
+                    <p>Create a watering schedule for a 100sqm flower plot.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Instructors -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="ff-section-header">
+                <h2><i class="bi bi-person-badge" style="color:#059669;"></i> Expert Instructors</h2>
+                <a href="instructors.html" style="color:#059669;font-size:0.9rem;">View All →</a>
+            </div>
+            <div class="ff-instructors" id="instructorGrid"></div>
+        </div>
+    </section>
+
+    <!-- Gallery -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="ff-section-header">
+                <h2><i class="bi bi-images" style="color:#059669;"></i> Student Farm Gallery</h2>
+                <a href="showcase.html" style="color:#059669;font-size:0.9rem;">View All →</a>
+            </div>
+            <div class="ff-gallery" id="galleryGrid"></div>
+        </div>
+    </section>
+
+    <!-- Resources -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="ff-section-header">
+                <h2><i class="bi bi-download" style="color:#059669;"></i> Resources & Downloads</h2>
+            </div>
+            <div class="ff-resources">
+                <div class="ff-resource"><i class="bi bi-calendar3"></i><h4>Farming Calendar</h4><p>Seasonal planting guide</p></div>
+                <div class="ff-resource"><i class="bi bi-droplet"></i><h4>Irrigation Guide</h4><p>Water management tips</p></div>
+                <div class="ff-resource"><i class="bi bi-clipboard-check"></i><h4>Soil Checklist</h4><p>Preparation checklist</p></div>
+                <div class="ff-resource"><i class="bi bi-bug"></i><h4>Pest ID Guide</h4><p>Common pest identification</p></div>
+                <div class="ff-resource"><i class="bi bi-scissors"></i><h4>Harvest Planner</h4><p>Optimal harvest timing</p></div>
+                <div class="ff-resource"><i class="bi bi-calculator"></i><h4>Farm Budget</h4><p>Financial planning template</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marketplace Integration -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="ff-section-header">
+                <h2><i class="bi bi-bag" style="color:#059669;"></i> Farming Supplies</h2>
+                <a href="marketplace.html" style="color:#059669;font-size:0.9rem;">Shop All →</a>
+            </div>
+            <div class="ff-marketplace" id="marketplaceGrid"></div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container">
+            <div style="background:linear-gradient(135deg,#065f46,#059669);border-radius:16px;padding:3rem;text-align:center;color:white;">
+                <h2 style="color:white;margin-bottom:0.5rem;">Ready to Start Your Farming Journey?</h2>
+                <p style="color:rgba(255,255,255,0.85);margin-bottom:1.5rem;max-width:500px;margin-left:auto;margin-right:auto;">Join thousands of students learning professional flower farming from expert growers.</p>
+                <a href="#courses" class="btn btn-white-green" style="padding:0.75rem 2rem;">Browse Courses</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        const SKILLS = ['Soil Preparation', 'Composting', 'Irrigation', 'Fertilizer Management', 'Greenhouse Design', 'Weed Control', 'Harvesting', 'Packaging'];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSkills();
+            loadCourses();
+            loadCategories();
+            loadInstructors();
+            loadGallery();
+            loadMarketplace();
+        });
+
+        function renderSkills() {
+            document.getElementById('skillsTags').innerHTML = SKILLS.map(s =>
+                `<button class="ff-skill" onclick="this.classList.toggle('active');applyFilters()">${s}</button>`
+            ).join('');
+        }
+
+        // ─── Categories ──────────────────────────────────────────────
+        function loadCategories() {
+            const cats = [
+                { icon: '🌹', name: 'Rose Farming', desc: 'Commercial rose production' },
+                { icon: '🌷', name: 'Tulip Farming', desc: 'Growing tulips successfully' },
+                { icon: '🌺', name: 'Tropical Flowers', desc: 'Production techniques' },
+                { icon: '🌼', name: 'Seasonal Flowers', desc: 'Managing seasonal blooms' },
+                { icon: '🌿', name: 'Organic Farming', desc: 'Chemical-free production' },
+                { icon: '🏡', name: 'Greenhouse Farming', desc: 'Controlled environment' },
+                { icon: '💧', name: 'Irrigation Systems', desc: 'Efficient watering' },
+                { icon: '🌱', name: 'Seed Propagation', desc: 'Growing from seeds' },
+                { icon: '✂️', name: 'Cut Flowers', desc: 'Growing for florists' },
+                { icon: '📦', name: 'Post-Harvest', desc: 'Storage & transport' }
+            ];
+            document.getElementById('categoryGrid').innerHTML = cats.map(c => `
+                <div class="ff-cat">
+                    <div class="ff-cat-icon">${c.icon}</div>
+                    <div class="ff-cat-name">${c.name}</div>
+                    <div class="ff-cat-desc">${c.desc}</div>
+                </div>
+            `).join('');
+        }
+
+        // ─── Courses ──────────────────────────────────────────────────
+        async function loadCourses() {
+            try {
+                const res = await fetch('/api/courses?category=farming&limit=12');
+                const data = await res.json();
+                const courses = Array.isArray(data) ? data : (data.courses || []);
+
+                document.getElementById('statCourses').textContent = courses.length;
+                const totalStudents = courses.reduce((s, c) => s + (c.students || c.students_count || 0), 0);
+                document.getElementById('statStudents').textContent = totalStudents >= 1000 ? (totalStudents/1000).toFixed(1) + 'K' : totalStudents;
+                const instructors = [...new Set(courses.map(c => c.instructor).filter(Boolean))];
+                document.getElementById('statInstructors').textContent = instructors.length;
+
+                const grid = document.getElementById('courseGrid');
+                if (!courses.length) {
+                    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-light);"><i class="bi bi-seedling" style="font-size:2.5rem;display:block;margin-bottom:0.75rem;opacity:0.4;"></i><p>Farming courses coming soon!</p></div>';
+                    return;
+                }
+
+                grid.innerHTML = courses.map(c => `
+                    <a href="course-detail.html?id=${c.id}" class="ff-course">
+                        <div class="ff-course-img">
+                            <img src="${c.thumbnail || c.thumbnail_url || 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=400&auto=format&fit=crop'}" alt="${c.title}" loading="lazy">
+                            ${c.level ? `<span class="ff-course-badge" style="background:#059669;color:white;">${c.level}</span>` : ''}
+                        </div>
+                        <div class="ff-course-body">
+                            <div class="ff-course-category">${c.category || 'Farming'}</div>
+                            <div class="ff-course-title">${c.title}</div>
+                            <div class="ff-course-instructor">
+                                <div class="ff-course-instructor-avatar">${(c.instructor || 'I').charAt(0)}</div>
+                                ${c.instructor || 'Expert'}
+                            </div>
+                            <div class="ff-course-rating">${'★'.repeat(Math.round(c.rating || 0))}${'☆'.repeat(5 - Math.round(c.rating || 0))} ${(c.rating || 0).toFixed(1)} <span style="color:var(--text-muted);">(${c.students || c.students_count || 0})</span></div>
+                            <div class="ff-course-meta">
+                                ${c.duration ? `<span><i class="bi bi-clock"></i> ${c.duration}</span>` : ''}
+                                ${c.lessons ? `<span><i class="bi bi-collection-play"></i> ${c.lessons} lessons</span>` : ''}
+                            </div>
+                            <div class="ff-course-footer">
+                                <span class="ff-course-price ${c.is_free || !c.price ? 'free' : ''}">${c.is_free || !c.price ? 'Free' : (c.currency || 'GHS') + ' ' + c.price}</span>
+                                <span class="ff-course-enroll">Enroll</span>
+                            </div>
+                        </div>
+                    </a>
+                `).join('');
+            } catch {}
+        }
+
+        function applyFilters() {}
+
+        // ─── Instructors ──────────────────────────────────────────────
+        async function loadInstructors() {
+            try {
+                const res = await fetch('/api/products/list/florists?limit=4');
+                const data = await res.json();
+                const instructors = Array.isArray(data) ? data : (data.florists || []);
+                document.getElementById('instructorGrid').innerHTML = instructors.length ? instructors.map(i => `
+                    <div class="ff-instructor">
+                        <div class="ff-instructor-avatar">
+                            <img src="${i.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 80 80%22><rect fill=%22%23ecfdf5%22 width=%2280%22 height=%2280%22/><text x=%2240%22 y=%2248%22 text-anchor=%22middle%22 fill=%22%23059669%22 font-size=%2228%22>${(i.name || 'I').charAt(0)}</text></svg>'}" alt="${i.name}">
+                        </div>
+                        <h3>${i.name}</h3>
+                        <p>${i.role || i.specialty || 'Farming Expert'}</p>
+                        <div class="ff-instructor-stats">
+                            <span><i class="bi bi-book"></i> ${i.courses || 3} courses</span>
+                            <span><i class="bi bi-people"></i> ${i.students || 200}+ students</span>
+                        </div>
+                    </div>
+                `).join('') : '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-light);">Instructors coming soon!</div>';
+            } catch {}
+        }
+
+        // ─── Gallery ──────────────────────────────────────────────────
+        function loadGallery() {
+            const images = [
+                'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=300&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=300&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1455659817273-f96807779a8a?q=300&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1470509037663-253afd7f0f51?q=300&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1463320726281-696a485928c7?q=300&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?q=300&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=300&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=300&auto=format&fit=crop'
+            ];
+            document.getElementById('galleryGrid').innerHTML = images.map(img => `
+                <div class="ff-gallery-item"><img src="${img}" alt="Student farm" loading="lazy"></div>
+            `).join('');
+        }
+
+        // ─── Marketplace ──────────────────────────────────────────────
+        function loadMarketplace() {
+            const items = [
+                { name: 'Flower Seeds', image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=200&auto=format&fit=crop', price: 'GHS 25' },
+                { name: 'Seedlings', image: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=200&auto=format&fit=crop', price: 'GHS 15' },
+                { name: 'Fertilizer', image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=200&auto=format&fit=crop', price: 'GHS 35' },
+                { name: 'Irrigation Kit', image: 'https://images.unsplash.com/photo-1470509037663-253afd7f0f51?q=200&auto=format&fit=crop', price: 'GHS 120' },
+                { name: 'Garden Tools', image: 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=200&auto=format&fit=crop', price: 'GHS 85' },
+                { name: 'Greenhouse Film', image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=200&auto=format&fit=crop', price: 'GHS 200' }
+            ];
+            document.getElementById('marketplaceGrid').innerHTML = items.map(item => `
+                <a href="marketplace.html?q=${encodeURIComponent(item.name)}" class="ff-mp-item">
+                    <img src="${item.image}" alt="${item.name}" loading="lazy">
+                    <div class="info">
+                        <div class="name">${item.name}</div>
+                        <div class="price">${item.price}</div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // ─── AI Assistant ─────────────────────────────────────────────
+        async function askAI() {
+            const q = document.getElementById('aiQuestion')?.value?.trim();
+            if (!q) return;
+            const resultEl = document.getElementById('aiResult');
+            resultEl.innerHTML = '<p style="color:var(--text-light);">Thinking...</p>';
+            try {
+                const token = localStorage.getItem('flower-token');
+                const res = await fetch('/api/openai/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': 'Bearer ' + token } : {}) },
+                    body: JSON.stringify({ messages: [
+                        { role: 'system', content: 'You are a flower farming expert tutor. Help students with soil preparation, irrigation, pest management, harvesting, greenhouse farming, and commercial flower production. Be encouraging and educational.' },
+                        { role: 'user', content: q }
+                    ]})
+                });
+                const data = await res.json();
+                resultEl.innerHTML = `<div style="font-size:0.92rem;line-height:1.7;">${(data.reply || data.message || 'I can help with flower farming questions.').replace(/\n/g, '<br>')}</div>`;
+            } catch {
+                resultEl.innerHTML = '<p style="color:var(--error-color);">Failed to get response.</p>';
+            }
+        }
+    </script>
+</body>
+</html>

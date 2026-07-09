@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lesson Viewer - Flower Ecosystem Learning Center">
+    <title>Lesson Viewer | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background:var(--bg-main); font-family:var(--font-sans); }
+
+        /* Layout */
+        .lv-layout { display:grid; grid-template-columns:280px 1fr 320px; min-height:100vh; }
+        .lv-left { background:var(--bg-white); border-right:1px solid var(--border-color); overflow-y:auto; height:100vh; position:sticky; top:0; }
+        .lv-main { min-width:0; overflow-y:auto; }
+        .lv-right { background:var(--bg-white); border-left:1px solid var(--border-color); overflow-y:auto; height:100vh; position:sticky; top:0; }
+
+        /* Left Sidebar - Curriculum */
+        .lv-sidebar-header { padding:1rem 1.25rem; border-bottom:1px solid var(--border-color); }
+        .lv-sidebar-header h3 { font-size:0.95rem; margin-bottom:0.25rem; }
+        .lv-sidebar-header p { font-size:0.78rem; color:var(--text-light); }
+        .lv-progress-mini { height:4px; background:var(--border-color); border-radius:2px; margin-top:0.5rem; overflow:hidden; }
+        .lv-progress-mini-fill { height:100%; background:#ec4899; border-radius:2px; }
+
+        .lv-module { border-bottom:1px solid var(--border-color); }
+        .lv-module-header { padding:0.75rem 1.25rem; cursor:pointer; display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; font-weight:500; background:var(--bg-light); transition:background 0.2s; }
+        .lv-module-header:hover { background:var(--border-color); }
+        .lv-module-header i { transition:transform 0.3s; font-size:0.75rem; }
+        .lv-module-header.open i { transform:rotate(90deg); }
+        .lv-module-header .count { margin-left:auto; font-size:0.72rem; color:var(--text-muted); }
+
+        .lv-lesson { display:flex; align-items:center; gap:0.75rem; padding:0.6rem 1.25rem 0.6rem 2rem; cursor:pointer; font-size:0.82rem; transition:all 0.2s; border-left:3px solid transparent; }
+        .lv-lesson:hover { background:var(--bg-light); }
+        .lv-lesson.active { background:#fdf2f8; border-left-color:#ec4899; color:#ec4899; font-weight:500; }
+        .lv-lesson.completed { color:var(--accent-green); }
+        .lv-lesson.locked { color:var(--text-muted); cursor:not-allowed; opacity:0.6; }
+        .lv-lesson-icon { width:20px; text-align:center; flex-shrink:0; }
+        .lv-lesson-duration { margin-left:auto; font-size:0.7rem; color:var(--text-muted); }
+
+        /* Main Content */
+        .lv-topbar { padding:0.75rem 1.5rem; background:var(--bg-white); border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; }
+        .lv-topbar h2 { font-size:1.1rem; }
+        .lv-topbar-meta { font-size:0.82rem; color:var(--text-light); display:flex; gap:1rem; align-items:center; }
+        .lv-topbar-actions { display:flex; gap:0.5rem; }
+
+        .lv-video-wrap { background:#000; position:relative; }
+        .lv-video-wrap video { width:100%; max-height:60vh; display:block; }
+        .lv-video-controls { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent,rgba(0,0,0,0.8)); padding:0.75rem 1rem; display:flex; align-items:center; gap:0.75rem; }
+        .lv-video-controls button { background:none; border:none; color:white; cursor:pointer; font-size:1rem; }
+        .lv-video-controls .progress { flex:1; height:4px; background:rgba(255,255,255,0.3); border-radius:2px; cursor:pointer; position:relative; }
+        .lv-video-controls .progress-fill { height:100%; background:#ec4899; border-radius:2px; }
+        .lv-video-controls .time { color:rgba(255,255,255,0.8); font-size:0.78rem; }
+
+        .lv-content { padding:2rem; max-width:800px; }
+        .lv-content h1 { font-size:1.5rem; margin-bottom:1rem; }
+        .lv-content p { line-height:1.8; color:var(--text-light); margin-bottom:1rem; }
+        .lv-content h3 { margin:1.5rem 0 0.75rem; font-size:1.1rem; }
+
+        /* Bottom Navigation */
+        .lv-nav { display:flex; justify-content:space-between; align-items:center; padding:1rem 1.5rem; background:var(--bg-white); border-top:1px solid var(--border-color); position:sticky; bottom:0; }
+        .lv-nav-btn { display:flex; align-items:center; gap:0.5rem; padding:0.6rem 1rem; border-radius:8px; font-size:0.85rem; cursor:pointer; transition:all 0.2s; border:1px solid var(--border-color); background:var(--bg-white); }
+        .lv-nav-btn:hover { border-color:#ec4899; color:#ec4899; }
+        .lv-nav-btn.primary { background:#ec4899; color:white; border-color:#ec4899; }
+        .lv-nav-btn.primary:hover { background:#be185d; }
+        .lv-complete-btn { display:flex; align-items:center; gap:0.5rem; padding:0.6rem 1.25rem; border-radius:8px; background:#059669; color:white; border:none; cursor:pointer; font-size:0.85rem; font-weight:500; }
+
+        /* Right Sidebar */
+        .lv-right-tabs { display:flex; border-bottom:1px solid var(--border-color); }
+        .lv-right-tab { flex:1; padding:0.6rem; text-align:center; font-size:0.78rem; cursor:pointer; border:none; background:none; color:var(--text-light); border-bottom:2px solid transparent; }
+        .lv-right-tab.active { color:#ec4899; border-bottom-color:#ec4899; }
+        .lv-right-panel { padding:1rem; display:none; }
+        .lv-right-panel.active { display:block; }
+
+        /* Notes */
+        .lv-notes { width:100%; min-height:150px; border:1px solid var(--border-color); border-radius:8px; padding:0.75rem; font-size:0.88rem; font-family:inherit; resize:vertical; background:var(--bg-light); }
+        .lv-notes:focus { outline:none; border-color:#ec4899; background:white; }
+        .lv-save-status { font-size:0.72rem; color:var(--text-muted); margin-top:0.3rem; }
+
+        /* Resources */
+        .lv-resource { display:flex; align-items:center; gap:0.75rem; padding:0.75rem; border:1px solid var(--border-color); border-radius:8px; margin-bottom:0.5rem; cursor:pointer; transition:all 0.2s; text-decoration:none; color:inherit; }
+        .lv-resource:hover { border-color:#ec4899; background:#fdf2f8; }
+        .lv-resource-icon { width:36px; height:36px; border-radius:8px; background:#fce7f3; display:flex; align-items:center; justify-content:center; color:#ec4899; flex-shrink:0; }
+        .lv-resource-info { flex:1; }
+        .lv-resource-name { font-size:0.85rem; font-weight:500; }
+        .lv-resource-meta { font-size:0.72rem; color:var(--text-muted); }
+
+        /* Discussion */
+        .lv-discussion { border:1px solid var(--border-color); border-radius:8px; padding:0.75rem; margin-bottom:0.75rem; }
+        .lv-discussion-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; }
+        .lv-discussion-author { font-size:0.82rem; font-weight:500; }
+        .lv-discussion-time { font-size:0.7rem; color:var(--text-muted); }
+        .lv-discussion-text { font-size:0.85rem; color:var(--text-light); line-height:1.5; }
+        .lv-discussion-input { display:flex; gap:0.5rem; margin-top:1rem; }
+        .lv-discussion-input input { flex:1; padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.85rem; }
+
+        /* Quiz */
+        .lv-quiz-q { margin-bottom:1rem; padding:1rem; background:var(--bg-light); border-radius:8px; }
+        .lv-quiz-q p { font-weight:500; margin-bottom:0.5rem; font-size:0.9rem; }
+        .lv-quiz-opt { display:block; padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:6px; margin-bottom:0.3rem; cursor:pointer; font-size:0.85rem; }
+        .lv-quiz-opt:hover { border-color:#ec4899; }
+        .lv-quiz-opt.selected { border-color:#ec4899; background:#fdf2f8; }
+        .lv-quiz-opt.correct { border-color:#059669; background:#d1fae5; }
+        .lv-quiz-opt.wrong { border-color:#dc2626; background:#fee2e2; }
+
+        /* AI */
+        .lv-ai-msg { padding:0.6rem 0.85rem; border-radius:8px; margin-bottom:0.5rem; font-size:0.85rem; line-height:1.5; max-width:90%; }
+        .lv-ai-msg.user { background:#ec4899; color:white; margin-left:auto; border-bottom-right-radius:2px; }
+        .lv-ai-msg.bot { background:var(--bg-light); border:1px solid var(--border-color); border-bottom-left-radius:2px; }
+        .lv-ai-input { display:flex; gap:0.5rem; margin-top:0.75rem; }
+        .lv-ai-input input { flex:1; padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; font-size:0.82rem; }
+
+        /* Mobile */
+        .lv-mobile-toggle { display:none; position:fixed; bottom:1rem; left:1rem; z-index:100; width:44px; height:44px; border-radius:50%; background:#ec4899; color:white; border:none; font-size:1.2rem; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+        @media(max-width:1024px) {
+            .lv-layout { grid-template-columns:1fr; }
+            .lv-left, .lv-right { position:fixed; top:0; bottom:0; z-index:200; transform:translateX(-100%); transition:transform 0.3s; }
+            .lv-left.open { transform:translateX(0); box-shadow:4px 0 20px rgba(0,0,0,0.2); }
+            .lv-right { right:0; left:auto; transform:translateX(100%); }
+            .lv-right.open { transform:translateX(0); box-shadow:-4px 0 20px rgba(0,0,0,0.2); }
+            .lv-mobile-toggle { display:flex; align-items:center; justify-content:center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Toggle -->
+    <button class="lv-mobile-toggle" onclick="toggleLeft()" id="menuBtn"><i class="bi bi-list"></i></button>
+
+    <div class="lv-layout">
+        <!-- Left Sidebar - Curriculum -->
+        <aside class="lv-left" id="leftSidebar">
+            <div class="lv-sidebar-header">
+                <a href="course-detail.html?id=" id="backLink" style="font-size:0.78rem;color:var(--text-light);text-decoration:none;display:flex;align-items:center;gap:0.3rem;margin-bottom:0.5rem;"><i class="bi bi-arrow-left"></i> Back to Course</a>
+                <h3 id="courseTitleSidebar">Loading...</h3>
+                <p id="moduleTitle">Module 1</p>
+                <div class="lv-progress-mini"><div class="lv-progress-mini-fill" id="progressMini" style="width:0%;"></div></div>
+                <p style="font-size:0.7rem;color:var(--text-muted);margin-top:0.3rem;" id="progressText">0% complete</p>
+            </div>
+            <div id="curriculumList"></div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="lv-main">
+            <div class="lv-topbar">
+                <div>
+                    <h2 id="lessonTitle">Loading...</h2>
+                    <div class="lv-topbar-meta">
+                        <span id="lessonModule">Module 1</span>
+                        <span>•</span>
+                        <span id="lessonDuration">0 min</span>
+                    </div>
+                </div>
+                <div class="lv-topbar-actions">
+                    <button class="lv-nav-btn" onclick="toggleRight()" title="AI Assistant"><i class="bi bi-robot"></i></button>
+                    <button class="lv-nav-btn" onclick="shareLesson()" title="Share"><i class="bi bi-share"></i></button>
+                </div>
+            </div>
+
+            <!-- Video Player -->
+            <div class="lv-video-wrap" id="videoWrap">
+                <video id="videoPlayer" controls preload="metadata">
+                    <source src="" type="video/mp4">
+                    Your browser does not support video.
+                </video>
+                <div class="lv-video-controls" id="videoControls" style="display:none;">
+                    <button onclick="togglePlay()"><i class="bi bi-play-fill" id="playIcon"></i></button>
+                    <div class="progress" onclick="seekVideo(event)">
+                        <div class="progress-fill" id="progressFill" style="width:0%;"></div>
+                    </div>
+                    <span class="time" id="timeDisplay">0:00 / 0:00</span>
+                    <button onclick="toggleSpeed()" title="Speed"><span id="speedLabel">1x</span></button>
+                    <button onclick="toggleFullscreen()" title="Fullscreen"><i class="bi bi-fullscreen"></i></button>
+                </div>
+            </div>
+
+            <!-- Lesson Content -->
+            <div class="lv-content" id="lessonContent">
+                <h1 id="contentTitle">Welcome</h1>
+                <div id="contentBody"></div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="lv-nav">
+                <button class="lv-nav-btn" id="prevBtn" onclick="prevLesson()"><i class="bi bi-chevron-left"></i> Previous</button>
+                <button class="lv-complete-btn" id="completeBtn" onclick="markComplete()"><i class="bi bi-check-circle"></i> Mark Complete</button>
+                <button class="lv-nav-btn primary" id="nextBtn" onclick="nextLesson()">Next <i class="bi bi-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <aside class="lv-right" id="rightSidebar">
+            <div class="lv-right-tabs">
+                <button class="lv-right-tab active" onclick="switchRightTab('notes',this)">Notes</button>
+                <button class="lv-right-tab" onclick="switchRightTab('resources',this)">Resources</button>
+                <button class="lv-right-tab" onclick="switchRightTab('discussion',this)">Q&A</button>
+                <button class="lv-right-tab" onclick="switchRightTab('quiz',this)">Quiz</button>
+                <button class="lv-right-tab" onclick="switchRightTab('ai',this)">AI</button>
+            </div>
+
+            <div class="lv-right-panel active" id="panel-notes">
+                <h4 style="font-size:0.9rem;margin-bottom:0.5rem;">My Notes</h4>
+                <textarea class="lv-notes" id="personalNotes" placeholder="Take notes for this lesson..." oninput="autoSaveNotes()"></textarea>
+                <div class="lv-save-status" id="saveStatus">Auto-saved</div>
+            </div>
+
+            <div class="lv-right-panel" id="panel-resources">
+                <h4 style="font-size:0.9rem;margin-bottom:0.5rem;">Resources</h4>
+                <div id="resourcesList"></div>
+            </div>
+
+            <div class="lv-right-panel" id="panel-discussion">
+                <h4 style="font-size:0.9rem;margin-bottom:0.5rem;">Discussion</h4>
+                <div id="discussionList"></div>
+                <div class="lv-discussion-input">
+                    <input type="text" id="discussionInput" placeholder="Ask a question...">
+                    <button class="btn btn-primary btn-sm" style="background:#ec4899;" onclick="postDiscussion()"><i class="bi bi-send"></i></button>
+                </div>
+            </div>
+
+            <div class="lv-right-panel" id="panel-quiz">
+                <h4 style="font-size:0.9rem;margin-bottom:0.5rem;">Quick Quiz</h4>
+                <div id="quizContent"></div>
+            </div>
+
+            <div class="lv-right-panel" id="panel-ai">
+                <h4 style="font-size:0.9rem;margin-bottom:0.5rem;">AI Tutor</h4>
+                <div id="aiChat" style="max-height:400px;overflow-y:auto;"></div>
+                <div class="lv-ai-input">
+                    <input type="text" id="aiInput" placeholder="Ask about this lesson..." onkeydown="if(event.key==='Enter')askAI()">
+                    <button class="btn btn-primary btn-sm" style="background:#ec4899;" onclick="askAI()"><i class="bi bi-send"></i></button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script>
+        let course = null, lessons = [], currentIdx = 0;
+        let noteSaveTimer = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const courseId = params.get('course');
+            const lessonId = params.get('lesson');
+            if (!courseId) { window.location.href = 'learning.html'; return; }
+            loadCourse(courseId, lessonId);
+        });
+
+        async function loadCourse(courseId, lessonId) {
+            try {
+                const res = await fetch(`/api/learning/courses/${courseId}`);
+                course = await res.json();
+                if (!course || !course.title) { window.location.href = 'learning.html'; return; }
+            } catch { window.location.href = 'learning.html'; return; }
+
+            lessons = course.lessons || [];
+            document.getElementById('courseTitleSidebar').textContent = course.title;
+            document.getElementById('backLink').href = `course-detail.html?id=${courseId}`;
+
+            // Find lesson index
+            if (lessonId) {
+                currentIdx = lessons.findIndex(l => l.id === lessonId || l.id === parseInt(lessonId));
+                if (currentIdx === -1) currentIdx = 0;
+            }
+            renderCurriculum();
+            loadLesson(currentIdx);
+        }
+
+        function renderCurriculum() {
+            // Group lessons into modules
+            const modules = {};
+            lessons.forEach((l, i) => {
+                const mod = l.module || l.module_title || 'Module 1';
+                if (!modules[mod]) modules[mod] = [];
+                modules[mod].push({ ...l, _idx: i });
+            });
+
+            const el = document.getElementById('curriculumList');
+            el.innerHTML = Object.entries(modules).map(([mod, modLessons]) => {
+                const completed = modLessons.filter(l => l._idx < currentIdx).length;
+                return `
+                <div class="lv-module">
+                    <div class="lv-module-header open" onclick="this.classList.toggle('open');this.nextElementSibling.style.display=this.classList.contains('open')?'block':'none'">
+                        <i class="bi bi-chevron-right"></i>
+                        <span>${escapeHtml(mod)}</span>
+                        <span class="count">${completed}/${modLessons.length}</span>
+                    </div>
+                    <div class="lv-module-lessons">
+                        ${modLessons.map(l => `
+                            <div class="lv-lesson ${l._idx === currentIdx ? 'active' : ''} ${l._idx < currentIdx ? 'completed' : ''}" onclick="loadLesson(${l._idx})">
+                                <span class="lv-lesson-icon">${l._idx < currentIdx ? '<i class="bi bi-check-circle-fill" style="color:#059669;"></i>' : l._idx === currentIdx ? '<i class="bi bi-play-circle-fill" style="color:#ec4899;"></i>' : '<i class="bi bi-circle"></i>'}</span>
+                                <span>${escapeHtml(l.title || 'Lesson ' + (l._idx + 1))}</span>
+                                <span class="lv-lesson-duration">${l.duration_minutes || ''} min</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+            }).join('');
+
+            // Update progress
+            const pct = lessons.length ? Math.round((currentIdx / lessons.length) * 100) : 0;
+            document.getElementById('progressMini').style.width = pct + '%';
+            document.getElementById('progressText').textContent = pct + '% complete';
+            document.getElementById('moduleTitle').textContent = Object.keys(modules)[0] || 'Module 1';
+        }
+
+        function loadLesson(idx) {
+            if (idx < 0 || idx >= lessons.length) return;
+            currentIdx = idx;
+            const lesson = lessons[idx];
+
+            document.getElementById('lessonTitle').textContent = lesson.title || 'Lesson ' + (idx + 1);
+            document.getElementById('lessonModule').textContent = lesson.module || lesson.module_title || 'Module 1';
+            document.getElementById('lessonDuration').textContent = (lesson.duration_minutes || '—') + ' min';
+            document.getElementById('contentTitle').textContent = lesson.title || 'Lesson ' + (idx + 1);
+            document.getElementById('contentBody').innerHTML = lesson.content || '<p style="color:var(--text-light);">No content available for this lesson yet.</p>';
+
+            // Video
+            const video = document.getElementById('videoPlayer');
+            if (lesson.video_url) {
+                video.src = lesson.video_url;
+                video.load();
+                document.getElementById('videoControls').style.display = 'flex';
+            } else {
+                video.src = '';
+                document.getElementById('videoControls').style.display = 'none';
+            }
+
+            // Navigation
+            document.getElementById('prevBtn').disabled = idx === 0;
+            document.getElementById('nextBtn').disabled = idx === lessons.length - 1;
+
+            // Complete button
+            const completeBtn = document.getElementById('completeBtn');
+            if (idx < currentIdx || lesson.completed) {
+                completeBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Completed';
+                completeBtn.style.background = '#059669';
+            } else {
+                completeBtn.innerHTML = '<i class="bi bi-check-circle"></i> Mark Complete';
+                completeBtn.style.background = '#059669';
+            }
+
+            // Load notes
+            loadNotes(lesson.id);
+            renderCurriculum();
+            loadResources(lesson);
+            loadDiscussion(lesson.id);
+            loadQuiz(lesson);
+        }
+
+        // Video controls
+        function togglePlay() {
+            const v = document.getElementById('videoPlayer');
+            if (v.paused) { v.play(); document.getElementById('playIcon').className = 'bi bi-pause-fill'; }
+            else { v.pause(); document.getElementById('playIcon').className = 'bi bi-play-fill'; }
+        }
+
+        function seekVideo(e) {
+            const v = document.getElementById('videoPlayer');
+            const bar = e.currentTarget;
+            v.currentTime = (e.offsetX / bar.offsetWidth) * v.duration;
+        }
+
+        const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+        let speedIdx = 2;
+        function toggleSpeed() {
+            speedIdx = (speedIdx + 1) % speeds.length;
+            document.getElementById('videoPlayer').playbackRate = speeds[speedIdx];
+            document.getElementById('speedLabel').textContent = speeds[speedIdx] + 'x';
+        }
+
+        function toggleFullscreen() {
+            const v = document.getElementById('videoPlayer');
+            if (v.requestFullscreen) v.requestFullscreen();
+            else if (v.webkitRequestFullscreen) v.webkitRequestFullscreen();
+        }
+
+        // Video progress
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('videoPlayer');
+            video.addEventListener('timeupdate', () => {
+                if (!video.duration) return;
+                const pct = (video.currentTime / video.duration) * 100;
+                document.getElementById('progressFill').style.width = pct + '%';
+                document.getElementById('timeDisplay').textContent = formatTime(video.currentTime) + ' / ' + formatTime(video.duration);
+            });
+            video.addEventListener('play', () => { document.getElementById('playIcon').className = 'bi bi-pause-fill'; });
+            video.addEventListener('pause', () => { document.getElementById('playIcon').className = 'bi bi-play-fill'; });
+        });
+
+        function formatTime(s) {
+            const m = Math.floor(s / 60);
+            const sec = Math.floor(s % 60);
+            return m + ':' + (sec < 10 ? '0' : '') + sec;
+        }
+
+        // Mark complete
+        async function markComplete() {
+            const lesson = lessons[currentIdx];
+            if (!lesson) return;
+            try {
+                const token = localStorage.getItem('flower-token');
+                await fetch(`/api/learning/courses/${course.id}/progress`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': 'Bearer ' + token } : {}) },
+                    body: JSON.stringify({ lesson_id: lesson.id, progress: 100 })
+                });
+            } catch {}
+            // Update local state
+            lesson.completed = true;
+            renderCurriculum();
+            document.getElementById('completeBtn').innerHTML = '<i class="bi bi-check-circle-fill"></i> Completed';
+            document.getElementById('completeBtn').style.background = '#059669';
+        }
+
+        function prevLesson() { if (currentIdx > 0) loadLesson(currentIdx - 1); }
+        function nextLesson() { if (currentIdx < lessons.length - 1) loadLesson(currentIdx + 1); }
+
+        // Notes
+        async function loadNotes(lessonId) {
+            const notes = localStorage.getItem(`notes_${course.id}_${lessonId}`) || '';
+            document.getElementById('personalNotes').value = notes;
+            document.getElementById('saveStatus').textContent = 'Auto-saved';
+        }
+
+        function autoSaveNotes() {
+            clearTimeout(noteSaveTimer);
+            document.getElementById('saveStatus').textContent = 'Saving...';
+            noteSaveTimer = setTimeout(() => {
+                const lesson = lessons[currentIdx];
+                if (lesson) {
+                    localStorage.setItem(`notes_${course.id}_${lesson.id}`, document.getElementById('personalNotes').value);
+                    document.getElementById('saveStatus').textContent = 'Auto-saved';
+                }
+            }, 1000);
+        }
+
+        // Resources
+        function loadResources(lesson) {
+            const resources = lesson.resources || lesson.files || [
+                { name: 'Lesson Notes', type: 'pdf', size: '1.2 MB' },
+                { name: 'Practice Worksheet', type: 'pdf', size: '0.8 MB' }
+            ];
+            document.getElementById('resourcesList').innerHTML = resources.map(r => `
+                <div class="lv-resource">
+                    <div class="lv-resource-icon"><i class="bi bi-file-earmark-${r.type === 'pdf' ? 'pdf' : 'text'}"></i></div>
+                    <div class="lv-resource-info">
+                        <div class="lv-resource-name">${escapeHtml(r.name || 'Resource')}</div>
+                        <div class="lv-resource-meta">${r.type || 'File'} • ${r.size || ''}</div>
+                    </div>
+                    <i class="bi bi-download" style="color:var(--text-light);"></i>
+                </div>
+            `).join('');
+        }
+
+        // Discussion
+        let discussions = [];
+        function loadDiscussion(lessonId) {
+            const stored = JSON.parse(localStorage.getItem(`discuss_${course.id}_${lessonId}`) || '[]');
+            discussions = stored;
+            renderDiscussion();
+        }
+
+        function renderDiscussion() {
+            document.getElementById('discussionList').innerHTML = discussions.length ? discussions.map(d => `
+                <div class="lv-discussion">
+                    <div class="lv-discussion-header">
+                        <span class="lv-discussion-author">${escapeHtml(d.author)}</span>
+                        <span class="lv-discussion-time">${d.time}</span>
+                    </div>
+                    <div class="lv-discussion-text">${escapeHtml(d.text)}</div>
+                </div>
+            `).join('') : '<p style="font-size:0.82rem;color:var(--text-light);text-align:center;padding:1rem;">No questions yet. Be the first to ask!</p>';
+        }
+
+        function postDiscussion() {
+            const input = document.getElementById('discussionInput');
+            const text = input.value.trim();
+            if (!text) return;
+            const lesson = lessons[currentIdx];
+            const name = localStorage.getItem('flower-user-name') || 'Student';
+            discussions.push({ author: name, text, time: 'Just now' });
+            localStorage.setItem(`discuss_${course.id}_${lesson.id}`, JSON.stringify(discussions));
+            input.value = '';
+            renderDiscussion();
+        }
+
+        // Quiz
+        function loadQuiz(lesson) {
+            const quiz = lesson.quiz || course.quiz;
+            const qEl = document.getElementById('quizContent');
+            if (!quiz || !quiz.questions) {
+                qEl.innerHTML = '<p style="font-size:0.82rem;color:var(--text-light);text-align:center;padding:1rem;">No quiz for this lesson.</p>';
+                return;
+            }
+            qEl.innerHTML = quiz.questions.map((q, qi) => `
+                <div class="lv-quiz-q">
+                    <p>${qi + 1}. ${q.question}</p>
+                    ${q.options.map((opt, oi) => `
+                        <label class="lv-quiz-opt" onclick="selectQuizOpt(this,${qi},${oi},${q.correct_answer || q.correct})">${opt}</label>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        function selectQuizOpt(el, qi, oi, correct) {
+            const parent = el.closest('.lv-quiz-q');
+            parent.querySelectorAll('.lv-quiz-opt').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            // Show correct/wrong immediately
+            parent.querySelectorAll('.lv-quiz-opt').forEach((o, i) => {
+                if (i === correct) o.classList.add('correct');
+                else if (i === oi && i !== correct) o.classList.add('wrong');
+            });
+        }
+
+        // AI
+        const aiMessages = [];
+        function renderAI() {
+            document.getElementById('aiChat').innerHTML = aiMessages.map(m => `
+                <div class="lv-ai-msg ${m.role}">${escapeHtml(m.text)}</div>
+            `).join('');
+        }
+
+        async function askAI() {
+            const input = document.getElementById('aiInput');
+            const q = input.value.trim();
+            if (!q) return;
+            aiMessages.push({ role: 'user', text: q });
+            input.value = '';
+            renderAI();
+            aiMessages.push({ role: 'bot', text: 'Thinking...' });
+            renderAI();
+
+            try {
+                const token = localStorage.getItem('flower-token');
+                const res = await fetch('/api/openai/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': 'Bearer ' + token } : {}) },
+                    body: JSON.stringify({ messages: [
+                        { role: 'system', content: `You are a helpful floral design tutor. The current lesson is "${lesson?.title || ''}" in the course "${course?.title || ''}". Help students understand the lesson content.` },
+                        ...aiMessages.filter(m => m.role !== 'bot' || m.text !== 'Thinking...').map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }))
+                    ]})
+                });
+                const data = await res.json();
+                aiMessages[aiMessages.length - 1] = { role: 'bot', text: data.reply || data.message || 'I can help with this lesson content.' };
+            } catch {
+                aiMessages[aiMessages.length - 1] = { role: 'bot', text: 'Failed to get response. Please try again.' };
+            }
+            renderAI();
+        }
+
+        // Tabs
+        function switchRightTab(tab, el) {
+            document.querySelectorAll('.lv-right-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.lv-right-panel').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('panel-' + tab).classList.add('active');
+        }
+
+        // Mobile
+        function toggleLeft() { document.getElementById('leftSidebar').classList.toggle('open'); }
+        function toggleRight() { document.getElementById('rightSidebar').classList.toggle('open'); }
+        function shareLesson() {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link copied!');
+            }
+        }
+
+        function escapeHtml(s) {
+            if (typeof s !== 'string') return String(s || '');
+            const d = document.createElement('div');
+            d.appendChild(document.createTextNode(s));
+            return d.innerHTML;
+        }
+    </script>
+</body>
+</html>

@@ -131,6 +131,62 @@
                             <div id="upcomingWorkshops"></div>
                         </div>
                     </div>
+
+                    <!-- Achievements & Streak -->
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+                        <div class="sd-section">
+                            <h3><i class="bi bi-trophy" style="color:#f59e0b;"></i> Achievements</h3>
+                            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;" id="achievementsGrid">
+                                <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center;">
+                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;">🎉</div>
+                                    <div style="font-size:0.75rem;font-weight:500;">First Lesson</div>
+                                    <div style="font-size:0.65rem;color:var(--text-muted);">Completed</div>
+                                </div>
+                                <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center;">
+                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;">📚</div>
+                                    <div style="font-size:0.75rem;font-weight:500;">5 Lessons</div>
+                                    <div style="font-size:0.65rem;color:var(--text-muted);">Completed</div>
+                                </div>
+                                <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center;opacity:0.4;">
+                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;">🏆</div>
+                                    <div style="font-size:0.75rem;font-weight:500;">Course Complete</div>
+                                    <div style="font-size:0.65rem;color:var(--text-muted);">Locked</div>
+                                </div>
+                                <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center;opacity:0.4;">
+                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;">🌸</div>
+                                    <div style="font-size:0.75rem;font-weight:500;">Bouquet Builder</div>
+                                    <div style="font-size:0.65rem;color:var(--text-muted);">Locked</div>
+                                </div>
+                                <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center;opacity:0.4;">
+                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;">📝</div>
+                                    <div style="font-size:0.75rem;font-weight:500;">Quiz Master</div>
+                                    <div style="font-size:0.65rem;color:var(--text-muted);">Locked</div>
+                                </div>
+                                <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center;opacity:0.4;">
+                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;">🔥</div>
+                                    <div style="font-size:0.75rem;font-weight:500;">7-Day Streak</div>
+                                    <div style="font-size:0.65rem;color:var(--text-muted);">Locked</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sd-section">
+                            <h3><i class="bi bi-fire" style="color:#ef4444;"></i> Learning Streak</h3>
+                            <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:12px;padding:1.5rem;text-align:center;">
+                                <div style="font-size:3rem;font-weight:700;color:#ef4444;" id="streakCount">3</div>
+                                <div style="font-size:0.9rem;color:var(--text-light);margin-bottom:1rem;">Day Streak</div>
+                                <div style="display:flex;gap:0.5rem;justify-content:center;" id="streakDays">
+                                    <div style="width:36px;height:36px;border-radius:50%;background:#ef4444;color:white;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;">M</div>
+                                    <div style="width:36px;height:36px;border-radius:50%;background:#ef4444;color:white;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;">T</div>
+                                    <div style="width:36px;height:36px;border-radius:50%;background:#ef4444;color:white;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;">W</div>
+                                    <div style="width:36px;height:36px;border-radius:50%;background:var(--bg-light);color:var(--text-muted);display:flex;align-items:center;justify-content:center;font-size:0.75rem;">T</div>
+                                    <div style="width:36px;height:36px;border-radius:50%;background:var(--bg-light);color:var(--text-muted);display:flex;align-items:center;justify-content:center;font-size:0.75rem;">F</div>
+                                    <div style="width:36px;height:36px;border-radius:50%;background:var(--bg-light);color:var(--text-muted);display:flex;align-items:center;justify-content:center;font-size:0.75rem;">S</div>
+                                    <div style="width:36px;height:36px;border-radius:50%;background:var(--bg-light);color:var(--text-muted);display:flex;align-items:center;justify-content:center;font-size:0.75rem;">S</div>
+                                </div>
+                                <p style="font-size:0.78rem;color:var(--text-muted);margin-top:0.75rem;">Keep learning daily to maintain your streak!</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- My Courses -->
@@ -453,13 +509,92 @@
                 calEl.innerHTML = grid;
             }
 
-            // Placeholder sections
-            ['myPathsList', 'myAssignmentsList', 'myQuizzesList', 'myDownloadsList'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el && !el.innerHTML.trim()) {
-                    el.innerHTML = emptyState('Coming soon.');
-                }
-            });
+            // Learning Paths
+            const pathsEl = document.getElementById('myPathsList');
+            if (pathsEl) {
+                const paths = [
+                    { name: 'Beginner Florist', progress: 45, courses: 6, completed: 3, icon: '🌱', color: '#10b981' },
+                    { name: 'Wedding Specialist', progress: 20, courses: 8, completed: 2, icon: '💒', color: '#ec4899' },
+                    { name: 'Professional Florist', progress: 0, courses: 10, completed: 0, icon: '🏆', color: '#f59e0b' }
+                ];
+                pathsEl.innerHTML = paths.map(p => `
+                    <div class="sd-progress-card" style="cursor:pointer;">
+                        <div style="width:50px;height:50px;border-radius:12px;background:${p.color}15;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">${p.icon}</div>
+                        <div class="sd-progress-info" style="flex:1;">
+                            <h4>${p.name}</h4>
+                            <p>${p.completed} of ${p.courses} courses completed</p>
+                            <div class="sd-progress-bar"><div class="sd-progress-fill" style="width:${p.progress}%;background:${p.color};"></div></div>
+                        </div>
+                        <span style="font-weight:700;color:${p.color};font-size:1.1rem;">${p.progress}%</span>
+                    </div>
+                `).join('');
+            }
+
+            // Assignments
+            const assignEl = document.getElementById('myAssignmentsList');
+            if (assignEl) {
+                const assignments = [
+                    { title: 'Create a Hand-Tied Bouquet', course: 'Floral Design Fundamentals', due: 'Dec 15, 2026', status: 'pending', statusColor: '#f59e0b' },
+                    { title: 'Color Theory Exercise', course: 'Floral Design Fundamentals', due: 'Dec 20, 2026', status: 'submitted', statusColor: '#3b82f6' },
+                    { title: 'Wedding Centerpiece Design', course: 'Wedding Floristry', due: 'Dec 25, 2026', status: 'pending', statusColor: '#f59e0b' }
+                ];
+                assignEl.innerHTML = assignments.length ? assignments.map(a => `
+                    <div class="sd-progress-card">
+                        <div style="width:44px;height:44px;border-radius:10px;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="bi bi-file-earmark-check" style="color:#8b5cf6;"></i>
+                        </div>
+                        <div class="sd-progress-info" style="flex:1;">
+                            <h4>${a.title}</h4>
+                            <p>${a.course} · Due ${a.due}</p>
+                        </div>
+                        <span style="font-size:0.78rem;font-weight:600;padding:0.25rem 0.6rem;border-radius:50px;background:${a.statusColor}15;color:${a.statusColor};">${a.status}</span>
+                    </div>
+                `).join('') : emptyState('No assignments yet.');
+            }
+
+            // Quizzes
+            const quizEl = document.getElementById('myQuizzesList');
+            if (quizEl) {
+                const quizzes = [
+                    { title: 'Flower Types Quiz', course: 'Floral Design Fundamentals', score: 85, total: 10, passed: true },
+                    { title: 'Color Theory Quiz', course: 'Floral Design Fundamentals', score: 90, total: 10, passed: true },
+                    { title: 'Wedding Design Quiz', course: 'Wedding Floristry', score: null, total: 15, passed: false }
+                ];
+                quizEl.innerHTML = quizzes.length ? quizzes.map(q => `
+                    <div class="sd-progress-card">
+                        <div style="width:44px;height:44px;border-radius:10px;background:${q.passed ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="bi ${q.passed ? 'bi-check-circle-fill' : 'bi-hourglass-split'}" style="color:${q.passed ? '#10b981' : '#f59e0b'};"></i>
+                        </div>
+                        <div class="sd-progress-info" style="flex:1;">
+                            <h4>${q.title}</h4>
+                            <p>${q.course}${q.score !== null ? ' · Score: ' + q.score + '/' + q.total : ''}</p>
+                        </div>
+                        <span style="font-size:0.78rem;font-weight:600;padding:0.25rem 0.6rem;border-radius:50px;background:${q.passed ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)'};color:${q.passed ? '#10b981' : '#f59e0b'};">${q.passed ? 'Passed' : 'Pending'}</span>
+                    </div>
+                `).join('') : emptyState('No quizzes yet.');
+            }
+
+            // Downloads
+            const dlEl = document.getElementById('myDownloadsList');
+            if (dlEl) {
+                const downloads = [
+                    { name: 'Floral Design Workbook', type: 'PDF', size: '2.4 MB', date: 'Dec 1, 2026' },
+                    { name: 'Color Theory Cheat Sheet', type: 'PDF', size: '1.1 MB', date: 'Dec 3, 2026' },
+                    { name: 'Wedding Planning Template', type: 'DOCX', size: '0.8 MB', date: 'Dec 5, 2026' }
+                ];
+                dlEl.innerHTML = downloads.length ? downloads.map(d => `
+                    <div class="sd-progress-card">
+                        <div style="width:44px;height:44px;border-radius:10px;background:rgba(59,130,246,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="bi bi-file-earmark-${d.type === 'PDF' ? 'pdf' : 'word'}" style="color:#3b82f6;"></i>
+                        </div>
+                        <div class="sd-progress-info" style="flex:1;">
+                            <h4>${d.name}</h4>
+                            <p>${d.type} · ${d.size} · ${d.date}</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm"><i class="bi bi-download"></i></button>
+                    </div>
+                `).join('') : emptyState('No downloads yet.');
+            }
         }
 
         initDashboard();

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Course Marketplace — Browse, compare, and enroll in floristry courses. Find the perfect course for your learning goals.">
+    <title>Course Marketplace | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .cm-hero { background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 50%,#3b82f6 100%); padding:4rem 0 3rem; color:white; position:relative; overflow:hidden; }
+        .cm-hero::before { content:''; position:absolute; top:-40%; right:-10%; width:500px; height:500px; background:rgba(255,255,255,0.06); border-radius:50%; }
+        .cm-hero h1 { color:white; font-size:clamp(2rem,4vw,2.8rem); margin-bottom:0.5rem; }
+        .cm-hero p { color:rgba(255,255,255,0.85); max-width:600px; margin-bottom:1.5rem; }
+        .cm-hero-btns { display:flex; gap:0.75rem; flex-wrap:wrap; }
+        .cm-hero-btns .btn { padding:0.65rem 1.5rem; border-radius:50px; }
+        .btn-white-blue { background:white; color:#1e3a5f; border:none; font-weight:600; }
+        .btn-outline-white { background:transparent; color:white; border:1.5px solid rgba(255,255,255,0.5); }
+
+        /* Search & Filters */
+        .cm-search { background:var(--bg-white); border-radius:16px; padding:1.5rem; box-shadow:0 10px 40px rgba(0,0,0,0.1); margin:-2rem auto 2rem; max-width:900px; position:relative; z-index:10; }
+        .cm-search-bar { display:flex; gap:0.5rem; margin-bottom:1rem; }
+        .cm-search-bar input { flex:1; padding:0.85rem 1.25rem; border:1px solid var(--border-color); border-radius:12px; font-size:1rem; }
+        .cm-search-bar input:focus { border-color:#2563eb; }
+        .cm-filter-row { display:flex; gap:0.5rem; flex-wrap:wrap; }
+        .cm-filter { padding:0.4rem 0.8rem; border:1px solid var(--border-color); border-radius:20px; font-size:0.82rem; cursor:pointer; background:var(--bg-white); transition:all 0.2s; }
+        .cm-filter:hover, .cm-filter.active { border-color:#2563eb; color:#2563eb; background:rgba(37,99,235,0.05); }
+
+        /* Stats */
+        .cm-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:2rem; }
+        .cm-stat { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; }
+        .cm-stat-value { font-size:1.5rem; font-weight:700; color:#2563eb; }
+        .cm-stat-label { font-size:0.8rem; color:var(--text-light); }
+
+        /* Section Headers */
+        .cm-section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+        .cm-section-header h2 { margin:0; }
+
+        /* Featured Courses */
+        .cm-featured { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1.5rem; }
+        .cm-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; overflow:hidden; transition:all 0.3s; text-decoration:none; color:inherit; display:flex; flex-direction:column; }
+        .cm-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); }
+        .cm-card-img { height:180px; overflow:hidden; position:relative; }
+        .cm-card-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .cm-card:hover .cm-card-img img { transform:scale(1.05); }
+        .cm-card-badge { position:absolute; top:0.75rem; left:0.75rem; padding:0.2rem 0.5rem; border-radius:5px; font-size:0.68rem; font-weight:600; }
+        .cm-card-save { position:absolute; top:0.75rem; right:0.75rem; width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.9); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.9rem; color:var(--text-light); }
+        .cm-card-save:hover, .cm-card-save.saved { color:#2563eb; }
+        .cm-card-body { padding:1.25rem; flex:1; display:flex; flex-direction:column; }
+        .cm-card-category { font-size:0.68rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:#2563eb; margin-bottom:0.3rem; }
+        .cm-card-title { font-size:1.05rem; font-weight:600; margin-bottom:0.4rem; line-height:1.3; }
+        .cm-card-instructor { display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; color:var(--text-light); margin-bottom:0.4rem; }
+        .cm-card-instructor-avatar { width:22px; height:22px; border-radius:50%; background:rgba(37,99,235,0.1); display:flex; align-items:center; justify-content:center; font-size:0.55rem; color:#2563eb; }
+        .cm-card-rating { display:flex; align-items:center; gap:0.3rem; font-size:0.82rem; margin-bottom:0.4rem; }
+        .cm-card-rating .stars { color:#f59e0b; }
+        .cm-card-meta { display:flex; gap:0.6rem; font-size:0.75rem; color:var(--text-light); margin-bottom:0.5rem; flex-wrap:wrap; }
+        .cm-card-meta span { display:flex; align-items:center; gap:0.2rem; }
+        .cm-card-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid var(--border-light); margin-top:auto; }
+        .cm-card-price { font-weight:700; font-size:1.05rem; color:#2563eb; }
+        .cm-card-price.free { color:var(--accent-green); }
+        .cm-card-price .original { font-size:0.8rem; color:var(--text-muted); text-decoration:line-through; margin-right:0.3rem; }
+        .cm-card-enroll { padding:0.45rem 1rem; background:#2563eb; color:white; border:none; border-radius:8px; font-size:0.82rem; font-weight:600; cursor:pointer; }
+        .cm-card-enroll:hover { background:#1d4ed8; }
+
+        /* Bundles */
+        .cm-bundles { display:grid; grid-template-columns:repeat(auto-fill,minmax(350px,1fr)); gap:1.25rem; }
+        .cm-bundle { background:linear-gradient(135deg,#eff6ff,#dbeafe); border:2px solid #bfdbfe; border-radius:14px; padding:1.5rem; transition:all 0.3s; cursor:pointer; }
+        .cm-bundle:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(37,99,235,0.15); border-color:#2563eb; }
+        .cm-bundle-badge { display:inline-flex; align-items:center; gap:0.3rem; background:#2563eb; color:white; padding:0.2rem 0.6rem; border-radius:50px; font-size:0.72rem; font-weight:600; margin-bottom:0.75rem; }
+        .cm-bundle h3 { font-size:1.1rem; margin-bottom:0.3rem; }
+        .cm-bundle p { font-size:0.85rem; color:var(--text-light); margin-bottom:0.75rem; }
+        .cm-bundle-courses { font-size:0.8rem; color:var(--text-light); margin-bottom:0.5rem; }
+        .cm-bundle-price { font-size:1.25rem; font-weight:700; color:#2563eb; }
+        .cm-bundle-price .original { font-size:0.9rem; color:var(--text-muted); text-decoration:line-through; margin-right:0.3rem; }
+        .cm-bundle-savings { font-size:0.78rem; color:var(--accent-green); font-weight:600; }
+
+        /* Gift */
+        .cm-gift { background:linear-gradient(135deg,#fdf2f8,#fce7f3); border-radius:16px; padding:2.5rem; text-align:center; margin:2rem 0; }
+        .cm-gift h2 { margin-bottom:0.5rem; }
+        .cm-gift p { color:var(--text-light); max-width:500px; margin:0 auto 1.5rem; }
+
+        /* Instructors */
+        .cm-instructors { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1.25rem; }
+        .cm-instructor { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; padding:1.5rem; text-align:center; transition:all 0.3s; cursor:pointer; }
+        .cm-instructor:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:#2563eb; }
+        .cm-instructor-avatar { width:80px; height:80px; border-radius:50%; margin:0 auto 0.75rem; overflow:hidden; border:3px solid #eff6ff; }
+        .cm-instructor-avatar img { width:100%; height:100%; object-fit:cover; }
+        .cm-instructor h3 { font-size:1rem; margin-bottom:0.2rem; }
+        .cm-instructor p { font-size:0.82rem; color:var(--text-light); margin-bottom:0.5rem; }
+        .cm-instructor-stats { display:flex; justify-content:center; gap:1rem; font-size:0.78rem; color:var(--text-muted); }
+
+        /* Testimonials */
+        .cm-testimonials { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.25rem; }
+        .cm-testimonial { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; padding:1.5rem; }
+        .cm-testimonial-stars { color:#f59e0b; margin-bottom:0.75rem; }
+        .cm-testimonial-text { font-size:0.92rem; line-height:1.6; color:var(--text-light); margin-bottom:1rem; font-style:italic; }
+        .cm-testimonial-author { display:flex; align-items:center; gap:0.75rem; }
+        .cm-testimonial-avatar { width:40px; height:40px; border-radius:50%; background:rgba(37,99,235,0.1); display:flex; align-items:center; justify-content:center; font-weight:600; color:#2563eb; }
+        .cm-testimonial-name { font-weight:600; font-size:0.9rem; }
+        .cm-testimonial-course { font-size:0.78rem; color:var(--text-light); }
+
+        @media(max-width:768px) {
+            .cm-stats { grid-template-columns:repeat(2,1fr); }
+            .cm-featured { grid-template-columns:1fr; }
+            .cm-bundles { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="cm-hero">
+        <div class="container">
+            <nav style="font-size:0.85rem;margin-bottom:1rem;color:rgba(255,255,255,0.6);">
+                <a href="learning.html" style="color:rgba(255,255,255,0.6);text-decoration:none;">Learning</a>
+                <span style="margin:0 0.5rem;">/</span>
+                <span style="color:white;">Course Marketplace</span>
+            </nav>
+            <h1><i class="bi bi-shop"></i> Course Marketplace</h1>
+            <p>Browse, compare, and enroll in courses from expert florists. Find the perfect course for your learning goals.</p>
+            <div class="cm-hero-btns">
+                <a href="#courses" class="btn btn-white-blue"><i class="bi bi-collection-play"></i> Browse Courses</a>
+                <a href="#bundles" class="btn btn-outline-white"><i class="bi bi-box-seam"></i> Course Bundles</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search -->
+    <div class="container">
+        <div class="cm-search">
+            <div class="cm-search-bar">
+                <input type="text" id="searchInput" placeholder="Search courses, topics, or instructors..." onkeydown="if(event.key==='Enter')applyFilters()">
+                <button class="btn btn-primary" style="background:#2563eb;" onclick="applyFilters()"><i class="bi bi-search"></i></button>
+            </div>
+            <div class="cm-filter-row">
+                <button class="cm-filter active" onclick="filterCategory('all',this)">All Courses</button>
+                <button class="cm-filter" onclick="filterCategory('floral-design',this)">💐 Floral Design</button>
+                <button class="cm-filter" onclick="filterCategory('wedding',this)">💒 Wedding</button>
+                <button class="cm-filter" onclick="filterCategory('business',this)">💼 Business</button>
+                <button class="cm-filter" onclick="filterCategory('care',this)">🌿 Plant Care</button>
+                <button class="cm-filter" onclick="filterCategory('farming',this)">🌱 Farming</button>
+                <button class="cm-filter" onclick="filterCategory('free',this)">Free Courses</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="container">
+        <div class="cm-stats">
+            <div class="cm-stat"><div class="cm-stat-value" id="statCourses">0</div><div class="cm-stat-label">Courses</div></div>
+            <div class="cm-stat"><div class="cm-stat-value" id="statStudents">0</div><div class="cm-stat-label">Students</div></div>
+            <div class="cm-stat"><div class="cm-stat-value" id="statInstructors">0</div><div class="cm-stat-label">Instructors</div></div>
+            <div class="cm-stat"><div class="cm-stat-value" id="statRating">0</div><div class="cm-stat-label">Avg Rating</div></div>
+        </div>
+    </div>
+
+    <!-- Featured Courses -->
+    <section class="section-padding" id="courses">
+        <div class="container">
+            <div class="cm-section-header">
+                <h2><i class="bi bi-star" style="color:#f59e0b;"></i> Featured Courses</h2>
+                <a href="learning.html" style="color:#2563eb;font-size:0.9rem;">View All →</a>
+            </div>
+            <div class="cm-featured" id="featuredGrid"></div>
+        </div>
+    </section>
+
+    <!-- Course Bundles -->
+    <section class="section-padding bg-light" id="bundles">
+        <div class="container">
+            <div class="cm-section-header">
+                <h2><i class="bi bi-box-seam" style="color:#2563eb;"></i> Course Bundles</h2>
+                <span style="font-size:0.85rem;color:var(--text-light);">Save up to 40% with bundles</span>
+            </div>
+            <div class="cm-bundles" id="bundlesGrid"></div>
+        </div>
+    </section>
+
+    <!-- Gift a Course -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="cm-gift">
+                <div style="font-size:3rem;margin-bottom:0.5rem;">🎁</div>
+                <h2>Gift a Course</h2>
+                <p>Share the joy of learning! Gift a course to a friend, family member, or colleague.</p>
+                <div style="display:flex;gap:0.75rem;justify-content:center;">
+                    <button class="btn btn-primary" style="background:#2563eb;" onclick="alert('Gift feature coming soon!')"><i class="bi bi-gift"></i> Gift a Course</button>
+                    <button class="btn btn-outline" onclick="alert('Gift cards coming soon!')"><i class="bi bi-credit-card"></i> Buy Gift Card</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Instructors -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="cm-section-header">
+                <h2><i class="bi bi-person-badge" style="color:#2563eb;"></i> Top Instructors</h2>
+                <a href="instructors.html" style="color:#2563eb;font-size:0.9rem;">View All →</a>
+            </div>
+            <div class="cm-instructors" id="instructorGrid"></div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section-padding">
+        <div class="container">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h2><i class="bi bi-chat-quote" style="color:#2563eb;"></i> What Students Say</h2>
+                <p style="color:var(--text-light);">Hear from students who transformed their skills</p>
+            </div>
+            <div class="cm-testimonials" id="testimonialGrid"></div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container">
+            <div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);border-radius:16px;padding:3rem;text-align:center;color:white;">
+                <h2 style="color:white;margin-bottom:0.5rem;">Ready to Start Learning?</h2>
+                <p style="color:rgba(255,255,255,0.85);margin-bottom:1.5rem;max-width:500px;margin-left:auto;margin-right:auto;">Join thousands of students learning floristry from expert instructors worldwide.</p>
+                <a href="#courses" class="btn btn-white-blue" style="padding:0.75rem 2rem;">Browse Courses</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        let currentCategory = 'all';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCourses();
+            loadBundles();
+            loadInstructors();
+            loadTestimonials();
+        });
+
+        // ─── Courses ──────────────────────────────────────────────────
+        async function loadCourses(category = '') {
+            try {
+                let url = '/api/courses?limit=12';
+                if (category && category !== 'all' && category !== 'free') url += `&category=${category}`;
+                if (category === 'free') url += '&price=free';
+                const res = await fetch(url);
+                const data = await res.json();
+                const courses = Array.isArray(data) ? data : (data.courses || []);
+
+                // Stats
+                document.getElementById('statCourses').textContent = courses.length;
+                const totalStudents = courses.reduce((s, c) => s + (c.students || c.students_count || 0), 0);
+                document.getElementById('statStudents').textContent = totalStudents >= 1000 ? (totalStudents/1000).toFixed(1) + 'K' : totalStudents;
+                const instructors = [...new Set(courses.map(c => c.instructor).filter(Boolean))];
+                document.getElementById('statInstructors').textContent = instructors.length;
+                const avgRating = courses.length ? (courses.reduce((s, c) => s + (c.rating || 0), 0) / courses.length).toFixed(1) : '0';
+                document.getElementById('statRating').textContent = avgRating + '★';
+
+                const grid = document.getElementById('featuredGrid');
+                if (!courses.length) {
+                    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-light);"><i class="bi bi-search" style="font-size:2.5rem;display:block;margin-bottom:0.75rem;opacity:0.4;"></i><p>No courses found.</p></div>';
+                    return;
+                }
+
+                grid.innerHTML = courses.map(c => `
+                    <a href="course-detail.html?id=${c.id}" class="cm-card">
+                        <div class="cm-card-img">
+                            <img src="${c.thumbnail || c.thumbnail_url || 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=400&auto=format&fit=crop'}" alt="${c.title}" loading="lazy">
+                            ${c.level ? `<span class="cm-card-badge" style="background:#2563eb;color:white;">${c.level}</span>` : ''}
+                            ${c.is_free ? '<span class="cm-card-badge" style="background:#059669;color:white;left:auto;right:2.5rem;">Free</span>' : ''}
+                            <button class="cm-card-save" onclick="event.preventDefault();event.stopPropagation();" title="Save"><i class="bi bi-heart"></i></button>
+                        </div>
+                        <div class="cm-card-body">
+                            <div class="cm-card-category">${c.category || 'Floristry'}</div>
+                            <div class="cm-card-title">${c.title}</div>
+                            <div class="cm-card-instructor">
+                                <div class="cm-card-instructor-avatar">${(c.instructor || 'I').charAt(0)}</div>
+                                ${c.instructor || 'Expert Instructor'}
+                            </div>
+                            <div class="cm-card-rating">
+                                <span class="stars">${'★'.repeat(Math.round(c.rating || 0))}${'☆'.repeat(5 - Math.round(c.rating || 0))}</span>
+                                <span>${(c.rating || 0).toFixed(1)}</span>
+                                <span style="color:var(--text-muted);">(${c.students || c.students_count || 0})</span>
+                            </div>
+                            <div class="cm-card-meta">
+                                ${c.duration ? `<span><i class="bi bi-clock"></i> ${c.duration}</span>` : ''}
+                                ${c.lessons ? `<span><i class="bi bi-collection-play"></i> ${c.lessons} lessons</span>` : ''}
+                                ${c.has_certificate !== false ? '<span><i class="bi bi-award"></i> Certificate</span>' : ''}
+                            </div>
+                            <div class="cm-card-footer">
+                                <span class="cm-card-price ${c.is_free || !c.price ? 'free' : ''}">${c.is_free || !c.price ? 'Free' : (c.currency || 'GHS') + ' ' + c.price}</span>
+                                <span class="cm-card-enroll">Enroll</span>
+                            </div>
+                        </div>
+                    </a>
+                `).join('');
+            } catch {}
+        }
+
+        function filterCategory(cat, el) {
+            currentCategory = cat;
+            document.querySelectorAll('.cm-filter').forEach(f => f.classList.remove('active'));
+            el.classList.add('active');
+            loadCourses(cat);
+        }
+
+        function applyFilters() {
+            const q = document.getElementById('searchInput')?.value?.trim();
+            loadCourses(currentCategory);
+        }
+
+        // ─── Bundles ──────────────────────────────────────────────────
+        function loadBundles() {
+            const bundles = [
+                { name: 'Complete Florist Bundle', desc: 'Everything you need to become a professional florist — from fundamentals to business.', courses: 8, price: 599, original: 1200, savings: '50%', color: '#2563eb', icon: '🎓' },
+                { name: 'Wedding Specialist Bundle', desc: 'Master wedding floristry with courses on bridal bouquets, venue styling, and pricing.', courses: 5, price: 399, original: 750, savings: '47%', color: '#ec4899', icon: '💒' },
+                { name: 'Beginner Starter Pack', desc: 'Start your floral journey with 4 beginner-friendly courses at a special price.', courses: 4, price: 149, original: 300, savings: '50%', color: '#10b981', icon: '🌱' }
+            ];
+
+            document.getElementById('bundlesGrid').innerHTML = bundles.map(b => `
+                <div class="cm-bundle" onclick="alert('Bundle enrollment coming soon!')">
+                    <div class="cm-bundle-badge"><i class="bi bi-lightning-fill"></i> Bundle Deal</div>
+                    <div style="font-size:2rem;margin-bottom:0.5rem;">${b.icon}</div>
+                    <h3>${b.name}</h3>
+                    <p>${b.desc}</p>
+                    <div class="cm-bundle-courses"><i class="bi bi-collection-play"></i> ${b.courses} courses included</div>
+                    <div class="cm-bundle-price">
+                        <span class="original">GHS ${b.original}</span>GHS ${b.price}
+                    </div>
+                    <div class="cm-bundle-savings">Save ${b.savings}</div>
+                </div>
+            `).join('');
+        }
+
+        // ─── Instructors ──────────────────────────────────────────────
+        async function loadInstructors() {
+            try {
+                const res = await fetch('/api/products/list/florists?limit=4');
+                const data = await res.json();
+                const instructors = Array.isArray(data) ? data : (data.florists || []);
+                document.getElementById('instructorGrid').innerHTML = instructors.length ? instructors.map(i => `
+                    <div class="cm-instructor" onclick="window.location.href='florist-profile.html?id=${i.id}'">
+                        <div class="cm-instructor-avatar">
+                            <img src="${i.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 80 80%22><rect fill=%22%23eff6ff%22 width=%2280%22 height=%2280%22/><text x=%2240%22 y=%2248%22 text-anchor=%22middle%22 fill=%22%232563eb%22 font-size=%2228%22>${(i.name || 'I').charAt(0)}</text></svg>'}" alt="${i.name}">
+                        </div>
+                        <h3>${i.name}</h3>
+                        <p>${i.role || i.specialty || 'Floristry Expert'}</p>
+                        <div class="cm-instructor-stats">
+                            <span><i class="bi bi-book"></i> ${i.courses || 3} courses</span>
+                            <span><i class="bi bi-people"></i> ${i.students || 500}+ students</span>
+                        </div>
+                    </div>
+                `).join('') : '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-light);">Instructors coming soon!</div>';
+            } catch {}
+        }
+
+        // ─── Testimonials ─────────────────────────────────────────────
+        function loadTestimonials() {
+            const testimonials = [
+                { name: 'Akua Mensah', course: 'Floral Design Fundamentals', rating: 5, text: 'This course transformed my passion into a profession. The hands-on projects were incredibly valuable.' },
+                { name: 'Kofi Asante', course: 'Wedding Floristry Masterclass', rating: 5, text: 'I now run my own wedding floral business thanks to these courses. The instructor support is amazing.' },
+                { name: 'Ama Darko', course: 'Flower Care & Preservation', rating: 4, text: 'Learned so many techniques I never knew existed. My arrangements now last twice as long.' },
+                { name: 'Yaw Boateng', course: 'Floristry Business', rating: 5, text: 'The business course helped me increase my revenue by 200% in just 3 months.' }
+            ];
+
+            document.getElementById('testimonialGrid').innerHTML = testimonials.map(t => `
+                <div class="cm-testimonial">
+                    <div class="cm-testimonial-stars">${'★'.repeat(t.rating)}${'☆'.repeat(5 - t.rating)}</div>
+                    <div class="cm-testimonial-text">"${t.text}"</div>
+                    <div class="cm-testimonial-author">
+                        <div class="cm-testimonial-avatar">${t.name.charAt(0)}</div>
+                        <div>
+                            <div class="cm-testimonial-name">${t.name}</div>
+                            <div class="cm-testimonial-course">${t.course}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
