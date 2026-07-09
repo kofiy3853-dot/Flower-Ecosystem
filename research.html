@@ -250,7 +250,7 @@
                 const cats = await res.json();
                 document.getElementById('categoryGrid').innerHTML = cats.map(c => `
                     <a class="res-cat" onclick="filterLibrary('${c.slug}', null); document.getElementById('library').scrollIntoView({behavior:'smooth'}); return false;">
-                        <div class="res-cat-icon">${c.icon || 'ðŸ“„'}</div>
+                        <div class="res-cat-icon">${c.icon || '<i class="bi bi-flower1"></i>>
                         <div class="res-cat-name">${c.name}</div>
                     </a>
                 `).join('');
