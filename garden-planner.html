@@ -150,7 +150,7 @@
                         <h4><i class="bi bi-gear" style="color:#059669;"></i> Garden Settings</h4>
                         <label style="font-size:0.78rem;color:var(--text-light);display:block;margin-bottom:0.3rem;">Garden Type</label>
                         <div class="gp-config-grid" id="typeGrid">
-                            <div class="gp-config-option selected" onclick="selectConfig('type',this,'outdoor')">ðŸŒ³ Outdoor</div>
+                            <div class="gp-config-option selected" onclick="selectConfig('type',this,'outdoor')">🌳 Outdoor</div>
                             <div class="gp-config-option" onclick="selectConfig('type',this,'indoor')">ðŸª´ Indoor</div>
                             <div class="gp-config-option" onclick="selectConfig('type',this,'balcony')">ðŸ™ï¸ Balcony</div>
                             <div class="gp-config-option" onclick="selectConfig('type',this,'rooftop')">ðŸ—ï¸ Rooftop</div>
@@ -202,22 +202,22 @@
         let gardenConfig = { type: 'outdoor', sun: 'full' };
 
         const PLANTS = [
-            { icon: 'ðŸŒ¹', name: 'Rose', color: '#ef4444', sun: 'full', water: 'medium' },
-            { icon: 'ðŸŒ·', name: 'Tulip', color: '#ec4899', sun: 'full', water: 'medium' },
-            { icon: 'ðŸŒ»', name: 'Sunflower', color: '#eab308', sun: 'full', water: 'medium' },
-            { icon: 'ðŸŒº', name: 'Hibiscus', color: '#f97316', sun: 'full', water: 'high' },
-            { icon: 'ðŸŒ¸', name: 'Cherry Blossom', color: '#f472b6', sun: 'full', water: 'medium' },
-            { icon: 'ðŸŒ¼', name: 'Daisy', color: '#fbbf24', sun: 'full', water: 'low' },
+            { icon: '🌹', name: 'Rose', color: '#ef4444', sun: 'full', water: 'medium' },
+            { icon: '🌷', name: 'Tulip', color: '#ec4899', sun: 'full', water: 'medium' },
+            { icon: '🌻', name: 'Sunflower', color: '#eab308', sun: 'full', water: 'medium' },
+            { icon: '🌺', name: 'Hibiscus', color: '#f97316', sun: 'full', water: 'high' },
+            { icon: '🌸', name: 'Cherry Blossom', color: '#f472b6', sun: 'full', water: 'medium' },
+            { icon: '🌼', name: 'Daisy', color: '#fbbf24', sun: 'full', water: 'low' },
             { icon: 'ðŸª»', name: 'Lavender', color: '#8b5cf6', sun: 'full', water: 'low' },
-            { icon: 'ðŸŒº', name: 'Orchid', color: '#ec4899', sun: 'partial', water: 'medium' },
-            { icon: 'ðŸŒ¿', name: 'Fern', color: '#22c55e', sun: 'shade', water: 'high' },
-            { icon: 'ðŸŒµ', name: 'Cactus', color: '#84cc16', sun: 'full', water: 'low' },
+            { icon: '🌺', name: 'Orchid', color: '#ec4899', sun: 'partial', water: 'medium' },
+            { icon: '🌿', name: 'Fern', color: '#22c55e', sun: 'shade', water: 'high' },
+            { icon: '🌵', name: 'Cactus', color: '#84cc16', sun: 'full', water: 'low' },
             { icon: 'ðŸª´', name: 'Pothos', color: '#16a34a', sun: 'shade', water: 'medium' },
-            { icon: 'ðŸŒ»', name: 'Marigold', color: '#f59e0b', sun: 'full', water: 'medium' },
-            { icon: 'ðŸŒ¸', name: 'Peony', color: '#f472b6', sun: 'full', water: 'medium' },
-            { icon: 'ðŸŒº', name: 'Lily', color: '#f43f5e', sun: 'full', water: 'medium' },
-            { icon: 'ðŸŒ¿', name: 'Basil', color: '#22c55e', sun: 'full', water: 'high' },
-            { icon: 'ðŸŒ¼', name: 'Zinnia', color: '#f97316', sun: 'full', water: 'medium' }
+            { icon: '🌻', name: 'Marigold', color: '#f59e0b', sun: 'full', water: 'medium' },
+            { icon: '🌸', name: 'Peony', color: '#f472b6', sun: 'full', water: 'medium' },
+            { icon: '🌺', name: 'Lily', color: '#f43f5e', sun: 'full', water: 'medium' },
+            { icon: '🌿', name: 'Basil', color: '#22c55e', sun: 'full', water: 'high' },
+            { icon: '🌼', name: 'Zinnia', color: '#f97316', sun: 'full', water: 'medium' }
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -330,7 +330,7 @@
             }
             list.innerHTML = saved.map((g, i) => `
                 <div class="gp-saved-item" onclick="loadGarden(${i})">
-                    <span class="gp-saved-icon">ðŸŒ±</span>
+                    <span class="gp-saved-icon">🌱</span>
                     <span style="flex:1;font-size:0.85rem;">Garden ${i + 1}</span>
                     <span style="font-size:0.72rem;color:var(--text-muted);">${g.plants.length} plants</span>
                 </div>
@@ -344,7 +344,7 @@
             clearCanvas();
             garden.config = gardenConfig;
             garden.plants.forEach(p => {
-                const plant = PLANTS.find(pl => pl.name === p.name) || { icon: 'ðŸŒ±', name: p.name };
+                const plant = PLANTS.find(pl => pl.name === p.name) || { icon: '🌱', name: p.name };
                 placePlant(p.x, p.y, plant);
             });
         }
@@ -384,7 +384,7 @@
                     if (data.plants?.length) {
                         document.getElementById('savedList').innerHTML = data.plants.map(p => `
                             <div class="gp-saved-item">
-                                <span class="gp-saved-icon">ðŸŒ±</span>
+                                <span class="gp-saved-icon">🌱</span>
                                 <span style="flex:1;font-size:0.85rem;">${p.name}</span>
                             </div>
                         `).join('') || '<p style="font-size:0.82rem;color:var(--text-light);">No saved plants.</p>';

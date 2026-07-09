@@ -374,7 +374,7 @@
                 const res = await fetch('/api/learning-paths?category=floral-design&limit=3');
                 const data = await res.json();
                 const paths = Array.isArray(data) ? data : (data.paths || []);
-                const icons = ['ðŸ’', 'ðŸŽ¨', 'ðŸ’’', 'ðŸŒ¸', 'âœ‚ï¸', 'ðŸ '];
+                const icons = ['ðŸ’', 'ðŸŽ¨', 'ðŸ’’', '🌸', 'âœ‚ï¸', 'ðŸ '];
                 const colors = ['#fce7f3', '#ede9fe', '#dbeafe', '#d1fae5', '#fef3c7', '#fee2e2'];
                 document.getElementById('pathGrid').innerHTML = paths.length ? paths.map((p, i) => `
                     <a href="learning-path.html?id=${p.id}" class="fd-path">
