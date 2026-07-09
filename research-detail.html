@@ -333,7 +333,7 @@
             document.getElementById('rdContent').style.display = 'none';
         }
 
-        // â”€â”€â”€ Actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // →→ Actions →→→→→→→→→→→→→→→→→→→→→→→→
         async function toggleBookmark() {
             const token = getToken();
             if (!token) { window.location.href = 'login.html'; return; }
@@ -355,7 +355,7 @@
 
         function shareArticle() {
             if (!article) return;
-            const text = `${article.title} â€” Flower Ecosystem Research Hub`;
+            const text = `${article.title} → Flower Ecosystem Research Hub`;
             if (navigator.share) {
                 navigator.share({ title: article.title, text, url: window.location.href });
             } else if (navigator.clipboard) {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Browse floral design courses â€” bouquet design, wedding floristry, event decoration, and professional techniques.">
+    <meta name="description" content="Browse floral design courses → bouquet design, wedding floristry, event decoration, and professional techniques.">
     <title>Floral Design Courses | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="styles/main.css?v=3.0">
@@ -161,7 +161,7 @@
             <div class="fdc-stat"><div class="fdc-stat-value" id="statCourses">0</div><div class="fdc-stat-label">Courses</div></div>
             <div class="fdc-stat"><div class="fdc-stat-value" id="statStudents">0</div><div class="fdc-stat-label">Students</div></div>
             <div class="fdc-stat"><div class="fdc-stat-value" id="statRating">0</div><div class="fdc-stat-label">Avg Rating</div></div>
-            <div class="fdc-stat"><div class="fdc-stat-value">âœ“</div><div class="fdc-stat-label">Certificates</div></div>
+            <div class="fdc-stat"><div class="fdc-stat-value">→</div><div class="fdc-stat-label">Certificates</div></div>
         </div>
     </div>
 
@@ -185,11 +185,11 @@
                 <h3><i class="bi bi-diagram-3" style="color:#ec4899;"></i> Learning Path</h3>
                 <div class="fdc-path-steps">
                     <div class="fdc-path-step" onclick="filterByLevel('Beginner')"><i class="bi-seedling"></i> Beginner</div>
-                    <div class="fdc-path-arrow">â†’</div>
+                    <div class="fdc-path-arrow">→</div>
                     <div class="fdc-path-step" onclick="filterByLevel('Intermediate')"><i class="bi-leaf"></i> Intermediate</div>
-                    <div class="fdc-path-arrow">â†’</div>
+                    <div class="fdc-path-arrow">→</div>
                     <div class="fdc-path-step" onclick="filterByLevel('Advanced')"><i class="bi-tree"></i> Advanced</div>
-                    <div class="fdc-path-arrow">â†’</div>
+                    <div class="fdc-path-arrow">→</div>
                     <div class="fdc-path-step" onclick="filterByLevel('Professional')">🏆 Professional</div>
                 </div>
             </div>
@@ -208,8 +208,8 @@
                     <div class="fdc-filter-card">
                         <h4><i class="bi bi-clock"></i> Duration</h4>
                         <label class="fdc-filter-option"><input type="checkbox" data-filter="duration" value="short" onchange="applyFilters()"> Under 2 Hours</label>
-                        <label class="fdc-filter-option"><input type="checkbox" data-filter="duration" value="medium" onchange="applyFilters()"> 2â€“5 Hours</label>
-                        <label class="fdc-filter-option"><input type="checkbox" data-filter="duration" value="long" onchange="applyFilters()"> 5â€“10 Hours</label>
+                        <label class="fdc-filter-option"><input type="checkbox" data-filter="duration" value="medium" onchange="applyFilters()"> 2→5 Hours</label>
+                        <label class="fdc-filter-option"><input type="checkbox" data-filter="duration" value="long" onchange="applyFilters()"> 5→10 Hours</label>
                         <label class="fdc-filter-option"><input type="checkbox" data-filter="duration" value="extended" onchange="applyFilters()"> 10+ Hours</label>
                     </div>
                     <div class="fdc-filter-card">
@@ -224,9 +224,9 @@
                     </div>
                     <div class="fdc-filter-card">
                         <h4><i class="bi-star-fill"></i> Rating</h4>
-                        <div class="fdc-filter-rating" onclick="filterByRating(4.5)"><span style="color:#f59e0b;">â˜…â˜…â˜…â˜…â˜…</span> 4.5+</div>
-                        <div class="fdc-filter-rating" onclick="filterByRating(4)"><span style="color:#f59e0b;">â˜…â˜…â˜…â˜…</span><span style="color:var(--border-color);">â˜…</span> 4.0+</div>
-                        <div class="fdc-filter-rating" onclick="filterByRating(3)"><span style="color:#f59e0b;">â˜…â˜…â˜…</span><span style="color:var(--border-color);">â˜…â˜…</span> 3.0+</div>
+                        <div class="fdc-filter-rating" onclick="filterByRating(4.5)"><span style="color:#f59e0b;">→→→</span> 4.5+</div>
+                        <div class="fdc-filter-rating" onclick="filterByRating(4)"><span style="color:#f59e0b;">→→</span><span style="color:var(--border-color);">→</span> 4.0+</div>
+                        <div class="fdc-filter-rating" onclick="filterByRating(3)"><span style="color:#f59e0b;">→→</span><span style="color:var(--border-color);">→</span> 3.0+</div>
                     </div>
                     <div class="fdc-filter-card">
                         <h4><i class="bi bi-person"></i> Instructor</h4>
@@ -323,7 +323,7 @@
             const totalStudents = allCourses.reduce((s, c) => s + (c.students || 0), 0);
             document.getElementById('statStudents').textContent = totalStudents.toLocaleString();
             const avgRating = allCourses.length ? (allCourses.reduce((s, c) => s + (c.rating || 0), 0) / allCourses.length).toFixed(1) : '0';
-            document.getElementById('statRating').textContent = avgRating + 'â˜…';
+            document.getElementById('statRating').textContent = avgRating + '→';
 
             // Populate instructor filter
             const instructors = [...new Set(allCourses.map(c => c.instructor).filter(Boolean))];
@@ -347,7 +347,7 @@
                     <h2>${c.title}</h2>
                     <p>${(c.description || '').slice(0, 200)}</p>
                     <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
-                        <span style="color:#f59e0b;">${'â˜…'.repeat(Math.round(c.rating || 0))}${'â˜†'.repeat(5 - Math.round(c.rating || 0))} ${c.rating || 0}</span>
+                        <span style="color:#f59e0b;">${'→'.repeat(Math.round(c.rating || 0))}${'→'.repeat(5 - Math.round(c.rating || 0))} ${c.rating || 0}</span>
                         <span style="font-size:0.85rem;color:var(--text-light);">${c.students || 0} students</span>
                         <span style="font-size:0.85rem;color:var(--text-light);">${c.duration || ''}</span>
                     </div>
@@ -429,7 +429,7 @@
                             ${c.instructor || 'Expert Instructor'}
                         </div>
                         <div class="fdc-card-rating">
-                            <span class="stars">${'â˜…'.repeat(Math.round(c.rating || 0))}${'â˜†'.repeat(5 - Math.round(c.rating || 0))}</span>
+                            <span class="stars">${'→'.repeat(Math.round(c.rating || 0))}${'→'.repeat(5 - Math.round(c.rating || 0))}</span>
                             <span>${(c.rating || 0).toFixed(1)}</span>
                             <span class="count">(${c.students || 0})</span>
                         </div>
@@ -452,11 +452,11 @@
             const pag = document.getElementById('pagination');
             if (totalPages <= 1) { pag.innerHTML = ''; return; }
             let html = '';
-            if (currentPage > 1) html += `<button class="fdc-page-btn" onclick="goPage(${currentPage - 1})">â†</button>`;
+            if (currentPage > 1) html += `<button class="fdc-page-btn" onclick="goPage(${currentPage - 1})">→</button>`;
             for (let i = 1; i <= totalPages; i++) {
                 html += `<button class="fdc-page-btn${i === currentPage ? ' active' : ''}" onclick="goPage(${i})">${i}</button>`;
             }
-            if (currentPage < totalPages) html += `<button class="fdc-page-btn" onclick="goPage(${currentPage + 1})">â†’</button>`;
+            if (currentPage < totalPages) html += `<button class="fdc-page-btn" onclick="goPage(${currentPage + 1})">→</button>`;
             pag.innerHTML = html;
         }
 

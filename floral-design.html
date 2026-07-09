@@ -140,7 +140,7 @@
                         <span style="color:white;">Floral Design</span>
                     </nav>
                     <h1>Master the Art of Floral Design</h1>
-                    <p>From beginner arrangements to professional event design â€” learn color theory, composition, bouquet construction, and event styling from expert florists.</p>
+                    <p>From beginner arrangements to professional event design → learn color theory, composition, bouquet construction, and event styling from expert florists.</p>
                     <div class="fd-hero-btns">
                         <a href="#courses" class="btn btn-white-pink"><i class="bi-play-circle"></i> Start Learning</a>
                         <a href="#paths" class="btn btn-outline-white"><i class="bi-bar-chart"></i> Learning Paths</a>
@@ -202,7 +202,7 @@
         <div class="container">
             <div class="section-header-flex">
                 <h2><i class="bi bi-play-circle" style="color:#ec4899;"></i> Featured Courses</h2>
-                <a href="learning.html?category=floral-design" style="color:#ec4899;font-size:0.9rem;">View All â†’</a>
+                <a href="learning.html?category=floral-design" style="color:#ec4899;font-size:0.9rem;">View All →</a>
             </div>
             <div class="fd-courses" id="courseGrid"></div>
         </div>
@@ -213,7 +213,7 @@
         <div class="container">
             <div class="section-header-flex">
                 <h2><i class="bi bi-diagram-3" style="color:#ec4899;"></i> Learning Paths</h2>
-                <a href="learning-paths.html" style="color:#ec4899;font-size:0.9rem;">View All â†’</a>
+                <a href="learning-paths.html" style="color:#ec4899;font-size:0.9rem;">View All →</a>
             </div>
             <div class="fd-paths" id="pathGrid"></div>
         </div>
@@ -224,7 +224,7 @@
         <div class="container">
             <div class="section-header-flex">
                 <h2><i class="bi bi-person-badge" style="color:#ec4899;"></i> Expert Instructors</h2>
-                <a href="instructors.html" style="color:#ec4899;font-size:0.9rem;">View All â†’</a>
+                <a href="instructors.html" style="color:#ec4899;font-size:0.9rem;">View All →</a>
             </div>
             <div class="fd-instructors" id="instructorGrid"></div>
         </div>
@@ -235,7 +235,7 @@
         <div class="container">
             <div class="section-header-flex">
                 <h2><i class="bi bi-easel" style="color:#ec4899;"></i> Upcoming Workshops</h2>
-                <a href="events.html?category=workshop" style="color:#ec4899;font-size:0.9rem;">View All â†’</a>
+                <a href="events.html?category=workshop" style="color:#ec4899;font-size:0.9rem;">View All →</a>
             </div>
             <div class="fd-workshops" id="workshopGrid"></div>
         </div>
@@ -246,7 +246,7 @@
         <div class="container">
             <div class="section-header-flex">
                 <h2><i class="bi bi-images" style="color:#ec4899;"></i> Student Gallery</h2>
-                <a href="showcase.html" style="color:#ec4899;font-size:0.9rem;">View All â†’</a>
+                <a href="showcase.html" style="color:#ec4899;font-size:0.9rem;">View All →</a>
             </div>
             <div class="fd-gallery" id="galleryGrid"></div>
         </div>
@@ -325,7 +325,7 @@
             loadFAQ();
         });
 
-        // â”€â”€â”€ Courses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // →→ Courses →→→→→→→→→→→→→→→→→→→→→→→→→
         async function loadCourses() {
             try {
                 const res = await fetch('/api/courses?category=floral-design&limit=6');
@@ -351,7 +351,7 @@
                                 ${c.instructor || 'Expert Instructor'}
                             </div>
                             <div class="fd-course-rating">
-                                ${'â˜…'.repeat(Math.round(c.rating || 0))}${'â˜†'.repeat(5 - Math.round(c.rating || 0))}
+                                ${'→'.repeat(Math.round(c.rating || 0))}${'→'.repeat(5 - Math.round(c.rating || 0))}
                                 <span style="color:var(--text-muted);">(${c.students || 0})</span>
                             </div>
                             <div class="fd-course-meta">
@@ -360,7 +360,7 @@
                             </div>
                             <div class="fd-course-footer">
                                 <span class="fd-course-price ${c.is_free || !c.price ? 'free' : ''}">${c.is_free || !c.price ? 'Free' : (c.currency || 'GHS') + ' ' + c.price}</span>
-                                <span style="color:#ec4899;font-size:0.82rem;font-weight:500;">Enroll â†’</span>
+                                <span style="color:#ec4899;font-size:0.82rem;font-weight:500;">Enroll →</span>
                             </div>
                         </div>
                     </a>
@@ -368,13 +368,13 @@
             } catch {}
         }
 
-        // â”€â”€â”€ Learning Paths â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // →→ Learning Paths →→→→→→→→→→→→→→→→→→→→→→
         async function loadPaths() {
             try {
                 const res = await fetch('/api/learning-paths?category=floral-design&limit=3');
                 const data = await res.json();
                 const paths = Array.isArray(data) ? data : (data.paths || []);
-                const icons = ['💐', '🎨', '💒', '🌸', 'âœ‚ï¸', '<i class="bi bi-flower1"></i>             const colors = ['#fce7f3', '#ede9fe', '#dbeafe', '#d1fae5', '#fef3c7', '#fee2e2'];
+                const icons = ['💐', '🎨', '💒', '🌸', '→', '<i class="bi bi-flower1"></i>             const colors = ['#fce7f3', '#ede9fe', '#dbeafe', '#d1fae5', '#fef3c7', '#fee2e2'];
                 document.getElementById('pathGrid').innerHTML = paths.length ? paths.map((p, i) => `
                     <a href="learning-path.html?id=${p.id}" class="fd-path">
                         <div class="fd-path-icon" style="background:${colors[i % colors.length]};">${icons[i % icons.length]}</div>
@@ -391,7 +391,7 @@
             } catch {}
         }
 
-        // â”€â”€â”€ Instructors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // →→ Instructors →→→→→→→→→→→→→→→→→→→→→→→
         async function loadInstructors() {
             try {
                 const res = await fetch('/api/instructors?category=floral-design&limit=4');
@@ -413,7 +413,7 @@
             } catch {}
         }
 
-        // â”€â”€â”€ Workshops â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // →→ Workshops →→→→→→→→→→→→→→→→→→→→→→→→
         async function loadWorkshops() {
             try {
                 const res = await fetch('/api/events?category=workshop&limit=3');
@@ -440,7 +440,7 @@
             } catch {}
         }
 
-        // â”€â”€â”€ Gallery â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // →→ Gallery →→→→→→→→→→→→→→→→→→→→→→→→→
         async function loadGallery() {
             try {
                 const res = await fetch('/api/showcase?category=floral-design&limit=8');
@@ -466,7 +466,7 @@
             } catch {}
         }
 
-        // â”€â”€â”€ FAQ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // →→ FAQ →→→→→→→→→→→→→→→→→→→→→→→→→→→
         function loadFAQ() {
             const faqs = [
                 { q: 'Do I need prior experience to take floral design courses?', a: 'No! We have beginner-friendly courses that start from the basics. Our learning paths guide you from complete beginner to professional level.' },
@@ -491,7 +491,7 @@
             el.parentElement.classList.toggle('open');
         }
 
-        // â”€â”€â”€ AI Tutor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // →→ AI Tutor →→→→→→→→→→→→→→→→→→→→→→→→→
         async function askAI() {
             const q = document.getElementById('aiQuestion')?.value?.trim();
             if (!q) return;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Flower Farming Academy â€” Learn to grow flowers commercially, manage farms, and build a successful floriculture business.">
+    <meta name="description" content="Flower Farming Academy → Learn to grow flowers commercially, manage farms, and build a successful floriculture business.">
     <title>Flower Farming Academy | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="styles/main.css?v=3.0">
@@ -158,7 +158,7 @@
             <div class="ff-stat"><div class="ff-stat-value" id="statCourses">0</div><div class="ff-stat-label">Courses</div></div>
             <div class="ff-stat"><div class="ff-stat-value" id="statStudents">0</div><div class="ff-stat-label">Students</div></div>
             <div class="ff-stat"><div class="ff-stat-value" id="statInstructors">0</div><div class="ff-stat-label">Instructors</div></div>
-            <div class="ff-stat"><div class="ff-stat-value">âœ“</div><div class="ff-stat-label">Certificates</div></div>
+            <div class="ff-stat"><div class="ff-stat-value">→</div><div class="ff-stat-label">Certificates</div></div>
         </div>
     </div>
 
@@ -183,15 +183,15 @@
             </div>
             <div class="ff-path">
                 <div class="ff-path-step active"><div class="icon"><i class="bi-seedling"></i></div><div>Soil & Seeds</div></div>
-                <div class="ff-path-arrow">â†’</div>
+                <div class="ff-path-arrow">→</div>
                 <div class="ff-path-step"><div class="icon"><i class="bi-leaf"></i></div><div>Cultivation</div></div>
-                <div class="ff-path-arrow">â†’</div>
+                <div class="ff-path-arrow">→</div>
                 <div class="ff-path-step"><div class="icon"><i class="bi bi-flower1"></i>div>Pest Management</div></div>
-                <div class="ff-path-arrow">â†’</div>
-                <div class="ff-path-step"><div class="icon">âœ‚ï¸</div><div>Harvesting</div></div>
-                <div class="ff-path-arrow">â†’</div>
+                <div class="ff-path-arrow">→</div>
+                <div class="ff-path-step"><div class="icon">→</div><div>Harvesting</div></div>
+                <div class="ff-path-arrow">→</div>
                 <div class="ff-path-step"><div class="icon"><i class="bi bi-flower1"></i>div>Commercial Farming</div></div>
-                <div class="ff-path-arrow">â†’</div>
+                <div class="ff-path-arrow">→</div>
                 <div class="ff-path-step"><div class="icon">🏆</div><div>Professional</div></div>
             </div>
         </div>
@@ -212,7 +212,7 @@
         <div class="container">
             <div class="ff-section-header">
                 <h2><i class="bi bi-play-circle" style="color:#059669;"></i> Featured Courses</h2>
-                <a href="learning.html?category=farming" style="color:#059669;font-size:0.9rem;">View All â†’</a>
+                <a href="learning.html?category=farming" style="color:#059669;font-size:0.9rem;">View All →</a>
             </div>
             <div class="ff-courses" id="courseGrid"></div>
         </div>
@@ -271,7 +271,7 @@
         <div class="container">
             <div class="ff-section-header">
                 <h2><i class="bi bi-person-badge" style="color:#059669;"></i> Expert Instructors</h2>
-                <a href="instructors.html" style="color:#059669;font-size:0.9rem;">View All â†’</a>
+                <a href="instructors.html" style="color:#059669;font-size:0.9rem;">View All →</a>
             </div>
             <div class="ff-instructors" id="instructorGrid"></div>
         </div>
@@ -282,7 +282,7 @@
         <div class="container">
             <div class="ff-section-header">
                 <h2><i class="bi bi-images" style="color:#059669;"></i> Student Farm Gallery</h2>
-                <a href="showcase.html" style="color:#059669;font-size:0.9rem;">View All â†’</a>
+                <a href="showcase.html" style="color:#059669;font-size:0.9rem;">View All →</a>
             </div>
             <div class="ff-gallery" id="galleryGrid"></div>
         </div>
@@ -310,7 +310,7 @@
         <div class="container">
             <div class="ff-section-header">
                 <h2><i class="bi bi-bag" style="color:#059669;"></i> Farming Supplies</h2>
-                <a href="marketplace.html" style="color:#059669;font-size:0.9rem;">Shop All â†’</a>
+                <a href="marketplace.html" style="color:#059669;font-size:0.9rem;">Shop All →</a>
             </div>
             <div class="ff-marketplace" id="marketplaceGrid"></div>
         </div>
@@ -351,7 +351,7 @@
             ).join('');
         }
 
-        // â”€â”€â”€ Categories â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // →→ Categories →→→→→→→→→→→→→→→→→→→→→→→
         function loadCategories() {
             const cats = [
                 { icon: '🌹', name: 'Rose Farming', desc: 'Commercial rose production' },
@@ -362,7 +362,7 @@
                 { icon: '<i class="bi bi-flower1"></i>: 'Greenhouse Farming', desc: 'Controlled environment' },
                 { icon: '<i class="bi bi-flower1"></i>: 'Irrigation Systems', desc: 'Efficient watering' },
                 { icon: '🌱', name: 'Seed Propagation', desc: 'Growing from seeds' },
-                { icon: 'âœ‚ï¸', name: 'Cut Flowers', desc: 'Growing for florists' },
+                { icon: '→', name: 'Cut Flowers', desc: 'Growing for florists' },
                 { icon: '<i class="bi bi-flower1"></i>: 'Post-Harvest', desc: 'Storage & transport' }
             ];
             document.getElementById('categoryGrid').innerHTML = cats.map(c => `
@@ -374,7 +374,7 @@
             `).join('');
         }
 
-        // â”€â”€â”€ Courses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // →→ Courses →→→→→→→→→→→→→→→→→→→→→→→→→
         async function loadCourses() {
             try {
                 const res = await fetch('/api/courses?category=farming&limit=12');
@@ -406,7 +406,7 @@
                                 <div class="ff-course-instructor-avatar">${(c.instructor || 'I').charAt(0)}</div>
                                 ${c.instructor || 'Expert'}
                             </div>
-                            <div class="ff-course-rating">${'â˜…'.repeat(Math.round(c.rating || 0))}${'â˜†'.repeat(5 - Math.round(c.rating || 0))} ${(c.rating || 0).toFixed(1)} <span style="color:var(--text-muted);">(${c.students || c.students_count || 0})</span></div>
+                            <div class="ff-course-rating">${'→'.repeat(Math.round(c.rating || 0))}${'→'.repeat(5 - Math.round(c.rating || 0))} ${(c.rating || 0).toFixed(1)} <span style="color:var(--text-muted);">(${c.students || c.students_count || 0})</span></div>
                             <div class="ff-course-meta">
                                 ${c.duration ? `<span><i class="bi bi-clock"></i> ${c.duration}</span>` : ''}
                                 ${c.lessons ? `<span><i class="bi bi-collection-play"></i> ${c.lessons} lessons</span>` : ''}
@@ -423,7 +423,7 @@
 
         function applyFilters() {}
 
-        // â”€â”€â”€ Instructors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // →→ Instructors →→→→→→→→→→→→→→→→→→→→→→→
         async function loadInstructors() {
             try {
                 const res = await fetch('/api/products/list/florists?limit=4');
@@ -445,7 +445,7 @@
             } catch {}
         }
 
-        // â”€â”€â”€ Gallery â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // →→ Gallery →→→→→→→→→→→→→→→→→→→→→→→→→
         function loadGallery() {
             const images = [
                 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=300&auto=format&fit=crop',
@@ -462,7 +462,7 @@
             `).join('');
         }
 
-        // â”€â”€â”€ Marketplace â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // →→ Marketplace →→→→→→→→→→→→→→→→→→→→→→→
         function loadMarketplace() {
             const items = [
                 { name: 'Flower Seeds', image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=200&auto=format&fit=crop', price: 'GHS 25' },
@@ -483,7 +483,7 @@
             `).join('');
         }
 
-        // â”€â”€â”€ AI Assistant â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // →→ AI Assistant →→→→→→→→→→→→→→→→→→→→→→→
         async function askAI() {
             const q = document.getElementById('aiQuestion')?.value?.trim();
             if (!q) return;
