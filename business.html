@@ -1,0 +1,511 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Flower Business Hub â€” Start, grow, and manage your floral business with tools, courses, marketplace, and community.">
+    <title>Business Hub | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .biz-hero { background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 50%,#3b82f6 100%); padding:5rem 0 3.5rem; color:white; position:relative; overflow:hidden; }
+        .biz-hero::before { content:''; position:absolute; top:-30%; right:-5%; width:500px; height:500px; background:rgba(255,255,255,0.06); border-radius:50%; }
+        .biz-hero h1 { color:white; font-size:clamp(2rem,4vw,2.8rem); margin-bottom:0.5rem; }
+        .biz-hero p { color:rgba(255,255,255,0.85); max-width:600px; margin-bottom:1.5rem; }
+        .biz-hero-btns { display:flex; gap:0.75rem; flex-wrap:wrap; }
+        .biz-hero-btns .btn { padding:0.65rem 1.5rem; border-radius:50px; }
+        .btn-white-blue { background:white; color:#1e3a5f; border:none; font-weight:600; }
+        .btn-outline-white { background:transparent; color:white; border:1.5px solid rgba(255,255,255,0.5); }
+
+        /* Stats */
+        .biz-stats { display:grid; grid-template-columns:repeat(6,1fr); gap:1rem; margin:-1.5rem auto 2rem; max-width:1100px; position:relative; z-index:10; }
+        .biz-stat { background:var(--bg-white); border-radius:12px; padding:1rem; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.08); border:1px solid var(--border-color); }
+        .biz-stat-value { font-size:1.3rem; font-weight:700; color:#2563eb; }
+        .biz-stat-label { font-size:0.72rem; color:var(--text-light); }
+
+        /* Section Headers */
+        .biz-section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+        .biz-section-header h2 { margin:0; }
+
+        /* Categories */
+        .biz-categories { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
+        .biz-cat { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; padding:1.5rem; transition:all 0.3s; cursor:pointer; }
+        .biz-cat:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); border-color:#2563eb; }
+        .biz-cat-icon { font-size:2rem; margin-bottom:0.75rem; }
+        .biz-cat h3 { font-size:1.1rem; margin-bottom:0.5rem; }
+        .biz-cat-tags { display:flex; gap:0.4rem; flex-wrap:wrap; }
+        .biz-cat-tag { font-size:0.72rem; padding:0.2rem 0.5rem; background:var(--bg-light); border-radius:4px; color:var(--text-light); }
+
+        /* Services */
+        .biz-services { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .biz-service { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; transition:all 0.3s; cursor:pointer; }
+        .biz-service:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); border-color:#2563eb; }
+        .biz-service-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin:0 auto 0.75rem; font-size:1.3rem; }
+        .biz-service h4 { font-size:0.9rem; margin-bottom:0.2rem; }
+        .biz-service p { font-size:0.75rem; color:var(--text-light); }
+
+        /* Courses */
+        .biz-courses { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.25rem; }
+        .biz-course { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; overflow:hidden; transition:all 0.3s; text-decoration:none; color:inherit; display:flex; flex-direction:column; }
+        .biz-course:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); }
+        .biz-course-img { height:150px; overflow:hidden; }
+        .biz-course-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .biz-course:hover .biz-course-img img { transform:scale(1.05); }
+        .biz-course-body { padding:1.25rem; flex:1; display:flex; flex-direction:column; }
+        .biz-course-title { font-size:1rem; font-weight:600; margin-bottom:0.4rem; }
+        .biz-course-meta { font-size:0.78rem; color:var(--text-light); margin-bottom:0.5rem; }
+        .biz-course-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid var(--border-light); margin-top:auto; }
+        .biz-course-price { font-weight:700; color:#2563eb; }
+
+        /* Tools */
+        .biz-tools { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+        .biz-tool { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; display:flex; gap:1rem; align-items:center; cursor:pointer; transition:all 0.2s; text-decoration:none; color:inherit; }
+        .biz-tool:hover { border-color:#2563eb; transform:translateY(-2px); }
+        .biz-tool-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
+        .biz-tool h4 { font-size:0.92rem; margin-bottom:0.15rem; }
+        .biz-tool p { font-size:0.78rem; color:var(--text-light); }
+
+        /* Success Stories */
+        .biz-stories { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.25rem; }
+        .biz-story { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; overflow:hidden; transition:all 0.3s; }
+        .biz-story:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(0,0,0,0.08); }
+        .biz-story-img { height:160px; overflow:hidden; }
+        .biz-story-img img { width:100%; height:100%; object-fit:cover; }
+        .biz-story-body { padding:1.25rem; }
+        .biz-story-stats { display:flex; gap:1rem; margin:0.75rem 0; font-size:0.78rem; color:var(--text-light); }
+        .biz-story-stats strong { color:var(--text-main); }
+
+        /* Resources */
+        .biz-resources { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; }
+        .biz-resource { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; padding:1.25rem; text-align:center; cursor:pointer; transition:all 0.2s; text-decoration:none; color:inherit; }
+        .biz-resource:hover { border-color:#2563eb; transform:translateY(-2px); }
+        .biz-resource i { font-size:1.8rem; color:#2563eb; margin-bottom:0.5rem; display:block; }
+        .biz-resource h4 { font-size:0.88rem; margin-bottom:0.2rem; }
+        .biz-resource p { font-size:0.72rem; color:var(--text-light); }
+
+        /* FAQ */
+        .biz-faq { max-width:700px; margin:0 auto; }
+        .biz-faq-item { border:1px solid var(--border-color); border-radius:10px; margin-bottom:0.75rem; overflow:hidden; }
+        .biz-faq-q { padding:1rem 1.25rem; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-weight:500; font-size:0.95rem; background:var(--bg-white); }
+        .biz-faq-q:hover { background:var(--bg-light); }
+        .biz-faq-q i { transition:transform 0.3s; color:var(--text-light); }
+        .biz-faq-item.open .biz-faq-q i { transform:rotate(180deg); }
+        .biz-faq-a { padding:0 1.25rem; max-height:0; overflow:hidden; transition:all 0.3s; font-size:0.9rem; color:var(--text-light); line-height:1.6; }
+        .biz-faq-item.open .biz-faq-a { padding:0 1.25rem 1rem; max-height:300px; }
+
+        /* Dashboard Preview */
+        .biz-dashboard { background:var(--bg-light); border-radius:16px; padding:2rem; margin:2rem 0; }
+        .biz-dash-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.5rem; }
+        .biz-dash-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; padding:1rem; text-align:center; }
+        .biz-dash-card i { font-size:1.5rem; margin-bottom:0.3rem; display:block; }
+        .biz-dash-card .val { font-size:1.2rem; font-weight:700; }
+        .biz-dash-card .lbl { font-size:0.72rem; color:var(--text-light); }
+
+        @media(max-width:768px) {
+            .biz-categories { grid-template-columns:1fr; }
+            .biz-services { grid-template-columns:repeat(2,1fr); }
+            .biz-tools { grid-template-columns:1fr; }
+            .biz-stats { grid-template-columns:repeat(3,1fr); }
+            .biz-dash-grid { grid-template-columns:repeat(2,1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="biz-hero">
+        <div class="container">
+            <nav style="font-size:0.85rem;margin-bottom:1rem;color:rgba(255,255,255,0.6);">
+                <a href="index.html" style="color:rgba(255,255,255,0.6);text-decoration:none;">Home</a>
+                <span style="margin:0 0.5rem;">/</span>
+                <span style="color:white;">Business Hub</span>
+            </nav>
+            <h1>📈 Grow Your Floral Business</h1>
+            <p>Learn, sell, connect, and manage every aspect of your flower business from one platform.</p>
+            <div class="biz-hero-btns">
+                <a href="sell.html" class="btn btn-white-blue"><i class="bi bi-shop"></i> Start Selling</a>
+                <a href="#courses" class="btn btn-outline-white">📖 Business Courses</a>
+                <a href="growers.html" class="btn btn-outline-white"><i class="bi bi-truck"></i> Find Suppliers</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="container">
+        <div class="biz-stats">
+            <div class="biz-stat"><div class="biz-stat-value" id="statBusinesses">0</div><div class="biz-stat-label">Businesses</div></div>
+            <div class="biz-stat"><div class="biz-stat-value" id="statProducts">0</div><div class="biz-stat-label">Products</div></div>
+            <div class="biz-stat"><div class="biz-stat-value" id="statOrders">0</div><div class="biz-stat-label">Orders</div></div>
+            <div class="biz-stat"><div class="biz-stat-value" id="statFlorists">0</div><div class="biz-stat-label">Florists</div></div>
+            <div class="biz-stat"><div class="biz-stat-value" id="statGrowers">0</div><div class="biz-stat-label">Growers</div></div>
+            <div class="biz-stat"><div class="biz-stat-value" id="statBuyers">0</div><div class="biz-stat-label">Active Buyers</div></div>
+        </div>
+    </div>
+
+    <!-- Business Categories -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="biz-section-header">
+                <h2><i class="bi bi-grid" style="color:#2563eb;"></i> Business Categories</h2>
+            </div>
+            <div class="biz-categories">
+                <div class="biz-cat">
+                    <div class="biz-cat-icon">ðŸ’</div>
+                    <h3>Florists</h3>
+                    <div class="biz-cat-tags">
+                        <span class="biz-cat-tag">Wedding</span>
+                        <span class="biz-cat-tag">Event</span>
+                        <span class="biz-cat-tag">Retail</span>
+                        <span class="biz-cat-tag">Luxury</span>
+                    </div>
+                </div>
+                <div class="biz-cat">
+                    <div class="biz-cat-icon">ðŸŒ±</div>
+                    <h3>Growers</h3>
+                    <div class="biz-cat-tags">
+                        <span class="biz-cat-tag">Commercial</span>
+                        <span class="biz-cat-tag">Organic</span>
+                        <span class="biz-cat-tag">Greenhouse</span>
+                        <span class="biz-cat-tag">Seasonal</span>
+                    </div>
+                </div>
+                <div class="biz-cat">
+                    <div class="biz-cat-icon">ðŸª</div>
+                    <h3>Flower Shops</h3>
+                    <div class="biz-cat-tags">
+                        <span class="biz-cat-tag">Local</span>
+                        <span class="biz-cat-tag">Online</span>
+                        <span class="biz-cat-tag">Boutique</span>
+                    </div>
+                </div>
+                <div class="biz-cat">
+                    <div class="biz-cat-icon">ðŸ’’</div>
+                    <h3>Event Services</h3>
+                    <div class="biz-cat-tags">
+                        <span class="biz-cat-tag">Wedding</span>
+                        <span class="biz-cat-tag">Funeral</span>
+                        <span class="biz-cat-tag">Corporate</span>
+                    </div>
+                </div>
+                <div class="biz-cat">
+                    <div class="biz-cat-icon">ðŸ“¦</div>
+                    <h3>Wholesalers</h3>
+                    <div class="biz-cat-tags">
+                        <span class="biz-cat-tag">Bulk Flowers</span>
+                        <span class="biz-cat-tag">Packaging</span>
+                        <span class="biz-cat-tag">Greenery</span>
+                    </div>
+                </div>
+                <div class="biz-cat">
+                    <div class="biz-cat-icon">ðŸŽ¨</div>
+                    <h3>Floral Designers</h3>
+                    <div class="biz-cat-tags">
+                        <span class="biz-cat-tag">Bouquet</span>
+                        <span class="biz-cat-tag">Interior</span>
+                        <span class="biz-cat-tag">Luxury</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Business Services -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="biz-section-header">
+                <h2><i class="bi bi-gear" style="color:#2563eb;"></i> Business Services</h2>
+            </div>
+            <div class="biz-services">
+                <div class="biz-service" onclick="window.location.href='sell.html'">
+                    <div class="biz-service-icon" style="background:rgba(37,99,235,0.1);color:#2563eb;"><i class="bi bi-person-plus"></i></div>
+                    <h4>Business Registration</h4>
+                    <p>Register as a seller</p>
+                </div>
+                <div class="biz-service" onclick="window.location.href='seller-dashboard.html'">
+                    <div class="biz-service-icon" style="background:rgba(16,185,129,0.1);color:#059669;"><i class="bi bi-speedometer2"></i></div>
+                    <h4>Seller Dashboard</h4>
+                    <p>Manage your store</p>
+                </div>
+                <div class="biz-service">
+                    <div class="biz-service-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;"><i class="bi bi-box-seam"></i></div>
+                    <h4>Inventory Management</h4>
+                    <p>Track stock levels</p>
+                </div>
+                <div class="biz-service">
+                    <div class="biz-service-icon" style="background:rgba(139,92,246,0.1);color:#8b5cf6;"><i class="bi bi-receipt"></i></div>
+                    <h4>Order Management</h4>
+                    <p>Process orders efficiently</p>
+                </div>
+                <div class="biz-service">
+                    <div class="biz-service-icon" style="background:rgba(236,72,153,0.1);color:#ec4899;"><i class="bi bi-people"></i></div>
+                    <h4>Customer Management</h4>
+                    <p>Build relationships</p>
+                </div>
+                <div class="biz-service">
+                    <div class="biz-service-icon" style="background:rgba(37,99,235,0.1);color:#2563eb;"><i class="bi bi-truck"></i></div>
+                    <h4>Delivery Management</h4>
+                    <p>Track deliveries</p>
+                </div>
+                <div class="biz-service">
+                    <div class="biz-service-icon" style="background:rgba(16,185,129,0.1);color:#059669;"><i class="bi bi-credit-card"></i></div>
+                    <h4>Payment Management</h4>
+                    <p>Secure payments</p>
+                </div>
+                <div class="biz-service">
+                    <div class="biz-service-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;"><i class="bi bi-bar-chart-line"></i></div>
+                    <h4>Analytics</h4>
+                    <p>Track performance</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Business Courses -->
+    <section class="section-padding" id="courses">
+        <div class="container">
+            <div class="biz-section-header">
+                <h2><i class="bi bi-book" style="color:#2563eb;"></i> Business Learning</h2>
+                <a href="learning.html?category=business" style="color:#2563eb;font-size:0.9rem;">View All â†’</a>
+            </div>
+            <div class="biz-courses" id="courseGrid"></div>
+        </div>
+    </section>
+
+    <!-- Business Tools -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="biz-section-header">
+                <h2><i class="bi bi-tools" style="color:#2563eb;"></i> Business Tools</h2>
+            </div>
+            <div class="biz-tools">
+                <a href="#" class="biz-tool" onclick="event.preventDefault();alert('Calculator coming soon!')">
+                    <div class="biz-tool-icon" style="background:rgba(37,99,235,0.1);color:#2563eb;"><i class="bi bi-calculator"></i></div>
+                    <div><h4>Profit Calculator</h4><p>Calculate your profit margins</p></div>
+                </a>
+                <a href="#" class="biz-tool" onclick="event.preventDefault();alert('Calculator coming soon!')">
+                    <div class="biz-tool-icon" style="background:rgba(16,185,129,0.1);color:#059669;">🌸</div>
+                    <div><h4>Bouquet Pricing</h4><p>Price your arrangements</p></div>
+                </a>
+                <a href="#" class="biz-tool" onclick="event.preventDefault();alert('Calculator coming soon!')">
+                    <div class="biz-tool-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;"><i class="bi bi-box"></i></div>
+                    <div><h4>Inventory Calculator</h4><p>Manage stock levels</p></div>
+                </a>
+                <a href="#" class="biz-tool" onclick="event.preventDefault();alert('Calculator coming soon!')">
+                    <div class="biz-tool-icon" style="background:rgba(139,92,246,0.1);color:#8b5cf6;"><i class="bi bi-truck"></i></div>
+                    <div><h4>Delivery Cost Calculator</h4><p>Estimate shipping costs</p></div>
+                </a>
+                <a href="#" class="biz-tool" onclick="event.preventDefault();alert('Guide coming soon!')">
+                    <div class="biz-tool-icon" style="background:rgba(236,72,153,0.1);color:#ec4899;">📅</div>
+                    <div><h4>Seasonal Pricing Guide</h4><p>Price by season</p></div>
+                </a>
+                <a href="#" class="biz-tool" onclick="event.preventDefault();alert('Tracker coming soon!')">
+                    <div class="biz-tool-icon" style="background:rgba(37,99,235,0.1);color:#2563eb;"><i class="bi bi-wallet2"></i></div>
+                    <div><h4>Expense Tracker</h4><p>Track business expenses</p></div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Stories -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="biz-section-header">
+                <h2><i class="bi bi-trophy" style="color:#2563eb;"></i> Success Stories</h2>
+                <a href="success-stories.html" style="color:#2563eb;font-size:0.9rem;">View All â†’</a>
+            </div>
+            <div class="biz-stories" id="storiesGrid"></div>
+        </div>
+    </section>
+
+    <!-- Dashboard Preview -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="biz-section-header">
+                <h2><i class="bi bi-speedometer2" style="color:#2563eb;"></i> Business Dashboard</h2>
+                <a href="seller-dashboard.html" class="btn btn-primary" style="background:#2563eb;">Open Dashboard</a>
+            </div>
+            <div class="biz-dashboard">
+                <div class="biz-dash-grid">
+                    <div class="biz-dash-card"><i class="bi bi-currency-dollar" style="color:#059669;"></i><div class="val" style="color:#059669;">GHS 12,450</div><div class="lbl">Revenue</div></div>
+                    <div class="biz-dash-card"><i class="bi bi-receipt" style="color:#2563eb;"></i><div class="val" style="color:#2563eb;">156</div><div class="lbl">Orders</div></div>
+                    <div class="biz-dash-card"><i class="bi bi-people" style="color:#8b5cf6;"></i><div class="val" style="color:#8b5cf6;">89</div><div class="lbl">Customers</div></div>
+                    <div class="biz-dash-card"><i class="bi bi-box-seam" style="color:#f59e0b;"></i><div class="val" style="color:#f59e0b;">42</div><div class="lbl">Products</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section-padding">
+        <div class="container">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h2><i class="bi bi-question-circle" style="color:#2563eb;"></i> Frequently Asked Questions</h2>
+            </div>
+            <div class="biz-faq" id="faqGrid"></div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container">
+            <div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);border-radius:16px;padding:3rem;text-align:center;color:white;">
+                <h2 style="color:white;margin-bottom:0.5rem;">Ready to Grow Your Floral Business?</h2>
+                <p style="color:rgba(255,255,255,0.85);margin-bottom:1.5rem;max-width:600px;margin-left:auto;margin-right:auto;">Whether you're a florist, grower, wholesaler, or entrepreneur, Flower Ecosystem provides the tools, education, marketplace, and community to help your business succeed.</p>
+                <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                    <a href="sell.html" class="btn btn-white-blue">Register Your Business</a>
+                    <a href="seller-dashboard.html" class="btn btn-outline-white">Start Selling</a>
+                    <a href="learning.html?category=business" class="btn btn-outline-white">Learn Business Skills</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            loadCourses();
+            loadStories();
+            loadFAQ();
+        });
+
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                document.getElementById('statBusinesses').textContent = (data.sellers || 0) + 50;
+                document.getElementById('statProducts').textContent = data.products || 0;
+                document.getElementById('statOrders').textContent = '1.2K';
+                document.getElementById('statFlorists').textContent = Math.floor((data.sellers || 0) * 0.6);
+                document.getElementById('statGrowers').textContent = Math.floor((data.sellers || 0) * 0.4);
+                document.getElementById('statBuyers').textContent = data.users || 0;
+            } catch {}
+        }
+
+        async function loadCourses() {
+            try {
+                const res = await fetch('/api/courses?category=business&limit=6');
+                const data = await res.json();
+                const courses = Array.isArray(data) ? data : (data.courses || []);
+                const grid = document.getElementById('courseGrid');
+                if (!courses.length) {
+                    const fallback = [
+                        { title: 'Starting a Flower Business', level: 'Beginner', price: 'GHS 150', duration: '4h', rating: 4.8, students: 320, instructor: 'Sarah Mensah' },
+                        { title: 'Floral Marketing Mastery', level: 'Intermediate', price: 'GHS 200', duration: '6h', rating: 4.9, students: 280, instructor: 'Kofi Asante' },
+                        { title: 'Pricing Flowers Profitably', level: 'Beginner', price: 'GHS 120', duration: '3h', rating: 4.7, students: 450, instructor: 'Ama Darko' },
+                        { title: 'Customer Service Excellence', level: 'All Levels', price: 'GHS 99', duration: '2h', rating: 4.6, students: 520, instructor: 'Yaw Boateng' },
+                        { title: 'Social Media for Florists', level: 'Beginner', price: 'GHS 130', duration: '3h', rating: 4.8, students: 380, instructor: 'Efua Owusu' },
+                        { title: 'Export Business for Florists', level: 'Advanced', price: 'GHS 250', duration: '8h', rating: 4.9, students: 150, instructor: 'Nana Mensah' }
+                    ];
+                    grid.innerHTML = fallback.map(c => `
+                        <div class="biz-course">
+                            <div class="biz-course-img">
+                                <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=400&auto=format&fit=crop" alt="${c.title}" loading="lazy">
+                            </div>
+                            <div class="biz-course-body">
+                                <div class="biz-course-title">${c.title}</div>
+                                <div class="biz-course-meta">${c.level} Â· ${c.duration} Â· ${c.instructor}</div>
+                                <div class="biz-course-footer">
+                                    <span class="biz-course-price">${c.price}</span>
+                                    <span style="color:var(--text-muted);font-size:0.78rem;">â˜… ${c.rating} (${c.students})</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    return;
+                }
+                grid.innerHTML = courses.map(c => `
+                    <a href="course-detail.html?id=${c.id}" class="biz-course">
+                        <div class="biz-course-img">
+                            <img src="${c.thumbnail || c.thumbnail_url || 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=400&auto=format&fit=crop'}" alt="${c.title}" loading="lazy">
+                        </div>
+                        <div class="biz-course-body">
+                            <div class="biz-course-title">${c.title}</div>
+                            <div class="biz-course-meta">${c.level || ''} Â· ${c.duration || ''} Â· ${c.instructor || ''}</div>
+                            <div class="biz-course-footer">
+                                <span class="biz-course-price">${c.is_free || !c.price ? 'Free' : (c.currency || 'GHS') + ' ' + c.price}</span>
+                                <span style="color:var(--text-muted);font-size:0.78rem;">â˜… ${c.rating || 0} (${c.students || c.students_count || 0})</span>
+                            </div>
+                        </div>
+                    </a>
+                `).join('');
+            } catch {}
+        }
+
+        async function loadStories() {
+            try {
+                const res = await fetch('/api/community/success-stories?limit=3');
+                const data = await res.json();
+                const stories = Array.isArray(data) ? data : (data.stories || []);
+                const grid = document.getElementById('storiesGrid');
+                if (stories.length) {
+                    grid.innerHTML = stories.map(s => `
+                        <div class="biz-story">
+                            <div class="biz-story-img">
+                                <img src="${s.cover_image || s.image || 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=400&auto=format&fit=crop'}" alt="${s.title}" loading="lazy">
+                            </div>
+                            <div class="biz-story-body">
+                                <h3 style="font-size:1rem;margin-bottom:0.3rem;">${s.title}</h3>
+                                <p style="font-size:0.82rem;color:var(--text-light);margin-bottom:0.5rem;">${(s.content || s.excerpt || '').slice(0, 120)}</p>
+                                <div class="biz-story-stats">
+                                    <span>By ${s.author_name || 'Anonymous'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    const fallback = [
+                        { title: 'From Hobby to Business', text: 'How I turned my passion for flowers into a thriving business.', stats: { revenue: 'GHS 50K', products: 200 } },
+                        { title: 'Wedding Florist Success', text: 'Building a luxury wedding floral brand from scratch.', stats: { revenue: 'GHS 120K', products: 500 } },
+                        { title: 'Farm to Table Flowers', text: 'Starting an organic flower farm in Ghana.', stats: { revenue: 'GHS 80K', products: 300 } }
+                    ];
+                    grid.innerHTML = fallback.map(s => `
+                        <div class="biz-story">
+                            <div class="biz-story-img">
+                                <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=400&auto=format&fit=crop" alt="${s.title}" loading="lazy">
+                            </div>
+                            <div class="biz-story-body">
+                                <h3 style="font-size:1rem;margin-bottom:0.3rem;">${s.title}</h3>
+                                <p style="font-size:0.82rem;color:var(--text-light);margin-bottom:0.5rem;">${s.text}</p>
+                                <div class="biz-story-stats">
+                                    <span>Revenue: <strong>${s.stats.revenue}</strong></span>
+                                    <span>Products: <strong>${s.stats.products}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch {}
+        }
+
+        function loadFAQ() {
+            const faqs = [
+                { q: 'How do I become a seller?', a: 'Click "Start Selling" and complete the registration form. You\'ll need to provide business details and verify your identity.' },
+                { q: 'How do I register my flower business?', a: 'Go to the Seller Dashboard and fill in your business profile. Upload your business documents for verification.' },
+                { q: 'How do I receive payments?', a: 'We support mobile money, bank transfers, and card payments. Funds are transferred to your account within 2-3 business days.' },
+                { q: 'How can I advertise my products?', a: 'Use the Marketplace to list your products. You can also boost listings and run promotions through the Seller Dashboard.' },
+                { q: 'How can I become a verified florist?', a: 'Submit a verification request from your Seller Dashboard with business documentation. Verification takes 2-3 business days.' },
+                { q: 'How do I find suppliers?', a: 'Visit the Growers page to find flower farms and suppliers. You can filter by location, flower type, and services offered.' }
+            ];
+            document.getElementById('faqGrid').innerHTML = faqs.map((f, i) => `
+                <div class="biz-faq-item${i === 0 ? ' open' : ''}">
+                    <div class="biz-faq-q" onclick="this.parentElement.classList.toggle('open')">
+                        <span>${f.q}</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="biz-faq-a">${f.a}</div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
+

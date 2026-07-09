@@ -1,0 +1,398 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Garden Planner â€” Design your perfect garden layout, choose plants, and create a thriving outdoor or indoor space.">
+    <title>Garden Planner | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .gp-hero { background:linear-gradient(135deg,#065f46 0%,#047857 40%,#10b981 100%); padding:4rem 0 2.5rem; color:white; position:relative; overflow:hidden; }
+        .gp-hero::before { content:''; position:absolute; top:-30%; right:-5%; width:400px; height:400px; background:rgba(255,255,255,0.06); border-radius:50%; }
+        .gp-hero h1 { color:white; font-size:clamp(1.8rem,3.5vw,2.5rem); margin-bottom:0.5rem; }
+        .gp-hero p { color:rgba(255,255,255,0.85); max-width:600px; }
+
+        /* Layout */
+        .gp-layout { display:grid; grid-template-columns:1fr 320px; gap:1.5rem; align-items:start; }
+        .gp-main { min-width:0; }
+        .gp-sidebar { position:sticky; top:90px; }
+
+        /* Garden Canvas */
+        .gp-canvas-wrap { background:var(--bg-white); border:1px solid var(--border-color); border-radius:16px; overflow:hidden; }
+        .gp-canvas-header { display:flex; justify-content:space-between; align-items:center; padding:1rem 1.25rem; border-bottom:1px solid var(--border-color); }
+        .gp-canvas-header h3 { font-size:1rem; margin:0; }
+        .gp-canvas-tools { display:flex; gap:0.5rem; }
+        .gp-canvas-tool { padding:0.4rem 0.75rem; border:1px solid var(--border-color); border-radius:6px; background:var(--bg-white); cursor:pointer; font-size:0.82rem; transition:all 0.2s; }
+        .gp-canvas-tool:hover, .gp-canvas-tool.active { border-color:#059669; color:#059669; background:#ecfdf5; }
+        .gp-canvas { width:100%; height:400px; background:linear-gradient(135deg,#dcfce7,#bbf7d0); position:relative; overflow:hidden; cursor:crosshair; border-bottom:1px solid var(--border-color); }
+        .gp-canvas-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size:40px 40px; }
+        .gp-plant { position:absolute; cursor:move; transition:transform 0.2s; z-index:10; }
+        .gp-plant:hover { transform:scale(1.1); z-index:20; }
+        .gp-plant-icon { font-size:1.5rem; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+        .gp-plant-label { font-size:0.6rem; background:white; padding:0.1rem 0.3rem; border-radius:4px; text-align:center; white-space:nowrap; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+
+        /* Config Panel */
+        .gp-config { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; margin-bottom:1rem; }
+        .gp-config h4 { font-size:0.9rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
+        .gp-config-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+        .gp-config-option { padding:0.6rem; border:1px solid var(--border-color); border-radius:8px; text-align:center; cursor:pointer; font-size:0.82rem; transition:all 0.2s; }
+        .gp-config-option:hover, .gp-config-option.selected { border-color:#059669; background:#ecfdf5; color:#059669; }
+
+        /* Plant Palette */
+        .gp-palette { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; margin-bottom:1rem; }
+        .gp-palette h4 { font-size:0.9rem; margin-bottom:0.75rem; }
+        .gp-palette-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem; }
+        .gp-palette-item { padding:0.5rem; border:1px solid var(--border-color); border-radius:8px; text-align:center; cursor:grab; transition:all 0.2s; font-size:0.72rem; }
+        .gp-palette-item:hover { border-color:#059669; background:#ecfdf5; }
+        .gp-palette-item .icon { font-size:1.3rem; }
+
+        /* Recommendations */
+        .gp-reco { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; margin-bottom:1rem; }
+        .gp-reco h4 { font-size:0.9rem; margin-bottom:0.75rem; }
+        .gp-reco-item { display:flex; gap:0.75rem; padding:0.5rem 0; border-bottom:1px solid var(--border-light); align-items:center; }
+        .gp-reco-item:last-child { border-bottom:none; }
+        .gp-reco-icon { font-size:1.2rem; }
+        .gp-reco-info { flex:1; }
+        .gp-reco-name { font-size:0.85rem; font-weight:500; }
+        .gp-reco-meta { font-size:0.72rem; color:var(--text-light); }
+        .gp-reco-add { padding:0.25rem 0.5rem; border:1px solid #059669; border-radius:6px; background:none; color:#059669; cursor:pointer; font-size:0.72rem; }
+
+        /* Saved Gardens */
+        .gp-saved { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; }
+        .gp-saved h4 { font-size:0.9rem; margin-bottom:0.75rem; }
+        .gp-saved-item { display:flex; align-items:center; gap:0.75rem; padding:0.5rem 0; border-bottom:1px solid var(--border-light); cursor:pointer; }
+        .gp-saved-item:last-child { border-bottom:none; }
+        .gp-saved-item:hover { color:#059669; }
+        .gp-saved-icon { font-size:1.2rem; }
+
+        /* Info Cards */
+        .gp-info { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:1.5rem; }
+        .gp-info-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; }
+        .gp-info-card i { font-size:1.5rem; color:#059669; margin-bottom:0.5rem; }
+        .gp-info-card h4 { font-size:0.9rem; margin-bottom:0.3rem; }
+        .gp-info-card p { font-size:0.78rem; color:var(--text-light); }
+
+        @media(max-width:900px) {
+            .gp-layout { grid-template-columns:1fr; }
+            .gp-sidebar { position:static; }
+            .gp-info { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="gp-hero">
+        <div class="container">
+            <nav style="font-size:0.85rem;margin-bottom:1rem;color:rgba(255,255,255,0.6);">
+                <a href="gardening.html" style="color:rgba(255,255,255,0.6);text-decoration:none;">Gardening</a>
+                <span style="margin:0 0.5rem;">/</span>
+                <span style="color:white;">Garden Planner</span>
+            </nav>
+            <h1>🗺️ Garden Planner</h1>
+            <p>Design your perfect garden layout, choose the right plants, and create a thriving space.</p>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <div class="gp-layout">
+                <!-- Main Canvas -->
+                <div class="gp-main">
+                    <div class="gp-canvas-wrap">
+                        <div class="gp-canvas-header">
+                            <h3><i class="bi bi-pencil-square" style="color:#059669;"></i> Garden Canvas</h3>
+                            <div class="gp-canvas-tools">
+                                <button class="gp-canvas-tool active" onclick="setTool('plant',this)" title="Add Plant">🌸</button>
+                                <button class="gp-canvas-tool" onclick="setTool('move',this)" title="Move"><i class="bi bi-arrows-move"></i></button>
+                                <button class="gp-canvas-tool" onclick="setTool('delete',this)" title="Delete"><i class="bi bi-trash"></i></button>
+                                <button class="gp-canvas-tool" onclick="clearCanvas()" title="Clear All"><i class="bi bi-x-circle"></i></button>
+                                <button class="gp-canvas-tool" onclick="saveGarden()" title="Save"><i class="bi bi-save"></i></button>
+                            </div>
+                        </div>
+                        <div class="gp-canvas" id="gardenCanvas" onclick="handleCanvasClick(event)">
+                            <div class="gp-canvas-grid"></div>
+                        </div>
+                        <div style="padding:0.75rem 1.25rem;display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;color:var(--text-light);">
+                            <span>Click to place plants â€¢ Drag to move â€¢ Right-click to remove</span>
+                            <span id="plantCount">0 plants placed</span>
+                        </div>
+                    </div>
+
+                    <!-- Info Cards -->
+                    <div class="gp-info">
+                        <div class="gp-info-card">
+                            <i class="bi bi-sun"></i>
+                            <h4>Sunlight Guide</h4>
+                            <p>Full Sun: 6+ hours â€¢ Partial: 3-6 hours â€¢ Shade: &lt;3 hours</p>
+                        </div>
+                        <div class="gp-info-card">
+                            <i class="bi bi-droplet"></i>
+                            <h4>Watering Tips</h4>
+                            <p>Water deeply but less frequently. Morning watering reduces evaporation.</p>
+                        </div>
+                        <div class="gp-info-card">
+                            <i class="bi bi-shield-check"></i>
+                            <h4>Spacing Rules</h4>
+                            <p>Allow adequate space between plants for air circulation and growth.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="gp-sidebar">
+                    <!-- Garden Config -->
+                    <div class="gp-config">
+                        <h4><i class="bi bi-gear" style="color:#059669;"></i> Garden Settings</h4>
+                        <label style="font-size:0.78rem;color:var(--text-light);display:block;margin-bottom:0.3rem;">Garden Type</label>
+                        <div class="gp-config-grid" id="typeGrid">
+                            <div class="gp-config-option selected" onclick="selectConfig('type',this,'outdoor')">ðŸŒ³ Outdoor</div>
+                            <div class="gp-config-option" onclick="selectConfig('type',this,'indoor')">ðŸª´ Indoor</div>
+                            <div class="gp-config-option" onclick="selectConfig('type',this,'balcony')">ðŸ™ï¸ Balcony</div>
+                            <div class="gp-config-option" onclick="selectConfig('type',this,'rooftop')">ðŸ—ï¸ Rooftop</div>
+                        </div>
+                        <label style="font-size:0.78rem;color:var(--text-light);display:block;margin:0.5rem 0 0.3rem;">Sunlight</label>
+                        <div class="gp-config-grid" id="sunGrid">
+                            <div class="gp-config-option selected" onclick="selectConfig('sun',this,'full')">â˜€ï¸ Full Sun</div>
+                            <div class="gp-config-option" onclick="selectConfig('sun',this,'partial')">â›… Partial</div>
+                            <div class="gp-config-option" onclick="selectConfig('sun',this,'shade')">ðŸŒ™ Shade</div>
+                        </div>
+                    </div>
+
+                    <!-- Plant Palette -->
+                    <div class="gp-palette">
+                        <h4><i class="bi bi-flower1" style="color:#059669;"></i> Plant Palette</h4>
+                        <p style="font-size:0.75rem;color:var(--text-light);margin-bottom:0.5rem;">Click a plant, then click on the canvas to place it.</p>
+                        <div class="gp-palette-grid" id="plantPalette"></div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="gp-reco">
+                        <h4><i class="bi bi-lightbulb" style="color:#059669;"></i> Recommended</h4>
+                        <div id="recoList"></div>
+                    </div>
+
+                    <!-- Saved Gardens -->
+                    <div class="gp-saved">
+                        <h4><i class="bi bi-bookmark" style="color:#059669;"></i> Saved Gardens</h4>
+                        <div id="savedList">
+                            <p style="font-size:0.82rem;color:var(--text-light);">No saved gardens yet.</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm" style="width:100%;margin-top:0.75rem;border-color:#059669;color:#059669;" onclick="saveGarden()"><i class="bi bi-plus"></i> Save Current Design</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        let currentTool = 'plant';
+        let selectedPalettePlant = null;
+        let placedPlants = [];
+        let gardenConfig = { type: 'outdoor', sun: 'full' };
+
+        const PLANTS = [
+            { icon: 'ðŸŒ¹', name: 'Rose', color: '#ef4444', sun: 'full', water: 'medium' },
+            { icon: 'ðŸŒ·', name: 'Tulip', color: '#ec4899', sun: 'full', water: 'medium' },
+            { icon: 'ðŸŒ»', name: 'Sunflower', color: '#eab308', sun: 'full', water: 'medium' },
+            { icon: 'ðŸŒº', name: 'Hibiscus', color: '#f97316', sun: 'full', water: 'high' },
+            { icon: 'ðŸŒ¸', name: 'Cherry Blossom', color: '#f472b6', sun: 'full', water: 'medium' },
+            { icon: 'ðŸŒ¼', name: 'Daisy', color: '#fbbf24', sun: 'full', water: 'low' },
+            { icon: 'ðŸª»', name: 'Lavender', color: '#8b5cf6', sun: 'full', water: 'low' },
+            { icon: 'ðŸŒº', name: 'Orchid', color: '#ec4899', sun: 'partial', water: 'medium' },
+            { icon: 'ðŸŒ¿', name: 'Fern', color: '#22c55e', sun: 'shade', water: 'high' },
+            { icon: 'ðŸŒµ', name: 'Cactus', color: '#84cc16', sun: 'full', water: 'low' },
+            { icon: 'ðŸª´', name: 'Pothos', color: '#16a34a', sun: 'shade', water: 'medium' },
+            { icon: 'ðŸŒ»', name: 'Marigold', color: '#f59e0b', sun: 'full', water: 'medium' },
+            { icon: 'ðŸŒ¸', name: 'Peony', color: '#f472b6', sun: 'full', water: 'medium' },
+            { icon: 'ðŸŒº', name: 'Lily', color: '#f43f5e', sun: 'full', water: 'medium' },
+            { icon: 'ðŸŒ¿', name: 'Basil', color: '#22c55e', sun: 'full', water: 'high' },
+            { icon: 'ðŸŒ¼', name: 'Zinnia', color: '#f97316', sun: 'full', water: 'medium' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPalette();
+            loadRecommendations();
+            loadSavedGardens();
+            loadSavedFromStorage();
+        });
+
+        function renderPalette() {
+            document.getElementById('plantPalette').innerHTML = PLANTS.map((p, i) => `
+                <div class="gp-palette-item" onclick="selectPlant(${i})" title="${p.name}">
+                    <div class="icon">${p.icon}</div>
+                    <div>${p.name}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectPlant(idx) {
+            selectedPalettePlant = PLANTS[idx];
+            document.querySelectorAll('.gp-palette-item').forEach((el, i) => {
+                el.style.borderColor = i === idx ? '#059669' : '';
+                el.style.background = i === idx ? '#ecfdf5' : '';
+            });
+            currentTool = 'plant';
+            document.querySelectorAll('.gp-canvas-tool').forEach(t => t.classList.remove('active'));
+            document.querySelector('.gp-canvas-tool').classList.add('active');
+        }
+
+        function setTool(tool, el) {
+            currentTool = tool;
+            selectedPalettePlant = tool === 'plant' ? selectedPalettePlant : null;
+            document.querySelectorAll('.gp-canvas-tool').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function handleCanvasClick(e) {
+            if (currentTool === 'plant' && selectedPalettePlant) {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                placePlant(x, y, selectedPalettePlant);
+            }
+        }
+
+        function placePlant(x, y, plant) {
+            const canvas = document.getElementById('gardenCanvas');
+            const el = document.createElement('div');
+            el.className = 'gp-plant';
+            el.style.left = (x - 15) + 'px';
+            el.style.top = (y - 15) + 'px';
+            el.innerHTML = `<div class="gp-plant-icon">${plant.icon}</div><div class="gp-plant-label">${plant.name}</div>`;
+            el.dataset.plant = plant.name;
+            el.dataset.x = x;
+            el.dataset.y = y;
+
+            // Make draggable
+            el.addEventListener('mousedown', (e) => {
+                if (currentTool === 'delete') { el.remove(); updatePlantCount(); return; }
+                const startX = e.clientX - el.offsetLeft;
+                const startY = e.clientY - el.offsetTop;
+                const onMove = (e) => {
+                    el.style.left = (e.clientX - startX) + 'px';
+                    el.style.top = (e.clientY - startY) + 'px';
+                };
+                const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('mouseup', onUp);
+            });
+
+            // Right-click to delete
+            el.addEventListener('contextmenu', (e) => { e.preventDefault(); el.remove(); updatePlantCount(); });
+
+            canvas.appendChild(el);
+            placedPlants.push({ name: plant.name, icon: plant.icon, x, y });
+            updatePlantCount();
+        }
+
+        function updatePlantCount() {
+            const count = document.querySelectorAll('.gp-plant').length;
+            document.getElementById('plantCount').textContent = count + ' plant' + (count !== 1 ? 's' : '') + ' placed';
+        }
+
+        function clearCanvas() {
+            if (!confirm('Clear all plants from the canvas?')) return;
+            document.querySelectorAll('.gp-plant').forEach(el => el.remove());
+            placedPlants = [];
+            updatePlantCount();
+        }
+
+        function saveGarden() {
+            const plants = [];
+            document.querySelectorAll('.gp-plant').forEach(el => {
+                plants.push({ name: el.dataset.plant, x: parseInt(el.style.left), y: parseInt(el.style.top) });
+            });
+            const garden = { plants, config: gardenConfig, savedAt: new Date().toISOString() };
+            const saved = JSON.parse(localStorage.getItem('gardens') || '[]');
+            saved.push(garden);
+            localStorage.setItem('gardens', JSON.stringify(saved));
+            loadSavedFromStorage();
+            alert('Garden saved!');
+        }
+
+        function loadSavedFromStorage() {
+            const saved = JSON.parse(localStorage.getItem('gardens') || '[]');
+            const list = document.getElementById('savedList');
+            if (!saved.length) {
+                list.innerHTML = '<p style="font-size:0.82rem;color:var(--text-light);">No saved gardens yet.</p>';
+                return;
+            }
+            list.innerHTML = saved.map((g, i) => `
+                <div class="gp-saved-item" onclick="loadGarden(${i})">
+                    <span class="gp-saved-icon">ðŸŒ±</span>
+                    <span style="flex:1;font-size:0.85rem;">Garden ${i + 1}</span>
+                    <span style="font-size:0.72rem;color:var(--text-muted);">${g.plants.length} plants</span>
+                </div>
+            `).join('');
+        }
+
+        function loadGarden(idx) {
+            const saved = JSON.parse(localStorage.getItem('gardens') || '[]');
+            const garden = saved[idx];
+            if (!garden) return;
+            clearCanvas();
+            garden.config = gardenConfig;
+            garden.plants.forEach(p => {
+                const plant = PLANTS.find(pl => pl.name === p.name) || { icon: 'ðŸŒ±', name: p.name };
+                placePlant(p.x, p.y, plant);
+            });
+        }
+
+        function selectConfig(key, el, value) {
+            gardenConfig[key] = value;
+            el.parentElement.querySelectorAll('.gp-config-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            loadRecommendations();
+        }
+
+        function loadRecommendations() {
+            const recos = PLANTS.filter(p => {
+                if (gardenConfig.sun === 'full' && p.sun === 'shade') return false;
+                if (gardenConfig.sun === 'shade' && p.sun === 'full') return false;
+                return true;
+            }).slice(0, 5);
+            document.getElementById('recoList').innerHTML = recos.map(p => `
+                <div class="gp-reco-item">
+                    <span class="gp-reco-icon">${p.icon}</span>
+                    <div class="gp-reco-info">
+                        <div class="gp-reco-name">${p.name}</div>
+                        <div class="gp-reco-meta">${p.sun} sun â€¢ ${p.water} water</div>
+                    </div>
+                    <button class="gp-reco-add" onclick="selectPlant(${PLANTS.indexOf(p)})">Add</button>
+                </div>
+            `).join('');
+        }
+
+        async function loadSavedGardens() {
+            const token = localStorage.getItem('flower-token');
+            if (!token) return;
+            try {
+                const res = await fetch('/api/my-garden', { headers: { 'Authorization': 'Bearer ' + token } });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.plants?.length) {
+                        document.getElementById('savedList').innerHTML = data.plants.map(p => `
+                            <div class="gp-saved-item">
+                                <span class="gp-saved-icon">ðŸŒ±</span>
+                                <span style="flex:1;font-size:0.85rem;">${p.name}</span>
+                            </div>
+                        `).join('') || '<p style="font-size:0.82rem;color:var(--text-light);">No saved plants.</p>';
+                    }
+                }
+            } catch {}
+        }
+    </script>
+</body>
+</html>
+

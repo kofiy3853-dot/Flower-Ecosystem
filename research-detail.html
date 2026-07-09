@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -109,7 +109,7 @@
 
                     <!-- Key Findings -->
                     <div class="rd-section" id="rdFindingsSection" style="display:none;">
-                        <h3><i class="bi bi-lightbulb"></i> Key Findings</h3>
+                        <h3>💡 Key Findings</h3>
                         <div class="rd-findings" id="rdFindings"></div>
                     </div>
 
@@ -121,7 +121,7 @@
 
                     <!-- Practical Applications -->
                     <div class="rd-section" id="rdAppsSection" style="display:none;">
-                        <h3><i class="bi bi-tools"></i> Practical Applications</h3>
+                        <h3>🔧 Practical Applications</h3>
                         <div id="rdApps" style="font-size:0.92rem;line-height:1.7;color:var(--text-light);"></div>
                     </div>
 
@@ -139,7 +139,7 @@
 
                     <!-- References -->
                     <div class="rd-section" id="rdRefsSection" style="display:none;">
-                        <h3><i class="bi bi-book"></i> References</h3>
+                        <h3>📖 References</h3>
                         <ul class="rd-references" id="rdReferences"></ul>
                     </div>
                 </div>
@@ -312,7 +312,7 @@
                 document.getElementById('rdRelated').innerHTML = related.map(r => `
                     <a href="research-detail.html?slug=${r.slug || r.id}" class="rd-related-item">
                         <div class="rd-related-title">${escapeHtml(r.title)}</div>
-                        <div class="rd-related-meta">${r.category_icon || ''} ${escapeHtml(r.category_name || '')} · ${r.publication_date ? new Date(r.publication_date).getFullYear() : ''}</div>
+                        <div class="rd-related-meta">${r.category_icon || ''} ${escapeHtml(r.category_name || '')} Â· ${r.publication_date ? new Date(r.publication_date).getFullYear() : ''}</div>
                     </a>
                 `).join('');
             }
@@ -333,7 +333,7 @@
             document.getElementById('rdContent').style.display = 'none';
         }
 
-        // ─── Actions ────────────────────────────────────────────────
+        // â”€â”€â”€ Actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         async function toggleBookmark() {
             const token = getToken();
             if (!token) { window.location.href = 'login.html'; return; }
@@ -355,7 +355,7 @@
 
         function shareArticle() {
             if (!article) return;
-            const text = `${article.title} — Flower Ecosystem Research Hub`;
+            const text = `${article.title} â€” Flower Ecosystem Research Hub`;
             if (navigator.share) {
                 navigator.share({ title: article.title, text, url: window.location.href });
             } else if (navigator.clipboard) {
@@ -384,3 +384,4 @@
     </script>
 </body>
 </html>
+

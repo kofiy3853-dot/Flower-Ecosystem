@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Course Marketplace — Browse, compare, and enroll in floristry courses. Find the perfect course for your learning goals.">
+    <meta name="description" content="Course Marketplace â€” Browse, compare, and enroll in floristry courses. Find the perfect course for your learning goals.">
     <title>Course Marketplace | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="styles/main.css?v=3.0">
@@ -137,11 +137,11 @@
             </div>
             <div class="cm-filter-row">
                 <button class="cm-filter active" onclick="filterCategory('all',this)">All Courses</button>
-                <button class="cm-filter" onclick="filterCategory('floral-design',this)">💐 Floral Design</button>
-                <button class="cm-filter" onclick="filterCategory('wedding',this)">💒 Wedding</button>
-                <button class="cm-filter" onclick="filterCategory('business',this)">💼 Business</button>
-                <button class="cm-filter" onclick="filterCategory('care',this)">🌿 Plant Care</button>
-                <button class="cm-filter" onclick="filterCategory('farming',this)">🌱 Farming</button>
+                <button class="cm-filter" onclick="filterCategory('floral-design',this)">ðŸ’ Floral Design</button>
+                <button class="cm-filter" onclick="filterCategory('wedding',this)">ðŸ’’ Wedding</button>
+                <button class="cm-filter" onclick="filterCategory('business',this)">ðŸ’¼ Business</button>
+                <button class="cm-filter" onclick="filterCategory('care',this)">ðŸŒ¿ Plant Care</button>
+                <button class="cm-filter" onclick="filterCategory('farming',this)">ðŸŒ± Farming</button>
                 <button class="cm-filter" onclick="filterCategory('free',this)">Free Courses</button>
             </div>
         </div>
@@ -162,7 +162,7 @@
         <div class="container">
             <div class="cm-section-header">
                 <h2><i class="bi bi-star" style="color:#f59e0b;"></i> Featured Courses</h2>
-                <a href="learning.html" style="color:#2563eb;font-size:0.9rem;">View All →</a>
+                <a href="learning.html" style="color:#2563eb;font-size:0.9rem;">View All â†’</a>
             </div>
             <div class="cm-featured" id="featuredGrid"></div>
         </div>
@@ -183,7 +183,7 @@
     <section class="section-padding">
         <div class="container">
             <div class="cm-gift">
-                <div style="font-size:3rem;margin-bottom:0.5rem;">🎁</div>
+                <div style="font-size:3rem;margin-bottom:0.5rem;">ðŸŽ</div>
                 <h2>Gift a Course</h2>
                 <p>Share the joy of learning! Gift a course to a friend, family member, or colleague.</p>
                 <div style="display:flex;gap:0.75rem;justify-content:center;">
@@ -199,7 +199,7 @@
         <div class="container">
             <div class="cm-section-header">
                 <h2><i class="bi bi-person-badge" style="color:#2563eb;"></i> Top Instructors</h2>
-                <a href="instructors.html" style="color:#2563eb;font-size:0.9rem;">View All →</a>
+                <a href="instructors.html" style="color:#2563eb;font-size:0.9rem;">View All â†’</a>
             </div>
             <div class="cm-instructors" id="instructorGrid"></div>
         </div>
@@ -243,7 +243,7 @@
             loadTestimonials();
         });
 
-        // ─── Courses ──────────────────────────────────────────────────
+        // â”€â”€â”€ Courses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         async function loadCourses(category = '') {
             try {
                 let url = '/api/courses?limit=12';
@@ -260,7 +260,7 @@
                 const instructors = [...new Set(courses.map(c => c.instructor).filter(Boolean))];
                 document.getElementById('statInstructors').textContent = instructors.length;
                 const avgRating = courses.length ? (courses.reduce((s, c) => s + (c.rating || 0), 0) / courses.length).toFixed(1) : '0';
-                document.getElementById('statRating').textContent = avgRating + '★';
+                document.getElementById('statRating').textContent = avgRating + 'â˜…';
 
                 const grid = document.getElementById('featuredGrid');
                 if (!courses.length) {
@@ -284,7 +284,7 @@
                                 ${c.instructor || 'Expert Instructor'}
                             </div>
                             <div class="cm-card-rating">
-                                <span class="stars">${'★'.repeat(Math.round(c.rating || 0))}${'☆'.repeat(5 - Math.round(c.rating || 0))}</span>
+                                <span class="stars">${'â˜…'.repeat(Math.round(c.rating || 0))}${'â˜†'.repeat(5 - Math.round(c.rating || 0))}</span>
                                 <span>${(c.rating || 0).toFixed(1)}</span>
                                 <span style="color:var(--text-muted);">(${c.students || c.students_count || 0})</span>
                             </div>
@@ -315,12 +315,12 @@
             loadCourses(currentCategory);
         }
 
-        // ─── Bundles ──────────────────────────────────────────────────
+        // â”€â”€â”€ Bundles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         function loadBundles() {
             const bundles = [
-                { name: 'Complete Florist Bundle', desc: 'Everything you need to become a professional florist — from fundamentals to business.', courses: 8, price: 599, original: 1200, savings: '50%', color: '#2563eb', icon: '🎓' },
-                { name: 'Wedding Specialist Bundle', desc: 'Master wedding floristry with courses on bridal bouquets, venue styling, and pricing.', courses: 5, price: 399, original: 750, savings: '47%', color: '#ec4899', icon: '💒' },
-                { name: 'Beginner Starter Pack', desc: 'Start your floral journey with 4 beginner-friendly courses at a special price.', courses: 4, price: 149, original: 300, savings: '50%', color: '#10b981', icon: '🌱' }
+                { name: 'Complete Florist Bundle', desc: 'Everything you need to become a professional florist â€” from fundamentals to business.', courses: 8, price: 599, original: 1200, savings: '50%', color: '#2563eb', icon: 'ðŸŽ“' },
+                { name: 'Wedding Specialist Bundle', desc: 'Master wedding floristry with courses on bridal bouquets, venue styling, and pricing.', courses: 5, price: 399, original: 750, savings: '47%', color: '#ec4899', icon: 'ðŸ’’' },
+                { name: 'Beginner Starter Pack', desc: 'Start your floral journey with 4 beginner-friendly courses at a special price.', courses: 4, price: 149, original: 300, savings: '50%', color: '#10b981', icon: 'ðŸŒ±' }
             ];
 
             document.getElementById('bundlesGrid').innerHTML = bundles.map(b => `
@@ -338,7 +338,7 @@
             `).join('');
         }
 
-        // ─── Instructors ──────────────────────────────────────────────
+        // â”€â”€â”€ Instructors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         async function loadInstructors() {
             try {
                 const res = await fetch('/api/products/list/florists?limit=4');
@@ -352,7 +352,7 @@
                         <h3>${i.name}</h3>
                         <p>${i.role || i.specialty || 'Floristry Expert'}</p>
                         <div class="cm-instructor-stats">
-                            <span><i class="bi bi-book"></i> ${i.courses || 3} courses</span>
+                            <span>📖 ${i.courses || 3} courses</span>
                             <span><i class="bi bi-people"></i> ${i.students || 500}+ students</span>
                         </div>
                     </div>
@@ -360,7 +360,7 @@
             } catch {}
         }
 
-        // ─── Testimonials ─────────────────────────────────────────────
+        // â”€â”€â”€ Testimonials â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         function loadTestimonials() {
             const testimonials = [
                 { name: 'Akua Mensah', course: 'Floral Design Fundamentals', rating: 5, text: 'This course transformed my passion into a profession. The hands-on projects were incredibly valuable.' },
@@ -371,7 +371,7 @@
 
             document.getElementById('testimonialGrid').innerHTML = testimonials.map(t => `
                 <div class="cm-testimonial">
-                    <div class="cm-testimonial-stars">${'★'.repeat(t.rating)}${'☆'.repeat(5 - t.rating)}</div>
+                    <div class="cm-testimonial-stars">${'â˜…'.repeat(t.rating)}${'â˜†'.repeat(5 - t.rating)}</div>
                     <div class="cm-testimonial-text">"${t.text}"</div>
                     <div class="cm-testimonial-author">
                         <div class="cm-testimonial-avatar">${t.name.charAt(0)}</div>
@@ -386,3 +386,4 @@
     </script>
 </body>
 </html>
+

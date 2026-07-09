@@ -1,0 +1,483 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sustainability Hub â€” Discover sustainable gardening, eco-friendly floristry, responsible farming, and practical ways to protect the planet.">
+    <title>Sustainability | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .sus-hero { background:linear-gradient(135deg,#065f46 0%,#047857 40%,#10b981 100%); padding:5rem 0 3.5rem; color:white; position:relative; overflow:hidden; }
+        .sus-hero::before { content:''; position:absolute; top:-30%; right:-5%; width:500px; height:500px; background:rgba(255,255,255,0.06); border-radius:50%; }
+        .sus-hero h1 { color:white; font-size:clamp(2rem,4vw,2.8rem); margin-bottom:0.5rem; }
+        .sus-hero p { color:rgba(255,255,255,0.85); max-width:600px; margin-bottom:1.5rem; }
+        .sus-hero-btns { display:flex; gap:0.75rem; flex-wrap:wrap; }
+        .sus-hero-btns .btn { padding:0.65rem 1.5rem; border-radius:50px; }
+        .btn-white-green { background:white; color:#065f46; border:none; font-weight:600; }
+
+        /* Stats */
+        .sus-stats { display:grid; grid-template-columns:repeat(5,1fr); gap:1rem; margin:-1.5rem auto 2rem; max-width:1000px; position:relative; z-index:10; }
+        .sus-stat { background:var(--bg-white); border-radius:12px; padding:1rem; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.08); border:1px solid var(--border-color); }
+        .sus-stat-value { font-size:1.3rem; font-weight:700; color:#059669; }
+        .sus-stat-label { font-size:0.72rem; color:var(--text-light); }
+
+        /* Section Headers */
+        .sus-section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+        .sus-section-header h2 { margin:0; }
+
+        /* Categories */
+        .sus-categories { display:grid; grid-template-columns:repeat(5,1fr); gap:0.75rem; }
+        .sus-cat { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1rem; text-align:center; cursor:pointer; transition:all 0.3s; text-decoration:none; color:inherit; }
+        .sus-cat:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.08); border-color:#059669; }
+        .sus-cat-icon { font-size:1.8rem; margin-bottom:0.3rem; }
+        .sus-cat-name { font-size:0.82rem; font-weight:500; }
+
+        /* Practices */
+        .sus-practices { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .sus-practice { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; transition:all 0.3s; cursor:pointer; }
+        .sus-practice:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); border-color:#059669; }
+        .sus-practice-icon { font-size:1.8rem; margin-bottom:0.4rem; }
+        .sus-practice h4 { font-size:0.88rem; margin-bottom:0.2rem; }
+        .sus-practice p { font-size:0.72rem; color:var(--text-light); line-height:1.4; }
+
+        /* Products */
+        .sus-products { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:1rem; }
+        .sus-product { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; transition:all 0.2s; }
+        .sus-product:hover { transform:translateY(-2px); box-shadow:var(--shadow-sm); border-color:#059669; }
+        .sus-product img { width:100%; height:100px; object-fit:cover; }
+        .sus-product .info { padding:0.75rem; }
+        .sus-product .name { font-size:0.82rem; font-weight:500; }
+        .sus-product .price { font-size:0.8rem; color:#059669; font-weight:600; }
+
+        /* Carbon Calculator */
+        .sus-carbon { background:linear-gradient(135deg,#ecfdf5,#d1fae5); border-radius:16px; padding:2rem; display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:center; }
+        .sus-carbon-result { background:white; border-radius:12px; padding:1.25rem; border:1px solid var(--border-color); }
+
+        /* Challenges */
+        .sus-challenges { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+        .sus-challenge { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; transition:all 0.3s; }
+        .sus-challenge:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); }
+        .sus-challenge-badge { display:inline-flex; align-items:center; gap:0.3rem; background:#d1fae5; color:#065f46; padding:0.2rem 0.5rem; border-radius:5px; font-size:0.7rem; font-weight:600; margin-bottom:0.5rem; }
+        .sus-challenge h4 { font-size:0.95rem; margin-bottom:0.3rem; }
+        .sus-challenge p { font-size:0.82rem; color:var(--text-light); margin-bottom:0.5rem; }
+        .sus-challenge-meta { font-size:0.75rem; color:var(--text-muted); }
+
+        /* Pollinator */
+        .sus-pollinator { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .sus-pollinator-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; transition:all 0.3s; }
+        .sus-pollinator-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); }
+        .sus-pollinator-icon { font-size:2rem; margin-bottom:0.5rem; }
+        .sus-pollinator-card h4 { font-size:0.9rem; margin-bottom:0.2rem; }
+        .sus-pollinator-card p { font-size:0.78rem; color:var(--text-light); }
+
+        /* Community Projects */
+        .sus-projects { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+        .sus-project { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; overflow:hidden; transition:all 0.3s; }
+        .sus-project:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); }
+        .sus-project-img { height:140px; overflow:hidden; }
+        .sus-project-img img { width:100%; height:100%; object-fit:cover; }
+        .sus-project-body { padding:1rem; }
+        .sus-project-badge { display:inline-flex; align-items:center; gap:0.3rem; background:#d1fae5; color:#065f46; padding:0.15rem 0.5rem; border-radius:4px; font-size:0.68rem; font-weight:600; margin-bottom:0.4rem; }
+        .sus-project h4 { font-size:0.92rem; margin-bottom:0.2rem; }
+        .sus-project p { font-size:0.78rem; color:var(--text-light); }
+
+        /* Expert */
+        .sus-experts { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; }
+        .sus-expert { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; }
+        .sus-expert-tag { display:inline-flex; align-items:center; gap:0.3rem; background:#ecfdf5; color:#065f46; padding:0.2rem 0.5rem; border-radius:4px; font-size:0.68rem; font-weight:600; margin-bottom:0.5rem; }
+        .sus-expert h4 { font-size:0.95rem; margin-bottom:0.3rem; }
+        .sus-expert p { font-size:0.82rem; color:var(--text-light); line-height:1.5; }
+
+        /* Discover */
+        .sus-discover { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .sus-discover-item { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; padding:1rem; text-align:center; text-decoration:none; color:inherit; transition:all 0.2s; }
+        .sus-discover-item:hover { border-color:#059669; transform:translateY(-2px); }
+        .sus-discover-item i { font-size:1.5rem; color:#059669; margin-bottom:0.3rem; display:block; }
+        .sus-discover-item h4 { font-size:0.85rem; margin-bottom:0.15rem; }
+        .sus-discover-item p { font-size:0.72rem; color:var(--text-light); }
+
+        /* FAQ */
+        .sus-faq { max-width:700px; margin:0 auto; }
+        .sus-faq-item { border:1px solid var(--border-color); border-radius:10px; margin-bottom:0.75rem; overflow:hidden; }
+        .sus-faq-q { padding:1rem 1.25rem; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-weight:500; font-size:0.95rem; background:var(--bg-white); }
+        .sus-faq-q:hover { background:var(--bg-light); }
+        .sus-faq-q i { transition:transform 0.3s; color:var(--text-light); }
+        .sus-faq-item.open .sus-faq-q i { transform:rotate(180deg); }
+        .sus-faq-a { padding:0 1.25rem; max-height:0; overflow:hidden; transition:all 0.3s; font-size:0.9rem; color:var(--text-light); line-height:1.6; }
+        .sus-faq-item.open .sus-faq-a { padding:0 1.25rem 1rem; max-height:300px; }
+
+        @media(max-width:768px) {
+            .sus-categories { grid-template-columns:repeat(3,1fr); }
+            .sus-practices { grid-template-columns:repeat(2,1fr); }
+            .sus-pollinator { grid-template-columns:repeat(2,1fr); }
+            .sus-challenges { grid-template-columns:1fr; }
+            .sus-projects { grid-template-columns:1fr; }
+            .sus-discover { grid-template-columns:repeat(2,1fr); }
+            .sus-carbon { grid-template-columns:1fr; }
+            .sus-stats { grid-template-columns:repeat(3,1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="sus-hero">
+        <div class="container">
+            <nav style="font-size:0.85rem;margin-bottom:1rem;color:rgba(255,255,255,0.6);">
+                <a href="index.html" style="color:rgba(255,255,255,0.6);text-decoration:none;">Home</a>
+                <span style="margin:0 0.5rem;">/</span>
+                <span style="color:white;">Sustainability</span>
+            </nav>
+            <h1>🌍 Growing Flowers, Protecting the Planet</h1>
+            <p>Discover sustainable gardening, eco-friendly floristry, responsible flower farming, and practical ways to reduce environmental impact.</p>
+            <div class="sus-hero-btns">
+                <a href="#practices" class="btn btn-white-green">💡 Learn Sustainable Practices</a>
+                <a href="#categories" class="btn btn-outline-white">🍃 Start Your Eco Journey</a>
+                <a href="#marketplace" class="btn btn-outline-white">🛍️ Eco-Friendly Products</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="container">
+        <div class="sus-stats">
+            <div class="sus-stat"><div class="sus-stat-value">120+</div><div class="sus-stat-label">Sustainable Farms</div></div>
+            <div class="sus-stat"><div class="sus-stat-value">85+</div><div class="sus-stat-label">Eco-Certified</div></div>
+            <div class="sus-stat"><div class="sus-stat-value">200+</div><div class="sus-stat-label">Learning Resources</div></div>
+            <div class="sus-stat"><div class="sus-stat-value">50+</div><div class="sus-stat-label">Community Projects</div></div>
+            <div class="sus-stat"><div class="sus-stat-value">10K+</div><div class="sus-stat-label">Trees Planted</div></div>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <section class="section-padding" id="categories">
+        <div class="container">
+            <div class="sus-section-header">
+                <h2><i class="bi bi-grid" style="color:#059669;"></i> Sustainability Categories</h2>
+            </div>
+            <div class="sus-categories">
+                <a href="#" class="sus-cat"><div class="sus-cat-icon">ðŸŒ±</div><div class="sus-cat-name">Sustainable Floriculture</div></a>
+                <a href="#" class="sus-cat"><div class="sus-cat-icon">ðŸŒ¿</div><div class="sus-cat-name">Organic Farming</div></a>
+                <a href="#" class="sus-cat"><div class="sus-cat-icon">â™»ï¸</div><div class="sus-cat-name">Eco-Friendly Gardening</div></a>
+                <a href="#" class="sus-cat"><div class="sus-cat-icon">ðŸ’§</div><div class="sus-cat-name">Water Conservation</div></a>
+                <a href="#" class="sus-cat"><div class="sus-cat-icon">ðŸŒ</div><div class="sus-cat-name">Soil Health</div></a>
+                <a href="#" class="sus-cat"><div class="sus-cat-icon">ðŸ</div><div class="sus-cat-name">Pollinator Conservation</div></a>
+                <a href="#" class="sus-cat"><div class="sus-cat-icon">ðŸŒ»</div><div class="sus-cat-name">Native Plants</div></a>
+                <a href="#" class="sus-cat"><div class="sus-cat-icon">ðŸŒ¡ï¸</div><div class="sus-cat-name">Climate-Smart Farming</div></a>
+                <a href="#" class="sus-cat"><div class="sus-cat-icon">ðŸ“¦</div><div class="sus-cat-name">Green Packaging</div></a>
+                <a href="#" class="sus-cat"><div class="sus-cat-icon">âš¡</div><div class="sus-cat-name">Renewable Energy</div></a>
+                <a href="#" class="sus-cat"><div class="sus-cat-icon">ðŸ¦‹</div><div class="sus-cat-name">Biodiversity</div></a>
+                <a href="#" class="sus-cat"><div class="sus-cat-icon">ðŸ™ï¸</div><div class="sus-cat-name">Urban Greening</div></a>
+                <a href="#" class="sus-cat"><div class="sus-cat-icon">ðŸ“‰</div><div class="sus-cat-name">Carbon Reduction</div></a>
+                <a href="#" class="sus-cat"><div class="sus-cat-icon">ðŸ—‘ï¸</div><div class="sus-cat-name">Waste Reduction</div></a>
+                <a href="#" class="sus-cat"><div class="sus-cat-icon">ðŸƒ</div><div class="sus-cat-name">Composting</div></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sustainable Practices -->
+    <section class="section-padding bg-light" id="practices">
+        <div class="container">
+            <div class="sus-section-header">
+                <h2><i class="bi bi-lightbulb" style="color:#059669;"></i> Sustainable Practices</h2>
+            </div>
+            <div class="sus-practices">
+                <div class="sus-practice"><div class="sus-practice-icon">â™»ï¸</div><h4>Composting</h4><p>Turn kitchen scraps into nutrient-rich soil</p></div>
+                <div class="sus-practice"><div class="sus-practice-icon">ðŸŒ§ï¸</div><h4>Rainwater Harvesting</h4><p>Collect and reuse rainwater for irrigation</p></div>
+                <div class="sus-practice"><div class="sus-practice-icon">ðŸ§ª</div><h4>Organic Fertilizers</h4><p>Nutrients without synthetic chemicals</p></div>
+                <div class="sus-practice"><div class="sus-practice-icon">ðŸ›</div><h4>Natural Pest Control</h4><p>Biological pest management</p></div>
+                <div class="sus-practice"><div class="sus-practice-icon">ðŸ‚</div><h4>Mulching</h4><p>Conserve moisture and suppress weeds</p></div>
+                <div class="sus-practice"><div class="sus-practice-icon">ðŸ”„</div><h4>Crop Rotation</h4><p>Maintain soil health seasonally</p></div>
+                <div class="sus-practice"><div class="sus-practice-icon">ðŸ¤</div><h4>Companion Planting</h4><p>Plants that help each other grow</p></div>
+                <div class="sus-practice"><div class="sus-practice-icon">ðŸ›¡ï¸</div><h4>Integrated Pest Management</h4><p>Smart, minimal-impact pest control</p></div>
+                <div class="sus-practice"><div class="sus-practice-icon">ðŸ’§</div><h4>Water-Efficient Irrigation</h4><p>Drip systems and smart watering</p></div>
+                <div class="sus-practice"><div class="sus-practice-icon">ðŸŒ±</div><h4>Seed Saving</h4><p>Preserve heirloom varieties</p></div>
+                <div class="sus-practice"><div class="sus-practice-icon">â™»ï¸</div><h4>Recycling Garden Waste</h4><p>Reduce landfill contributions</p></div>
+                <div class="sus-practice"><div class="sus-practice-icon">ðŸš«</div><h4>Plastic Reduction</h4><p>Minimize plastic in gardening</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Carbon Calculator -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="sus-section-header">
+                <h2><i class="bi bi-calculator" style="color:#059669;"></i> Carbon Footprint Calculator</h2>
+            </div>
+            <div class="sus-carbon">
+                <div>
+                    <h3 style="margin-bottom:0.5rem;">Calculate Your Impact</h3>
+                    <p style="color:var(--text-light);margin-bottom:1rem;">Estimate your environmental impact and get personalized suggestions to reduce it.</p>
+                    <div style="margin-bottom:1rem;">
+                        <label style="font-weight:500;font-size:0.85rem;display:block;margin-bottom:0.4rem;">Monthly Water Usage (liters)</label>
+                        <input type="range" id="waterSlider" min="0" max="5000" value="1000" style="width:100%;" oninput="updateCarbon()">
+                        <span id="waterValue" style="font-size:0.85rem;color:var(--text-light);">1,000 L</span>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label style="font-weight:500;font-size:0.85rem;display:block;margin-bottom:0.4rem;">Garden Size (sqm)</label>
+                        <input type="range" id="gardenSlider" min="10" max="500" value="100" style="width:100%;" oninput="updateCarbon()">
+                        <span id="gardenValue" style="font-size:0.85rem;color:var(--text-light);">100 sqm</span>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label style="font-weight:500;font-size:0.85rem;display:block;margin-bottom:0.4rem;">Monthly Fertilizer (kg)</label>
+                        <input type="range" id="fertSlider" min="0" max="50" value="10" style="width:100%;" oninput="updateCarbon()">
+                        <span id="fertValue" style="font-size:0.85rem;color:var(--text-light);">10 kg</span>
+                    </div>
+                    <button class="btn btn-primary" style="background:#059669;" onclick="updateCarbon()">Calculate</button>
+                </div>
+                <div class="sus-carbon-result" id="carbonResult">
+                    <h4 style="margin-bottom:0.75rem;"><i class="bi bi-graph-up" style="color:#059669;"></i> Your Impact Score</h4>
+                    <div style="text-align:center;margin:1rem 0;">
+                        <div style="font-size:2.5rem;font-weight:700;color:#059669;" id="carbonScore">--</div>
+                        <div style="font-size:0.85rem;color:var(--text-light);">Environmental Score</div>
+                    </div>
+                    <div id="carbonTips" style="font-size:0.85rem;color:var(--text-light);line-height:1.6;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pollinator Hub -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="sus-section-header">
+                <h2><i class="bi bi-heart" style="color:#059669;"></i> Pollinator Conservation</h2>
+                <a href="flower-finder.html" style="color:#059669;font-size:0.9rem;">Find Pollinator Plants â†’</a>
+            </div>
+            <div class="sus-pollinator">
+                <div class="sus-pollinator-card"><div class="sus-pollinator-icon">ðŸ</div><h4>Bees</h4><p>Pollinate 75% of flowering plants</p></div>
+                <div class="sus-pollinator-card"><div class="sus-pollinator-icon">ðŸ¦‹</div><h4>Butterflies</h4><p>Essential for biodiversity</p></div>
+                <div class="sus-pollinator-card"><div class="sus-pollinator-icon">ðŸ¦</div><h4>Birds</h4><p>Spread seeds naturally</p></div>
+                <div class="sus-pollinator-card"><div class="sus-pollinator-icon">ðŸž</div><h4>Beneficial Insects</h4><p>Natural pest controllers</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Eco Marketplace -->
+    <section class="section-padding" id="marketplace">
+        <div class="container">
+            <div class="sus-section-header">
+                <h2><i class="bi bi-bag" style="color:#059669;"></i> Eco-Friendly Products</h2>
+                <a href="marketplace.html" style="color:#059669;font-size:0.9rem;">Shop All â†’</a>
+            </div>
+            <div class="sus-products" id="productsGrid"></div>
+        </div>
+    </section>
+
+    <!-- Challenges -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="sus-section-header">
+                <h2><i class="bi bi-trophy" style="color:#f59e0b;"></i> Sustainability Challenges</h2>
+            </div>
+            <div class="sus-challenges">
+                <div class="sus-challenge">
+                    <div class="sus-challenge-badge">📅 Monthly</div>
+                    <h4>Plastic-Free Garden Month</h4>
+                    <p>Eliminate single-use plastics from your garden for 30 days.</p>
+                    <div class="sus-challenge-meta">156 participants Â· Earn a badge</div>
+                </div>
+                <div class="sus-challenge">
+                    <div class="sus-challenge-badge" style="background:#d1fae5;"><i class="bi bi-recycle"></i> Ongoing</div>
+                    <h4>Compost Challenge</h4>
+                    <p>Start composting and track your waste reduction.</p>
+                    <div class="sus-challenge-meta">89 participants Â· Earn a badge</div>
+                </div>
+                <div class="sus-challenge">
+                    <div class="sus-challenge-badge" style="background:#fef3c7;"><i class="bi bi-calendar-event"></i> Seasonal</div>
+                    <h4>Plant a Pollinator Garden</h4>
+                    <p>Create a garden that supports local pollinators.</p>
+                    <div class="sus-challenge-meta">234 participants Â· Earn a badge</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Projects -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="sus-section-header">
+                <h2><i class="bi bi-people" style="color:#059669;"></i> Community Projects</h2>
+                <a href="discussions.html" style="color:#059669;font-size:0.9rem;">View All â†’</a>
+            </div>
+            <div class="sus-projects">
+                <div class="sus-project">
+                    <div class="sus-project-img"><img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=400&auto=format&fit=crop" alt="Community garden" loading="lazy"></div>
+                    <div class="sus-project-body">
+                        <div class="sus-project-badge"><i class="bi bi-check-circle"></i> Active</div>
+                        <h4>Community Garden Initiative</h4>
+                        <p>Transforming unused spaces into productive community gardens.</p>
+                    </div>
+                </div>
+                <div class="sus-project">
+                    <div class="sus-project-img"><img src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=400&auto=format&fit=crop" alt="School garden" loading="lazy"></div>
+                    <div class="sus-project-body">
+                        <div class="sus-project-badge"><i class="bi bi-check-circle"></i> Active</div>
+                        <h4>School Garden Program</h4>
+                        <p>Teaching children sustainable gardening in local schools.</p>
+                    </div>
+                </div>
+                <div class="sus-project">
+                    <div class="sus-project-img"><img src="https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?q=400&auto=format&fit=crop" alt="Reforestation" loading="lazy"></div>
+                    <div class="sus-project-body">
+                        <div class="sus-project-badge" style="background:#fef3c7;color:#92400e;"><i class="bi bi-clock"></i> Upcoming</div>
+                        <h4>Urban Reforestation</h4>
+                        <p>Planting 1,000 trees in urban areas this year.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Expert Insights -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="sus-section-header">
+                <h2><i class="bi bi-person-badge" style="color:#059669;"></i> Expert Insights</h2>
+            </div>
+            <div class="sus-experts">
+                <div class="sus-expert">
+                    <div class="sus-expert-tag"><i class="bi bi-check-circle"></i> Verified Expert</div>
+                    <h4>Climate Resilience in Floriculture</h4>
+                    <p>How flower farms are adapting to changing weather patterns and what growers can do to protect their crops.</p>
+                </div>
+                <div class="sus-expert">
+                    <div class="sus-expert-tag"><i class="bi bi-check-circle"></i> Research</div>
+                    <h4>Organic Growing Methods</h4>
+                    <p>Evidence-based approaches to chemical-free flower production that maintain quality and yield.</p>
+                </div>
+                <div class="sus-expert">
+                    <div class="sus-expert-tag"><i class="bi bi-check-circle"></i> Guide</div>
+                    <h4>Biodiversity Protection</h4>
+                    <p>How flower farms can support local ecosystems and wildlife populations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Discover -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="sus-section-header">
+                <h2><i class="bi bi-compass" style="color:#059669;"></i> Discover More</h2>
+            </div>
+            <div class="sus-discover">
+                <a href="flower-encyclopedia.html" class="sus-discover-item">📖<h4>Encyclopedia</h4><p>500+ species</p></a>
+                <a href="care-guides-hub.html" class="sus-discover-item"><i class="bi bi-heart-pulse"></i><h4>Care Guides</h4><p>Expert instructions</p></a>
+                <a href="flower-farming.html" class="sus-discover-item">🌱<h4>Farming Academy</h4><p>Learn sustainable farming</p></a>
+                <a href="research.html" class="sus-discover-item"><i class="bi bi-journal-text"></i><h4>Research</h4><p>Scientific studies</p></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h2><i class="bi bi-question-circle" style="color:#059669;"></i> Frequently Asked Questions</h2>
+            </div>
+            <div class="sus-faq" id="faqGrid"></div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container">
+            <div style="background:linear-gradient(135deg,#065f46,#059669);border-radius:16px;padding:3rem;text-align:center;color:white;">
+                <h2 style="color:white;margin-bottom:0.5rem;">Grow Beautiful Flowers While Caring for the Environment</h2>
+                <p style="color:rgba(255,255,255,0.85);margin-bottom:1.5rem;max-width:600px;margin-left:auto;margin-right:auto;">Join a community committed to sustainable gardening, responsible flower farming, and eco-friendly floristry.</p>
+                <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                    <a href="#practices" class="btn btn-white-green">Start Your Journey</a>
+                    <a href="#marketplace" class="btn btn-outline-white">Eco-Friendly Products</a>
+                    <a href="discussions.html" class="btn btn-outline-white">Join Challenges</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProducts();
+            loadFAQ();
+            updateCarbon();
+        });
+
+        function loadProducts() {
+            const products = [
+                { name: 'Organic Seeds', image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=200&auto=format&fit=crop', price: 'GHS 25' },
+                { name: 'Compost', image: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=200&auto=format&fit=crop', price: 'GHS 35' },
+                { name: 'Biodegradable Pots', image: 'https://images.unsplash.com/photo-1463320726281-696a485928c7?q=200&auto=format&fit=crop', price: 'GHS 20' },
+                { name: 'Eco Fertilizer', image: 'https://images.unsplash.com/photo-1470509037663-253afd7f0f51?q=200&auto=format&fit=crop', price: 'GHS 40' },
+                { name: 'Drip Irrigation', image: 'https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?q=200&auto=format&fit=crop', price: 'GHS 120' },
+                { name: 'Solar Lights', image: 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=200&auto=format&fit=crop', price: 'GHS 85' },
+                { name: 'Recycled Planters', image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=200&auto=format&fit=crop', price: 'GHS 55' },
+                { name: 'Eco Packaging', image: 'https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?q=200&auto=format&fit=crop', price: 'GHS 15' }
+            ];
+            document.getElementById('productsGrid').innerHTML = products.map(p => `
+                <a href="marketplace.html?q=${encodeURIComponent(p.name)}" class="sus-product">
+                    <img src="${p.image}" alt="${p.name}" loading="lazy">
+                    <div class="info">
+                        <div class="name">${p.name}</div>
+                        <div class="price">${p.price}</div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        function loadFAQ() {
+            const faqs = [
+                { q: 'What is sustainable floriculture?', a: 'Sustainable floriculture refers to growing flowers using environmentally responsible methods that minimize waste, reduce chemical use, conserve water, and support biodiversity.' },
+                { q: 'How can I reduce water usage in my garden?', a: 'Use drip irrigation, mulch to retain moisture, collect rainwater, and choose drought-resistant plants. Water in the early morning to reduce evaporation.' },
+                { q: 'Which flowers attract pollinators?', a: 'Lavender, sunflowers, marigolds, zinnias, cosmos, and native wildflowers are excellent pollinator-friendly choices.' },
+                { q: 'How do I start composting?', a: 'Start with a simple bin, add kitchen scraps and garden waste, maintain moisture, and turn regularly. You\'ll have rich compost in 2-3 months.' },
+                { q: 'What makes a product eco-friendly?', a: 'Look for organic certifications, biodegradable packaging, locally sourced materials, and sustainable production methods.' },
+                { q: 'How can my flower business become more sustainable?', a: 'Use eco-friendly packaging, source locally, minimize waste, implement water recycling, and consider carbon offset programs.' }
+            ];
+            document.getElementById('faqGrid').innerHTML = faqs.map((f, i) => `
+                <div class="sus-faq-item${i === 0 ? ' open' : ''}">
+                    <div class="sus-faq-q" onclick="this.parentElement.classList.toggle('open')">
+                        <span>${f.q}</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="sus-faq-a">${f.a}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateCarbon() {
+            const water = parseInt(document.getElementById('waterSlider')?.value || 1000);
+            const garden = parseInt(document.getElementById('gardenSlider')?.value || 100);
+            const fert = parseInt(document.getElementById('fertSlider')?.value || 10);
+            document.getElementById('waterValue').textContent = water.toLocaleString() + ' L';
+            document.getElementById('gardenValue').textContent = garden.toLocaleString() + ' sqm';
+            document.getElementById('fertValue').textContent = fert.toLocaleString() + ' kg';
+
+            const waterScore = Math.max(0, 100 - (water / 50));
+            const gardenScore = Math.min(100, (garden / 5) + 20);
+            const fertScore = Math.max(0, 100 - (fert * 3));
+            const total = Math.round((waterScore + gardenScore + fertScore) / 3);
+
+            document.getElementById('carbonScore').textContent = total;
+            const tips = [];
+            if (water > 2000) tips.push('Consider drip irrigation to reduce water usage by 30-50%.');
+            if (fert > 20) tips.push('Switch to organic fertilizers to reduce chemical runoff.');
+            if (garden < 50) tips.push('Add more native plants to support local biodiversity.');
+            if (total >= 80) tips.push('Great job! Your garden practices are very sustainable.');
+            else if (total >= 50) tips.push('Good progress! Try composting to improve your score further.');
+            else tips.push('Start with mulching and rainwater collection for quick wins.');
+            document.getElementById('carbonTips').innerHTML = tips.map(t => `<div style="margin-bottom:0.5rem;"><i class="bi bi-check-circle" style="color:#059669;margin-right:0.4rem;"></i>${t}</div>`).join('');
+        }
+    </script>
+</body>
+</html>
+

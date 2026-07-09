@@ -1,0 +1,535 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Floral Photography Hub â€” Capture the beauty of every bloom. Learn, showcase, hire photographers, and join the creative community.">
+    <title>Floral Photography | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .photo-hero { background:linear-gradient(135deg,#1e1b4b 0%,#4338ca 50%,#6366f1 100%); padding:5rem 0 3.5rem; color:white; position:relative; overflow:hidden; }
+        .photo-hero::before { content:''; position:absolute; top:-30%; right:-5%; width:500px; height:500px; background:rgba(255,255,255,0.06); border-radius:50%; }
+        .photo-hero h1 { color:white; font-size:clamp(2rem,4vw,2.8rem); margin-bottom:0.5rem; }
+        .photo-hero p { color:rgba(255,255,255,0.85); max-width:600px; margin-bottom:1.5rem; }
+        .photo-hero-btns { display:flex; gap:0.75rem; flex-wrap:wrap; }
+        .photo-hero-btns .btn { padding:0.65rem 1.5rem; border-radius:50px; }
+        .btn-white-purple { background:white; color:#1e1b4b; border:none; font-weight:600; }
+
+        /* Stats */
+        .photo-stats { display:grid; grid-template-columns:repeat(5,1fr); gap:1rem; margin:-1.5rem auto 2rem; max-width:1000px; position:relative; z-index:10; }
+        .photo-stat { background:var(--bg-white); border-radius:12px; padding:1rem; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.08); border:1px solid var(--border-color); }
+        .photo-stat-value { font-size:1.3rem; font-weight:700; color:#4338ca; }
+        .photo-stat-label { font-size:0.72rem; color:var(--text-light); }
+
+        /* Section Headers */
+        .photo-section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+        .photo-section-header h2 { margin:0; }
+
+        /* Categories */
+        .photo-categories { display:grid; grid-template-columns:repeat(5,1fr); gap:0.75rem; }
+        .photo-cat { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1rem; text-align:center; cursor:pointer; transition:all 0.3s; text-decoration:none; color:inherit; }
+        .photo-cat:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.08); border-color:#4338ca; }
+        .photo-cat-icon { font-size:1.8rem; margin-bottom:0.3rem; }
+        .photo-cat-name { font-size:0.82rem; font-weight:500; }
+
+        /* Galleries */
+        .photo-galleries { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.25rem; }
+        .photo-gallery { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; overflow:hidden; transition:all 0.3s; text-decoration:none; color:inherit; }
+        .photo-gallery:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); }
+        .photo-gallery-img { height:180px; overflow:hidden; position:relative; }
+        .photo-gallery-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .photo-gallery:hover .photo-gallery-img img { transform:scale(1.05); }
+        .photo-gallery-badge { position:absolute; top:0.75rem; left:0.75rem; background:rgba(0,0,0,0.6); color:white; padding:0.2rem 0.5rem; border-radius:5px; font-size:0.68rem; font-weight:600; }
+        .photo-gallery-body { padding:1.25rem; }
+        .photo-gallery-title { font-size:1rem; font-weight:600; margin-bottom:0.3rem; }
+        .photo-gallery-meta { display:flex; gap:0.75rem; font-size:0.78rem; color:var(--text-light); }
+        .photo-gallery-meta span { display:flex; align-items:center; gap:0.2rem; }
+
+        /* Masonry Gallery */
+        .photo-masonry { columns:4; column-gap:0.75rem; }
+        .photo-masonry-item { break-inside:avoid; margin-bottom:0.75rem; border-radius:12px; overflow:hidden; position:relative; cursor:pointer; }
+        .photo-masonry-item img { width:100%; display:block; transition:transform 0.5s; }
+        .photo-masonry-item:hover img { transform:scale(1.05); }
+        .photo-masonry-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; gap:0.5rem; opacity:0; transition:opacity 0.3s; }
+        .photo-masonry-item:hover .photo-masonry-overlay { opacity:1; }
+        .photo-masonry-btn { width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.9); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.9rem; color:var(--text-main); }
+
+        /* Photographers */
+        .photo-photographers { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:1.25rem; }
+        .photo-photographer { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; padding:1.25rem; transition:all 0.3s; cursor:pointer; }
+        .photo-photographer:hover { transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,0.08); }
+        .photo-photographer-header { display:flex; gap:0.75rem; align-items:center; margin-bottom:0.75rem; }
+        .photo-photographer-avatar { width:50px; height:50px; border-radius:50%; overflow:hidden; flex-shrink:0; }
+        .photo-photographer-avatar img { width:100%; height:100%; object-fit:cover; }
+        .photo-photographer-name { font-weight:600; font-size:0.95rem; }
+        .photo-photographer-rating { font-size:0.78rem; color:#f59e0b; }
+        .photo-photographer-meta { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.75rem; }
+        .photo-photographer-tag { font-size:0.7rem; padding:0.15rem 0.5rem; background:var(--bg-light); border-radius:4px; color:var(--text-light); }
+        .photo-photographer-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid var(--border-light); }
+        .photo-photographer-price { font-weight:600; color:#4338ca; font-size:0.9rem; }
+
+        /* Services */
+        .photo-services { display:grid; grid-template-columns:repeat(5,1fr); gap:1rem; }
+        .photo-service { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; transition:all 0.3s; cursor:pointer; }
+        .photo-service:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); border-color:#4338ca; }
+        .photo-service-icon { font-size:1.8rem; margin-bottom:0.4rem; }
+        .photo-service h4 { font-size:0.85rem; margin-bottom:0.2rem; }
+        .photo-service p { font-size:0.72rem; color:var(--text-light); }
+
+        /* Equipment */
+        .photo-equipment { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
+        .photo-equip-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; }
+        .photo-equip-card h3 { font-size:1rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
+        .photo-equip-list { list-style:none; padding:0; margin:0; }
+        .photo-equip-list li { padding:0.4rem 0; font-size:0.85rem; color:var(--text-light); display:flex; align-items:center; gap:0.4rem; }
+        .photo-equip-list li i { color:#4338ca; font-size:0.8rem; }
+
+        /* Challenges */
+        .photo-challenges { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
+        .photo-challenge { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; transition:all 0.3s; }
+        .photo-challenge:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); }
+        .photo-challenge-badge { display:inline-flex; align-items:center; gap:0.3rem; background:#fef3c7; color:#92400e; padding:0.2rem 0.5rem; border-radius:5px; font-size:0.7rem; font-weight:600; margin-bottom:0.5rem; }
+        .photo-challenge h4 { font-size:0.95rem; margin-bottom:0.3rem; }
+        .photo-challenge p { font-size:0.82rem; color:var(--text-light); margin-bottom:0.5rem; }
+        .photo-challenge-meta { font-size:0.75rem; color:var(--text-muted); }
+
+        /* Products */
+        .photo-products { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:1rem; }
+        .photo-product { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; transition:all 0.2s; }
+        .photo-product:hover { transform:translateY(-2px); box-shadow:var(--shadow-sm); border-color:#4338ca; }
+        .photo-product img { width:100%; height:100px; object-fit:cover; }
+        .photo-product .info { padding:0.75rem; }
+        .photo-product .name { font-size:0.82rem; font-weight:500; }
+        .photo-product .price { font-size:0.8rem; color:#4338ca; font-weight:600; }
+
+        /* Discover */
+        .photo-discover { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .photo-discover-item { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; padding:1rem; text-align:center; text-decoration:none; color:inherit; transition:all 0.2s; }
+        .photo-discover-item:hover { border-color:#4338ca; transform:translateY(-2px); }
+        .photo-discover-item i { font-size:1.5rem; color:#4338ca; margin-bottom:0.3rem; display:block; }
+        .photo-discover-item h4 { font-size:0.85rem; margin-bottom:0.15rem; }
+        .photo-discover-item p { font-size:0.72rem; color:var(--text-light); }
+
+        @media(max-width:768px) {
+            .photo-categories { grid-template-columns:repeat(3,1fr); }
+            .photo-masonry { columns:2; }
+            .photo-services { grid-template-columns:repeat(2,1fr); }
+            .photo-equipment { grid-template-columns:1fr; }
+            .photo-challenges { grid-template-columns:1fr; }
+            .photo-discover { grid-template-columns:repeat(2,1fr); }
+            .photo-stats { grid-template-columns:repeat(3,1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="photo-hero">
+        <div class="container">
+            <nav style="font-size:0.85rem;margin-bottom:1rem;color:rgba(255,255,255,0.6);">
+                <a href="index.html" style="color:rgba(255,255,255,0.6);text-decoration:none;">Home</a>
+                <span style="margin:0 0.5rem;">/</span>
+                <span style="color:white;">Photography</span>
+            </nav>
+            <h1>🎬 Floral Photography</h1>
+            <p>Capture the beauty of every bloom. Master floral photography, discover inspiring galleries, hire professionals, and showcase your work.</p>
+            <div class="photo-hero-btns">
+                <a href="#galleries" class="btn btn-white-purple">🖼️ Explore Galleries</a>
+                <a href="#learning" class="btn btn-outline-white">📖 Learn Photography</a>
+                <a href="#photographers" class="btn btn-outline-white"><i class="bi bi-person"></i> Hire a Photographer</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="container">
+        <div class="photo-stats">
+            <div class="photo-stat"><div class="photo-stat-value" id="statPhotographers">0</div><div class="photo-stat-label">Photographers</div></div>
+            <div class="photo-stat"><div class="photo-stat-value" id="statPhotos">0</div><div class="photo-stat-label">Photos</div></div>
+            <div class="photo-stat"><div class="photo-stat-value" id="statCourses">0</div><div class="photo-stat-label">Courses</div></div>
+            <div class="photo-stat"><div class="photo-stat-value" id="statGalleries">0</div><div class="photo-stat-label">Galleries</div></div>
+            <div class="photo-stat"><div class="photo-stat-value" id="statMembers">0</div><div class="photo-stat-label">Members</div></div>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <section class="section-padding" id="categories">
+        <div class="container">
+            <div class="photo-section-header">
+                <h2><i class="bi bi-grid" style="color:#4338ca;"></i> Photography Categories</h2>
+            </div>
+            <div class="photo-categories">
+                <a href="showcase.html?category=flower" class="photo-cat"><div class="photo-cat-icon">ðŸŒ¸</div><div class="photo-cat-name">Flower</div></a>
+                <a href="showcase.html?category=macro" class="photo-cat"><div class="photo-cat-icon">ðŸ”¬</div><div class="photo-cat-name">Macro</div></a>
+                <a href="showcase.html?category=bouquet" class="photo-cat"><div class="photo-cat-icon">ðŸ’</div><div class="photo-cat-name">Bouquet</div></a>
+                <a href="showcase.html?category=wedding" class="photo-cat"><div class="photo-cat-icon">ðŸ’’</div><div class="photo-cat-name">Wedding</div></a>
+                <a href="showcase.html?category=event" class="photo-cat"><div class="photo-cat-icon">ðŸŽ‰</div><div class="photo-cat-name">Events</div></a>
+                <a href="showcase.html?category=product" class="photo-cat"><div class="photo-cat-icon">ðŸ“¦</div><div class="photo-cat-name">Product</div></a>
+                <a href="showcase.html?category=garden" class="photo-cat"><div class="photo-cat-icon">ðŸ¡</div><div class="photo-cat-name">Garden</div></a>
+                <a href="showcase.html?category=nature" class="photo-cat"><div class="photo-cat-icon">ðŸŒ¿</div><div class="photo-cat-name">Nature</div></a>
+                <a href="showcase.html?category=botanical" class="photo-cat"><div class="photo-cat-icon">ðŸŒº</div><div class="photo-cat-name">Botanical</div></a>
+                <a href="showcase.html?category=commercial" class="photo-cat"><div class="photo-cat-icon">ðŸ’¼</div><div class="photo-cat-name">Commercial</div></a>
+                <a href="showcase.html?category=drone" class="photo-cat"><div class="photo-cat-icon">ðŸš</div><div class="photo-cat-name">Drone</div></a>
+                <a href="showcase.html?category=mobile" class="photo-cat"><div class="photo-cat-icon">ðŸ“±</div><div class="photo-cat-name">Mobile</div></a>
+                <a href="showcase.html?category=studio" class="photo-cat"><div class="photo-cat-icon">ðŸ“¸</div><div class="photo-cat-name">Studio</div></a>
+                <a href="showcase.html?category=arrangement" class="photo-cat"><div class="photo-cat-icon">ðŸŽ¨</div><div class="photo-cat-name">Arrangements</div></a>
+                <a href="showcase.html?category=farm" class="photo-cat"><div class="photo-cat-icon">ðŸŒ±</div><div class="photo-cat-name">Farm</div></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Galleries -->
+    <section class="section-padding bg-light" id="galleries">
+        <div class="container">
+            <div class="photo-section-header">
+                <h2><i class="bi bi-star" style="color:#f59e0b;"></i> Featured Galleries</h2>
+                <a href="showcase.html" style="color:#4338ca;font-size:0.9rem;">View All â†’</a>
+            </div>
+            <div class="photo-galleries" id="galleryGrid"></div>
+        </div>
+    </section>
+
+    <!-- Inspiration Gallery -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="photo-section-header">
+                <h2><i class="bi bi-images" style="color:#4338ca;"></i> Inspiration</h2>
+                <a href="showcase.html" style="color:#4338ca;font-size:0.9rem;">View All â†’</a>
+            </div>
+            <div class="photo-masonry" id="masonryGrid"></div>
+        </div>
+    </section>
+
+    <!-- Photographers -->
+    <section class="section-padding bg-light" id="photographers">
+        <div class="container">
+            <div class="photo-section-header">
+                <h2><i class="bi bi-person-badge" style="color:#4338ca;"></i> Photographers</h2>
+                <a href="florists.html" style="color:#4338ca;font-size:0.9rem;">View All â†’</a>
+            </div>
+            <div class="photo-photographers" id="photographerGrid"></div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="photo-section-header">
+                <h2><i class="bi bi-camera" style="color:#4338ca;"></i> Photography Services</h2>
+            </div>
+            <div class="photo-services">
+                <div class="photo-service"><div class="photo-service-icon">ðŸ’’</div><h4>Wedding</h4><p>Floral wedding photography</p></div>
+                <div class="photo-service"><div class="photo-service-icon">ðŸ“¦</div><h4>Product</h4><p>Floral product shots</p></div>
+                <div class="photo-service"><div class="photo-service-icon">ðŸŽ‰</div><h4>Event</h4><p>Event coverage</p></div>
+                <div class="photo-service"><div class="photo-service-icon">ðŸ¡</div><h4>Garden</h4><p>Garden landscapes</p></div>
+                <div class="photo-service"><div class="photo-service-icon">ðŸ’¼</div><h4>Commercial</h4><p>Brand photography</p></div>
+                <div class="photo-service"><div class="photo-service-icon">ðŸŒ±</div><h4>Farm</h4><p>Farm documentation</p></div>
+                <div class="photo-service"><div class="photo-service-icon">ðŸ“¸</div><h4>Studio</h4><p>Controlled lighting</p></div>
+                <div class="photo-service"><div class="photo-service-icon">ðŸ“±</div><h4>Social Media</h4><p>Content creation</p></div>
+                <div class="photo-service"><div class="photo-service-icon">ðŸŽ¨</div><h4>Editing</h4><p>Post-processing</p></div>
+                <div class="photo-service"><div class="photo-service-icon">ðŸŽ“</div><h4>Training</h4><p>Photography lessons</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Equipment Guide -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="photo-section-header">
+                <h2><i class="bi bi-tools" style="color:#4338ca;"></i> Equipment Guide</h2>
+            </div>
+            <div class="photo-equipment">
+                <div class="photo-equip-card">
+                    <h3>ðŸ“· Cameras</h3>
+                    <ul class="photo-equip-list">
+                        <li><i class="bi bi-check2"></i> DSLR â€” Canon, Nikon</li>
+                        <li><i class="bi bi-check2"></i> Mirrorless â€” Sony, Fujifilm</li>
+                        <li><i class="bi bi-check2"></i> Compact â€” Ricoh, Sony RX100</li>
+                        <li><i class="bi bi-check2"></i> Smartphone â€” iPhone, Samsung</li>
+                    </ul>
+                </div>
+                <div class="photo-equip-card">
+                    <h3>ðŸ”­ Lenses</h3>
+                    <ul class="photo-equip-list">
+                        <li><i class="bi bi-check2"></i> Macro â€” 90-105mm</li>
+                        <li><i class="bi bi-check2"></i> Portrait â€” 50-85mm f/1.4</li>
+                        <li><i class="bi bi-check2"></i> Wide-angle â€” 16-35mm</li>
+                        <li><i class="bi bi-check2"></i> Telephoto â€” 70-200mm</li>
+                    </ul>
+                </div>
+                <div class="photo-equip-card">
+                    <h3>ðŸŽ’ Accessories</h3>
+                    <ul class="photo-equip-list">
+                        <li><i class="bi bi-check2"></i> Tripods & Monopods</li>
+                        <li><i class="bi bi-check2"></i> Reflectors & Diffusers</li>
+                        <li><i class="bi bi-check2"></i> Flash & Speedlights</li>
+                        <li><i class="bi bi-check2"></i> Filters & Backgrounds</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Challenges -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="photo-section-header">
+                <h2><i class="bi bi-trophy" style="color:#f59e0b;"></i> Photography Challenges</h2>
+            </div>
+            <div class="photo-challenges">
+                <div class="photo-challenge">
+                    <div class="photo-challenge-badge"><i class="bi bi-clock"></i> Active</div>
+                    <h4>Flower of the Month</h4>
+                    <p>Photograph this month's featured flower and win prizes.</p>
+                    <div class="photo-challenge-meta">42 entries Â· 5 days left</div>
+                </div>
+                <div class="photo-challenge">
+                    <div class="photo-challenge-badge" style="background:#d1fae5;color:#065f46;">📅 Seasonal</div>
+                    <h4>Summer Garden Challenge</h4>
+                    <p>Show off your summer garden in all its glory.</p>
+                    <div class="photo-challenge-meta">78 entries Â· 30 days left</div>
+                </div>
+                <div class="photo-challenge">
+                    <div class="photo-challenge-badge" style="background:#ede9fe;color:#5b21b6;">📷 Contest</div>
+                    <h4>Macro Photography Contest</h4>
+                    <p>Capture the tiny details of flowers up close.</p>
+                    <div class="photo-challenge-meta">35 entries Â· 14 days left</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Learning -->
+    <section class="section-padding bg-light" id="learning">
+        <div class="container">
+            <div class="photo-section-header">
+                <h2><i class="bi bi-book" style="color:#4338ca;"></i> Learn Photography</h2>
+                <a href="learning.html?category=photography" style="color:#4338ca;font-size:0.9rem;">View All â†’</a>
+            </div>
+            <div id="courseGrid" class="photo-galleries"></div>
+        </div>
+    </section>
+
+    <!-- Marketplace -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="photo-section-header">
+                <h2><i class="bi bi-bag" style="color:#4338ca;"></i> Photography Supplies</h2>
+                <a href="marketplace.html" style="color:#4338ca;font-size:0.9rem;">Shop All â†’</a>
+            </div>
+            <div class="photo-products" id="productsGrid"></div>
+        </div>
+    </section>
+
+    <!-- Discover -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="photo-section-header">
+                <h2><i class="bi bi-compass" style="color:#4338ca;"></i> Discover More</h2>
+            </div>
+            <div class="photo-discover">
+                <a href="flower-encyclopedia.html" class="photo-discover-item">📖<h4>Encyclopedia</h4><p>500+ species</p></a>
+                <a href="ai-scanner.html" class="photo-discover-item">📷<h4>AI Scanner</h4><p>Identify flowers</p></a>
+                <a href="flower-meanings.html" class="photo-discover-item"><i class="bi bi-heart"></i><h4>Flower Meanings</h4><p>Symbolism</p></a>
+                <a href="care-guides-hub.html" class="photo-discover-item"><i class="bi bi-heart-pulse"></i><h4>Care Guides</h4><p>Plant care</p></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container">
+            <div style="background:linear-gradient(135deg,#1e1b4b,#4338ca);border-radius:16px;padding:3rem;text-align:center;color:white;">
+                <h2 style="color:white;margin-bottom:0.5rem;">Turn Every Flower into a Masterpiece</h2>
+                <p style="color:rgba(255,255,255,0.85);margin-bottom:1.5rem;max-width:600px;margin-left:auto;margin-right:auto;">Whether you're capturing a single bloom or building a professional portfolio, Flower Ecosystem provides the tools, education, and community to elevate your floral photography.</p>
+                <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                    <a href="#galleries" class="btn btn-white-purple">Explore Galleries</a>
+                    <a href="#photographers" class="btn btn-outline-white">Book a Photographer</a>
+                    <a href="#learning" class="btn btn-outline-white">Start Learning</a>
+                    <a href="showcase.html" class="btn btn-outline-white">Upload Portfolio</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            loadGalleries();
+            loadMasonry();
+            loadPhotographers();
+            loadCourses();
+            loadProducts();
+        });
+
+        function loadStats() {
+            document.getElementById('statPhotographers').textContent = '120+';
+            document.getElementById('statPhotos').textContent = '15K+';
+            document.getElementById('statCourses').textContent = '24';
+            document.getElementById('statGalleries').textContent = '85+';
+            document.getElementById('statMembers').textContent = '3.2K';
+        }
+
+        async function loadGalleries() {
+            try {
+                const res = await fetch('/api/showcase?limit=6');
+                const data = await res.json();
+                const items = Array.isArray(data) ? data : (data.projects || data.items || []);
+                const defaultImages = [
+                    { img: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop', title: 'Rose Collection', photographer: 'Sarah M.', photos: 24, likes: 156 },
+                    { img: 'https://images.unsplash.com/photo-1455659817273-f96807779a8a?q=400&auto=format&fit=crop', title: 'Garden Paths', photographer: 'Kofi A.', photos: 18, likes: 89 },
+                    { img: 'https://images.unsplash.com/photo-1470509037663-253afd7f0f51?q=400&auto=format&fit=crop', title: 'Wild Blooms', photographer: 'Ama D.', photos: 32, likes: 201 },
+                    { img: 'https://images.unsplash.com/photo-1463320726281-696a485928c7?q=400&auto=format&fit=crop', title: 'Wedding Florals', photographer: 'Yaw B.', photos: 45, likes: 312 },
+                    { img: 'https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?q=400&auto=format&fit=crop', title: 'Macro Details', photographer: 'Efua O.', photos: 28, likes: 178 },
+                    { img: 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=400&auto=format&fit=crop', title: 'Sunset Garden', photographer: 'Nana M.', photos: 20, likes: 145 }
+                ];
+                const grid = document.getElementById('galleryGrid');
+                grid.innerHTML = defaultImages.map(g => `
+                    <div class="photo-gallery">
+                        <div class="photo-gallery-img">
+                            <img src="${g.img}" alt="${g.title}" loading="lazy">
+                            <div class="photo-gallery-badge">🖼️ ${g.photos} photos</div>
+                        </div>
+                        <div class="photo-gallery-body">
+                            <div class="photo-gallery-title">${g.title}</div>
+                            <div class="photo-gallery-meta">
+                                <span><i class="bi bi-person"></i> ${g.photographer}</span>
+                                <span><i class="bi bi-heart"></i> ${g.likes}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch {}
+        }
+
+        function loadMasonry() {
+            const images = [
+                'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=300&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1455659817273-f96807779a8a?q=300&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1470509037663-253afd7f0f51?q=300&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1463320726281-696a485928c7?q=300&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?q=300&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=300&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=300&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=300&auto=format&fit=crop'
+            ];
+            document.getElementById('masonryGrid').innerHTML = images.map(img => `
+                <div class="photo-masonry-item">
+                    <img src="${img}" alt="Floral photography" loading="lazy">
+                    <div class="photo-masonry-overlay">
+                        <button class="photo-masonry-btn" title="Like"><i class="bi bi-heart"></i></button>
+                        <button class="photo-masonry-btn" title="Save"><i class="bi bi-bookmark"></i></button>
+                        <button class="photo-masonry-btn" title="Share"><i class="bi bi-share"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function loadPhotographers() {
+            try {
+                const res = await fetch('/api/products/list/florists?limit=6');
+                const data = await res.json();
+                const photographers = Array.isArray(data) ? data : (data.florists || []);
+                document.getElementById('photographerGrid').innerHTML = photographers.length ? photographers.map(p => `
+                    <div class="photo-photographer" onclick="window.location.href='florist-profile.html?id=${p.id}'">
+                        <div class="photo-photographer-header">
+                            <div class="photo-photographer-avatar">
+                                <img src="${p.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 50 50%22><rect fill=%22%23ede9fe%22 width=%2250%22 height=%2250%22/><text x=%2225%22 y=%2232%22 text-anchor=%22middle%22 fill=%22%234338ca%22 font-size=%2218%22>${(p.name || 'P').charAt(0)}</text></svg>'}" alt="${p.name}">
+                            </div>
+                            <div>
+                                <div class="photo-photographer-name">${p.name}</div>
+                                <div class="photo-photographer-rating">${'â˜…'.repeat(Math.round(p.rating || 4))} ${(p.rating || 4).toFixed(1)}</div>
+                            </div>
+                        </div>
+                        <div class="photo-photographer-meta">
+                            <span class="photo-photographer-tag">${p.role || 'Photographer'}</span>
+                            <span class="photo-photographer-tag">${p.location || 'Local'}</span>
+                        </div>
+                        <div class="photo-photographer-footer">
+                            <span class="photo-photographer-price">From GHS 200</span>
+                            <span style="font-size:0.82rem;color:#4338ca;font-weight:500;">Book â†’</span>
+                        </div>
+                    </div>
+                `).join('') : '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-light);">Photographers coming soon!</div>';
+            } catch {}
+        }
+
+        async function loadCourses() {
+            try {
+                const res = await fetch('/api/courses?category=photography&limit=4');
+                const data = await res.json();
+                const courses = Array.isArray(data) ? data : (data.courses || []);
+                const grid = document.getElementById('courseGrid');
+                if (courses.length) {
+                    grid.innerHTML = courses.map(c => `
+                        <a href="course-detail.html?id=${c.id}" class="photo-gallery">
+                            <div class="photo-gallery-img">
+                                <img src="${c.thumbnail || c.thumbnail_url || 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?q=400&auto=format&fit=crop'}" alt="${c.title}" loading="lazy">
+                            </div>
+                            <div class="photo-gallery-body">
+                                <div class="photo-gallery-title">${c.title}</div>
+                                <div class="photo-gallery-meta">
+                                    <span><i class="bi bi-clock"></i> ${c.duration || ''}</span>
+                                    <span><i class="bi bi-people"></i> ${c.students || 0}</span>
+                                </div>
+                            </div>
+                        </a>
+                    `).join('');
+                } else {
+                    const fallback = [
+                        { title: 'Floral Photography Fundamentals', duration: '6h', students: 320 },
+                        { title: 'Macro Photography Mastery', duration: '4h', students: 180 },
+                        { title: 'Natural Light Techniques', duration: '3h', students: 250 },
+                        { title: 'Photo Editing with Lightroom', duration: '5h', students: 410 }
+                    ];
+                    grid.innerHTML = fallback.map(c => `
+                        <div class="photo-gallery">
+                            <div class="photo-gallery-img">
+                                <img src="https://images.unsplash.com/photo-1452587925148-ce544e77e70d?q=400&auto=format&fit=crop" alt="${c.title}" loading="lazy">
+                            </div>
+                            <div class="photo-gallery-body">
+                                <div class="photo-gallery-title">${c.title}</div>
+                                <div class="photo-gallery-meta">
+                                    <span><i class="bi bi-clock"></i> ${c.duration}</span>
+                                    <span><i class="bi bi-people"></i> ${c.students}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch {}
+        }
+
+        function loadProducts() {
+            const products = [
+                { name: 'Fresh Flowers', image: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=200&auto=format&fit=crop', price: 'From GHS 25' },
+                { name: 'Bouquets', image: 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?q=200&auto=format&fit=crop', price: 'From GHS 80' },
+                { name: 'Props & Decor', image: 'https://images.unsplash.com/photo-1470509037663-253afd7f0f51?q=200&auto=format&fit=crop', price: 'From GHS 40' },
+                { name: 'Backgrounds', image: 'https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?q=200&auto=format&fit=crop', price: 'From GHS 60' },
+                { name: 'Camera Gear', image: 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?q=200&auto=format&fit=crop', price: 'From GHS 150' },
+                { name: 'Studio Lights', image: 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=200&auto=format&fit=crop', price: 'From GHS 200' }
+            ];
+            document.getElementById('productsGrid').innerHTML = products.map(p => `
+                <a href="marketplace.html?q=${encodeURIComponent(p.name)}" class="photo-product">
+                    <img src="${p.image}" alt="${p.name}" loading="lazy">
+                    <div class="info">
+                        <div class="name">${p.name}</div>
+                        <div class="price">${p.price}</div>
+                    </div>
+                </a>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,509 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plant Care Academy â€” Master the science and art of caring for flowers and plants through practical lessons and expert guidance.">
+    <title>Plant Care Academy | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .pc-hero { background:linear-gradient(135deg,#065f46 0%,#047857 50%,#10b981 100%); padding:5rem 0 3.5rem; color:white; position:relative; overflow:hidden; }
+        .pc-hero::before { content:''; position:absolute; top:-30%; right:-5%; width:500px; height:500px; background:rgba(255,255,255,0.06); border-radius:50%; }
+        .pc-hero h1 { color:white; font-size:clamp(2rem,4vw,2.8rem); margin-bottom:0.5rem; }
+        .pc-hero p { color:rgba(255,255,255,0.85); max-width:600px; margin-bottom:1.5rem; }
+        .pc-hero-btns { display:flex; gap:0.75rem; flex-wrap:wrap; }
+        .pc-hero-btns .btn { padding:0.65rem 1.5rem; border-radius:50px; }
+        .btn-white-green { background:white; color:#065f46; border:none; font-weight:600; }
+
+        /* Stats */
+        .pc-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin:-1.5rem auto 2rem; max-width:900px; position:relative; z-index:10; }
+        .pc-stat { background:var(--bg-white); border-radius:12px; padding:1.25rem; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.08); border:1px solid var(--border-color); }
+        .pc-stat-value { font-size:1.5rem; font-weight:700; color:#059669; }
+        .pc-stat-label { font-size:0.8rem; color:var(--text-light); }
+
+        /* Search */
+        .pc-search { background:var(--bg-white); border-radius:12px; padding:1rem; box-shadow:0 4px 15px rgba(0,0,0,0.06); margin-bottom:1.5rem; display:flex; gap:0.5rem; }
+        .pc-search input { flex:1; border:1px solid var(--border-color); border-radius:8px; padding:0.7rem 1rem; font-size:0.95rem; outline:none; }
+        .pc-search input:focus { border-color:#059669; }
+
+        /* Section Headers */
+        .pc-section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+        .pc-section-header h2 { margin:0; }
+
+        /* Learning Path */
+        .pc-path { display:flex; align-items:center; gap:0; margin:2rem 0; overflow-x:auto; padding:1rem 0; }
+        .pc-path-step { flex:1; min-width:120px; text-align:center; padding:0.85rem; background:var(--bg-white); border:2px solid var(--border-color); border-radius:12px; font-size:0.82rem; font-weight:500; transition:all 0.3s; }
+        .pc-path-step:hover { border-color:#059669; transform:translateY(-2px); }
+        .pc-path-step .icon { font-size:1.3rem; margin-bottom:0.2rem; }
+        .pc-path-arrow { font-size:1.3rem; color:var(--text-muted); flex-shrink:0; padding:0 0.2rem; }
+
+        /* Categories */
+        .pc-categories { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+        .pc-cat { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; transition:all 0.3s; cursor:pointer; }
+        .pc-cat:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.08); border-color:#059669; }
+        .pc-cat-icon { font-size:1.8rem; margin-bottom:0.5rem; }
+        .pc-cat h4 { font-size:0.95rem; margin-bottom:0.2rem; }
+        .pc-cat p { font-size:0.78rem; color:var(--text-light); line-height:1.4; }
+
+        /* Courses */
+        .pc-courses { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.25rem; }
+        .pc-course { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; overflow:hidden; transition:all 0.3s; text-decoration:none; color:inherit; display:flex; flex-direction:column; }
+        .pc-course:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); }
+        .pc-course-img { height:160px; overflow:hidden; position:relative; }
+        .pc-course-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .pc-course:hover .pc-course-img img { transform:scale(1.05); }
+        .pc-course-badge { position:absolute; top:0.75rem; left:0.75rem; padding:0.2rem 0.5rem; border-radius:5px; font-size:0.68rem; font-weight:600; }
+        .pc-course-body { padding:1.25rem; flex:1; display:flex; flex-direction:column; }
+        .pc-course-category { font-size:0.68rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:#059669; margin-bottom:0.3rem; }
+        .pc-course-title { font-size:1rem; font-weight:600; margin-bottom:0.4rem; line-height:1.3; }
+        .pc-course-instructor { display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; color:var(--text-light); margin-bottom:0.4rem; }
+        .pc-course-rating { font-size:0.82rem; color:#f59e0b; }
+        .pc-course-meta { display:flex; gap:0.6rem; font-size:0.75rem; color:var(--text-light); margin-bottom:0.5rem; }
+        .pc-course-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid var(--border-light); margin-top:auto; }
+        .pc-course-price { font-weight:700; font-size:1.05rem; color:#059669; }
+        .pc-course-price.free { color:var(--accent-green); }
+        .pc-course-enroll { padding:0.45rem 1rem; background:#059669; color:white; border:none; border-radius:8px; font-size:0.82rem; font-weight:600; }
+
+        /* Labs */
+        .pc-labs { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .pc-lab { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; transition:all 0.3s; }
+        .pc-lab:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); border-color:#059669; }
+        .pc-lab-icon { font-size:2rem; margin-bottom:0.5rem; }
+        .pc-lab h4 { font-size:0.9rem; margin-bottom:0.3rem; }
+        .pc-lab p { font-size:0.78rem; color:var(--text-light); line-height:1.4; }
+
+        /* Workshops */
+        .pc-workshops { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.25rem; }
+        .pc-workshop { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; overflow:hidden; transition:all 0.3s; text-decoration:none; color:inherit; }
+        .pc-workshop:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(0,0,0,0.08); }
+        .pc-workshop-img { height:140px; overflow:hidden; }
+        .pc-workshop-img img { width:100%; height:100%; object-fit:cover; }
+        .pc-workshop-body { padding:1.25rem; }
+        .pc-workshop-date { display:inline-flex; align-items:center; gap:0.3rem; background:#ecfdf5; color:#047857; padding:0.2rem 0.6rem; border-radius:6px; font-size:0.72rem; font-weight:600; margin-bottom:0.5rem; }
+        .pc-workshop h3 { font-size:1rem; margin-bottom:0.3rem; }
+        .pc-workshop p { font-size:0.82rem; color:var(--text-light); }
+
+        /* Instructors */
+        .pc-instructors { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1.25rem; }
+        .pc-instructor { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; padding:1.25rem; text-align:center; transition:all 0.3s; }
+        .pc-instructor:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
+        .pc-instructor-avatar { width:70px; height:70px; border-radius:50%; margin:0 auto 0.75rem; overflow:hidden; border:3px solid #d1fae5; }
+        .pc-instructor-avatar img { width:100%; height:100%; object-fit:cover; }
+        .pc-instructor h3 { font-size:0.95rem; margin-bottom:0.2rem; }
+        .pc-instructor p { font-size:0.8rem; color:var(--text-light); margin-bottom:0.5rem; }
+
+        /* Marketplace */
+        .pc-marketplace { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:1rem; }
+        .pc-mp-item { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; transition:all 0.2s; }
+        .pc-mp-item:hover { transform:translateY(-2px); box-shadow:var(--shadow-sm); border-color:#059669; }
+        .pc-mp-item img { width:100%; height:100px; object-fit:cover; }
+        .pc-mp-item .info { padding:0.75rem; }
+        .pc-mp-item .name { font-size:0.82rem; font-weight:500; }
+        .pc-mp-item .price { font-size:0.8rem; color:#059669; font-weight:600; }
+
+        /* AI */
+        .pc-ai { background:linear-gradient(135deg,#ecfdf5,#d1fae5); border-radius:16px; padding:2rem; display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:center; }
+        .pc-ai-input { display:flex; gap:0.5rem; }
+        .pc-ai-input input { flex:1; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:10px; font-size:0.95rem; }
+        .pc-ai-result { background:white; border-radius:12px; padding:1.25rem; border:1px solid var(--border-color); min-height:120px; }
+
+        /* Simulations */
+        .pc-sims { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+        .pc-sim { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.5rem; text-align:center; transition:all 0.3s; }
+        .pc-sim:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); border-color:#059669; }
+        .pc-sim-icon { font-size:2.5rem; margin-bottom:0.5rem; }
+        .pc-sim h4 { font-size:0.95rem; margin-bottom:0.3rem; }
+        .pc-sim p { font-size:0.82rem; color:var(--text-light); line-height:1.4; margin-bottom:0.75rem; }
+
+        /* Discover Links */
+        .pc-discover { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .pc-discover-item { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; padding:1rem; text-align:center; text-decoration:none; color:inherit; transition:all 0.2s; }
+        .pc-discover-item:hover { border-color:#059669; transform:translateY(-2px); }
+        .pc-discover-item i { font-size:1.5rem; color:#059669; margin-bottom:0.3rem; display:block; }
+        .pc-discover-item h4 { font-size:0.85rem; margin-bottom:0.15rem; }
+        .pc-discover-item p { font-size:0.72rem; color:var(--text-light); }
+
+        @media(max-width:768px) {
+            .pc-categories { grid-template-columns:repeat(2,1fr); }
+            .pc-labs { grid-template-columns:repeat(2,1fr); }
+            .pc-sims { grid-template-columns:1fr; }
+            .pc-discover { grid-template-columns:repeat(2,1fr); }
+            .pc-ai { grid-template-columns:1fr; }
+            .pc-stats { grid-template-columns:repeat(2,1fr); }
+            .pc-path { flex-direction:column; }
+            .pc-path-arrow { transform:rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="pc-hero">
+        <div class="container">
+            <nav style="font-size:0.85rem;margin-bottom:1rem;color:rgba(255,255,255,0.6);">
+                <a href="learning.html" style="color:rgba(255,255,255,0.6);text-decoration:none;">Learning</a>
+                <span style="margin:0 0.5rem;">/</span>
+                <span style="color:white;">Plant Care</span>
+            </nav>
+            <h1><i class="bi bi-flower2"></i> Plant Care Academy</h1>
+            <p>Master the science and art of caring for flowers and plants through practical lessons, expert guidance, and hands-on activities.</p>
+            <div class="pc-hero-btns">
+                <a href="#courses" class="btn btn-white-green">▶️ Start Learning</a>
+                <a href="#path" class="btn btn-outline-white">📊 Learning Path</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="container">
+        <div class="pc-stats">
+            <div class="pc-stat"><div class="pc-stat-value" id="statCourses">0</div><div class="pc-stat-label">Courses</div></div>
+            <div class="pc-stat"><div class="pc-stat-value" id="statStudents">0</div><div class="pc-stat-label">Students</div></div>
+            <div class="pc-stat"><div class="pc-stat-value">94%</div><div class="pc-stat-label">Completion Rate</div></div>
+            <div class="pc-stat"><div class="pc-stat-value">âœ“</div><div class="pc-stat-label">Certificates</div></div>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="container">
+        <div class="pc-search">
+            <input type="text" id="searchInput" placeholder="Search plant care courses..." onkeydown="if(event.key==='Enter')applyFilters()">
+            <button class="btn btn-primary" style="background:#059669;" onclick="applyFilters()"><i class="bi bi-search"></i></button>
+        </div>
+    </div>
+
+    <!-- Learning Path -->
+    <section class="section-padding" style="padding-bottom:0;" id="path">
+        <div class="container">
+            <div class="pc-section-header">
+                <h2><i class="bi bi-diagram-3" style="color:#059669;"></i> Learning Path</h2>
+            </div>
+            <div class="pc-path">
+                <div class="pc-path-step active"><div class="icon">ðŸŒ±</div><div>Basics</div></div>
+                <div class="pc-path-arrow">â†’</div>
+                <div class="pc-path-step"><div class="icon">ðŸ’§</div><div>Watering</div></div>
+                <div class="pc-path-arrow">â†’</div>
+                <div class="pc-path-step"><div class="icon">ðŸŒ</div><div>Soil</div></div>
+                <div class="pc-path-arrow">â†’</div>
+                <div class="pc-path-step"><div class="icon">â˜€ï¸</div><div>Light</div></div>
+                <div class="pc-path-arrow">â†’</div>
+                <div class="pc-path-step"><div class="icon">âœ‚ï¸</div><div>Pruning</div></div>
+                <div class="pc-path-arrow">â†’</div>
+                <div class="pc-path-step"><div class="icon">ðŸ›</div><div>Disease</div></div>
+                <div class="pc-path-arrow">â†’</div>
+                <div class="pc-path-step"><div class="icon">ðŸ†</div><div>Advanced</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="pc-section-header">
+                <h2><i class="bi bi-grid" style="color:#059669;"></i> Care Categories</h2>
+            </div>
+            <div class="pc-categories">
+                <div class="pc-cat"><div class="pc-cat-icon">ðŸ’§</div><h4>Watering</h4><p>How much, how often, signs of overwatering</p></div>
+                <div class="pc-cat"><div class="pc-cat-icon">â˜€ï¸</div><h4>Light</h4><p>Full sun, partial shade, indoor lighting, grow lights</p></div>
+                <div class="pc-cat"><div class="pc-cat-icon">ðŸŒ±</div><h4>Soil</h4><p>Choosing soil, drainage, pH, repotting</p></div>
+                <div class="pc-cat"><div class="pc-cat-icon">ðŸŒ¿</div><h4>Fertilizer</h4><p>Organic, chemical, application schedules</p></div>
+                <div class="pc-cat"><div class="pc-cat-icon">âœ‚ï¸</div><h4>Pruning</h4><p>Deadheading, seasonal pruning, cleaning tools</p></div>
+                <div class="pc-cat"><div class="pc-cat-icon">ðŸª´</div><h4>Repotting</h4><p>Choosing pots, root care, repotting safely</p></div>
+                <div class="pc-cat"><div class="pc-cat-icon">ðŸ›</div><h4>Pest Control</h4><p>Aphids, spider mites, whiteflies, scale</p></div>
+                <div class="pc-cat"><div class="pc-cat-icon">ðŸ¦ </div><h4>Plant Diseases</h4><p>Root rot, powdery mildew, leaf spot</p></div>
+                <div class="pc-cat"><div class="pc-cat-icon">ðŸŒ¡ï¸</div><h4>Environment</h4><p>Humidity, temperature, air circulation</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Courses -->
+    <section class="section-padding bg-light" id="courses">
+        <div class="container">
+            <div class="pc-section-header">
+                <h2><i class="bi bi-play-circle" style="color:#059669;"></i> Featured Courses</h2>
+                <a href="learning.html?category=plant-care" style="color:#059669;font-size:0.9rem;">View All â†’</a>
+            </div>
+            <div class="pc-courses" id="courseGrid"></div>
+        </div>
+    </section>
+
+    <!-- Practical Labs -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="pc-section-header">
+                <h2><i class="bi bi-tools" style="color:#059669;"></i> Practical Labs</h2>
+            </div>
+            <div class="pc-labs">
+                <div class="pc-lab"><div class="pc-lab-icon">ðŸ’§</div><h4>Measure Soil Moisture</h4><p>Learn to test moisture levels accurately</p></div>
+                <div class="pc-lab"><div class="pc-lab-icon">ðŸª´</div><h4>Repot a Plant</h4><p>Practice repotting techniques safely</p></div>
+                <div class="pc-lab"><div class="pc-lab-icon">ðŸ“…</div><h4>Watering Schedule</h4><p>Create a care schedule for different plants</p></div>
+                <div class="pc-lab"><div class="pc-lab-icon">ðŸ”</div><h4>Diagnose Deficiencies</h4><p>Identify nutrient issues from symptoms</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Plant Coach -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="pc-ai">
+                <div>
+                    <h2 style="margin-bottom:0.5rem;"><i class="bi bi-robot" style="color:#059669;"></i> AI Plant Coach</h2>
+                    <p style="color:var(--text-light);margin-bottom:1rem;">Get personalized answers about plant care, diagnosis, and treatment.</p>
+                    <div class="pc-ai-input">
+                        <input type="text" id="aiQuestion" placeholder="e.g., Why are my leaves turning yellow?">
+                        <button class="btn btn-primary" style="background:#059669;" onclick="askAI()"><i class="bi bi-send"></i></button>
+                    </div>
+                </div>
+                <div class="pc-ai-result" id="aiResult">
+                    <p style="color:var(--text-light);font-size:0.9rem;">Ask me about watering, soil, pests, diseases, or any plant care topic!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Simulations -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="pc-section-header">
+                <h2><i class="bi bi-controller" style="color:#059669;"></i> Interactive Simulations</h2>
+            </div>
+            <div class="pc-sims">
+                <div class="pc-sim">
+                    <div class="pc-sim-icon">ðŸ’§</div>
+                    <h4>Virtual Watering Simulator</h4>
+                    <p>Adjust watering frequency and observe simulated outcomes.</p>
+                    <button class="btn btn-outline btn-sm" style="border-color:#059669;color:#059669;">Try Now</button>
+                </div>
+                <div class="pc-sim">
+                    <div class="pc-sim-icon">ðŸ”</div>
+                    <h4>Plant Diagnosis Challenge</h4>
+                    <p>Identify problems from photos and symptoms.</p>
+                    <button class="btn btn-outline btn-sm" style="border-color:#059669;color:#059669;">Try Now</button>
+                </div>
+                <div class="pc-sim">
+                    <div class="pc-sim-icon">ðŸ“…</div>
+                    <h4>Seasonal Care Planner</h4>
+                    <p>Create care schedules for different climates.</p>
+                    <button class="btn btn-outline btn-sm" style="border-color:#059669;color:#059669;">Try Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workshops -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="pc-section-header">
+                <h2><i class="bi bi-easel" style="color:#059669;"></i> Live Workshops</h2>
+                <a href="events.html?category=workshop" style="color:#059669;font-size:0.9rem;">View All â†’</a>
+            </div>
+            <div class="pc-workshops" id="workshopGrid"></div>
+        </div>
+    </section>
+
+    <!-- Instructors -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="pc-section-header">
+                <h2><i class="bi bi-person-badge" style="color:#059669;"></i> Expert Instructors</h2>
+                <a href="instructors.html" style="color:#059669;font-size:0.9rem;">View All â†’</a>
+            </div>
+            <div class="pc-instructors" id="instructorGrid"></div>
+        </div>
+    </section>
+
+    <!-- Discover Integration -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="pc-section-header">
+                <h2><i class="bi bi-compass" style="color:#059669;"></i> Explore More</h2>
+            </div>
+            <div class="pc-discover">
+                <a href="care-guides-hub.html" class="pc-discover-item"><i class="bi bi-heart-pulse"></i><h4>Care Guides</h4><p>Specific flower care</p></a>
+                <a href="flower-encyclopedia.html" class="pc-discover-item">📖<h4>Encyclopedia</h4><p>500+ flower species</p></a>
+                <a href="ai-scanner.html" class="pc-discover-item">📷<h4>Identify Plants</h4><p>AI flower scanner</p></a>
+                <a href="flower-meanings.html" class="pc-discover-item"><i class="bi bi-heart"></i><h4>Flower Meanings</h4><p>Symbolism & meaning</p></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marketplace -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="pc-section-header">
+                <h2><i class="bi bi-bag" style="color:#059669;"></i> Plant Care Essentials</h2>
+                <a href="marketplace.html" style="color:#059669;font-size:0.9rem;">Shop All â†’</a>
+            </div>
+            <div class="pc-marketplace" id="marketplaceGrid"></div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container">
+            <div style="background:linear-gradient(135deg,#065f46,#059669);border-radius:16px;padding:3rem;text-align:center;color:white;">
+                <h2 style="color:white;margin-bottom:0.5rem;">Ready to Master Plant Care?</h2>
+                <p style="color:rgba(255,255,255,0.85);margin-bottom:1.5rem;max-width:500px;margin-left:auto;margin-right:auto;">Join thousands of students learning professional plant care from expert horticulturists.</p>
+                <a href="#courses" class="btn btn-white-green" style="padding:0.75rem 2rem;">Browse Courses</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCourses();
+            loadWorkshops();
+            loadInstructors();
+            loadMarketplace();
+        });
+
+        // â”€â”€â”€ Courses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        async function loadCourses() {
+            try {
+                const res = await fetch('/api/courses?category=plant-care&limit=8');
+                const data = await res.json();
+                const courses = Array.isArray(data) ? data : (data.courses || []);
+
+                document.getElementById('statCourses').textContent = courses.length;
+                const totalStudents = courses.reduce((s, c) => s + (c.students || c.students_count || 0), 0);
+                document.getElementById('statStudents').textContent = totalStudents >= 1000 ? (totalStudents/1000).toFixed(1) + 'K' : totalStudents;
+
+                const grid = document.getElementById('courseGrid');
+                if (!courses.length) {
+                    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-light);"><i class="bi bi-flower2" style="font-size:2.5rem;display:block;margin-bottom:0.75rem;opacity:0.4;"></i><p>Plant care courses coming soon!</p></div>';
+                    return;
+                }
+
+                grid.innerHTML = courses.map(c => `
+                    <a href="course-detail.html?id=${c.id}" class="pc-course">
+                        <div class="pc-course-img">
+                            <img src="${c.thumbnail || c.thumbnail_url || 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=400&auto=format&fit=crop'}" alt="${c.title}" loading="lazy">
+                            ${c.level ? `<span class="pc-course-badge" style="background:#059669;color:white;">${c.level}</span>` : ''}
+                        </div>
+                        <div class="pc-course-body">
+                            <div class="pc-course-category">${c.category || 'Plant Care'}</div>
+                            <div class="pc-course-title">${c.title}</div>
+                            <div class="pc-course-instructor">
+                                <div style="width:22px;height:22px;border-radius:50%;background:#ecfdf5;display:flex;align-items:center;justify-content:center;font-size:0.55rem;color:#059669;">${(c.instructor || 'I').charAt(0)}</div>
+                                ${c.instructor || 'Expert'}
+                            </div>
+                            <div class="pc-course-rating">${'â˜…'.repeat(Math.round(c.rating || 0))}${'â˜†'.repeat(5 - Math.round(c.rating || 0))} ${(c.rating || 0).toFixed(1)} <span style="color:var(--text-muted);">(${c.students || c.students_count || 0})</span></div>
+                            <div class="pc-course-meta">
+                                ${c.duration ? `<span><i class="bi bi-clock"></i> ${c.duration}</span>` : ''}
+                                ${c.lessons ? `<span><i class="bi bi-collection-play"></i> ${c.lessons} lessons</span>` : ''}
+                            </div>
+                            <div class="pc-course-footer">
+                                <span class="pc-course-price ${c.is_free || !c.price ? 'free' : ''}">${c.is_free || !c.price ? 'Free' : (c.currency || 'GHS') + ' ' + c.price}</span>
+                                <span class="pc-course-enroll">Enroll</span>
+                            </div>
+                        </div>
+                    </a>
+                `).join('');
+            } catch {}
+        }
+
+        function applyFilters() {}
+
+        // â”€â”€â”€ Workshops â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        async function loadWorkshops() {
+            try {
+                const res = await fetch('/api/events?category=workshop&limit=3');
+                const data = await res.json();
+                const events = Array.isArray(data) ? data : (data.events || []);
+                const grid = document.getElementById('workshopGrid');
+                if (events.length) {
+                    grid.innerHTML = events.map(e => {
+                        const d = e.date ? new Date(e.date) : null;
+                        return `
+                        <a href="event-detail.html?id=${e.id}" class="pc-workshop">
+                            <div class="pc-workshop-img">
+                                <img src="${e.image || 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=300&auto=format&fit=crop'}" alt="${e.title}" loading="lazy">
+                            </div>
+                            <div class="pc-workshop-body">
+                                ${d ? `<div class="pc-workshop-date">📅 ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>` : ''}
+                                <h3>${e.title}</h3>
+                                <p>${(e.description || '').slice(0, 100)}</p>
+                            </div>
+                        </a>`;
+                    }).join('');
+                } else {
+                    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-light);">No upcoming workshops.</div>';
+                }
+            } catch {}
+        }
+
+        // â”€â”€â”€ Instructors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        async function loadInstructors() {
+            try {
+                const res = await fetch('/api/products/list/florists?limit=4');
+                const data = await res.json();
+                const instructors = Array.isArray(data) ? data : (data.florists || []);
+                document.getElementById('instructorGrid').innerHTML = instructors.length ? instructors.map(i => `
+                    <div class="pc-instructor">
+                        <div class="pc-instructor-avatar">
+                            <img src="${i.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 70 70%22><rect fill=%22%23ecfdf5%22 width=%2270%22 height=%2270%22/><text x=%2235%22 y=%2242%22 text-anchor=%22middle%22 fill=%22%23059669%22 font-size=%2224%22>${(i.name || 'I').charAt(0)}</text></svg>'}" alt="${i.name}">
+                        </div>
+                        <h3>${i.name}</h3>
+                        <p>${i.role || i.specialty || 'Plant Care Expert'}</p>
+                    </div>
+                `).join('') : '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-light);">Instructors coming soon!</div>';
+            } catch {}
+        }
+
+        // â”€â”€â”€ Marketplace â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        function loadMarketplace() {
+            const items = [
+                { name: 'Watering Can', image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=200&auto=format&fit=crop', price: 'GHS 35' },
+                { name: 'Fertilizer', image: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=200&auto=format&fit=crop', price: 'GHS 25' },
+                { name: 'Potting Soil', image: 'https://images.unsplash.com/photo-1470509037663-253afd7f0f51?q=200&auto=format&fit=crop', price: 'GHS 20' },
+                { name: 'Ceramic Pots', image: 'https://images.unsplash.com/photo-1463320726281-696a485928c7?q=200&auto=format&fit=crop', price: 'GHS 45' },
+                { name: 'Moisture Meter', image: 'https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?q=200&auto=format&fit=crop', price: 'GHS 55' },
+                { name: 'Pruning Shears', image: 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=200&auto=format&fit=crop', price: 'GHS 40' }
+            ];
+            document.getElementById('marketplaceGrid').innerHTML = items.map(item => `
+                <a href="marketplace.html?q=${encodeURIComponent(item.name)}" class="pc-mp-item">
+                    <img src="${item.image}" alt="${item.name}" loading="lazy">
+                    <div class="info">
+                        <div class="name">${item.name}</div>
+                        <div class="price">${item.price}</div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // â”€â”€â”€ AI Coach â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        async function askAI() {
+            const q = document.getElementById('aiQuestion')?.value?.trim();
+            if (!q) return;
+            const resultEl = document.getElementById('aiResult');
+            resultEl.innerHTML = '<p style="color:var(--text-light);">Thinking...</p>';
+            try {
+                const token = localStorage.getItem('flower-token');
+                const res = await fetch('/api/openai/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': 'Bearer ' + token } : {}) },
+                    body: JSON.stringify({ messages: [
+                        { role: 'system', content: 'You are a plant care expert tutor. Help students with watering, soil, light, fertilizer, pruning, pest control, disease management, and repotting. Be encouraging and educational.' },
+                        { role: 'user', content: q }
+                    ]})
+                });
+                const data = await res.json();
+                resultEl.innerHTML = `<div style="font-size:0.92rem;line-height:1.7;">${(data.reply || data.message || 'I can help with plant care questions.').replace(/\n/g, '<br>')}</div>`;
+            } catch {
+                resultEl.innerHTML = '<p style="color:var(--error-color);">Failed to get response.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,398 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plant Encyclopedia â€” Browse 500+ flower and plant species with detailed profiles, care guides, growing conditions, and AI identification.">
+    <title>Plant Encyclopedia | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .pe-hero { background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 50%,#3b82f6 100%); padding:5rem 0 3.5rem; color:white; position:relative; overflow:hidden; }
+        .pe-hero::before { content:''; position:absolute; top:-30%; right:-5%; width:500px; height:500px; background:rgba(255,255,255,0.06); border-radius:50%; }
+        .pe-hero h1 { color:white; font-size:clamp(2rem,4vw,2.8rem); margin-bottom:0.5rem; }
+        .pe-hero p { color:rgba(255,255,255,0.85); max-width:600px; margin-bottom:1.5rem; }
+        .pe-hero-btns { display:flex; gap:0.75rem; flex-wrap:wrap; }
+        .pe-hero-btns .btn { padding:0.65rem 1.5rem; border-radius:50px; }
+        .btn-white-blue { background:white; color:#1e3a5f; border:none; font-weight:600; }
+
+        /* Stats */
+        .pe-stats { display:grid; grid-template-columns:repeat(5,1fr); gap:1rem; margin:-1.5rem auto 2rem; max-width:1000px; position:relative; z-index:10; }
+        .pe-stat { background:var(--bg-white); border-radius:12px; padding:1rem; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.08); border:1px solid var(--border-color); }
+        .pe-stat-value { font-size:1.3rem; font-weight:700; color:#2563eb; }
+        .pe-stat-label { font-size:0.72rem; color:var(--text-light); }
+
+        /* Search */
+        .pe-search { background:var(--bg-white); border-radius:16px; padding:1.5rem; box-shadow:0 10px 40px rgba(0,0,0,0.1); margin:-2rem auto 2rem; max-width:800px; position:relative; z-index:10; }
+        .pe-search-bar { display:flex; gap:0.5rem; margin-bottom:1rem; }
+        .pe-search-bar input { flex:1; padding:0.85rem 1.25rem; border:1px solid var(--border-color); border-radius:12px; font-size:1rem; }
+        .pe-search-bar input:focus { border-color:#2563eb; }
+        .pe-filter-row { display:flex; gap:0.5rem; flex-wrap:wrap; }
+        .pe-filter { padding:0.4rem 0.8rem; border:1px solid var(--border-color); border-radius:20px; font-size:0.82rem; cursor:pointer; background:var(--bg-white); transition:all 0.2s; }
+        .pe-filter:hover, .pe-filter.active { border-color:#2563eb; color:#2563eb; background:rgba(37,99,235,0.05); }
+        .pe-color-btn { width:28px; height:28px; border-radius:50%; border:2px solid var(--border-color); cursor:pointer; transition:all 0.2s; }
+        .pe-color-btn:hover, .pe-color-btn.active { border-color:#2563eb; transform:scale(1.15); }
+
+        /* Section Headers */
+        .pe-section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+        .pe-section-header h2 { margin:0; }
+
+        /* AI Scanner */
+        .pe-ai { background:linear-gradient(135deg,#eff6ff,#dbeafe); border-radius:16px; padding:2rem; display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:center; margin-bottom:2rem; }
+        .pe-ai-upload { border:2px dashed #2563eb; border-radius:12px; padding:2rem; text-align:center; cursor:pointer; transition:all 0.2s; background:white; }
+        .pe-ai-upload:hover { background:#eff6ff; }
+        .pe-ai-result { background:white; border-radius:12px; padding:1.25rem; border:1px solid var(--border-color); min-height:150px; }
+
+        /* Alpha Nav */
+        .pe-alpha { display:flex; justify-content:center; gap:0.25rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+        .pe-alpha-btn { width:36px; height:36px; border-radius:50%; border:1px solid var(--border-color); background:var(--bg-white); cursor:pointer; font-weight:500; font-size:0.85rem; transition:all 0.2s; }
+        .pe-alpha-btn:hover, .pe-alpha-btn.active { background:#2563eb; color:white; border-color:#2563eb; }
+
+        /* Plant Cards */
+        .pe-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1.25rem; }
+        .pe-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; overflow:hidden; transition:all 0.3s; text-decoration:none; color:inherit; }
+        .pe-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); }
+        .pe-card-img { height:180px; overflow:hidden; position:relative; }
+        .pe-card-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .pe-card:hover .pe-card-img img { transform:scale(1.05); }
+        .pe-card-badge { position:absolute; top:0.75rem; right:0.75rem; background:var(--bg-white); padding:0.2rem 0.5rem; border-radius:6px; font-size:0.7rem; font-weight:600; }
+        .pe-card-body { padding:1rem; }
+        .pe-card-name { font-weight:600; font-size:1rem; margin-bottom:0.2rem; }
+        .pe-card-sci { font-size:0.82rem; color:#2563eb; font-style:italic; margin-bottom:0.5rem; }
+        .pe-card-meta { display:flex; gap:0.75rem; font-size:0.78rem; color:var(--text-light); flex-wrap:wrap; }
+        .pe-card-meta span { display:flex; align-items:center; gap:0.2rem; }
+
+        /* Seasonal */
+        .pe-seasonal { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .pe-season { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; }
+        .pe-season-icon { font-size:2rem; margin-bottom:0.5rem; }
+        .pe-season h4 { font-size:0.95rem; margin-bottom:0.3rem; }
+        .pe-season-flowers { font-size:0.82rem; color:var(--text-light); line-height:1.5; }
+
+        /* Care Tips */
+        .pe-tips { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+        .pe-tip { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; }
+        .pe-tip-icon { font-size:1.8rem; margin-bottom:0.5rem; }
+        .pe-tip h4 { font-size:0.95rem; margin-bottom:0.3rem; }
+        .pe-tip p { font-size:0.82rem; color:var(--text-light); line-height:1.5; }
+
+        /* Discover */
+        .pe-discover { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .pe-discover-item { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; padding:1rem; text-align:center; text-decoration:none; color:inherit; transition:all 0.2s; }
+        .pe-discover-item:hover { border-color:#2563eb; transform:translateY(-2px); }
+        .pe-discover-item i { font-size:1.5rem; color:#2563eb; margin-bottom:0.3rem; display:block; }
+        .pe-discover-item h4 { font-size:0.85rem; margin-bottom:0.15rem; }
+        .pe-discover-item p { font-size:0.72rem; color:var(--text-light); }
+
+        @media(max-width:768px) {
+            .pe-stats { grid-template-columns:repeat(3,1fr); }
+            .pe-ai { grid-template-columns:1fr; }
+            .pe-seasonal { grid-template-columns:repeat(2,1fr); }
+            .pe-tips { grid-template-columns:1fr; }
+            .pe-discover { grid-template-columns:repeat(2,1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="pe-hero">
+        <div class="container">
+            <nav style="font-size:0.85rem;margin-bottom:1rem;color:rgba(255,255,255,0.6);">
+                <a href="index.html" style="color:rgba(255,255,255,0.6);text-decoration:none;">Home</a>
+                <span style="margin:0 0.5rem;">/</span>
+                <span style="color:white;">Plant Encyclopedia</span>
+            </nav>
+            <h1>📖 Plant Encyclopedia</h1>
+            <p>Browse 500+ flower and plant species with detailed profiles, care guides, growing conditions, and AI identification.</p>
+            <div class="pe-hero-btns">
+                <a href="#browse" class="btn btn-white-blue"><i class="bi bi-search"></i> Browse Plants</a>
+                <a href="#ai" class="btn btn-outline-white">📷 Identify a Plant</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="container">
+        <div class="pe-stats">
+            <div class="pe-stat"><div class="pe-stat-value" id="statSpecies">0</div><div class="pe-stat-label">Species</div></div>
+            <div class="pe-stat"><div class="pe-stat-value">50+</div><div class="pe-stat-label">Families</div></div>
+            <div class="pe-stat"><div class="pe-stat-value">120+</div><div class="pe-stat-label">Care Guides</div></div>
+            <div class="pe-stat"><div class="pe-stat-value">200+</div><div class="pe-stat-label">Photos</div></div>
+            <div class="pe-stat"><div class="pe-stat-value">5K+</div><div class="pe-stat-label">Enthusiasts</div></div>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="container">
+        <div class="pe-search">
+            <div class="pe-search-bar">
+                <input type="text" id="searchInput" placeholder="Search by name, species, family, or color..." onkeydown="if(event.key==='Enter')applyFilters()">
+                <button class="btn btn-primary" style="background:#2563eb;" onclick="applyFilters()"><i class="bi bi-search"></i></button>
+            </div>
+            <div class="pe-filter-row">
+                <button class="pe-filter active" onclick="setFilter('all',this)">All Plants</button>
+                <button class="pe-filter" onclick="setFilter('indoor',this)">ðŸŒ¿ Indoor</button>
+                <button class="pe-filter" onclick="setFilter('outdoor',this)">ðŸŒ³ Outdoor</button>
+                <button class="pe-filter" onclick="setFilter('easy',this)">âœ¨ Easy Care</button>
+                <button class="pe-filter" onclick="setFilter('fragrant',this)">ðŸŒ¸ Fragrant</button>
+                <button class="pe-filter" onclick="setFilter('tropical',this)">ðŸŒ´ Tropical</button>
+                <button class="pe-filter" onclick="setFilter('succulent',this)">ðŸŒµ Succulent</button>
+            </div>
+            <div class="pe-filter-row" style="margin-top:0.5rem;">
+                <span style="font-size:0.78rem;color:var(--text-muted);margin-right:0.25rem;">Colors:</span>
+                <button class="pe-color-btn" onclick="setColor('red',this)" style="background:#ef4444;" title="Red"></button>
+                <button class="pe-color-btn" onclick="setColor('pink',this)" style="background:#ec4899;" title="Pink"></button>
+                <button class="pe-color-btn" onclick="setColor('white',this)" style="background:#f8fafc;" title="White"></button>
+                <button class="pe-color-btn" onclick="setColor('yellow',this)" style="background:#eab308;" title="Yellow"></button>
+                <button class="pe-color-btn" onclick="setColor('purple',this)" style="background:#8b5cf6;" title="Purple"></button>
+                <button class="pe-color-btn" onclick="setColor('blue',this)" style="background:#3b82f6;" title="Blue"></button>
+                <button class="pe-color-btn" onclick="setColor('orange',this)" style="background:#f97316;" title="Orange"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Scanner -->
+    <div class="container" id="ai">
+        <div class="pe-ai">
+            <div>
+                <h2 style="margin-bottom:0.5rem;"><i class="bi bi-camera" style="color:#2563eb;"></i> AI Plant Identification</h2>
+                <p style="color:var(--text-light);margin-bottom:1rem;">Upload a photo to instantly identify any plant with AI-powered analysis.</p>
+                <div class="pe-ai-upload" id="aiUpload" onclick="document.getElementById('aiFileInput').click()">
+                    <i class="bi bi-camera" style="font-size:2.5rem;color:#2563eb;margin-bottom:0.5rem;display:block;"></i>
+                    <p style="font-weight:500;margin-bottom:0.25rem;">Upload Plant Photo</p>
+                    <p style="font-size:0.8rem;color:var(--text-light);">or drag and drop</p>
+                    <p style="font-size:0.72rem;color:var(--text-muted);margin-top:0.5rem;">JPG, PNG, WEBP &bull; Max 10MB</p>
+                    <input type="file" id="aiFileInput" accept="image/*" style="display:none;" onchange="identifyPlant(this.files[0])">
+                </div>
+            </div>
+            <div class="pe-ai-result" id="aiResult">
+                <p style="color:var(--text-light);font-size:0.9rem;">Upload a plant photo to get instant identification with care information and growing tips.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Browse by Letter -->
+    <section class="section-padding" id="browse">
+        <div class="container">
+            <div class="pe-section-header">
+                <h2><i class="bi bi-book" style="color:#2563eb;"></i> Browse by Letter</h2>
+                <span id="resultCount" style="font-size:0.85rem;color:var(--text-light);"></span>
+            </div>
+            <div class="pe-alpha" id="alphaNav"></div>
+            <div class="pe-grid" id="plantGrid"></div>
+        </div>
+    </section>
+
+    <!-- Seasonal -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="pe-section-header">
+                <h2><i class="bi bi-calendar3" style="color:#2563eb;"></i> Seasonal Blooms</h2>
+                <a href="bloom-calendar.html" style="color:#2563eb;font-size:0.9rem;">View Calendar â†’</a>
+            </div>
+            <div class="pe-seasonal">
+                <div class="pe-season"><div class="pe-season-icon">ðŸŒ¸</div><h4>Spring</h4><div class="pe-season-flowers">Cherry Blossoms, Tulips, Daffodils, Lilacs, Peonies</div></div>
+                <div class="pe-season"><div class="pe-season-icon">â˜€ï¸</div><h4>Summer</h4><div class="pe-season-flowers">Sunflowers, Roses, Lavender, Dahlias, Zinnias</div></div>
+                <div class="pe-season"><div class="pe-season-icon">ðŸ‚</div><h4>Autumn</h4><div class="pe-season-flowers">Chrysanthemums, Marigolds, Asters, Sedums</div></div>
+                <div class="pe-season"><div class="pe-season-icon">â„ï¸</div><h4>Winter</h4><div class="pe-season-flowers">Poinsettias, Amaryllis, Hellebores, Cyclamen</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Care Tips -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="pe-section-header">
+                <h2><i class="bi bi-lightbulb" style="color:#2563eb;"></i> Essential Care Tips</h2>
+                <a href="care-guides-hub.html" style="color:#2563eb;font-size:0.9rem;">View All Guides â†’</a>
+            </div>
+            <div class="pe-tips">
+                <div class="pe-tip">
+                    <div class="pe-tip-icon">ðŸ’§</div>
+                    <h4>Watering Wisdom</h4>
+                    <p>Water deeply in the morning. Most flowers need 1-2 inches per week. Check soil 2 inches deep before watering.</p>
+                </div>
+                <div class="pe-tip">
+                    <div class="pe-tip-icon">â˜€ï¸</div>
+                    <h4>Sunlight Guide</h4>
+                    <p>Full sun = 6+ hours daily. Partial shade = 3-6 hours. Match plants to your garden's light conditions.</p>
+                </div>
+                <div class="pe-tip">
+                    <div class="pe-tip-icon">ðŸŒ</div>
+                    <h4>Soil Health</h4>
+                    <p>Add compost annually. Test pH yearly. Healthy soil grows healthy plants â€” amend as needed.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Discover -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="pe-section-header">
+                <h2><i class="bi bi-compass" style="color:#2563eb;"></i> Discover More</h2>
+            </div>
+            <div class="pe-discover">
+                <a href="flower-meanings.html" class="pe-discover-item"><i class="bi bi-heart"></i><h4>Flower Meanings</h4><p>Symbolism & meaning</p></a>
+                <a href="care-guides-hub.html" class="pe-discover-item"><i class="bi bi-heart-pulse"></i><h4>Care Guides</h4><p>Expert instructions</p></a>
+                <a href="ai-scanner.html" class="pe-discover-item">📷<h4>AI Scanner</h4><p>Identify flowers</p></a>
+                <a href="plant-database.html" class="pe-discover-item"><i class="bi bi-database"></i><h4>Plant Database</h4><p>Search all plants</p></a>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        let currentFilter = 'all';
+        let currentColor = '';
+        let currentLetter = '';
+        let currentPage = 1;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAlphaNav();
+            loadPlants();
+            setupDragDrop();
+        });
+
+        function renderAlphaNav() {
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            document.getElementById('alphaNav').innerHTML = letters.map(l =>
+                `<button class="pe-alpha-btn${currentLetter === l ? ' active' : ''}" onclick="selectLetter('${l}')">${l}</button>`
+            ).join('') + `<button class="pe-alpha-btn${currentLetter === '' ? ' active' : ''}" onclick="selectLetter('')" style="width:auto;padding:0 0.75rem;">All</button>`;
+        }
+
+        function selectLetter(letter) {
+            currentLetter = letter;
+            currentPage = 1;
+            renderAlphaNav();
+            loadPlants();
+        }
+
+        function setFilter(filter, el) {
+            currentFilter = filter;
+            document.querySelectorAll('.pe-filter').forEach(f => f.classList.remove('active'));
+            el.classList.add('active');
+            currentPage = 1;
+            loadPlants();
+        }
+
+        function setColor(color, el) {
+            currentColor = currentColor === color ? '' : color;
+            document.querySelectorAll('.pe-color-btn').forEach(b => b.classList.remove('active'));
+            if (currentColor) el.classList.add('active');
+            currentPage = 1;
+            loadPlants();
+        }
+
+        function applyFilters() { currentPage = 1; loadPlants(); }
+
+        async function loadPlants() {
+            const search = document.getElementById('searchInput')?.value?.trim() || '';
+            let url = `/api/flowers?page=${currentPage}&limit=20&sort=name`;
+            if (search) url += `&search=${encodeURIComponent(search)}`;
+            if (currentLetter) url += `&letter=${currentLetter}`;
+            if (currentFilter === 'indoor') url += '&indoor_outdoor=Indoor';
+            if (currentFilter === 'outdoor') url += '&indoor_outdoor=Outdoor';
+            if (currentFilter === 'easy') url += '&care_level=Easy';
+            if (currentFilter === 'fragrant') url += '&fragrant=true';
+            if (currentColor) url += `&color=${currentColor}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                const plants = data.flowers || [];
+                document.getElementById('statSpecies').textContent = data.total || plants.length;
+                document.getElementById('resultCount').textContent = `${data.total || plants.length} species found`;
+
+                const grid = document.getElementById('plantGrid');
+                if (!plants.length) {
+                    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-light);"><i class="bi bi-search" style="font-size:2.5rem;display:block;margin-bottom:0.75rem;opacity:0.4;"></i><p>No plants match your filters.</p></div>';
+                    return;
+                }
+
+                grid.innerHTML = plants.map(p => `
+                    <a href="flower-detail.html?slug=${p.slug || p.id}" class="pe-card">
+                        <div class="pe-card-img">
+                            <img src="${p.primary_image || p.image_url || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=300&auto=format&fit=crop'}" alt="${p.common_name}" loading="lazy">
+                            <span class="pe-card-badge">${p.care_level || 'Easy'}</span>
+                        </div>
+                        <div class="pe-card-body">
+                            <div class="pe-card-name">${p.common_name}</div>
+                            <div class="pe-card-sci">${p.scientific_name || ''}</div>
+                            <div class="pe-card-meta">
+                                ${p.sunlight ? `<span><i class="bi bi-sun"></i> ${p.sunlight}</span>` : ''}
+                                ${p.water_requirements ? `<span><i class="bi bi-droplet"></i> ${p.water_requirements}</span>` : ''}
+                                ${p.indoor_outdoor ? `<span><i class="bi bi-house"></i> ${p.indoor_outdoor}</span>` : ''}
+                            </div>
+                        </div>
+                    </a>
+                `).join('');
+            } catch {}
+        }
+
+        // AI Scanner
+        function setupDragDrop() {
+            const area = document.getElementById('aiUpload');
+            if (!area) return;
+            ['dragenter', 'dragover'].forEach(e => area.addEventListener(e, ev => { ev.preventDefault(); area.style.background = '#eff6ff'; }));
+            ['dragleave', 'drop'].forEach(e => area.addEventListener(e, ev => { ev.preventDefault(); area.style.background = 'white'; }));
+            area.addEventListener('drop', e => { if (e.dataTransfer.files.length) identifyPlant(e.dataTransfer.files[0]); });
+        }
+
+        async function identifyPlant(file) {
+            if (!file) return;
+            const resultEl = document.getElementById('aiResult');
+            const uploadEl = document.getElementById('aiUpload');
+            uploadEl.innerHTML = `
+                <img src="${URL.createObjectURL(file)}" style="max-height:120px;border-radius:8px;margin-bottom:0.5rem;">
+                <p style="font-size:0.85rem;color:#2563eb;"><span class="spinner" style="display:inline-block;width:16px;height:16px;border:2px solid var(--border-color);border-top-color:#2563eb;border-radius:50%;animation:spin 0.8s linear infinite;"></span> Analyzing...</p>
+            `;
+            const form = new FormData();
+            form.append('image', file);
+            try {
+                const resp = await fetch('/api/openai/flower-expert', { method: 'POST', body: form });
+                if (!resp.ok) throw new Error('Identification failed');
+                const data = await resp.json();
+                if (data.error) throw new Error(data.error);
+                const ai = data.ai || {};
+                const confidence = ((ai.confidence || 0) * 100).toFixed(0);
+                const slug = (ai.flowerName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                resultEl.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;">
+                        <div>
+                            <h3 style="font-size:1.1rem;margin-bottom:0.2rem;">${ai.flowerName || 'Unknown Plant'}</h3>
+                            <p style="font-style:italic;color:#2563eb;font-size:0.9rem;">${ai.scientificName || ''}</p>
+                        </div>
+                        <span style="background:#d1fae5;color:#059669;padding:0.2rem 0.6rem;border-radius:50px;font-size:0.75rem;font-weight:600;">${confidence}% Match</span>
+                    </div>
+                    <p style="font-size:0.85rem;color:var(--text-light);line-height:1.5;margin-bottom:0.5rem;">${(ai.description || '').slice(0, 250)}</p>
+                    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:0.75rem;">
+                        <a href="flower-detail.html?slug=${slug}" class="btn btn-sm btn-outline" style="border-color:#2563eb;color:#2563eb;">View Full Profile</a>
+                        <a href="care-guides-hub.html?flower=${encodeURIComponent(ai.flowerName || '')}" class="btn btn-sm btn-outline">Care Guide</a>
+                        <a href="marketplace.html?q=${encodeURIComponent(ai.flowerName || '')}" class="btn btn-sm btn-outline">Shop</a>
+                    </div>
+                `;
+            } catch (err) {
+                resultEl.innerHTML = `<p style="color:var(--error-color);">Failed to identify. Please try again.</p>`;
+                uploadEl.innerHTML = `
+                    <i class="bi bi-camera" style="font-size:2.5rem;color:#2563eb;margin-bottom:0.5rem;display:block;"></i>
+                    <p style="font-weight:500;margin-bottom:0.25rem;">Upload Plant Photo</p>
+                    <p style="font-size:0.8rem;color:var(--text-light);">or drag and drop</p>
+                    <input type="file" id="aiFileInput" accept="image/*" style="display:none;" onchange="identifyPlant(this.files[0])">
+                `;
+            }
+        }
+    </script>
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+</body>
+</html>
+

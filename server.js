@@ -149,6 +149,15 @@ app.get('/floral-design', (_, res) => res.sendFile(path.join(__dirname, 'floral-
 app.get('/floral-design/courses', (_, res) => res.sendFile(path.join(__dirname, 'floral-design-courses.html')));
 app.get('/course-marketplace', (_, res) => res.sendFile(path.join(__dirname, 'course-marketplace.html')));
 app.get('/flower-farming', (_, res) => res.sendFile(path.join(__dirname, 'flower-farming.html')));
+app.get('/plant-care', (_, res) => res.sendFile(path.join(__dirname, 'plant-care.html')));
+app.get('/business', (_, res) => res.sendFile(path.join(__dirname, 'business.html')));
+app.get('/discover', (_, res) => res.sendFile(path.join(__dirname, 'discover.html')));
+app.get('/photography', (_, res) => res.sendFile(path.join(__dirname, 'photography.html')));
+app.get('/sustainability', (_, res) => res.sendFile(path.join(__dirname, 'sustainability.html')));
+app.get('/organic-gardening', (_, res) => res.sendFile(path.join(__dirname, 'organic-gardening.html')));
+app.get('/plant-encyclopedia', (_, res) => res.sendFile(path.join(__dirname, 'plant-encyclopedia.html')));
+app.get('/garden-planner', (_, res) => res.sendFile(path.join(__dirname, 'garden-planner.html')));
+app.get('/seasonal-calendar', (_, res) => res.sendFile(path.join(__dirname, 'seasonal-calendar.html')));
 app.get('/lesson', (_, res) => res.sendFile(path.join(__dirname, 'lesson-viewer.html')));
 
 // ─── Detail pages ──────────────────────────────────────────────────────────

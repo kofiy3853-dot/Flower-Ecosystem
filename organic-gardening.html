@@ -1,0 +1,475 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Organic Gardening Hub â€” Grow flowers and plants naturally without synthetic chemicals. Learn organic methods, find products, and join the community.">
+    <title>Organic Gardening | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .org-hero { background:linear-gradient(135deg,#14532d 0%,#166534 40%,#22c55e 100%); padding:5rem 0 3.5rem; color:white; position:relative; overflow:hidden; }
+        .org-hero::before { content:''; position:absolute; top:-30%; right:-5%; width:500px; height:500px; background:rgba(255,255,255,0.06); border-radius:50%; }
+        .org-hero h1 { color:white; font-size:clamp(2rem,4vw,2.8rem); margin-bottom:0.5rem; }
+        .org-hero p { color:rgba(255,255,255,0.85); max-width:600px; margin-bottom:1.5rem; }
+        .org-hero-btns { display:flex; gap:0.75rem; flex-wrap:wrap; }
+        .org-hero-btns .btn { padding:0.65rem 1.5rem; border-radius:50px; }
+        .btn-white-green { background:white; color:#14532d; border:none; font-weight:600; }
+
+        /* Stats */
+        .org-stats { display:grid; grid-template-columns:repeat(5,1fr); gap:1rem; margin:-1.5rem auto 2rem; max-width:1000px; position:relative; z-index:10; }
+        .org-stat { background:var(--bg-white); border-radius:12px; padding:1rem; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.08); border:1px solid var(--border-color); }
+        .org-stat-value { font-size:1.3rem; font-weight:700; color:#16a34a; }
+        .org-stat-label { font-size:0.72rem; color:var(--text-light); }
+
+        /* Section Headers */
+        .org-section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+        .org-section-header h2 { margin:0; }
+
+        /* Methods */
+        .org-methods { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
+        .org-method { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; padding:1.5rem; transition:all 0.3s; cursor:pointer; }
+        .org-method:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); border-color:#16a34a; }
+        .org-method-icon { font-size:2.5rem; margin-bottom:0.75rem; }
+        .org-method h3 { font-size:1.1rem; margin-bottom:0.4rem; }
+        .org-method p { font-size:0.85rem; color:var(--text-light); line-height:1.5; margin-bottom:0.75rem; }
+        .org-method-tags { display:flex; gap:0.4rem; flex-wrap:wrap; }
+        .org-method-tag { font-size:0.7rem; padding:0.15rem 0.5rem; background:#dcfce7; color:#166534; border-radius:4px; font-weight:500; }
+
+        /* Benefits */
+        .org-benefits { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .org-benefit { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; }
+        .org-benefit-icon { font-size:2rem; margin-bottom:0.5rem; }
+        .org-benefit h4 { font-size:0.92rem; margin-bottom:0.3rem; }
+        .org-benefit p { font-size:0.78rem; color:var(--text-light); line-height:1.4; }
+
+        /* Products */
+        .org-products { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:1rem; }
+        .org-product { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; transition:all 0.2s; }
+        .org-product:hover { transform:translateY(-2px); box-shadow:var(--shadow-sm); border-color:#16a34a; }
+        .org-product img { width:100%; height:100px; object-fit:cover; }
+        .org-product .info { padding:0.75rem; }
+        .org-product .name { font-size:0.82rem; font-weight:500; }
+        .org-product .price { font-size:0.8rem; color:#16a34a; font-weight:600; }
+        .org-product .badge { display:inline-block; font-size:0.65rem; padding:0.1rem 0.4rem; background:#dcfce7; color:#166534; border-radius:3px; font-weight:600; margin-top:0.3rem; }
+
+        /* Guides */
+        .org-guides { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.25rem; }
+        .org-guide { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; overflow:hidden; transition:all 0.3s; text-decoration:none; color:inherit; }
+        .org-guide:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); }
+        .org-guide-img { height:160px; overflow:hidden; }
+        .org-guide-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .org-guide:hover .org-guide-img img { transform:scale(1.05); }
+        .org-guide-body { padding:1.25rem; }
+        .org-guide-badge { display:inline-flex; align-items:center; gap:0.3rem; background:#dcfce7; color:#166534; padding:0.2rem 0.5rem; border-radius:5px; font-size:0.68rem; font-weight:600; margin-bottom:0.5rem; }
+        .org-guide h3 { font-size:1rem; margin-bottom:0.3rem; }
+        .org-guide p { font-size:0.82rem; color:var(--text-light); line-height:1.5; }
+
+        /* Seasonal */
+        .org-seasonal { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .org-season { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; }
+        .org-season-icon { font-size:2rem; margin-bottom:0.5rem; }
+        .org-season h4 { font-size:0.95rem; margin-bottom:0.3rem; }
+        .org-season-list { list-style:none; padding:0; margin:0; }
+        .org-season-list li { font-size:0.82rem; color:var(--text-light); padding:0.2rem 0; }
+
+        /* Community */
+        .org-community { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+        .org-comm-item { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-decoration:none; color:inherit; transition:all 0.2s; }
+        .org-comm-item:hover { border-color:#16a34a; transform:translateY(-2px); }
+        .org-comm-icon { font-size:1.5rem; margin-bottom:0.5rem; }
+        .org-comm-item h4 { font-size:0.92rem; margin-bottom:0.2rem; }
+        .org-comm-item p { font-size:0.78rem; color:var(--text-light); }
+
+        /* AI */
+        .org-ai { background:linear-gradient(135deg,#dcfce7,#bbf7d0); border-radius:16px; padding:2rem; display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:center; }
+        .org-ai-input { display:flex; gap:0.5rem; }
+        .org-ai-input input { flex:1; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:10px; font-size:0.95rem; }
+        .org-ai-result { background:white; border-radius:12px; padding:1.25rem; border:1px solid var(--border-color); min-height:120px; }
+
+        /* Discover */
+        .org-discover { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .org-discover-item { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; padding:1rem; text-align:center; text-decoration:none; color:inherit; transition:all 0.2s; }
+        .org-discover-item:hover { border-color:#16a34a; transform:translateY(-2px); }
+        .org-discover-item i { font-size:1.5rem; color:#16a34a; margin-bottom:0.3rem; display:block; }
+        .org-discover-item h4 { font-size:0.85rem; margin-bottom:0.15rem; }
+        .org-discover-item p { font-size:0.72rem; color:var(--text-light); }
+
+        /* FAQ */
+        .org-faq { max-width:700px; margin:0 auto; }
+        .org-faq-item { border:1px solid var(--border-color); border-radius:10px; margin-bottom:0.75rem; overflow:hidden; }
+        .org-faq-q { padding:1rem 1.25rem; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-weight:500; font-size:0.95rem; background:var(--bg-white); }
+        .org-faq-q:hover { background:var(--bg-light); }
+        .org-faq-q i { transition:transform 0.3s; color:var(--text-light); }
+        .org-faq-item.open .org-faq-q i { transform:rotate(180deg); }
+        .org-faq-a { padding:0 1.25rem; max-height:0; overflow:hidden; transition:all 0.3s; font-size:0.9rem; color:var(--text-light); line-height:1.6; }
+        .org-faq-item.open .org-faq-a { padding:0 1.25rem 1rem; max-height:300px; }
+
+        @media(max-width:768px) {
+            .org-methods { grid-template-columns:1fr; }
+            .org-benefits { grid-template-columns:repeat(2,1fr); }
+            .org-seasonal { grid-template-columns:repeat(2,1fr); }
+            .org-community { grid-template-columns:1fr; }
+            .org-discover { grid-template-columns:repeat(2,1fr); }
+            .org-ai { grid-template-columns:1fr; }
+            .org-stats { grid-template-columns:repeat(3,1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="org-hero">
+        <div class="container">
+            <nav style="font-size:0.85rem;margin-bottom:1rem;color:rgba(255,255,255,0.6);">
+                <a href="index.html" style="color:rgba(255,255,255,0.6);text-decoration:none;">Home</a>
+                <span style="margin:0 0.5rem;">/</span>
+                <span style="color:white;">Organic Gardening</span>
+            </nav>
+            <h1>🍃 Organic Gardening</h1>
+            <p>Grow flowers and plants naturally without synthetic chemicals. Learn organic methods, find products, and join the community.</p>
+            <div class="org-hero-btns">
+                <a href="#methods" class="btn btn-white-green">📖 Learn Organic Methods</a>
+                <a href="#products" class="btn btn-outline-white">🛍️ Organic Products</a>
+                <a href="#community" class="btn btn-outline-white"><i class="bi bi-people"></i> Join Community</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="container">
+        <div class="org-stats">
+            <div class="org-stat"><div class="org-stat-value">200+</div><div class="org-stat-label">Organic Farms</div></div>
+            <div class="org-stat"><div class="org-stat-value">500+</div><div class="org-stat-label">Products</div></div>
+            <div class="org-stat"><div class="org-stat-value">150+</div><div class="org-stat-label">Guides</div></div>
+            <div class="org-stat"><div class="org-stat-value">5K+</div><div class="org-stat-label">Community Members</div></div>
+            <div class="org-stat"><div class="org-stat-value">30+</div><div class="org-stat-label">Certifications</div></div>
+        </div>
+    </div>
+
+    <!-- Organic Methods -->
+    <section class="section-padding" id="methods">
+        <div class="container">
+            <div class="org-section-header">
+                <h2><i class="bi bi-lightbulb" style="color:#16a34a;"></i> Organic Gardening Methods</h2>
+            </div>
+            <div class="org-methods">
+                <div class="org-method">
+                    <div class="org-method-icon">ðŸŒ¿</div>
+                    <h3>Composting</h3>
+                    <p>Transform kitchen scraps and garden waste into nutrient-rich compost for your soil.</p>
+                    <div class="org-method-tags">
+                        <span class="org-method-tag">Soil Health</span>
+                        <span class="org-method-tag">Waste Reduction</span>
+                    </div>
+                </div>
+                <div class="org-method">
+                    <div class="org-method-icon">ðŸ›</div>
+                    <h3>Beneficial Insects</h3>
+                    <p>Attract ladybugs, lacewings, and other natural pest controllers to your garden.</p>
+                    <div class="org-method-tags">
+                        <span class="org-method-tag">Pest Control</span>
+                        <span class="org-method-tag">Biodiversity</span>
+                    </div>
+                </div>
+                <div class="org-method">
+                    <div class="org-method-icon">ðŸ¤</div>
+                    <h3>Companion Planting</h3>
+                    <p>Grow plants together that benefit each other â€” deter pests, improve pollination, and enhance growth.</p>
+                    <div class="org-method-tags">
+                        <span class="org-method-tag">Natural Pest Control</span>
+                        <span class="org-method-tag">Growth Enhancement</span>
+                    </div>
+                </div>
+                <div class="org-method">
+                    <div class="org-method-icon">ðŸ‚</div>
+                    <h3>Mulching</h3>
+                    <p>Cover soil with organic materials to retain moisture, suppress weeds, and regulate temperature.</p>
+                    <div class="org-method-tags">
+                        <span class="org-method-tag">Water Conservation</span>
+                        <span class="org-method-tag">Weed Control</span>
+                    </div>
+                </div>
+                <div class="org-method">
+                    <div class="org-method-icon">ðŸŒ±</div>
+                    <h3>Cover Cropping</h3>
+                    <p>Plant cover crops to prevent erosion, improve soil, and add organic matter.</p>
+                    <div class="org-method-tags">
+                        <span class="org-method-tag">Soil Health</span>
+                        <span class="org-method-tag">Erosion Control</span>
+                    </div>
+                </div>
+                <div class="org-method">
+                    <div class="org-method-icon">ðŸ”„</div>
+                    <h3>Crop Rotation</h3>
+                    <p>Rotate plant families to prevent soil depletion and reduce pest buildup.</p>
+                    <div class="org-method-tags">
+                        <span class="org-method-tag">Soil Health</span>
+                        <span class="org-method-tag">Pest Prevention</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="org-section-header">
+                <h2><i class="bi bi-heart" style="color:#16a34a;"></i> Why Go Organic?</h2>
+            </div>
+            <div class="org-benefits">
+                <div class="org-benefit"><div class="org-benefit-icon">ðŸŒ</div><h4>Environmentally Safe</h4><p>No harmful chemicals entering the ecosystem</p></div>
+                <div class="org-benefit"><div class="org-benefit-icon">ðŸ</div><h4>Pollinator Friendly</h4><p>Protects bees, butterflies, and beneficial insects</p></div>
+                <div class="org-benefit"><div class="org-benefit-icon">ðŸ’ª</div><h4>Healthier Plants</h4><p>Stronger root systems and natural disease resistance</p></div>
+                <div class="org-benefit"><div class="org-benefit-icon">ðŸ’§</div><h4>Better Soil</h4><p>Improves soil structure and water retention</p></div>
+                <div class="org-benefit"><div class="org-benefit-icon">ðŸŽ</div><h4>Chemical-Free Produce</h4><p>Safe for you and your family</p></div>
+                <div class="org-benefit"><div class="org-benefit-icon">ðŸ’°</div><h4>Cost Effective</h4><p>Reduce spending on chemicals and pesticides</p></div>
+                <div class="org-benefit"><div class="org-benefit-icon">â™»ï¸</div><h4>Sustainable</h4><p>Supports long-term ecosystem health</p></div>
+                <div class="org-benefit"><div class="org-benefit-icon">ðŸŒ±</div><h4>Biodiversity</h4><p>Encourages diverse plant and animal life</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Organic Products -->
+    <section class="section-padding" id="products">
+        <div class="container">
+            <div class="org-section-header">
+                <h2><i class="bi bi-bag" style="color:#16a34a;"></i> Organic Products</h2>
+                <a href="marketplace.html" style="color:#16a34a;font-size:0.9rem;">Shop All â†’</a>
+            </div>
+            <div class="org-products" id="productsGrid"></div>
+        </div>
+    </section>
+
+    <!-- Seasonal Guide -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="org-section-header">
+                <h2><i class="bi bi-calendar3" style="color:#16a34a;"></i> Seasonal Organic Gardening</h2>
+            </div>
+            <div class="org-seasonal">
+                <div class="org-season">
+                    <div class="org-season-icon">ðŸŒ¸</div>
+                    <h4>Spring</h4>
+                    <ul class="org-season-list">
+                        <li>Start composting</li>
+                        <li>Plant seedlings</li>
+                        <li>Apply organic mulch</li>
+                        <li>Prepare beds</li>
+                    </ul>
+                </div>
+                <div class="org-season">
+                    <div class="org-season-icon">â˜€ï¸</div>
+                    <h4>Summer</h4>
+                    <ul class="org-season-list">
+                        <li>Water deeply morning</li>
+                        <li>Harvest compost</li>
+                        <li>Attract beneficial insects</li>
+                        <li>Monitor for pests</li>
+                    </ul>
+                </div>
+                <div class="org-season">
+                    <div class="org-season-icon">ðŸ‚</div>
+                    <h4>Autumn</h4>
+                    <ul class="org-season-list">
+                        <li>Collect seeds</li>
+                        <li>Add leaf mulch</li>
+                        <li>Plant cover crops</li>
+                        <li>Clean tools</li>
+                    </ul>
+                </div>
+                <div class="org-season">
+                    <div class="org-season-icon">â„ï¸</div>
+                    <h4>Winter</h4>
+                    <ul class="org-season-list">
+                        <li>Plan next season</li>
+                        <li>Order organic seeds</li>
+                        <li>Build compost bins</li>
+                        <li>Study techniques</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Guides -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="org-section-header">
+                <h2><i class="bi bi-book" style="color:#16a34a;"></i> Organic Gardening Guides</h2>
+                <a href="care-guides-hub.html" style="color:#16a34a;font-size:0.9rem;">View All â†’</a>
+            </div>
+            <div class="org-guides">
+                <a href="care-guides-hub.html?topic=composting" class="org-guide">
+                    <div class="org-guide-img"><img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=400&auto=format&fit=crop" alt="Composting" loading="lazy"></div>
+                    <div class="org-guide-body"><div class="org-guide-badge"><i class="bi bi-check-circle"></i> Beginner</div><h3>Composting 101</h3><p>Start your composting journey with this comprehensive guide.</p></div>
+                </a>
+                <a href="care-guides-hub.html?topic=pest-control" class="org-guide">
+                    <div class="org-guide-img"><img src="https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=400&auto=format&fit=crop" alt="Pest Control" loading="lazy"></div>
+                    <div class="org-guide-body"><div class="org-guide-badge"><i class="bi bi-check-circle"></i> Intermediate</div><h3>Natural Pest Control</h3><p>Manage pests without chemicals using biological methods.</p></div>
+                </a>
+                <a href="care-guides-hub.html?topic=soil" class="org-guide">
+                    <div class="org-guide-img"><img src="https://images.unsplash.com/photo-1470509037663-253afd7f0f51?q=400&auto=format&fit=crop" alt="Soil Health" loading="lazy"></div>
+                    <div class="org-guide-body"><div class="org-guide-badge"><i class="bi bi-check-circle"></i> Beginner</div><h3>Building Healthy Soil</h3><p>Improve soil structure naturally for better plant growth.</p></div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Assistant -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="org-ai">
+                <div>
+                    <h2 style="margin-bottom:0.5rem;"><i class="bi bi-robot" style="color:#16a34a;"></i> Organic Gardening AI</h2>
+                    <p style="color:var(--text-light);margin-bottom:1rem;">Get personalized organic gardening advice for your specific situation.</p>
+                    <div class="org-ai-input">
+                        <input type="text" id="aiQuestion" placeholder="e.g., How do I control aphids organically?">
+                        <button class="btn btn-primary" style="background:#16a34a;" onclick="askAI()"><i class="bi bi-send"></i></button>
+                    </div>
+                </div>
+                <div class="org-ai-result" id="aiResult">
+                    <p style="color:var(--text-light);font-size:0.9rem;">Ask me about composting, pest control, soil health, companion planting, or any organic gardening topic!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="org-section-header">
+                <h2><i class="bi bi-people" style="color:#16a34a;"></i> Organic Gardening Community</h2>
+            </div>
+            <div class="org-community">
+                <a href="discussions.html?category=organic" class="org-comm-item"><div class="org-comm-icon">ðŸ’¬</div><h4>Organic Discussions</h4><p>Share tips and ask questions about organic methods.</p></a>
+                <a href="clubs.html" class="org-comm-item"><div class="org-comm-icon">ðŸŒ±</div><h4>Organic Garden Clubs</h4><p>Join local organic gardening communities.</p></a>
+                <a href="events.html" class="org-comm-item"><div class="org-comm-icon">ðŸŽª</div><h4>Organic Events</h4><p>Workshops, farm tours, and organic fairs.</p></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Discover -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="org-section-header">
+                <h2><i class="bi bi-compass" style="color:#16a34a;"></i> Discover More</h2>
+            </div>
+            <div class="org-discover">
+                <a href="flower-encyclopedia.html" class="org-discover-item">📖<h4>Encyclopedia</h4><p>500+ species</p></a>
+                <a href="sustainability.html" class="org-discover-item"><i class="bi bi-globe"></i><h4>Sustainability</h4><p>Eco practices</p></a>
+                <a href="care-guides-hub.html" class="org-discover-item"><i class="bi bi-heart-pulse"></i><h4>Care Guides</h4><p>Expert instructions</p></a>
+                <a href="flower-farming.html" class="org-discover-item">🌱<h4>Farming Academy</h4><p>Learn farming</p></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section-padding">
+        <div class="container">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <h2><i class="bi bi-question-circle" style="color:#16a34a;"></i> Frequently Asked Questions</h2>
+            </div>
+            <div class="org-faq" id="faqGrid"></div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-padding" style="padding-top:0;">
+        <div class="container">
+            <div style="background:linear-gradient(135deg,#14532d,#166534);border-radius:16px;padding:3rem;text-align:center;color:white;">
+                <h2 style="color:white;margin-bottom:0.5rem;">Grow Naturally, Thrive Sustainably</h2>
+                <p style="color:rgba(255,255,255,0.85);margin-bottom:1.5rem;max-width:600px;margin-left:auto;margin-right:auto;">Join thousands of gardeners who are growing flowers and plants without synthetic chemicals. It's better for you, your garden, and the planet.</p>
+                <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                    <a href="#methods" class="btn btn-white-green">Learn Organic Methods</a>
+                    <a href="#products" class="btn btn-outline-white">Shop Organic Products</a>
+                    <a href="discussions.html" class="btn btn-outline-white">Join Community</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProducts();
+            loadFAQ();
+        });
+
+        function loadProducts() {
+            const products = [
+                { name: 'Organic Seeds', image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=200&auto=format&fit=crop', price: 'GHS 25', badge: 'Organic' },
+                { name: 'Compost Mix', image: 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=200&auto=format&fit=crop', price: 'GHS 35', badge: 'Organic' },
+                { name: 'Natural Pest Spray', image: 'https://images.unsplash.com/photo-1470509037663-253afd7f0f51?q=200&auto=format&fit=crop', price: 'GHS 20', badge: 'Chemical-Free' },
+                { name: 'Organic Fertilizer', image: 'https://images.unsplash.com/photo-1463320726281-696a485928c7?q=200&auto=format&fit=crop', price: 'GHS 40', badge: 'Organic' },
+                { name: 'Mulch', image: 'https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?q=200&auto=format&fit=crop', price: 'GHS 15', badge: 'Natural' },
+                { name: 'Seedling Trays', image: 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=200&auto=format&fit=crop', price: 'GHS 30', badge: 'Biodegradable' },
+                { name: 'Worm Composter', image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?q=200&auto=format&fit=crop', price: 'GHS 85', badge: 'Eco-Friendly' },
+                { name: 'Neem Oil', image: 'https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?q=200&auto=format&fit=crop', price: 'GHS 18', badge: 'Organic' }
+            ];
+            document.getElementById('productsGrid').innerHTML = products.map(p => `
+                <a href="marketplace.html?q=${encodeURIComponent(p.name)}" class="org-product">
+                    <img src="${p.image}" alt="${p.name}" loading="lazy">
+                    <div class="info">
+                        <div class="name">${p.name}</div>
+                        <div class="price">${p.price}</div>
+                        <div class="badge">${p.badge}</div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        function loadFAQ() {
+            const faqs = [
+                { q: 'What is organic gardening?', a: 'Organic gardening is the practice of growing plants without synthetic pesticides, fertilizers, or GMOs. It focuses on natural methods like composting, companion planting, and biological pest control.' },
+                { q: 'How do I start composting?', a: 'Start with a bin or pile, add equal parts green (kitchen scraps, grass) and brown (dry leaves, cardboard) materials, keep moist, and turn regularly. You will have usable compost in 2-3 months.' },
+                { q: 'What are good natural pest repellents?', a: 'Neem oil, garlic spray, diatomaceous earth, companion planting with marigolds and herbs, and encouraging beneficial insects like ladybugs.' },
+                { q: 'Can I use organic methods in containers?', a: 'Absolutely! Container gardening works well with organic methods. Use organic potting mix, compost tea for feeding, and natural pest solutions.' },
+                { q: 'How do I improve soil organically?', a: 'Add compost, use cover crops, practice crop rotation, apply mulch, and avoid tilling. These methods build soil structure and microbial life naturally.' },
+                { q: 'Is organic gardening more expensive?', a: 'Initial setup may cost more, but ongoing costs are lower since you make your own compost, save seeds, and reduce chemical purchases.' }
+            ];
+            document.getElementById('faqGrid').innerHTML = faqs.map((f, i) => `
+                <div class="org-faq-item${i === 0 ? ' open' : ''}">
+                    <div class="org-faq-q" onclick="this.parentElement.classList.toggle('open')">
+                        <span>${f.q}</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="org-faq-a">${f.a}</div>
+                </div>
+            `).join('');
+        }
+
+        async function askAI() {
+            const q = document.getElementById('aiQuestion')?.value?.trim();
+            if (!q) return;
+            const resultEl = document.getElementById('aiResult');
+            resultEl.innerHTML = '<p style="color:var(--text-light);">Thinking...</p>';
+            try {
+                const token = localStorage.getItem('flower-token');
+                const res = await fetch('/api/openai/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': 'Bearer ' + token } : {}) },
+                    body: JSON.stringify({ messages: [
+                        { role: 'system', content: 'You are an organic gardening expert. Help students with composting, natural pest control, companion planting, soil health, organic fertilizers, and sustainable gardening methods. Be encouraging and educational.' },
+                        { role: 'user', content: q }
+                    ]})
+                });
+                const data = await res.json();
+                resultEl.innerHTML = `<div style="font-size:0.92rem;line-height:1.7;">${(data.reply || data.message || 'I can help with organic gardening questions.').replace(/\n/g, '<br>')}</div>`;
+            } catch {
+                resultEl.innerHTML = '<p style="color:var(--error-color);">Failed to get response.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
+

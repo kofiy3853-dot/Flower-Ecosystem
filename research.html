@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Floriculture Research Hub — Explore scientific research, industry insights, and innovations in flowers and horticulture.">
+    <meta name="description" content="Floriculture Research Hub â€” Explore scientific research, industry insights, and innovations in flowers and horticulture.">
     <title>Floriculture Research Hub | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="styles/main.css?v=3.0">
@@ -75,7 +75,7 @@
 
     <section class="res-hero">
         <div class="container" style="position:relative;z-index:1;">
-            <h1><i class="bi bi-microscope"></i> Floriculture Research Hub</h1>
+            <h1>🔬 Floriculture Research Hub</h1>
             <p>Explore scientific research, industry insights, and innovations shaping the future of flowers and horticulture.</p>
             <div class="res-hero-btns">
                 <a href="#library" class="btn btn-white-blue"><i class="bi bi-journal-text"></i> Browse Research</a>
@@ -127,7 +127,7 @@
         <div class="container">
             <div class="res-section-header">
                 <h2><i class="bi bi-star" style="color:#f59e0b;"></i> Featured Research</h2>
-                <a href="#library" style="color:#2563eb;font-size:0.9rem;">View All →</a>
+                <a href="#library" style="color:#2563eb;font-size:0.9rem;">View All â†’</a>
             </div>
             <div class="res-featured" id="featuredGrid"></div>
         </div>
@@ -243,21 +243,21 @@
 
         function getToken() { return localStorage.getItem('flower-token'); }
 
-        // ─── Categories ──────────────────────────────────────────────
+        // â”€â”€â”€ Categories â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         async function loadCategories() {
             try {
                 const res = await fetch('/api/research/categories');
                 const cats = await res.json();
                 document.getElementById('categoryGrid').innerHTML = cats.map(c => `
                     <a class="res-cat" onclick="filterLibrary('${c.slug}', null); document.getElementById('library').scrollIntoView({behavior:'smooth'}); return false;">
-                        <div class="res-cat-icon">${c.icon || '📄'}</div>
+                        <div class="res-cat-icon">${c.icon || 'ðŸ“„'}</div>
                         <div class="res-cat-name">${c.name}</div>
                     </a>
                 `).join('');
             } catch {}
         }
 
-        // ─── Featured ────────────────────────────────────────────────
+        // â”€â”€â”€ Featured â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         async function loadFeatured() {
             try {
                 const res = await fetch('/api/research/featured');
@@ -266,7 +266,7 @@
             } catch {}
         }
 
-        // ─── Latest ──────────────────────────────────────────────────
+        // â”€â”€â”€ Latest â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         async function loadLatest() {
             try {
                 const res = await fetch('/api/research/latest');
@@ -275,7 +275,7 @@
             } catch {}
         }
 
-        // ─── Library ─────────────────────────────────────────────────
+        // â”€â”€â”€ Library â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         async function loadLibrary(page = 1) {
             const q = document.getElementById('resSearch')?.value?.trim() || currentLibraryQuery;
             let url = `/api/research?page=${page}&limit=12`;
@@ -318,7 +318,7 @@
             loadLibrary(1);
         }
 
-        // ─── Render ──────────────────────────────────────────────────
+        // â”€â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         function renderCards(articles, containerId) {
             const grid = document.getElementById(containerId);
             if (!grid || !articles?.length) { if (grid) grid.innerHTML = ''; return; }
@@ -348,13 +348,13 @@
                                 ${a.views ? `<span><i class="bi bi-eye"></i> ${a.views}</span>` : ''}
                                 ${a.bookmark_count ? `<span><i class="bi bi-bookmark"></i> ${a.bookmark_count}</span>` : ''}
                             </div>
-                            <span style="color:#2563eb;font-size:0.82rem;font-weight:500;">Read →</span>
+                            <span style="color:#2563eb;font-size:0.82rem;font-weight:500;">Read â†’</span>
                         </div>
                     </div>
                 </a>`;
         }
 
-        // ─── AI Assistant ────────────────────────────────────────────
+        // â”€â”€â”€ AI Assistant â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         async function askAI() {
             const q = document.getElementById('aiQuestion')?.value?.trim();
             if (!q) return;
@@ -382,7 +382,7 @@
             }
         }
 
-        // ─── Submit ──────────────────────────────────────────────────
+        // â”€â”€â”€ Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         async function loadSubmitCategories() {
             try {
                 const res = await fetch('/api/research/categories');
@@ -447,3 +447,4 @@
     <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 </body>
 </html>
+

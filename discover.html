@@ -1,0 +1,360 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover flowers â€” Encyclopedia, identification, care guides, meanings, and more. Your gateway to the world of flowers.">
+    <title>Discover | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .disc-hero { background:linear-gradient(135deg,#831843 0%,#be185d 50%,#ec4899 100%); padding:5rem 0 3.5rem; color:white; position:relative; overflow:hidden; }
+        .disc-hero::before { content:''; position:absolute; top:-30%; right:-5%; width:500px; height:500px; background:rgba(255,255,255,0.06); border-radius:50%; }
+        .disc-hero h1 { color:white; font-size:clamp(2rem,4vw,2.8rem); margin-bottom:0.5rem; }
+        .disc-hero p { color:rgba(255,255,255,0.85); max-width:600px; margin-bottom:1.5rem; }
+        .disc-hero-btns { display:flex; gap:0.75rem; flex-wrap:wrap; }
+        .disc-hero-btns .btn { padding:0.65rem 1.5rem; border-radius:50px; }
+        .btn-white-pink { background:white; color:#831843; border:none; font-weight:600; }
+        .btn-outline-white { background:transparent; color:white; border:1.5px solid rgba(255,255,255,0.5); }
+
+        /* Search */
+        .disc-search { background:var(--bg-white); border-radius:16px; padding:1.5rem; box-shadow:0 10px 40px rgba(0,0,0,0.1); margin:-2rem auto 2rem; max-width:800px; position:relative; z-index:10; }
+        .disc-search-bar { display:flex; gap:0.5rem; }
+        .disc-search-bar input { flex:1; padding:0.85rem 1.25rem; border:1px solid var(--border-color); border-radius:12px; font-size:1rem; }
+        .disc-search-bar input:focus { border-color:#ec4899; }
+
+        /* Section Headers */
+        .disc-section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+        .disc-section-header h2 { margin:0; }
+
+        /* Feature Cards */
+        .disc-features { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; }
+        .disc-feature { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; padding:1.5rem; text-decoration:none; color:inherit; transition:all 0.3s; display:flex; flex-direction:column; align-items:center; text-align:center; }
+        .disc-feature:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.1); border-color:#ec4899; }
+        .disc-feature-icon { width:64px; height:64px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:1rem; }
+        .disc-feature h3 { font-size:1.1rem; margin-bottom:0.4rem; }
+        .disc-feature p { font-size:0.85rem; color:var(--text-light); line-height:1.5; margin-bottom:1rem; flex:1; }
+        .disc-feature .btn { font-size:0.82rem; padding:0.45rem 1rem; border-radius:50px; }
+
+        /* AI Scanner */
+        .disc-ai { background:linear-gradient(135deg,#fdf2f8,#fce7f3); border-radius:16px; padding:2rem; display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:center; }
+        .disc-ai-upload { border:2px dashed #ec4899; border-radius:12px; padding:2rem; text-align:center; cursor:pointer; transition:all 0.2s; background:white; }
+        .disc-ai-upload:hover { background:#fdf2f8; }
+        .disc-ai-result { background:white; border-radius:12px; padding:1.25rem; border:1px solid var(--border-color); min-height:150px; }
+
+        /* Quick Links */
+        .disc-quick { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .disc-quick-item { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; text-decoration:none; color:inherit; transition:all 0.2s; }
+        .disc-quick-item:hover { border-color:#ec4899; transform:translateY(-2px); box-shadow:var(--shadow-sm); }
+        .disc-quick-item i { font-size:1.5rem; color:#ec4899; margin-bottom:0.3rem; display:block; }
+        .disc-quick-item h4 { font-size:0.88rem; margin-bottom:0.15rem; }
+        .disc-quick-item p { font-size:0.72rem; color:var(--text-light); }
+
+        /* Seasonal */
+        .disc-seasonal { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .disc-season { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; text-align:center; }
+        .disc-season-icon { font-size:2rem; margin-bottom:0.5rem; }
+        .disc-season h4 { font-size:0.9rem; margin-bottom:0.3rem; }
+        .disc-season-flowers { font-size:0.78rem; color:var(--text-light); line-height:1.4; }
+
+        /* Popular Flowers */
+        .disc-flowers { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:1rem; }
+        .disc-flower { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; overflow:hidden; text-decoration:none; color:inherit; transition:all 0.3s; }
+        .disc-flower:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.08); }
+        .disc-flower-img { height:120px; overflow:hidden; }
+        .disc-flower-img img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s; }
+        .disc-flower:hover .disc-flower-img img { transform:scale(1.05); }
+        .disc-flower-body { padding:0.75rem; }
+        .disc-flower-name { font-weight:600; font-size:0.88rem; margin-bottom:0.15rem; }
+        .disc-flower-sci { font-size:0.75rem; color:#ec4899; font-style:italic; }
+
+        /* AI Assistant */
+        .disc-assistant { background:linear-gradient(135deg,#fdf2f8,#fce7f3); border-radius:16px; padding:2rem; }
+        .disc-assistant-input { display:flex; gap:0.5rem; margin-top:1rem; }
+        .disc-assistant-input input { flex:1; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:10px; font-size:0.95rem; }
+        .disc-assistant-result { background:white; border-radius:12px; padding:1.25rem; border:1px solid var(--border-color); min-height:100px; margin-top:1rem; }
+
+        @media(max-width:768px) {
+            .disc-features { grid-template-columns:1fr; }
+            .disc-quick { grid-template-columns:repeat(2,1fr); }
+            .disc-seasonal { grid-template-columns:repeat(2,1fr); }
+            .disc-ai { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="disc-hero">
+        <div class="container">
+            <nav style="font-size:0.85rem;margin-bottom:1rem;color:rgba(255,255,255,0.6);">
+                <a href="index.html" style="color:rgba(255,255,255,0.6);text-decoration:none;">Home</a>
+                <span style="margin:0 0.5rem;">/</span>
+                <span style="color:white;">Discover</span>
+            </nav>
+            <h1>🔍 Discover Flowers</h1>
+            <p>Explore the world of flowers â€” identify species, learn meanings, find care tips, and connect with nature.</p>
+            <div class="disc-hero-btns">
+                <a href="flower-encyclopedia.html" class="btn btn-white-pink">📖 Browse Encyclopedia</a>
+                <a href="ai-scanner.html" class="btn btn-outline-white">📷 Identify a Flower</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search -->
+    <div class="container">
+        <div class="disc-search">
+            <div class="disc-search-bar">
+                <input type="text" id="searchInput" placeholder="Search flowers, species, meanings..." onkeydown="if(event.key==='Enter')searchFlowers()">
+                <button class="btn btn-primary" style="background:#ec4899;" onclick="searchFlowers()"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Cards -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="disc-section-header">
+                <h2><i class="bi bi-grid" style="color:#ec4899;"></i> Explore Features</h2>
+            </div>
+            <div class="disc-features">
+                <a href="flower-encyclopedia.html" class="disc-feature">
+                    <div class="disc-feature-icon" style="background:#fdf2f8;color:#ec4899;">📖</div>
+                    <h3>Flower Encyclopedia</h3>
+                    <p>Browse 500+ flower species with detailed profiles, care guides, and photos.</p>
+                    <span class="btn btn-outline" style="border-color:#ec4899;color:#ec4899;">Explore â†’</span>
+                </a>
+                <a href="ai-scanner.html" class="disc-feature">
+                    <div class="disc-feature-icon" style="background:#ede9fe;color:#8b5cf6;">📷</div>
+                    <h3>AI Flower Scanner</h3>
+                    <p>Upload a photo to instantly identify any flower with AI-powered analysis.</p>
+                    <span class="btn btn-outline" style="border-color:#8b5cf6;color:#8b5cf6;">Try Now â†’</span>
+                </a>
+                <a href="flower-meanings.html" class="disc-feature">
+                    <div class="disc-feature-icon" style="background:#dbeafe;color:#2563eb;"></i><i class="bi bi-heart"></i></div>
+                    <h3>Flower Meanings</h3>
+                    <p>Discover the symbolism and meaning behind every flower.</p>
+                    <span class="btn btn-outline" style="border-color:#2563eb;color:#2563eb;">Explore â†’</span>
+                </a>
+                <a href="care-guides-hub.html" class="disc-feature">
+                    <div class="disc-feature-icon" style="background:#d1fae5;color:#059669;"><i class="bi bi-heart-pulse"></i></div>
+                    <h3>Care Guides</h3>
+                    <p>Learn how to care for any flower with expert guides.</p>
+                    <span class="btn btn-outline" style="border-color:#059669;color:#059669;">Explore â†’</span>
+                </a>
+                <a href="flower-finder.html" class="disc-feature">
+                    <div class="disc-feature-icon" style="background:#fef3c7;color:#f59e0b;">🔍</div>
+                    <h3>Flower Finder</h3>
+                    <p>Find the perfect flower for any occasion or setting.</p>
+                    <span class="btn btn-outline" style="border-color:#f59e0b;color:#f59e0b;">Find â†’</span>
+                </a>
+                <a href="gardening.html" class="disc-feature">
+                    <div class="disc-feature-icon" style="background:#fce7f3;color:#ec4899;"><i class="bi bi-flower2"></i></div>
+                    <h3>Botanical Gardens</h3>
+                    <p>Discover beautiful gardens and botanical parks near you.</p>
+                    <span class="btn btn-outline" style="border-color:#ec4899;color:#ec4899;">Explore â†’</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Scanner -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="disc-ai">
+                <div>
+                    <h2 style="margin-bottom:0.5rem;"><i class="bi bi-camera" style="color:#ec4899;"></i> AI Flower Scanner</h2>
+                    <p style="color:var(--text-light);margin-bottom:1rem;">Upload a photo of any flower and get instant identification with care tips and related products.</p>
+                    <div class="disc-ai-upload" id="aiUpload" onclick="document.getElementById('aiFileInput').click()">
+                        <i class="bi bi-camera" style="font-size:2.5rem;color:#ec4899;margin-bottom:0.5rem;display:block;"></i>
+                        <p style="font-weight:500;margin-bottom:0.25rem;">Upload Flower Photo</p>
+                        <p style="font-size:0.8rem;color:var(--text-light);">or drag and drop</p>
+                        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:0.5rem;">JPG, PNG, WEBP &bull; Max 10MB</p>
+                        <input type="file" id="aiFileInput" accept="image/*" style="display:none;" onchange="identifyFlower(this.files[0])">
+                    </div>
+                </div>
+                <div class="disc-ai-result" id="aiResult">
+                    <p style="color:var(--text-light);font-size:0.9rem;">Upload a flower photo to get started. The AI will identify the species and provide care information.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Links -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="disc-section-header">
+                <h2><i class="bi bi-lightning" style="color:#ec4899;"></i> Quick Links</h2>
+            </div>
+            <div class="disc-quick">
+                <a href="plant-database.html" class="disc-quick-item"><i class="bi bi-database"></i><h4>Plant Database</h4><p>Search all plants</p></a>
+                <a href="bloom-calendar.html" class="disc-quick-item">📅<h4>Bloom Calendar</h4><p>Seasonal blooms</p></a>
+                <a href="identification.html" class="disc-quick-item">📷<h4>Identification</h4><p>Learn to identify</p></a>
+                <a href="flower-quiz.html" class="disc-quick-item">💡<h4>Flower Quiz</h4><p>Test your knowledge</p></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seasonal Flowers -->
+    <section class="section-padding bg-light">
+        <div class="container">
+            <div class="disc-section-header">
+                <h2><i class="bi bi-calendar3" style="color:#ec4899;"></i> Seasonal Blooms</h2>
+                <a href="bloom-calendar.html" style="color:#ec4899;font-size:0.9rem;">View Calendar â†’</a>
+            </div>
+            <div class="disc-seasonal">
+                <div class="disc-season"><div class="disc-season-icon">ðŸŒ¸</div><h4>Spring</h4><div class="disc-season-flowers">Cherry Blossoms, Tulips, Daffodils, Lilacs</div></div>
+                <div class="disc-season"><div class="disc-season-icon">â˜€ï¸</div><h4>Summer</h4><div class="disc-season-flowers">Sunflowers, Roses, Lavender, Dahlias</div></div>
+                <div class="disc-season"><div class="disc-season-icon">ðŸ‚</div><h4>Autumn</h4><div class="disc-season-flowers">Chrysanthemums, Marigolds, Asters</div></div>
+                <div class="disc-season"><div class="disc-season-icon">â„ï¸</div><h4>Winter</h4><div class="disc-season-flowers">Poinsettias, Amaryllis, Hellebores</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Flowers -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="disc-section-header">
+                <h2><i class="bi bi-star" style="color:#ec4899;"></i> Popular Flowers</h2>
+                <a href="flower-encyclopedia.html" style="color:#ec4899;font-size:0.9rem;">View All â†’</a>
+            </div>
+            <div class="disc-flowers" id="popularFlowers"></div>
+        </div>
+    </section>
+
+    <!-- AI Assistant -->
+    <section class="section-padding bg-light">
+        <div class="container" style="max-width:700px;">
+            <div class="disc-assistant">
+                <h2 style="margin-bottom:0.5rem;"><i class="bi bi-robot" style="color:#ec4899;"></i> Flora AI Assistant</h2>
+                <p style="color:var(--text-light);">Ask questions about flowers, get recommendations, and learn about plant care.</p>
+                <div class="disc-assistant-input">
+                    <input type="text" id="aiQuestion" placeholder="e.g., What flower symbolizes love?">
+                    <button class="btn btn-primary" style="background:#ec4899;" onclick="askAI()"><i class="bi bi-send"></i></button>
+                </div>
+                <div class="disc-assistant-result" id="aiResult">
+                    <p style="color:var(--text-light);font-size:0.9rem;">Ask me anything about flowers! I can help with identification, meanings, care, and more.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPopularFlowers();
+        });
+
+        async function loadPopularFlowers() {
+            try {
+                const res = await fetch('/api/flowers/featured');
+                const data = await res.json();
+                const flowers = Array.isArray(data) ? data : [];
+                if (flowers.length) {
+                    document.getElementById('popularFlowers').innerHTML = flowers.slice(0, 8).map(f => `
+                        <a href="flower-knowledge.html?slug=${f.slug || f.id}" class="disc-flower">
+                            <div class="disc-flower-img">
+                                <img src="${f.primary_image || f.image_url || 'https://images.unsplash.com/photo-1490750967868-88df5691a78b?q=200&auto=format&fit=crop'}" alt="${f.common_name}" loading="lazy">
+                            </div>
+                            <div class="disc-flower-body">
+                                <div class="disc-flower-name">${f.common_name}</div>
+                                <div class="disc-flower-sci">${f.scientific_name || ''}</div>
+                            </div>
+                        </a>
+                    `).join('');
+                } else {
+                    document.getElementById('popularFlowers').innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--text-light);padding:1rem;">Flowers coming soon!</p>';
+                }
+            } catch {}
+        }
+
+        function searchFlowers() {
+            const q = document.getElementById('searchInput')?.value?.trim();
+            if (q) window.location.href = `flower-encyclopedia.html?search=${encodeURIComponent(q)}`;
+        }
+
+        // AI Scanner
+        function setupDragDrop() {
+            const area = document.getElementById('aiUpload');
+            ['dragenter', 'dragover'].forEach(e => area.addEventListener(e, ev => { ev.preventDefault(); area.style.background = '#fdf2f8'; }));
+            ['dragleave', 'drop'].forEach(e => area.addEventListener(e, ev => { ev.preventDefault(); area.style.background = 'white'; }));
+            area.addEventListener('drop', e => { if (e.dataTransfer.files.length) identifyFlower(e.dataTransfer.files[0]); });
+        }
+        setupDragDrop();
+
+        async function identifyFlower(file) {
+            if (!file) return;
+            const resultEl = document.getElementById('aiResult');
+            const uploadEl = document.getElementById('aiUpload');
+            uploadEl.innerHTML = `
+                <img src="${URL.createObjectURL(file)}" style="max-height:120px;border-radius:8px;margin-bottom:0.5rem;">
+                <p style="font-size:0.85rem;color:#ec4899;"><i class="bi bi-hourglass-split"></i> Analyzing...</p>
+            `;
+            const form = new FormData();
+            form.append('image', file);
+            try {
+                const resp = await fetch('/api/openai/flower-expert', { method: 'POST', body: form });
+                if (!resp.ok) throw new Error('Identification failed');
+                const data = await resp.json();
+                if (data.error) throw new Error(data.error);
+                const ai = data.ai || {};
+                const confidence = ((ai.confidence || 0) * 100).toFixed(0);
+                resultEl.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;">
+                        <div>
+                            <h3 style="font-size:1.1rem;margin-bottom:0.2rem;">${ai.flowerName || 'Unknown Flower'}</h3>
+                            <p style="font-style:italic;color:#ec4899;font-size:0.9rem;">${ai.scientificName || ''}</p>
+                        </div>
+                        <span style="background:#d1fae5;color:#059669;padding:0.2rem 0.6rem;border-radius:50px;font-size:0.75rem;font-weight:600;">${confidence}% Match</span>
+                    </div>
+                    <p style="font-size:0.85rem;color:var(--text-light);line-height:1.5;margin-bottom:0.75rem;">${(ai.description || '').slice(0, 200)}</p>
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                        <a href="flower-detail.html?slug=${(ai.flowerName || '').toLowerCase().replace(/[^a-z0-9]+/g, '-')}" class="btn btn-sm btn-outline" style="border-color:#ec4899;color:#ec4899;">View Details</a>
+                        <a href="care-guides-hub.html?flower=${encodeURIComponent(ai.flowerName || '')}" class="btn btn-sm btn-outline">Care Guide</a>
+                    </div>
+                `;
+            } catch (err) {
+                resultEl.innerHTML = `<p style="color:var(--error-color);">Failed to identify. Please try again.</p>`;
+                uploadEl.innerHTML = `
+                    <i class="bi bi-camera" style="font-size:2.5rem;color:#ec4899;margin-bottom:0.5rem;display:block;"></i>
+                    <p style="font-weight:500;margin-bottom:0.25rem;">Upload Flower Photo</p>
+                    <p style="font-size:0.8rem;color:var(--text-light);">or drag and drop</p>
+                    <input type="file" id="aiFileInput" accept="image/*" style="display:none;" onchange="identifyFlower(this.files[0])">
+                `;
+            }
+        }
+
+        // AI Assistant
+        async function askAI() {
+            const q = document.getElementById('aiQuestion')?.value?.trim();
+            if (!q) return;
+            const resultEl = document.getElementById('aiResult');
+            resultEl.innerHTML = '<p style="color:var(--text-light);">Thinking...</p>';
+            try {
+                const token = localStorage.getItem('flower-token');
+                const res = await fetch('/api/openai/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': 'Bearer ' + token } : {}) },
+                    body: JSON.stringify({ messages: [
+                        { role: 'system', content: 'You are Flora, a knowledgeable flower expert. Help users learn about flowers, their meanings, care requirements, and recommendations. Be friendly and educational.' },
+                        { role: 'user', content: q }
+                    ]})
+                });
+                const data = await res.json();
+                resultEl.innerHTML = `<div style="font-size:0.92rem;line-height:1.7;">${(data.reply || data.message || 'I can help with flower questions.').replace(/\n/g, '<br>')}</div>`;
+            } catch {
+                resultEl.innerHTML = '<p style="color:var(--error-color);">Failed to get response.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
+

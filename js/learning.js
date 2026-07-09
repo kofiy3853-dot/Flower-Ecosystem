@@ -8,14 +8,14 @@ let currentPage = 1;
 let totalPages = 1;
 
 const LEARNING_CATEGORIES = [
-    { slug: 'floral-design', name: 'Floral Design', icon: 'bi-flower1', color: '#e74c3c' },
-    { slug: 'flower-farming', name: 'Flower Farming', icon: 'bi-seedling', color: '#27ae60' },
-    { slug: 'plant-care', name: 'Plant Care', icon: 'bi-flower3', color: '#10b981' },
-    { slug: 'business', name: 'Business', icon: 'bi-briefcase', color: '#8b5cf6' },
-    { slug: 'event-decoration', name: 'Event Decoration', icon: 'bi-ticket', color: '#f59e0b' },
-    { slug: 'gardening', name: 'Gardening', icon: 'bi-tree', color: '#3b82f6' },
-    { slug: 'photography', name: 'Photography', icon: 'bi-camera', color: '#ec4899' },
-    { slug: 'sustainability', name: 'Sustainability', icon: 'bi-globe', color: '#14b8a6' }
+    { slug: 'floral-design', name: 'Floral Design', icon: 'bi-flower1', color: '#e74c3c', link: 'floral-design.html' },
+    { slug: 'flower-farming', name: 'Flower Farming', icon: 'bi-seedling', color: '#27ae60', link: 'flower-farming.html' },
+    { slug: 'plant-care', name: 'Plant Care', icon: 'bi-flower3', color: '#10b981', link: 'plant-care.html' },
+    { slug: 'business', name: 'Business', icon: 'bi-briefcase', color: '#8b5cf6', link: 'business.html' },
+    { slug: 'event-decoration', name: 'Event Decoration', icon: 'bi-ticket', color: '#f59e0b', link: 'events.html?category=workshop' },
+    { slug: 'gardening', name: 'Gardening', icon: 'bi-tree', color: '#3b82f6', link: 'gardening.html' },
+    { slug: 'photography', name: 'Photography', icon: 'bi-camera', color: '#ec4899', link: 'photography.html' },
+    { slug: 'sustainability', name: 'Sustainability', icon: 'bi-globe', color: '#14b8a6', link: 'sustainability.html' }
 ];
 
 const LEARNING_PATHS = [
@@ -84,7 +84,7 @@ function renderCategoryCards() {
     const el = document.getElementById('catCards');
     if (!el) return;
     el.innerHTML = LEARNING_CATEGORIES.map(c => `
-        <div class="learn-cat-card${currentCategory === c.slug ? ' active' : ''}" data-slug="${c.slug}" onclick="selectCategory('${c.slug}')">
+        <div class="learn-cat-card${currentCategory === c.slug ? ' active' : ''}" data-slug="${c.slug}" onclick="${c.link ? `window.location.href='${c.link}'` : `selectCategory('${c.slug}')`}">
             <div class="learn-cat-card-icon" style="background:${c.color}15;"><i class="bi ${c.icon}"></i></div>
             <div class="learn-cat-card-name">${c.name}</div>
         </div>
@@ -94,7 +94,7 @@ function renderCategoryCards() {
     const mobileEl = document.getElementById('mobileCategories');
     if (mobileEl) {
         mobileEl.innerHTML = LEARNING_CATEGORIES.map(c => `
-            <span class="learn-chip${currentCategory === c.slug ? ' active' : ''}" data-slug="${c.slug}" onclick="selectCategory('${c.slug}');closeMobileFilter();">
+            <span class="learn-chip${currentCategory === c.slug ? ' active' : ''}" data-slug="${c.slug}" onclick="${c.link ? `window.location.href='${c.link}'` : `selectCategory('${c.slug}');closeMobileFilter();`}">
                 <i class="bi ${c.icon}"></i> ${c.name}
             </span>
         `).join('');

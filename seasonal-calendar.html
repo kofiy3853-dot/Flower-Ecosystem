@@ -1,0 +1,391 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Seasonal Planting Calendar â€” Know exactly what to plant, when to plant it, and how to care for your garden throughout the year.">
+    <title>Seasonal Planting Calendar | Flower Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Hero */
+        .sc-hero { background:linear-gradient(135deg,#065f46 0%,#047857 40%,#10b981 100%); padding:4rem 0 2.5rem; color:white; position:relative; overflow:hidden; }
+        .sc-hero::before { content:''; position:absolute; top:-30%; right:-5%; width:400px; height:400px; background:rgba(255,255,255,0.06); border-radius:50%; }
+        .sc-hero h1 { color:white; font-size:clamp(1.8rem,3.5vw,2.5rem); margin-bottom:0.5rem; }
+        .sc-hero p { color:rgba(255,255,255,0.85); max-width:600px; }
+
+        /* Section Headers */
+        .sc-section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+        .sc-section-header h2 { margin:0; }
+
+        /* Season Tabs */
+        .sc-season-tabs { display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+        .sc-season-tab { padding:0.6rem 1.25rem; border:2px solid var(--border-color); border-radius:10px; font-size:0.9rem; font-weight:500; cursor:pointer; background:var(--bg-white); transition:all 0.2s; display:flex; align-items:center; gap:0.4rem; }
+        .sc-season-tab:hover { border-color:#059669; }
+        .sc-season-tab.active { border-color:#059669; background:#ecfdf5; color:#059669; }
+
+        /* Month Calendar */
+        .sc-month-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:2rem; background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1rem; }
+        .sc-month-header { text-align:center; font-weight:600; font-size:0.82rem; padding:0.5rem; color:var(--text-light); }
+        .sc-month-day { text-align:center; padding:0.6rem; border-radius:8px; font-size:0.82rem; cursor:pointer; transition:all 0.2s; }
+        .sc-month-day:hover { background:var(--bg-light); }
+        .sc-month-day.today { background:#059669; color:white; font-weight:600; }
+        .sc-month-day.has-event { position:relative; }
+        .sc-month-day.has-event::after { content:''; position:absolute; bottom:2px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:#f59e0b; }
+        .sc-month-day.planting { background:#dcfce7; color:#166534; font-weight:500; }
+
+        /* Planting Schedule */
+        .sc-schedule { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-bottom:2rem; }
+        .sc-plant-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1rem; transition:all 0.3s; cursor:pointer; text-decoration:none; color:inherit; }
+        .sc-plant-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-sm); border-color:#059669; }
+        .sc-plant-icon { font-size:2rem; margin-bottom:0.5rem; }
+        .sc-plant-name { font-weight:600; font-size:0.95rem; margin-bottom:0.2rem; }
+        .sc-plant-meta { font-size:0.78rem; color:var(--text-light); }
+        .sc-plant-timing { display:flex; gap:0.25rem; margin-top:0.5rem; }
+        .sc-plant-month { width:18px; height:18px; border-radius:3px; font-size:0.5rem; display:flex; align-items:center; justify-content:center; }
+        .sc-plant-month.active { background:#059669; color:white; }
+        .sc-plant-month.inactive { background:var(--bg-light); color:var(--text-muted); }
+
+        /* Tasks */
+        .sc-tasks { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:2rem; }
+        .sc-task { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem; }
+        .sc-task-badge { display:inline-flex; align-items:center; gap:0.3rem; padding:0.15rem 0.5rem; border-radius:4px; font-size:0.68rem; font-weight:600; margin-bottom:0.5rem; }
+        .sc-task h4 { font-size:0.92rem; margin-bottom:0.3rem; }
+        .sc-task p { font-size:0.82rem; color:var(--text-light); line-height:1.5; }
+
+        /* Bloom Chart */
+        .sc-bloom-chart { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; overflow:hidden; }
+        .sc-bloom-header { padding:1rem 1.25rem; border-bottom:1px solid var(--border-color); }
+        .sc-bloom-row { display:flex; align-items:center; padding:0.75rem 1.25rem; border-bottom:1px solid var(--border-light); }
+        .sc-bloom-row:last-child { border-bottom:none; }
+        .sc-bloom-name { width:120px; font-size:0.85rem; font-weight:500; flex-shrink:0; }
+        .sc-bloom-bars { flex:1; display:flex; gap:2px; }
+        .sc-bloom-bar { height:20px; border-radius:3px; flex:1; }
+        .sc-bloom-bar.active { background:#059669; }
+        .sc-bloom-bar.inactive { background:var(--bg-light); }
+
+        /* Zones */
+        .sc-zones { display:grid; grid-template-columns:repeat(5,1fr); gap:0.75rem; }
+        .sc-zone { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; padding:1rem; text-align:center; cursor:pointer; transition:all 0.2s; }
+        .sc-zone:hover, .sc-zone.active { border-color:#059669; background:#ecfdf5; }
+        .sc-zone h4 { font-size:0.85rem; margin-bottom:0.2rem; }
+        .sc-zone p { font-size:0.72rem; color:var(--text-light); }
+        .sc-zone .temp { font-size:0.7rem; color:#059669; font-weight:600; margin-top:0.2rem; }
+
+        /* Quick Links */
+        .sc-links { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+        .sc-link { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; padding:1rem; text-align:center; text-decoration:none; color:inherit; transition:all 0.2s; }
+        .sc-link:hover { border-color:#059669; transform:translateY(-2px); }
+        .sc-link i { font-size:1.5rem; color:#059669; margin-bottom:0.3rem; display:block; }
+        .sc-link h4 { font-size:0.85rem; margin-bottom:0.15rem; }
+        .sc-link p { font-size:0.72rem; color:var(--text-light); }
+
+        @media(max-width:768px) {
+            .sc-tasks { grid-template-columns:1fr; }
+            .sc-zones { grid-template-columns:repeat(2,1fr); }
+            .sc-links { grid-template-columns:repeat(2,1fr); }
+            .sc-month-grid { font-size:0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <!-- Hero -->
+    <section class="sc-hero">
+        <div class="container">
+            <nav style="font-size:0.85rem;margin-bottom:1rem;color:rgba(255,255,255,0.6);">
+                <a href="gardening.html" style="color:rgba(255,255,255,0.6);text-decoration:none;">Gardening</a>
+                <span style="margin:0 0.5rem;">/</span>
+                <span style="color:white;">Seasonal Calendar</span>
+            </nav>
+            <h1>📅 Seasonal Planting Calendar</h1>
+            <p>Know exactly what to plant, when to plant it, and how to care for your garden throughout the year.</p>
+        </div>
+    </section>
+
+    <section class="section-padding">
+        <div class="container">
+            <!-- Season Tabs -->
+            <div class="sc-season-tabs" id="seasonTabs"></div>
+
+            <!-- Monthly Calendar -->
+            <div class="sc-section-header">
+                <h2><i class="bi bi-calendar-month" style="color:#059669;"></i> <span id="monthTitle">January</span> Calendar</h2>
+                <div style="display:flex;gap:0.5rem;">
+                    <button class="btn btn-outline btn-sm" onclick="prevMonth()"><i class="bi bi-chevron-left"></i></button>
+                    <button class="btn btn-outline btn-sm" onclick="nextMonth()"><i class="bi bi-chevron-right"></i></button>
+                </div>
+            </div>
+            <div class="sc-month-grid" id="monthGrid"></div>
+
+            <!-- What to Plant -->
+            <div class="sc-section-header">
+                <h2><i class="bi bi-seedling" style="color:#059669;"></i> What to Plant This Month</h2>
+            </div>
+            <div class="sc-schedule" id="plantSchedule"></div>
+
+            <!-- Tasks -->
+            <div class="sc-section-header">
+                <h2><i class="bi bi-check2-square" style="color:#059669;"></i> Monthly Tasks</h2>
+            </div>
+            <div class="sc-tasks" id="taskList"></div>
+
+            <!-- Bloom Chart -->
+            <div class="sc-section-header">
+                <h2><i class="bi bi-bar-chart" style="color:#059669;"></i> Bloom Schedule</h2>
+                <a href="bloom-calendar.html" style="color:#059669;font-size:0.9rem;">Full Calendar â†’</a>
+            </div>
+            <div class="sc-bloom-chart" id="bloomChart"></div>
+
+            <!-- Climate Zones -->
+            <div class="sc-section-header" style="margin-top:2rem;">
+                <h2><i class="bi bi-geo-alt" style="color:#059669;"></i> Climate Zones</h2>
+            </div>
+            <div class="sc-zones" id="zoneList"></div>
+
+            <!-- Quick Links -->
+            <div class="sc-section-header" style="margin-top:2rem;">
+                <h2><i class="bi bi-lightning" style="color:#059669;"></i> Quick Links</h2>
+            </div>
+            <div class="sc-links">
+                <a href="plant-encyclopedia.html" class="sc-link">📖<h4>Plant Encyclopedia</h4><p>Browse all plants</p></a>
+                <a href="care-guides-hub.html" class="sc-link"><i class="bi bi-heart-pulse"></i><h4>Care Guides</h4><p>Expert instructions</p></a>
+                <a href="garden-planner.html" class="sc-link">🗺️<h4>Garden Planner</h4><p>Design your garden</p></a>
+                <a href="marketplace.html" class="sc-link">🛍️<h4>Shop Supplies</h4><p>Seeds & tools</p></a>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="js/shared/components.js?v=3.1"></script>
+    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/theme.js?v=3.0"></script>
+    <script src="js/shared/api.js?v=4.0"></script>
+    <script>
+        const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        let currentMonth = new Date().getMonth();
+        let currentSeason = getSeason(currentMonth);
+
+        const SEASON_DATA = {
+            spring: {
+                months: [2,3,4],
+                plants: [
+                    { icon:'ðŸŒ·', name:'Tulips', timing:[2,3,4], sun:'Full', water:'Medium' },
+                    { icon:'ðŸŒ¸', name:'Cherry Blossoms', timing:[3,4], sun:'Full', water:'Medium' },
+                    { icon:'ðŸŒ¼', name:'Daffodils', timing:[1,2,3], sun:'Full', water:'Medium' },
+                    { icon:'ðŸŒº', name:'Lilacs', timing:[3,4], sun:'Full', water:'Regular' },
+                    { icon:'ðŸŒ¸', name:'Peonies', timing:[3,4], sun:'Full', water:'Regular' },
+                    { icon:'ðŸ’', name:'Hyacinths', timing:[2,3], sun:'Full', water:'Moderate' }
+                ],
+                tasks: [
+                    { type:'Planning', badge:'type-planning', icon:'ðŸ“‹', title:'Plan Garden Layout', desc:'Design your garden beds and choose plant locations.' },
+                    { type:'Planting', badge:'type-outdoor', icon:'ðŸŒ±', title:'Start Seeds Indoors', desc:'Begin growing seedlings 6-8 weeks before last frost.' },
+                    { type:'Maintenance', badge:'type-maintenance', icon:'âœ‚ï¸', title:'Prune Roses', desc:'Cut back dead wood and shape rose bushes before new growth.' },
+                    { type:'Soil', badge:'type-planning', icon:'ðŸŒ', title:'Prepare Beds', desc:'Add compost and amend soil before planting season.' },
+                    { type:'Planting', badge:'type-outdoor', icon:'ðŸŒ·', title:'Plant Bulbs', desc:'Plant spring-blooming bulbs as soon as ground thaws.' },
+                    { type:'Watering', badge:'type-watering', icon:'ðŸ’§', title:'Start Watering', desc:'Begin regular watering as temperatures warm up.' }
+                ]
+            },
+            summer: {
+                months: [5,6,7],
+                plants: [
+                    { icon:'ðŸŒ»', name:'Sunflowers', timing:[4,5,6], sun:'Full', water:'Regular' },
+                    { icon:'ðŸŒ¹', name:'Roses', timing:[5,6], sun:'Full', water:'Regular' },
+                    { icon:'ðŸ’œ', name:'Lavender', timing:[5,6], sun:'Full', water:'Low' },
+                    { icon:'ðŸŒº', name:'Dahlias', timing:[4,5], sun:'Full', water:'Regular' },
+                    { icon:'ðŸŒ¼', name:'Zinnias', timing:[5,6], sun:'Full', water:'Moderate' },
+                    { icon:'ðŸŒ¸', name:'Marigolds', timing:[4,5,6], sun:'Full', water:'Regular' }
+                ],
+                tasks: [
+                    { type:'Watering', badge:'type-watering', icon:'ðŸ’§', title:'Deep Watering', desc:'Water deeply in morning to reduce evaporation.' },
+                    { type:'Maintenance', badge:'type-maintenance', icon:'âœ‚ï¸', title:'Deadhead Blooms', desc:'Remove spent flowers to encourage more blooms.' },
+                    { type:'Fertilizing', badge:'type-outdoor', icon:'ðŸ§ª', title:'Feed Plants', desc:'Apply balanced fertilizer every 4-6 weeks.' },
+                    { type:'Pest Control', badge:'type-maintenance', icon:'ðŸ›', title:'Monitor for Pests', desc:'Check leaves weekly for aphids and spider mites.' },
+                    { type:'Maintenance', badge:'type-maintenance', icon:'ðŸ‚', title:'Mulch Beds', desc:'Add 2-3 inches of mulch to retain moisture.' },
+                    { type:'Harvesting', badge:'type-harvesting', icon:'âœ‚ï¸', title:'Harvest Herbs', desc:'Regular harvesting encourages bushier growth.' }
+                ]
+            },
+            autumn: {
+                months: [8,9,10],
+                plants: [
+                    { icon:'ðŸŒ¼', name:'Chrysanthemums', timing:[8,9], sun:'Full', water:'Regular' },
+                    { icon:'ðŸŒ»', name:'Marigolds', timing:[8,9], sun:'Full', water:'Moderate' },
+                    { icon:'ðŸ’œ', name:'Asters', timing:[8,9,10], sun:'Full', water:'Regular' },
+                    { icon:'ðŸŒ¸', name:'Sedums', timing:[8,9], sun:'Full', water:'Low' },
+                    { icon:'ðŸŒ·', name:'Spring Bulbs', timing:[9,10,11], sun:'Full', water:'Low' },
+                    { icon:'ðŸŒ¿', name:'Cover Crops', timing:[9,10], sun:'Any', water:'Low' }
+                ],
+                tasks: [
+                    { type:'Planting', badge:'type-outdoor', icon:'ðŸŒ·', title:'Plant Spring Bulbs', desc:'Plant tulips, daffodils, and other spring bulbs now.' },
+                    { type:'Maintenance', badge:'type-maintenance', icon:'ðŸ‚', title:'Clean Up Beds', desc:'Remove dead plants and add compost to beds.' },
+                    { type:'Soil', badge:'type-planning', icon:'ðŸŒ', title:'Add Compost', desc:'Top-dress beds with compost before winter.' },
+                    { type:'Maintenance', badge:'type-maintenance', icon:'âœ‚ï¸', title:'Cut Back Perennials', desc:'Trim back spent foliage to prepare for dormancy.' },
+                    { type:'Planting', badge:'type-outdoor', icon:'ðŸŒ±', title:'Plant Cover Crops', desc:'Sow cover crops to protect and enrich soil.' },
+                    { type:'Maintenance', badge:'type-maintenance', icon:'ðŸ§Š', title:'Protect from Frost', desc:'Cover tender plants before first frost.' }
+                ]
+            },
+            winter: {
+                months: [11,0,1],
+                plants: [
+                    { icon:'ðŸŽ„', name:'Poinsettias', timing:[11], sun:'Indirect', water:'Low' },
+                    { icon:'ðŸŒº', name:'Amaryllis', timing:[11,12], sun:'Bright', water:'Moderate' },
+                    { icon:'â„ï¸', name:'Hellebores', timing:[12,1], sun:'Partial', water:'Regular' },
+                    { icon:'ðŸŒ¸', name:'Cyclamen', timing:[11,12], sun:'Indirect', water:'Moderate' },
+                    { icon:'ðŸŒ¿', name:'Indoor Herbs', timing:[12,1], sun:'Bright', water:'Regular' },
+                    { icon:'ðŸŒ±', name:'Start Seeds', timing:[1,2], sun:'Bright', water:'Light' }
+                ],
+                tasks: [
+                    { type:'Planning', badge:'type-planning', icon:'ðŸ“‹', title:'Plan Next Season', desc:'Review this year and plan improvements for spring.' },
+                    { type:'Planning', badge:'type-indoor', icon:'ðŸŒ±', title:'Order Seeds Early', desc:'Popular varieties sell out fast â€” order in January.' },
+                    { type:'Maintenance', badge:'type-maintenance', icon:'ðŸ”§', title:'Clean & Store Tools', desc:'Clean, sharpen, and oil garden tools for storage.' },
+                    { type:'Planning', badge:'type-planning', icon:'ðŸ“š', title:'Study Techniques', desc:'Read about new gardening methods and varieties.' },
+                    { type:'Indoor', badge:'type-indoor', icon:'ðŸª´', title:'Tend Houseplants', desc:'Increase humidity and reduce watering for dormancy.' },
+                    { type:'Indoor', badge:'type-indoor', icon:'ðŸŒ±', title:'Start Seeds Indoors', desc:'Begin growing seedlings under grow lights.' }
+                ]
+            }
+        };
+
+        const BLOOM_DATA = [
+            { name:'Roses', blooms:[0,0,1,1,1,1,1,1,1,1,0,0] },
+            { name:'Tulips', blooms:[0,1,1,1,0,0,0,0,0,0,0,0] },
+            { name:'Sunflowers', blooms:[0,0,0,1,1,1,1,1,0,0,0,0] },
+            { name:'Lavender', blooms:[0,0,0,0,1,1,1,1,0,0,0,0] },
+            { name:'Chrysanthemums', blooms:[0,0,0,0,0,0,0,1,1,1,0,0] },
+            { name:'Dahlias', blooms:[0,0,0,0,1,1,1,1,1,0,0,0] },
+            { name:'Orchids', blooms:[1,1,0,0,1,1,1,0,0,1,1,1] },
+            { name:'Lilies', blooms:[0,0,0,0,1,1,1,1,0,0,0,0] }
+        ];
+
+        const ZONES = [
+            { name:'Tropical', temp:'25-35Â°C', desc:'Year-round warm, high humidity' },
+            { name:'Subtropical', temp:'18-28Â°C', desc:'Mild winters, warm summers' },
+            { name:'Temperate', temp:'10-25Â°C', desc:'Distinct seasons, moderate rainfall' },
+            { name:'Continental', temp:'-5-25Â°C', desc:'Cold winters, warm summers' },
+            { name:'Arid', temp:'15-40Â°C', desc:'Hot, dry with minimal rainfall' }
+        ];
+
+        function getSeason(month) {
+            if (month >= 2 && month <= 4) return 'spring';
+            if (month >= 5 && month <= 7) return 'summer';
+            if (month >= 8 && month <= 10) return 'autumn';
+            return 'winter';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSeasonTabs();
+            renderMonth();
+            renderPlantSchedule();
+            renderTasks();
+            renderBloomChart();
+            renderZones();
+        });
+
+        function renderSeasonTabs() {
+            const seasonNames = { spring:'ðŸŒ¸ Spring', summer:'â˜€ï¸ Summer', autumn:'ðŸ‚ Autumn', winter:'â„ï¸ Winter' };
+            document.getElementById('seasonTabs').innerHTML = Object.entries(seasonNames).map(([key, name]) => `
+                <button class="sc-season-tab${currentSeason === key ? ' active' : ''}" onclick="setSeason('${key}')">${name}</button>
+            `).join('');
+        }
+
+        function setSeason(season) {
+            currentSeason = season;
+            const months = SEASON_DATA[season].months;
+            currentMonth = months[0];
+            renderSeasonTabs();
+            renderMonth();
+            renderPlantSchedule();
+            renderTasks();
+        }
+
+        function prevMonth() { currentMonth = (currentMonth - 1 + 12) % 12; renderMonth(); renderPlantSchedule(); renderTasks(); }
+        function nextMonth() { currentMonth = (currentMonth + 1) % 12; renderMonth(); renderPlantSchedule(); renderTasks(); }
+
+        function renderMonth() {
+            document.getElementById('monthTitle').textContent = MONTHS[currentMonth];
+            const year = new Date().getFullYear();
+            const firstDay = new Date(year, currentMonth, 1).getDay();
+            const daysInMonth = new Date(year, currentMonth + 1, 0).getDate();
+            const today = new Date();
+            const isCurrentMonth = today.getMonth() === currentMonth;
+
+            const plantingDays = new Set([5, 10, 15, 20, 25]);
+            const eventDays = new Set([1, 8, 15, 22]);
+
+            const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+            let html = dayNames.map(d => `<div class="sc-month-header">${d}</div>`).join('');
+            for (let i = 0; i < firstDay; i++) html += '<div class="sc-month-day"></div>';
+            for (let d = 1; d <= daysInMonth; d++) {
+                const classes = ['sc-month-day'];
+                if (isCurrentMonth && d === today.getDate()) classes.push('today');
+                if (plantingDays.has(d)) classes.push('planting');
+                if (eventDays.has(d)) classes.push('has-event');
+                html += `<div class="${classes.join(' ')}">${d}</div>`;
+            }
+            document.getElementById('monthGrid').innerHTML = html;
+        }
+
+        function renderPlantSchedule() {
+            const plants = SEASON_DATA[currentSeason].plants;
+            document.getElementById('plantSchedule').innerHTML = plants.map(p => `
+                <a href="flower-detail.html?slug=${p.name.toLowerCase().replace(/\s+/g, '-')}" class="sc-plant-card">
+                    <div class="sc-plant-icon">${p.icon}</div>
+                    <div class="sc-plant-name">${p.name}</div>
+                    <div class="sc-plant-meta">${p.sun} sun â€¢ ${p.water} water</div>
+                    <div class="sc-plant-timing">
+                        ${MONTH_SHORT.map((m, i) => `<div class="sc-plant-month ${p.timing.includes(i) ? 'active' : 'inactive'}" title="${MONTHS[i]}">${m.charAt(0)}</div>`).join('')}
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        function renderTasks() {
+            const tasks = SEASON_DATA[currentSeason].tasks;
+            const badgeColors = { 'type-planning':'background:#dbeafe;color:#1e40af', 'type-indoor':'background:#fef3c7;color:#92400e', 'type-outdoor':'background:#d1fae5;color:#065f46', 'type-maintenance':'background:#ede9fe;color:#5b21b6', 'type-watering':'background:#dbeafe;color:#1e40af', 'type-harvesting':'background:#fee2e2;color:#991b1b' };
+            document.getElementById('taskList').innerHTML = tasks.map(t => `
+                <div class="sc-task">
+                    <div class="sc-task-badge" style="${badgeColors[t.badge] || ''}">${t.icon} ${t.type}</div>
+                    <h4>${t.title}</h4>
+                    <p>${t.desc}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderBloomChart() {
+            document.getElementById('bloomChart').innerHTML = `
+                <div class="sc-bloom-header"><strong style="font-size:0.9rem;">Bloom Schedule by Month</strong></div>
+                ${BLOOM_DATA.map(b => `
+                    <div class="sc-bloom-row">
+                        <div class="sc-bloom-name">${b.name}</div>
+                        <div class="sc-bloom-bars">
+                            ${b.blooms.map((v, i) => `<div class="sc-bloom-bar ${v ? 'active' : 'inactive'}" title="${MONTHS[i]}"></div>`).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+                <div style="display:flex;justify-content:space-between;padding:0.5rem 1.25rem;font-size:0.7rem;color:var(--text-muted);">
+                    ${MONTH_SHORT.map(m => `<span>${m}</span>`).join('')}
+                </div>
+            `;
+        }
+
+        function renderZones() {
+            document.getElementById('zoneList').innerHTML = ZONES.map((z, i) => `
+                <div class="sc-zone${i === 2 ? ' active' : ''}" onclick="selectZone(this)">
+                    <h4>${z.name}</h4>
+                    <p>${z.desc}</p>
+                    <div class="temp">${z.temp}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectZone(el) {
+            document.querySelectorAll('.sc-zone').forEach(z => z.classList.remove('active'));
+            el.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+
