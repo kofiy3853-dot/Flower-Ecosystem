@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Buyer Dashboard - Manage orders, favorites, and track deliveries.">
+    <meta name="description" content="Buyer Dashboard - Manage orders, saved items, and track deliveries.">
     <title>My Dashboard | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,7 +17,7 @@
         .stat-card .icon { background:rgba(216,68,124,0.1); color:var(--primary-color); }
         .section { animation:fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
-        .order-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1rem; margin-bottom:0.75rem; display:flex; gap:1rem; align-items:center; transition:all 0.2s; }
+        .order-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:12px; padding:1rem; margin-bottom:0.75rem; display:flex; gap:1rem; align-items:center; transition:all 0.2s; cursor:pointer; }
         .order-card:hover { border-color:var(--primary-color); }
         .order-img { width:60px; height:60px; border-radius:8px; object-fit:cover; flex-shrink:0; }
         .order-info { flex:1; }
@@ -28,6 +28,7 @@
         .badge { display:inline-block; padding:0.15rem 0.5rem; border-radius:4px; font-size:0.72rem; font-weight:600; }
         .badge-pending { background:#fff3cd; color:#856404; }
         .badge-confirmed { background:#cce5ff; color:#004085; }
+        .badge-processing { background:#e2e3f5; color:#383d91; }
         .badge-shipped { background:#d4edda; color:#155724; }
         .badge-delivered { background:#d1ecf1; color:#0c5460; }
         .badge-cancelled { background:#f8d7da; color:#721c24; }
@@ -43,10 +44,13 @@
         .activity-icon { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0; }
         .activity-text { font-size:0.88rem; }
         .activity-time { font-size:0.75rem; color:var(--text-light); }
-        .settings-tab { border:none; background:none; color:var(--text-light); padding:0.5rem 1rem; cursor:pointer; border-bottom:2px solid transparent; }
+        .settings-tab { border:none; background:none; color:var(--text-light); padding:0.5rem 1rem; cursor:pointer; border-bottom:2px solid transparent; font-size:0.85rem; font-weight:500; }
         .settings-tab:hover { color:var(--text-main); }
-        .settings-tab.active { color:var(--primary-color); border-bottom-color:var(--primary-color); font-weight:500; }
+        .settings-tab.active { color:var(--primary-color); border-bottom-color:var(--primary-color); }
         .settings-panel { animation:fadeIn 0.3s ease; }
+        .notif-item { transition:all 0.15s; }
+        .notif-item:hover { background:var(--bg-light); }
+        .notif-item.unread { border-left:3px solid var(--primary-color); }
         .dash-mobile-item.active { color:var(--primary-color) !important; }
         @media(max-width:768px) {
             .dash-mobile-nav { display:block !important; }
@@ -57,778 +61,247 @@
 </head>
 <body>
 <div class="dash-layout">
-        <nav class="dash-sidebar">
-            <div class="dash-sidebar-profile">
-                <div class="avatar" id="sidebarAvatar">B</div>
-                <div class="info">
-                    <h4 id="sidebarName">My Account</h4>
-                    <p>Buyer</p>
-                </div>
+    <nav class="dash-sidebar">
+        <div class="dash-sidebar-profile">
+            <div class="avatar" id="sidebarAvatar">B</div>
+            <div class="info">
+                <h4 id="sidebarName">My Account</h4>
+                <p>Buyer</p>
             </div>
-            <h3>Menu</h3>
-            <ul class="dash-nav">
-                <li><a href="#dashboard" class="active" data-section="dashboard"><i class="bi bi-house"></i> Dashboard</a></li>
-                <li><a href="#orders" data-section="orders"><i class="bi bi-receipt"></i> My Orders</a></li>
-                <li><a href="#wishlist" data-section="wishlist"><i class="bi bi-bookmark-heart"></i> Wishlist</a></li>
-                <li><a href="#favorites" data-section="favorites"><i class="bi bi-heart"></i> Favorites</a></li>
-                <li><a href="#tracking" data-section="tracking"><i class="bi bi-truck"></i> Order Tracking</a></li>
-                <li><a href="#recently-viewed" data-section="recently-viewed"><i class="bi bi-clock-history"></i> Recently Viewed</a></li>
-                <li><a href="#learning" data-section="learning"><i class="bi bi-mortarboard"></i> My Learning</a></li>
-                <li><a href="#events" data-section="events"><i class="bi bi-calendar-event"></i> My Events</a></li>
-                <li><a href="#community" data-section="community"><i class="bi bi-people"></i> Community</a></li>
-                <li><a href="#messages" data-section="messages"><i class="bi bi-chat-dots"></i> Messages</a></li>
-                <li><a href="#notifications" data-section="notifications"><i class="bi bi-bell"></i> Notifications</a></li>
-                <li><a href="#settings" data-section="settings"><i class="bi bi-gear"></i> Settings</a></li>
-                <li><a href="#" class="theme-toggle" id="themeToggle"><i class="bi bi-moon-fill" id="themeIcon"></i> <span id="themeText">Dark Mode</span></a></li>
-                <li style="margin-top:1rem;border-top:1px solid var(--border-color);padding-top:0.75rem;"><a href="#" id="buyerLogout" style="color:var(--error-color);"><i class="bi bi-box-arrow-left"></i> Sign Out</a></li>
-            </ul>
-        </nav>
-
-        <main class="dash-main">
-            <div id="loginPrompt" class="login-prompt" style="display:none;">
-                <i class="bi bi-person-circle" style="font-size:3rem;display:block;margin-bottom:1rem;color:var(--text-light);"></i>
-                <h2>Sign In Required</h2>
-                <p style="color:var(--text-light);">Sign in to access your dashboard.</p>
-                <a href="javascript:void(0)" onclick="sessionStorage.setItem('pending-auth','login');if(typeof openAuthModal==='function')openAuthModal('login');else window.location.href='login.html';" class="btn btn-primary">Sign In</a>
-            </div>
-
-            <div id="dashContent" style="display:none;">
-                <!-- Dashboard -->
-                <div id="section-dashboard" class="section active">
-                    <div class="welcome-card" style="background:linear-gradient(135deg,var(--primary-color),#be185d);color:white;border-radius:16px;padding:2rem;margin-bottom:1.5rem;">
-                        <h2 id="welcomeTitle" style="color:white;margin-bottom:0.25rem;">Welcome Back</h2>
-                        <p style="opacity:0.85;">Manage your orders, favorites, and account.</p>
-                    </div>
-                    <div class="stats-grid" id="statsGrid"></div>
-
-                    <!-- Quick Actions -->
-                    <div class="section-card" style="margin-bottom:1.5rem;">
-                        <h3><i class="bi bi-lightning" style="color:var(--accent-gold)"></i> Quick Actions</h3>
-                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.75rem;">
-                            <a href="marketplace.html" class="btn btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
-                                <i class="bi bi-bag" style="font-size:1.5rem;color:var(--primary-color);"></i> Shop
-                            </a>
-                            <a href="events.html" class="btn btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
-                                <i class="bi bi-calendar-event" style="font-size:1.5rem;color:var(--primary-color);"></i> Events
-                            </a>
-                            <a href="learning.html" class="btn btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
-                                <i class="bi bi-mortarboard" style="font-size:1.5rem;color:var(--primary-color);"></i> Learn
-                            </a>
-                            <a href="community.html" class="btn btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
-                                <i class="bi bi-people" style="font-size:1.5rem;color:var(--primary-color);"></i> Community
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="grid-2">
-                        <div class="section-card">
-                            <h3>Recent Orders</h3>
-                            <div id="recentOrders"></div>
-                        </div>
-                        <div class="section-card">
-                            <h3>Recommended For You</h3>
-                            <div id="recommendations"></div>
-                        </div>
-                    </div>
-
-                    <!-- Upcoming Events -->
-                    <div class="section-card" style="margin-top:1.5rem;">
-                        <h3><i class="bi bi-calendar-event" style="color:var(--primary-color)"></i> Upcoming Events</h3>
-                        <div id="dashboardEvents"></div>
-                    </div>
-                </div>
-
-                <!-- Orders -->
-                <div id="section-orders" class="section">
-                    <h1 style="margin-bottom:1.5rem;">My Orders</h1>
-                    <div id="ordersList"></div>
-                </div>
-
-                <!-- Wishlist -->
-                <div id="section-wishlist" class="section">
-                    <h1 style="margin-bottom:1.5rem;">My Wishlist</h1>
-                    <p style="color:var(--text-light);margin-bottom:1rem;">Items you've saved for later</p>
-                    <div class="fav-grid" id="wishlistGrid"></div>
-                </div>
-
-                <!-- Favorites -->
-                <div id="section-favorites" class="section">
-                    <h1 style="margin-bottom:1.5rem;">Favorites</h1>
-                    <div class="fav-grid" id="favoritesGrid"></div>
-                </div>
-
-                <!-- Order Tracking -->
-                <div id="section-tracking" class="section">
-                    <h1 style="margin-bottom:1.5rem;">Order Tracking</h1>
-                    <div id="trackingList"></div>
-                </div>
-
-                <!-- Recently Viewed -->
-                <div id="section-recently-viewed" class="section">
-                    <h1 style="margin-bottom:1.5rem;">Recently Viewed</h1>
-                    <div class="fav-grid" id="recentlyViewedGrid"></div>
-                </div>
-
-                <!-- Learning -->
-                <div id="section-learning" class="section">
-                    <h1 style="margin-bottom:1.5rem;">My Learning</h1>
-                    <div class="stats-grid" id="learningStats"></div>
-                    <div class="grid-2" style="margin-top:1.5rem;">
-                        <div class="section-card">
-                            <h3>Continue Learning</h3>
-                            <div id="continueCourses"></div>
-                        </div>
-                        <div class="section-card">
-                            <h3>Certificates</h3>
-                            <div id="certificatesList"></div>
-                        </div>
-                    </div>
-                    <!-- Learning Progress -->
-                    <div class="section-card" style="margin-top:1.5rem;">
-                        <h3><i class="bi bi-graph-up" style="color:var(--primary-color)"></i> Learning Progress</h3>
-                        <div id="learningProgress"></div>
-                    </div>
-                </div>
-
-                <!-- My Events -->
-                <div id="section-events" class="section">
-                    <h1 style="margin-bottom:1.5rem;">My Events</h1>
-                    <div class="grid-2">
-                        <div class="section-card">
-                            <h3>Upcoming Events</h3>
-                            <div id="upcomingEventsList"></div>
-                        </div>
-                        <div class="section-card">
-                            <h3>Past Events</h3>
-                            <div id="pastEventsList"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Community -->
-                <div id="section-community" class="section">
-                    <h1 style="margin-bottom:1.5rem;">Community Activity</h1>
-                    <div class="grid-2">
-                        <div class="section-card">
-                            <h3>My Posts</h3>
-                            <div id="myPosts"></div>
-                        </div>
-                        <div class="section-card">
-                            <h3>My Discussions</h3>
-                            <div id="myDiscussions"></div>
-                        </div>
-                    </div>
-                    <div class="section-card" style="margin-top:1rem;">
-                        <h3>Upcoming Events</h3>
-                        <div id="upcomingEvents"></div>
-                    </div>
-                </div>
-
-                <!-- Messages -->
-                <div id="section-messages" class="section">
-                    <h1 style="margin-bottom:1.5rem;">Messages</h1>
-                    <div class="section-card">
-                        <p style="text-align:center;color:var(--text-light);padding:2rem;">
-                            <a href="messages.html" class="btn btn-primary">Open Messages</a>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Notifications -->
-                <div id="section-notifications" class="section">
-                    <h1 style="margin-bottom:1.5rem;">Notifications</h1>
-                    <div id="notificationsList"></div>
-                </div>
-
-                <!-- Activity -->
-                <div id="section-activity" class="section">
-                    <h1 style="margin-bottom:1.5rem;">Recent Activity</h1>
-                    <div class="section-card" id="activityList"></div>
-                </div>
-
-                <!-- Settings -->
-                <div id="section-settings" class="section">
-                    <h1 style="margin-bottom:1.5rem;">Account Settings</h1>
-                    <div class="section-card" id="settingsForm"></div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Mobile Bottom Nav -->
-    <nav class="dash-mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg-white);border-top:1px solid var(--border-color);padding:0.5rem;z-index:100;">
-        <div style="display:flex;justify-content:space-around;">
-            <a href="#dashboard" class="dash-mobile-item active" data-section="dashboard" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text-light);font-size:0.65rem;gap:0.15rem;">
-                <i class="bi bi-house" style="font-size:1.1rem;"></i> Home
-            </a>
-            <a href="#orders" class="dash-mobile-item" data-section="orders" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text-light);font-size:0.65rem;gap:0.15rem;">
-                <i class="bi bi-receipt" style="font-size:1.1rem;"></i> Orders
-            </a>
-            <a href="#favorites" class="dash-mobile-item" data-section="favorites" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text-light);font-size:0.65rem;gap:0.15rem;">
-                <i class="bi bi-heart" style="font-size:1.1rem;"></i> Favorites
-            </a>
-            <a href="#learning" class="dash-mobile-item" data-section="learning" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text-light);font-size:0.65rem;gap:0.15rem;">
-                <i class="bi bi-mortarboard" style="font-size:1.1rem;"></i> Learning
-            </a>
-            <a href="#settings" class="dash-mobile-item" data-section="settings" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text-light);font-size:0.65rem;gap:0.15rem;">
-                <i class="bi bi-gear" style="font-size:1.1rem;"></i> More
-            </a>
         </div>
+        <h3>Menu</h3>
+        <ul class="dash-nav">
+            <li><a href="#dashboard" class="active" data-section="dashboard"><i class="bi bi-house"></i> Dashboard</a></li>
+            <li><a href="#orders" data-section="orders"><i class="bi bi-receipt"></i> My Orders</a></li>
+            <li><a href="#saved" data-section="saved"><i class="bi bi-heart"></i> Saved Items</a></li>
+            <li><a href="#tracking" data-section="tracking"><i class="bi bi-truck"></i> Order Tracking</a></li>
+            <li><a href="#recently-viewed" data-section="recently-viewed"><i class="bi bi-clock-history"></i> Recently Viewed</a></li>
+            <li><a href="#learning" data-section="learning"><i class="bi bi-mortarboard"></i> My Learning</a></li>
+            <li><a href="#events" data-section="events"><i class="bi bi-calendar-event"></i> My Events</a></li>
+            <li><a href="#community" data-section="community"><i class="bi bi-people"></i> Community</a></li>
+            <li><a href="#messages" data-section="messages"><i class="bi bi-chat-dots"></i> Messages</a></li>
+            <li><a href="#notifications" data-section="notifications"><i class="bi bi-bell"></i> Notifications <span id="notifBadge" style="display:none;background:var(--error-color);color:white;font-size:0.65rem;padding:0.1rem 0.4rem;border-radius:10px;margin-left:0.35rem;"></span></a></li>
+            <li><a href="#activity" data-section="activity"><i class="bi bi-activity"></i> Activity</a></li>
+            <li><a href="#settings" data-section="settings"><i class="bi bi-gear"></i> Settings</a></li>
+            <li><a href="#" class="theme-toggle" id="themeToggle"><i class="bi bi-moon-fill" id="themeIcon"></i> <span id="themeText">Dark Mode</span></a></li>
+            <li style="margin-top:1rem;border-top:1px solid var(--border-color);padding-top:0.75rem;"><a href="#" id="buyerLogout" style="color:var(--error-color);"><i class="bi bi-box-arrow-left"></i> Sign Out</a></li>
+        </ul>
     </nav>
 
-    <script src="js/shared/api.js?v=4.0"></script>
-    <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.4"></script>
-    <script src="js/shared/ui.js?v=2.0"></script>
-    <script src="js/shared/cart.js?v=3.0"></script>
+    <main class="dash-main">
+        <div id="loginPrompt" class="login-prompt" style="display:none;">
+            <i class="bi bi-person-circle" style="font-size:3rem;display:block;margin-bottom:1rem;color:var(--text-light);"></i>
+            <h2>Sign In Required</h2>
+            <p style="color:var(--text-light);">Sign in to access your dashboard.</p>
+            <a href="javascript:void(0)" onclick="sessionStorage.setItem('pending-auth','login');if(typeof openAuthModal==='function')openAuthModal('login');else window.location.href='login.html';" class="btn btn-primary">Sign In</a>
+        </div>
+
+        <div id="dashContent" style="display:none;">
+            <!-- Dashboard -->
+            <div id="section-dashboard" class="section active">
+                <div class="welcome-card" style="background:linear-gradient(135deg,var(--primary-color),#be185d);color:white;border-radius:16px;padding:2rem;margin-bottom:1.5rem;">
+                    <h2 id="welcomeTitle" style="color:white;margin-bottom:0.25rem;">Welcome Back</h2>
+                    <p style="opacity:0.85;">Manage your orders, saved items, and account.</p>
+                </div>
+                <div class="stats-grid" id="statsGrid"></div>
+
+                <div class="section-card" style="margin-bottom:1.5rem;">
+                    <h3><i class="bi bi-lightning" style="color:var(--accent-gold)"></i> Quick Actions</h3>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.75rem;">
+                        <a href="marketplace.html" class="btn btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                            <i class="bi bi-bag" style="font-size:1.5rem;color:var(--primary-color);"></i> Shop
+                        </a>
+                        <a href="events.html" class="btn btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                            <i class="bi bi-calendar-event" style="font-size:1.5rem;color:var(--primary-color);"></i> Events
+                        </a>
+                        <a href="learning.html" class="btn btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                            <i class="bi bi-mortarboard" style="font-size:1.5rem;color:var(--primary-color);"></i> Learn
+                        </a>
+                        <a href="community.html" class="btn btn-outline" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1rem;">
+                            <i class="bi bi-people" style="font-size:1.5rem;color:var(--primary-color);"></i> Community
+                        </a>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="section-card">
+                        <h3>Recent Orders</h3>
+                        <div id="recentOrders"></div>
+                    </div>
+                    <div class="section-card">
+                        <h3>Recommended For You</h3>
+                        <div id="recommendations"></div>
+                    </div>
+                </div>
+
+                <div class="section-card" style="margin-top:1.5rem;">
+                    <h3><i class="bi bi-calendar-event" style="color:var(--primary-color)"></i> Upcoming Events</h3>
+                    <div id="dashboardEvents"></div>
+                </div>
+            </div>
+
+            <!-- Orders -->
+            <div id="section-orders" class="section">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+                    <h1 style="margin:0;">My Orders</h1>
+                    <div id="orderFilters"></div>
+                </div>
+                <div id="ordersList"></div>
+            </div>
+
+            <!-- Saved Items -->
+            <div id="section-saved" class="section">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+                    <div>
+                        <h1 style="margin:0;">Saved Items</h1>
+                        <p style="color:var(--text-light);margin:0.25rem 0 0;">Products you've saved for later</p>
+                    </div>
+                    <div id="savedFilters"></div>
+                </div>
+                <div class="fav-grid" id="savedGrid"></div>
+            </div>
+
+            <!-- Order Tracking -->
+            <div id="section-tracking" class="section">
+                <h1 style="margin-bottom:1.5rem;">Order Tracking</h1>
+                <div id="trackingList"></div>
+            </div>
+
+            <!-- Recently Viewed -->
+            <div id="section-recently-viewed" class="section">
+                <h1 style="margin-bottom:1.5rem;">Recently Viewed</h1>
+                <div class="fav-grid" id="recentlyViewedGrid"></div>
+            </div>
+
+            <!-- Learning -->
+            <div id="section-learning" class="section">
+                <h1 style="margin-bottom:1.5rem;">My Learning</h1>
+                <div class="stats-grid" id="learningStats"></div>
+                <div class="grid-2" style="margin-top:1.5rem;">
+                    <div class="section-card">
+                        <h3>Continue Learning</h3>
+                        <div id="continueCourses"></div>
+                    </div>
+                    <div class="section-card">
+                        <h3>Certificates</h3>
+                        <div id="certificatesList"></div>
+                    </div>
+                </div>
+                <div class="section-card" style="margin-top:1.5rem;">
+                    <h3><i class="bi bi-graph-up" style="color:var(--primary-color)"></i> Learning Progress</h3>
+                    <div id="learningProgress"></div>
+                </div>
+            </div>
+
+            <!-- My Events -->
+            <div id="section-events" class="section">
+                <h1 style="margin-bottom:1.5rem;">My Events</h1>
+                <div class="grid-2">
+                    <div class="section-card">
+                        <h3>Upcoming Events</h3>
+                        <div id="upcomingEventsList"></div>
+                    </div>
+                    <div class="section-card">
+                        <h3>Past Events</h3>
+                        <div id="pastEventsList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community -->
+            <div id="section-community" class="section">
+                <h1 style="margin-bottom:1.5rem;">Community Activity</h1>
+                <div class="grid-2">
+                    <div class="section-card">
+                        <h3>My Posts</h3>
+                        <div id="myPosts"></div>
+                    </div>
+                    <div class="section-card">
+                        <h3>My Discussions</h3>
+                        <div id="myDiscussions"></div>
+                    </div>
+                </div>
+                <div class="section-card" style="margin-top:1rem;">
+                    <h3>Upcoming Events</h3>
+                    <div id="upcomingEvents"></div>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div id="section-messages" class="section">
+                <h1 style="margin-bottom:1.5rem;">Messages</h1>
+                <div class="section-card">
+                    <p style="text-align:center;color:var(--text-light);padding:2rem;">
+                        <a href="messages.html" class="btn btn-primary"><i class="bi bi-chat-dots"></i> Open Messages</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div id="section-notifications" class="section">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+                    <h1 style="margin:0;">Notifications</h1>
+                    <button class="btn btn-outline btn-sm" onclick="markAllNotifRead()"><i class="bi bi-check-all"></i> Mark All Read</button>
+                </div>
+                <div id="notificationsList"></div>
+            </div>
+
+            <!-- Activity -->
+            <div id="section-activity" class="section">
+                <h1 style="margin-bottom:1.5rem;">Recent Activity</h1>
+                <div class="section-card" id="activityList"></div>
+            </div>
+
+            <!-- Settings -->
+            <div id="section-settings" class="section">
+                <h1 style="margin-bottom:1.5rem;">Account Settings</h1>
+                <div class="section-card" id="settingsForm"></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Order Detail Modal -->
+<div id="orderModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:1rem;">
+    <div style="background:var(--bg-white);border-radius:16px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+            <h2 style="margin:0;font-size:1.2rem;" id="modalOrderTitle">Order Details</h2>
+            <button onclick="closeOrderModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-light);">&times;</button>
+        </div>
+        <div id="modalOrderContent"></div>
+    </div>
+</div>
+
+<!-- Mobile Bottom Nav -->
+<nav class="dash-mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg-white);border-top:1px solid var(--border-color);padding:0.5rem;z-index:100;">
+    <div style="display:flex;justify-content:space-around;">
+        <a href="#dashboard" class="dash-mobile-item active" data-section="dashboard" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text-light);font-size:0.65rem;gap:0.15rem;">
+            <i class="bi bi-house" style="font-size:1.1rem;"></i> Home
+        </a>
+        <a href="#orders" class="dash-mobile-item" data-section="orders" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text-light);font-size:0.65rem;gap:0.15rem;">
+            <i class="bi bi-receipt" style="font-size:1.1rem;"></i> Orders
+        </a>
+        <a href="#saved" class="dash-mobile-item" data-section="saved" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text-light);font-size:0.65rem;gap:0.15rem;">
+            <i class="bi bi-heart" style="font-size:1.1rem;"></i> Saved
+        </a>
+        <a href="#learning" class="dash-mobile-item" data-section="learning" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text-light);font-size:0.65rem;gap:0.15rem;">
+            <i class="bi bi-mortarboard" style="font-size:1.1rem;"></i> Learning
+        </a>
+        <a href="#settings" class="dash-mobile-item" data-section="settings" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--text-light);font-size:0.65rem;gap:0.15rem;">
+            <i class="bi bi-gear" style="font-size:1.1rem;"></i> More
+        </a>
+    </div>
+</nav>
+
+<div id="footer-container"></div>
+
+<script src="js/shared/api.js?v=4.0"></script>
+<script src="js/shared/theme.js?v=3.0"></script>
+<script src="js/shared/auth.js?v=3.4"></script>
+<script src="js/shared/ui.js?v=2.0"></script>
+<script src="js/shared/cart.js?v=3.0"></script>
 <script src="js/shared/animations.js?v=3.0"></script>
-    <script>
-        let currentSection = 'dashboard';
-
-        function initDashboard() {
-            if (!localStorage.getItem('flower-token')) {
-                document.getElementById('loginPrompt').style.display = 'block';
-                return;
-            }
-            document.getElementById('dashContent').style.display = 'block';
-
-            // Navigation
-            document.querySelectorAll('.dash-nav a[data-section]').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const section = link.dataset.section;
-                    document.querySelectorAll('.dash-nav a').forEach(l => l.classList.remove('active'));
-                    link.classList.add('active');
-                    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                    document.getElementById('section-' + section).classList.add('active');
-                    currentSection = section;
-                    loadSection(section);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
-            });
-
-            // Logout
-            document.getElementById('buyerLogout')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (typeof logout === 'function') logout();
-                window.location.href = '/index.html';
-            });
-
-            // Load user info
-            const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
-            if (user) {
-                document.getElementById('sidebarName').textContent = user.name || user.email || 'My Account';
-                document.getElementById('sidebarAvatar').textContent = (user.name || 'U')[0].toUpperCase();
-                document.getElementById('welcomeTitle').textContent = `Welcome Back, ${user.name || 'there'}`;
-            }
-
-            loadSection('dashboard');
-        }
-
-        function loadSection(section) {
-            switch (section) {
-                case 'dashboard': loadOverview(); break;
-                case 'orders': loadOrders(); break;
-                case 'wishlist': loadWishlist(); break;
-                case 'favorites': loadFavorites(); break;
-                case 'tracking': loadTracking(); break;
-                case 'recently-viewed': loadRecentlyViewed(); break;
-                case 'learning': loadLearning(); break;
-                case 'events': loadMyEvents(); break;
-                case 'community': loadCommunity(); break;
-                case 'messages': break;
-                case 'notifications': loadNotifications(); break;
-                case 'settings': loadSettings(); break;
-            }
-        }
-
-        async function loadOverview() {
-            // Stats
-            let orders = [];
-            try { orders = await fetch('/api/orders', { headers: authHeaders() }).then(r => r.json()); } catch {}
-            const orderList = Array.isArray(orders) ? orders : (orders.orders || []);
-
-            const totalSpent = orderList.reduce((s, o) => s + Number(o.total_amount || 0), 0);
-            const pending = orderList.filter(o => o.status === 'PENDING' || o.status === 'CONFIRMED').length;
-            const delivered = orderList.filter(o => o.status === 'DELIVERED').length;
-
-            document.getElementById('statsGrid').innerHTML = `
-                <div class="stat-card"><div class="icon"><i class="bi bi-receipt"></i></div><div class="num">${orderList.length}</div><div class="label">Total Orders</div></div>
-                <div class="stat-card"><div class="icon"><i class="bi bi-currency-dollar"></i></div><div class="num">GHS ${totalSpent.toFixed(2)}</div><div class="label">Total Spent</div></div>
-                <div class="stat-card"><div class="icon"><i class="bi bi-hourglass-split"></i></div><div class="num">${pending}</div><div class="label">In Progress</div></div>
-                <div class="stat-card"><div class="icon"><i class="bi bi-check-circle"></i></div><div class="num">${delivered}</div><div class="label">Delivered</div></div>
-            `;
-
-            // Recent orders
-            const recent = orderList.slice(0, 5);
-            document.getElementById('recentOrders').innerHTML = recent.length ? recent.map(o => `
-                <div class="order-card">
-                    <div class="order-info">
-                        <div class="order-name">Order #${(o.id || '').slice(0, 8)}</div>
-                        <div class="order-meta">${o.created_at ? new Date(o.created_at).toLocaleDateString() : ''}</div>
-                    </div>
-                    <div class="order-right">
-                        <div class="order-price">GHS ${Number(o.total_amount || 0).toFixed(2)}</div>
-                        <span class="badge badge-${(o.status || '').toLowerCase()}">${o.status || 'Pending'}</span>
-                    </div>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No orders yet. <a href="marketplace.html">Start shopping!</a></p>';
-
-            // Recommendations
-            let products = [];
-            try { products = await fetch('/api/products?limit=4&sort=popular', { headers: authHeaders() }).then(r => r.json()); } catch {}
-            const productList = Array.isArray(products) ? products : (products.products || []);
-
-            document.getElementById('recommendations').innerHTML = productList.length ? productList.map(p => `
-                <div style="display:flex;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);cursor:pointer;" onclick="window.location.href='product-detail.html?id=${p.id}'">
-                    <div style="width:50px;height:50px;border-radius:8px;overflow:hidden;flex-shrink:0;">
-                        <img src="${escapeHtml(p.image || p.thumbnail_url || '')}" alt="${escapeHtml(p.name || 'Product')}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
-                    </div>
-                    <div style="flex:1;">
-                        <div style="font-weight:500;font-size:0.88rem;">${escapeHtml(p.name || 'Product')}</div>
-                        <div style="font-size:0.8rem;color:var(--primary-color);font-weight:600;">GHS ${Number(p.price || 0).toFixed(2)}</div>
-                    </div>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:1rem;">No recommendations yet</p>';
-
-            // Dashboard Events
-            let events = [];
-            try { events = await fetch('/api/events?limit=3', { headers: authHeaders() }).then(r => r.json()); } catch {}
-            const eventList = Array.isArray(events) ? events : (events.events || []);
-
-            document.getElementById('dashboardEvents').innerHTML = eventList.length ? eventList.slice(0, 3).map(e => `
-                <div style="display:flex;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);">
-                    <div style="width:40px;height:40px;border-radius:8px;background:var(--primary-light);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
-                        <span style="font-size:0.5rem;color:var(--primary-color);font-weight:600;">${e.event_date ? new Date(e.event_date).toLocaleDateString('en', {month:'short'}) : ''}</span>
-                        <span style="font-size:0.85rem;font-weight:700;color:var(--primary-color);">${e.event_date ? new Date(e.event_date).getDate() : ''}</span>
-                    </div>
-                    <div>
-                        <div style="font-weight:500;font-size:0.88rem;">${escapeHtml(e.title || 'Event')}</div>
-                        <div style="font-size:0.78rem;color:var(--text-light);">${e.event_date ? new Date(e.event_date).toLocaleTimeString('en', {hour:'numeric',minute:'2-digit'}) : ''}</div>
-                    </div>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:1rem;">No upcoming events</p>';
-        }
-
-        async function loadOrders() {
-            let orders = [];
-            try { orders = await fetch('/api/orders', { headers: authHeaders() }).then(r => r.json()); } catch {}
-            const orderList = Array.isArray(orders) ? orders : (orders.orders || []);
-
-            document.getElementById('ordersList').innerHTML = orderList.length ? orderList.map(o => `
-                <div class="order-card">
-                    <div class="order-info">
-                        <div class="order-name">Order #${(o.id || '').slice(0, 8)}</div>
-                        <div class="order-meta">${o.created_at ? new Date(o.created_at).toLocaleDateString() : ''} ${o.items ? '· ' + o.items + ' item(s)' : ''}</div>
-                    </div>
-                    <div class="order-right">
-                        <div class="order-price">GHS ${Number(o.total_amount || 0).toFixed(2)}</div>
-                        <span class="badge badge-${(o.status || '').toLowerCase()}">${o.status || 'Pending'}</span>
-                    </div>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:3rem;">No orders yet. <a href="marketplace.html">Browse products</a></p>';
-        }
-
-        async function loadFavorites() {
-            let favorites = [];
-            try { favorites = await fetch('/api/buyer/favorites', { headers: authHeaders() }).then(r => r.json()); } catch {}
-            const favList = Array.isArray(favorites) ? favorites : (favorites.favorites || []);
-
-            document.getElementById('favoritesGrid').innerHTML = favList.length ? favList.map(f => `
-                <div class="fav-card" onclick="window.location.href='product-detail.html?id=${escapeHtml(f.id)}'">
-                    <div class="fav-img"><img src="${escapeHtml(f.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 140%22><rect fill=%22%23fce7f0%22 width=%22200%22 height=%22140%22/><text x=%22100%22 y=%2280%22 text-anchor=%22middle%22 fill=%22%23d8447c%22 font-size=%2218%22>No Image</text></svg>')}" alt="${escapeHtml(f.name || 'Product')}"></div>
-                    <div class="fav-body">
-                        <div class="fav-name">${escapeHtml(f.name || 'Product')}</div>
-                        <div class="fav-price">GHS ${Number(f.price || 0).toFixed(2)}</div>
-                    </div>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:3rem;grid-column:1/-1;">No favorites yet. <a href="marketplace.html">Browse products</a></p>';
-        }
-
-        async function loadLearning() {
-            let enrollments = [];
-            try { enrollments = await fetch('/api/enrollments', { headers: authHeaders() }).then(r => r.json()); } catch {}
-            const enrolled = Array.isArray(enrollments) ? enrollments : (enrollments.enrollments || []);
-
-            const completed = enrolled.filter(e => e.completed).length;
-            const inProgress = enrolled.filter(e => !e.completed).length;
-            const certificates = enrolled.filter(e => e.certificate).length;
-
-            document.getElementById('learningStats').innerHTML = `
-                <div class="stat-card"><div class="icon"><i class="bi bi-book"></i></div><div class="num">${enrolled.length}</div><div class="label">Enrolled</div></div>
-                <div class="stat-card"><div class="icon"><i class="bi bi-play-circle"></i></div><div class="num">${inProgress}</div><div class="label">In Progress</div></div>
-                <div class="stat-card"><div class="icon"><i class="bi bi-check-circle"></i></div><div class="num">${completed}</div><div class="label">Completed</div></div>
-                <div class="stat-card"><div class="icon"><i class="bi bi-award"></i></div><div class="num">${certificates}</div><div class="label">Certificates</div></div>
-            `;
-
-            const inProgressCourses = enrolled.filter(e => !e.completed).slice(0, 3);
-            document.getElementById('continueCourses').innerHTML = inProgressCourses.length ? inProgressCourses.map(c => `
-                <div style="display:flex;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);">
-                    <div style="width:50px;height:50px;border-radius:8px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i class="bi bi-book" style="color:var(--primary-color);"></i>
-                    </div>
-                    <div style="flex:1;">
-                        <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(c.course_name || 'Course')}</div>
-                        <div style="font-size:0.8rem;color:var(--text-light);">${c.progress || 0}% complete</div>
-                        <div style="height:4px;background:var(--bg-light);border-radius:2px;margin-top:0.25rem;">
-                            <div style="height:100%;width:${c.progress || 0}%;background:var(--primary-color);border-radius:2px;"></div>
-                        </div>
-                    </div>
-                    <a href="course-detail.html?id=${c.course_id}" class="btn btn-sm btn-outline">Continue</a>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No courses in progress. <a href="learning.html">Browse courses</a></p>';
-
-            const certs = enrolled.filter(e => e.certificate).slice(0, 3);
-            document.getElementById('certificatesList').innerHTML = certs.length ? certs.map(c => `
-                <div style="display:flex;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);">
-                    <div style="width:40px;height:40px;border-radius:50%;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i class="bi bi-award" style="color:#8b5cf6;"></i>
-                    </div>
-                    <div>
-                        <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(c.course_name || 'Course')}</div>
-                        <div style="font-size:0.8rem;color:var(--text-light);">Completed ${c.completed_at ? new Date(c.completed_at).toLocaleDateString() : ''}</div>
-                    </div>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No certificates yet</p>';
-
-            // Learning Progress
-            const progressHtml = enrolled.length ? `
-                <div style="display:flex;flex-direction:column;gap:0.75rem;">
-                    ${enrolled.slice(0, 5).map(c => `
-                        <div style="display:flex;align-items:center;gap:0.75rem;">
-                            <div style="flex:1;font-size:0.9rem;">${escapeHtml(c.course_name || 'Course')}</div>
-                            <div style="width:100px;height:6px;background:var(--bg-light);border-radius:3px;">
-                                <div style="height:100%;width:${c.progress || 0}%;background:${c.progress >= 100 ? 'var(--accent-green)' : 'var(--primary-color)'};border-radius:3px;"></div>
-                            </div>
-                            <div style="font-size:0.8rem;font-weight:500;width:40px;text-align:right;">${c.progress || 0}%</div>
-                        </div>
-                    `).join('')}
-                </div>
-            ` : '<p style="color:var(--text-light);text-align:center;padding:1rem;">No learning data yet</p>';
-            document.getElementById('learningProgress').innerHTML = progressHtml;
-        }
-
-        // ─── Wishlist ──────────────────────────────────────────────────────
-        async function loadWishlist() {
-            let items = [];
-            try { items = await fetch('/api/buyer/wishlist', { headers: authHeaders() }).then(r => r.json()); } catch {}
-            const list = Array.isArray(items) ? items : (items.items || []);
-
-            document.getElementById('wishlistGrid').innerHTML = list.length ? list.map(item => `
-                <div class="fav-card">
-                    <div class="fav-img"><img src="${escapeHtml(item.image || item.thumbnail || '')}" alt="${escapeHtml(item.name || 'Product')}" loading="lazy"></div>
-                    <div class="fav-body">
-                        <div class="fav-name">${escapeHtml(item.name || 'Product')}</div>
-                        <div class="fav-price">GHS ${Number(item.price || 0).toFixed(2)}</div>
-                        <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
-                            <a href="product-detail.html?id=${item.id}" class="btn btn-sm btn-outline" style="flex:1;">View</a>
-                            <button class="btn btn-sm btn-primary" style="flex:1;" onclick="addToCart('${item.id}')">Add to Cart</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:3rem;grid-column:1/-1;">Your wishlist is empty. <a href="marketplace.html">Browse products</a></p>';
-        }
-
-        // ─── Order Tracking ────────────────────────────────────────────────
-        async function loadTracking() {
-            let orders = [];
-            try { orders = await fetch('/api/orders', { headers: authHeaders() }).then(r => r.json()); } catch {}
-            const orderList = Array.isArray(orders) ? orders : (orders.orders || []);
-            const activeOrders = orderList.filter(o => o.status !== 'DELIVERED' && o.status !== 'CANCELLED');
-
-            const statusSteps = ['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED'];
-            const statusIcons = { PENDING: 'bi-clock', CONFIRMED: 'bi-check-circle', SHIPPED: 'bi-truck', DELIVERED: 'bi-house-check' };
-
-            document.getElementById('trackingList').innerHTML = activeOrders.length ? activeOrders.map(o => {
-                const currentIdx = statusSteps.indexOf(o.status);
-                return `
-                    <div class="section-card" style="margin-bottom:1rem;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-                            <div>
-                                <div style="font-weight:600;">Order #${(o.id || '').slice(0, 8)}</div>
-                                <div style="font-size:0.8rem;color:var(--text-light);">${o.created_at ? new Date(o.created_at).toLocaleDateString() : ''}</div>
-                            </div>
-                            <div style="font-weight:700;color:var(--primary-color);">GHS ${Number(o.total_amount || 0).toFixed(2)}</div>
-                        </div>
-                        <div style="display:flex;justify-content:space-between;position:relative;">
-                            <div style="position:absolute;top:15px;left:0;right:0;height:3px;background:var(--bg-light);"></div>
-                            <div style="position:absolute;top:15px;left:0;height:3px;background:var(--accent-green);width:${(currentIdx / (statusSteps.length - 1)) * 100}%;"></div>
-                            ${statusSteps.map((s, i) => `
-                                <div style="text-align:center;z-index:1;">
-                                    <div style="width:32px;height:32px;border-radius:50%;background:${i <= currentIdx ? 'var(--accent-green)' : 'var(--bg-light)'};display:flex;align-items:center;justify-content:center;margin:0 auto 0.25rem;">
-                                        <i class="bi ${statusIcons[s]}" style="color:${i <= currentIdx ? 'white' : 'var(--text-muted)'};font-size:0.9rem;"></i>
-                                    </div>
-                                    <div style="font-size:0.7rem;color:${i <= currentIdx ? 'var(--accent-green)' : 'var(--text-muted)'};">${s}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }).join('') : '<p style="color:var(--text-light);text-align:center;padding:3rem;">No active orders to track</p>';
-        }
-
-        // ─── Recently Viewed ───────────────────────────────────────────────
-        async function loadRecentlyViewed() {
-            let items = [];
-            try { items = JSON.parse(localStorage.getItem('recentlyViewed') || '[]'); } catch {}
-            const uniqueItems = items.filter((item, i, self) => self.findIndex(x => x.id === item.id) === i).slice(0, 12);
-
-            document.getElementById('recentlyViewedGrid').innerHTML = uniqueItems.length ? uniqueItems.map(item => `
-                <div class="fav-card" onclick="window.location.href='product-detail.html?id=${item.id}'">
-                    <div class="fav-img"><img src="${escapeHtml(item.image || '')}" alt="${escapeHtml(item.name || 'Product')}" loading="lazy"></div>
-                    <div class="fav-body">
-                        <div class="fav-name">${escapeHtml(item.name || 'Product')}</div>
-                        <div class="fav-price">GHS ${Number(item.price || 0).toFixed(2)}</div>
-                    </div>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:3rem;">No recently viewed items</p>';
-        }
-
-        // ─── My Events ─────────────────────────────────────────────────────
-        async function loadMyEvents() {
-            let events = [];
-            try { events = await fetch('/api/events/my', { headers: authHeaders() }).then(r => r.json()); } catch {}
-            const eventList = Array.isArray(events) ? events : (events.events || []);
-
-            const upcoming = eventList.filter(e => new Date(e.event_date) >= new Date());
-            const past = eventList.filter(e => new Date(e.event_date) < new Date());
-
-            document.getElementById('upcomingEventsList').innerHTML = upcoming.length ? upcoming.map(e => `
-                <div style="display:flex;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);">
-                    <div style="width:50px;height:50px;border-radius:8px;background:var(--primary-light);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
-                        <span style="font-size:0.6rem;color:var(--primary-color);font-weight:600;">${e.event_date ? new Date(e.event_date).toLocaleDateString('en', {month:'short'}) : ''}</span>
-                        <span style="font-size:1rem;font-weight:700;color:var(--primary-color);">${e.event_date ? new Date(e.event_date).getDate() : ''}</span>
-                    </div>
-                    <div style="flex:1;">
-                        <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(e.title || 'Event')}</div>
-                        <div style="font-size:0.8rem;color:var(--text-light);">${e.location || 'Online'}</div>
-                    </div>
-                    <a href="event-detail.html?id=${e.id}" class="btn btn-sm btn-outline">View</a>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No upcoming events. <a href="events.html">Browse events</a></p>';
-
-            document.getElementById('pastEventsList').innerHTML = past.length ? past.map(e => `
-                <div style="display:flex;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);opacity:0.7;">
-                    <div style="width:50px;height:50px;border-radius:8px;background:var(--bg-light);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
-                        <span style="font-size:0.6rem;color:var(--text-muted);font-weight:600;">${e.event_date ? new Date(e.event_date).toLocaleDateString('en', {month:'short'}) : ''}</span>
-                        <span style="font-size:1rem;font-weight:700;color:var(--text-muted);">${e.event_date ? new Date(e.event_date).getDate() : ''}</span>
-                    </div>
-                    <div style="flex:1;">
-                        <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(e.title || 'Event')}</div>
-                        <div style="font-size:0.8rem;color:var(--text-light);">Attended</div>
-                    </div>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No past events</p>';
-
-            // Dashboard Events
-            document.getElementById('dashboardEvents').innerHTML = upcoming.length ? upcoming.slice(0, 3).map(e => `
-                <div style="display:flex;gap:0.75rem;padding:0.75rem;border-bottom:1px solid var(--border-light);">
-                    <div style="width:40px;height:40px;border-radius:8px;background:var(--primary-light);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
-                        <span style="font-size:0.5rem;color:var(--primary-color);font-weight:600;">${e.event_date ? new Date(e.event_date).toLocaleDateString('en', {month:'short'}) : ''}</span>
-                        <span style="font-size:0.85rem;font-weight:700;color:var(--primary-color);">${e.event_date ? new Date(e.event_date).getDate() : ''}</span>
-                    </div>
-                    <div>
-                        <div style="font-weight:500;font-size:0.88rem;">${escapeHtml(e.title || 'Event')}</div>
-                        <div style="font-size:0.78rem;color:var(--text-light);">${e.event_date ? new Date(e.event_date).toLocaleTimeString('en', {hour:'numeric',minute:'2-digit'}) : ''}</div>
-                    </div>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:1rem;">No upcoming events</p>';
-        }
-
-        async function loadCommunity() {
-            let posts = [];
-            try { posts = await fetch('/api/posts?my=1', { headers: authHeaders() }).then(r => r.json()); } catch {}
-            const postList = Array.isArray(posts) ? posts : (posts.posts || []);
-
-            document.getElementById('myPosts').innerHTML = postList.slice(0, 5).length ? postList.slice(0, 5).map(p => `
-                <div style="padding:0.75rem;border-bottom:1px solid var(--border-light);">
-                    <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(p.title || p.content?.slice(0, 50) || 'Post')}</div>
-                    <div style="font-size:0.8rem;color:var(--text-light);">${p.likes || 0} likes · ${p.comments || 0} comments</div>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No posts yet. <a href="create-post.html">Create your first post</a></p>';
-
-            let discussions = [];
-            try { discussions = await fetch('/api/discussions?my=1', { headers: authHeaders() }).then(r => r.json()); } catch {}
-            const discList = Array.isArray(discussions) ? discussions : (discussions.discussions || []);
-
-            document.getElementById('myDiscussions').innerHTML = discList.slice(0, 5).length ? discList.slice(0, 5).map(d => `
-                <div style="padding:0.75rem;border-bottom:1px solid var(--border-light);">
-                    <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(d.title || 'Discussion')}</div>
-                    <div style="font-size:0.8rem;color:var(--text-light);">${d.replies || 0} replies</div>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No discussions yet. <a href="discussions.html">Join a discussion</a></p>';
-
-            let events = [];
-            try { events = await fetch('/api/events?upcoming=3', { headers: authHeaders() }).then(r => r.json()); } catch {}
-            const eventList = Array.isArray(events) ? events : (events.events || []);
-
-            document.getElementById('upcomingEvents').innerHTML = eventList.slice(0, 3).length ? eventList.slice(0, 3).map(e => `
-                <div style="display:flex;gap:1rem;padding:0.75rem;border-bottom:1px solid var(--border-light);">
-                    <div style="width:50px;height:50px;border-radius:8px;background:var(--primary-light);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
-                        <span style="font-size:0.65rem;color:var(--primary-color);font-weight:600;">${e.date ? new Date(e.date).toLocaleDateString('en', {month:'short'}) : ''}</span>
-                        <span style="font-size:1rem;font-weight:700;color:var(--primary-color);">${e.date ? new Date(e.date).getDate() : ''}</span>
-                    </div>
-                    <div>
-                        <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(e.title || 'Event')}</div>
-                        <div style="font-size:0.8rem;color:var(--text-light);">${e.attendees || 0} attending</div>
-                    </div>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No upcoming events. <a href="events.html">Browse events</a></p>';
-        }
-
-        async function loadNotifications() {
-            let notifs = [];
-            try { notifs = await fetch('/api/notifications', { headers: authHeaders() }).then(r => r.json()); } catch {}
-
-            document.getElementById('notificationsList').innerHTML = notifs.length ? notifs.map(n => `
-                <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;margin-bottom:0.5rem;display:flex;gap:0.75rem;align-items:flex-start;${n.is_read ? '' : 'border-left:3px solid var(--primary-color);'}">
-                    <div style="width:36px;height:36px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i class="bi bi-${n.type === 'order' ? 'bag-check' : n.type === 'message' ? 'chat-dots' : 'bell'}" style="color:var(--primary-color);"></i>
-                    </div>
-                    <div style="flex:1;">
-                        <div style="font-weight:500;font-size:0.9rem;">${escapeHtml(n.title)}</div>
-                        <div style="font-size:0.82rem;color:var(--text-light);">${escapeHtml(n.message || '')}</div>
-                        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem;">${n.created_at ? timeAgo(n.created_at) : ''}</div>
-                    </div>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:3rem;">No notifications</p>';
-        }
-
-        async function loadActivity() {
-            let orders = [];
-            try { orders = await fetch('/api/orders', { headers: authHeaders() }).then(r => r.json()); } catch {}
-            const orderList = Array.isArray(orders) ? orders : (orders.orders || []);
-
-            const activities = orderList.slice(0, 10).map(o => ({
-                icon: 'bi-bag-check',
-                iconBg: 'rgba(216,68,124,0.1)',
-                iconColor: 'var(--primary-color)',
-                text: `Order #${(o.id || '').slice(0, 8)} — ${o.status || 'Pending'}`,
-                time: o.created_at ? timeAgo(o.created_at) : ''
-            }));
-
-            document.getElementById('activityList').innerHTML = activities.length ? activities.map(a => `
-                <div class="activity-item">
-                    <div class="activity-icon" style="background:${a.iconBg};color:${a.iconColor};"><i class="bi ${a.icon}"></i></div>
-                    <div>
-                        <div class="activity-text">${a.text}</div>
-                        <div class="activity-time">${a.time}</div>
-                    </div>
-                </div>
-            `).join('') : '<p style="color:var(--text-light);text-align:center;padding:3rem;">No activity yet</p>';
-        }
-
-        function loadSettings() {
-            const user = typeof getCurrentUser === 'function' ? getCurrentUser() : {};
-            document.getElementById('settingsForm').innerHTML = `
-                <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;border-bottom:1px solid var(--border-color);padding-bottom:0.5rem;">
-                    <button class="btn btn-sm settings-tab active" data-tab="profile"><i class="bi bi-person"></i> Profile</button>
-                    <button class="btn btn-sm settings-tab" data-tab="notifications"><i class="bi bi-bell"></i> Notifications</button>
-                    <button class="btn btn-sm settings-tab" data-tab="preferences"><i class="bi bi-gear"></i> Preferences</button>
-                </div>
-
-                <div id="settings-profile" class="settings-panel">
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-                        <div class="form-group"><label>Full Name</label><input type="text" class="form-input" value="${escapeHtml(user.name || '')}"></div>
-                        <div class="form-group"><label>Email</label><input type="email" class="form-input" value="${escapeHtml(user.email || '')}" disabled></div>
-                        <div class="form-group"><label>Phone</label><input type="tel" class="form-input" placeholder="+233 XX XXX XXXX"></div>
-                        <div class="form-group"><label>Location</label><input type="text" class="form-input" placeholder="City, Country"></div>
-                    </div>
-                    <div class="form-group"><label>Bio</label><textarea class="form-input" rows="2" placeholder="Tell us about yourself..."></textarea></div>
-                    <div class="form-group"><label>Default Delivery Address</label><textarea class="form-input" rows="2" placeholder="Enter your delivery address"></textarea></div>
-                    <button class="btn btn-primary" onclick="saveSettings('profile')" style="margin-top:1rem;">Save Profile</button>
-                </div>
-
-                <div id="settings-notifications" class="settings-panel" style="display:none;">
-                    <div style="display:flex;flex-direction:column;gap:1rem;">
-                        <label style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-light);border-radius:8px;cursor:pointer;">
-                            <input type="checkbox" checked style="width:18px;height:18px;">
-                            <div><div style="font-weight:500;">Order Updates</div><div style="font-size:0.8rem;color:var(--text-light);">Get notified about order status changes</div></div>
-                        </label>
-                        <label style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-light);border-radius:8px;cursor:pointer;">
-                            <input type="checkbox" checked style="width:18px;height:18px;">
-                            <div><div style="font-weight:500;">New Messages</div><div style="font-size:0.8rem;color:var(--text-light);">Receive alerts for new messages</div></div>
-                        </label>
-                        <label style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-light);border-radius:8px;cursor:pointer;">
-                            <input type="checkbox" checked style="width:18px;height:18px;">
-                            <div><div style="font-weight:500;">Course Updates</div><div style="font-size:0.8rem;color:var(--text-light);">Notifications about enrolled courses</div></div>
-                        </label>
-                        <label style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-light);border-radius:8px;cursor:pointer;">
-                            <input type="checkbox" style="width:18px;height:18px;">
-                            <div><div style="font-weight:500;">Marketing Emails</div><div style="font-size:0.8rem;color:var(--text-light);">Receive tips, offers, and news</div></div>
-                        </label>
-                    </div>
-                    <button class="btn btn-primary" onclick="saveSettings('notifications')" style="margin-top:1.5rem;">Save Preferences</button>
-                </div>
-
-                <div id="settings-preferences" class="settings-panel" style="display:none;">
-                    <div style="display:flex;flex-direction:column;gap:1rem;">
-                        <div class="form-group">
-                            <label>Language</label>
-                            <select class="form-input">
-                                <option value="en">English</option>
-                                <option value="tw">Twi</option>
-                                <option value="fr">French</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Currency</label>
-                            <select class="form-input">
-                                <option value="GHS">Ghanaian Cedi (GHS)</option>
-                                <option value="USD">US Dollar (USD)</option>
-                                <option value="NGN">Nigerian Naira (NGN)</option>
-                            </select>
-                        </div>
-                        <label style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--bg-light);border-radius:8px;cursor:pointer;">
-                            <input type="checkbox" checked style="width:18px;height:18px;">
-                            <div><div style="font-weight:500;">Dark Mode</div><div style="font-size:0.8rem;color:var(--text-light);">Use dark theme</div></div>
-                        </label>
-                    </div>
-                    <button class="btn btn-primary" onclick="saveSettings('preferences')" style="margin-top:1.5rem;">Save Preferences</button>
-                </div>
-            `;
-
-            // Settings tabs
-            document.querySelectorAll('.settings-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    document.querySelectorAll('.settings-panel').forEach(p => p.style.display = 'none');
-                    document.getElementById('settings-' + tab.dataset.tab).style.display = 'block';
-                });
-            });
-        }
-
-        function saveSettings(type) {
-            showToast('Settings saved successfully!');
-        }
-
-        // Logout
-        document.getElementById('buyerLogout')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (typeof logout === 'function') logout();
-            window.location.href = '/index.html';
-        });
-
-        // Mobile navigation
-        document.querySelectorAll('.dash-mobile-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                const section = item.dataset.section;
-                document.querySelectorAll('.dash-mobile-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                document.querySelectorAll('.dash-nav a').forEach(l => {
-                    l.classList.toggle('active', l.dataset.section === section);
-                });
-                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                document.getElementById('section-' + section).classList.add('active');
-                currentSection = section;
-                loadSection(section);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-        });
-
-        initDashboard();
-    </script>
+<script src="js/buyer-dashboard.js?v=2.0"></script>
+<script>document.addEventListener('DOMContentLoaded', () => initBuyerDashboard());</script>
 </body>
 </html>

@@ -20,16 +20,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el) el.innerHTML = html;
     });
 
-    // Fire all data fetches in parallel — then render
+    // Fire all data fetches in parallel — each wrapped so one failure doesn't break all others
+    const safe = p => p.catch(() => null);
     Promise.all([
-        fetchJSON('/api/stats',                       30),   // 30s cache
-        fetchJSON('/api/products/list/categories',    60),   // 1 min cache
-        fetchJSON('/api/products?limit=8',            30),   // 30s cache
-        fetchJSON('/api/articles?limit=3',            300),  // Fetch from API
-        fetchJSON('/api/videos?limit=3',              300),
-        fetchJSON('/api/courses?limit=4',             300),
-        fetchJSON('/api/products/list/florists',      60),
-        fetchJSON('/api/events?limit=3',              0),   // no cache for events
+        safe(fetchJSON('/api/stats',                       30)),   // 30s cache
+        safe(fetchJSON('/api/products/list/categories',    60)),   // 1 min cache
+        safe(fetchJSON('/api/products?limit=8',            30)),   // 30s cache
+        safe(fetchJSON('/api/articles?limit=3',            300)),  // Fetch from API
+        safe(fetchJSON('/api/videos?limit=3',              300)),
+        safe(fetchJSON('/api/courses?limit=4',             300)),
+        safe(fetchJSON('/api/products/list/florists',      60)),
+        safe(fetchJSON('/api/events?limit=3',              0)),   // no cache for events
     ]).then(([stats, categories, products, articles, videos, courses, florists, events]) => {
         renderStats(stats);
         renderCategories(categories);

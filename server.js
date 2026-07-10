@@ -3,7 +3,8 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const compression = require('compression');
-const { pool, JWT_SECRET, rateLimiter } = require('./routes/middleware');
+const cookieParser = require('cookie-parser');
+const { pool, JWT_SECRET, rateLimiter, csrfProtection, validateCSRF } = require('./routes/middleware');
 const bcrypt = require('bcryptjs');
 
 const app = express();
@@ -12,6 +13,10 @@ const PORT = process.env.PORT || 3000;
 if (!process.env.JWT_SECRET) {
     console.error("CRITICAL: JWT_SECRET environment variable is not set. Generate one with: node -e \"console.log(require('crypto').randomBytes(64).toString('hex'))\"");
     process.exit(1);
+}
+
+if (!process.env.JWT_REFRESH_SECRET) {
+    process.env.JWT_REFRESH_SECRET = process.env.JWT_SECRET;
 }
 
 // ─── Middleware ─────────────────────────────────────────────────────────────
@@ -42,8 +47,13 @@ app.use(require('helmet')({
 // Gzip / Brotli compression — shrinks JS, CSS, HTML, JSON over the wire
 app.use(compression({ threshold: 1024 }));
 
+// Cookie parser for HttpOnly cookie handling
+app.use(cookieParser());
+
 app.use(require('cors')({
-    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:3000', 'https://flower-ecosystem.onrender.com'],
+    origin: process.env.CORS_ORIGIN
+        ? process.env.CORS_ORIGIN.split(',')
+        : (process.env.NODE_ENV === 'production' ? [] : ['http://localhost:3000']),
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
@@ -51,6 +61,7 @@ app.use(require('cors')({
 app.set('trust proxy', 1);
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 // CSRF protection — block form-encoded cross-origin POSTs
 app.use((req, res, next) => {
@@ -66,16 +77,6 @@ app.use((req, res, next) => {
     }
     next();
 });
-
-app.get('/favicon.ico', (req, res) => res.redirect('/favicon.svg'));
-app.use(express.static(path.join(__dirname), {
-    setHeaders: (res, filePath) => {
-        if (filePath.endsWith('.html')) {
-            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-        } else if (filePath.match(/\.(js|css)$/)) {
-            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-        } else if (filePath.match(/\.(jpg|jpeg|png|gif|webp|svg|ico)$/i)) {
-            // Cache images for 30 days — single biggest bandwidth win
             res.setHeader('Cache-Control', 'public, max-age=2592000, stale-while-revalidate=86400');
         }
     }
@@ -411,7 +412,29 @@ const wss = new WebSocket.Server({ server });
 // Store connected clients: { userId: Set<WebSocket> }
 const clients = new Map();
 
+// WebSocket connection rate limiting: max connections per IP
+const wsConnectionsPerIp = new Map();
+const WS_MAX_PER_IP = 10;
+
+function getWsClientIp(req) {
+    return req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress;
+}
+
 wss.on('connection', (ws, req) => {
+    const ip = getWsClientIp(req);
+    const count = (wsConnectionsPerIp.get(ip) || 0) + 1;
+    if (count > WS_MAX_PER_IP) {
+        ws.close(1013, 'Too many connections');
+        return;
+    }
+    wsConnectionsPerIp.set(ip, count);
+
+    ws.on('close', () => {
+        const c = wsConnectionsPerIp.get(ip) || 1;
+        if (c <= 1) wsConnectionsPerIp.delete(ip);
+        else wsConnectionsPerIp.set(ip, c - 1);
+    });
+
     let userId = null;
 
     // Authenticate on connect

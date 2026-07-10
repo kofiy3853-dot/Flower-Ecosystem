@@ -21,6 +21,7 @@
         .dash-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: -1.5rem; position: relative; z-index: 2; }
         .stat-card { background: var(--white); border-radius: 12px; padding: 1.25rem; box-shadow: 0 4px 15px rgba(0,0,0,0.06); text-align: center; }
         .stat-card .stat-icon { font-size: 1.5rem; color: var(--primary-color); margin-bottom: 0.35rem; }
+        .stat-card .stat-icon.fire { color: #f59e0b; }
         .stat-card .stat-num { font-size: 1.75rem; font-weight: 700; }
         .stat-card .stat-label { font-size: 0.8rem; color: var(--text-light); }
         .dash-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border-color); margin: 1.5rem 0; }
@@ -74,6 +75,7 @@
                 <div class="stat-card"><div class="stat-icon"><i class="bi bi-check-circle"></i></div><div class="stat-num" id="statCompleted">0</div><div class="stat-label">Completed</div></div>
                 <div class="stat-card"><div class="stat-icon"><i class="bi bi-award"></i></div><div class="stat-num" id="statCertificates">0</div><div class="stat-label">Certificates</div></div>
                 <div class="stat-card"><div class="stat-icon"><i class="bi bi-bookmark"></i></div><div class="stat-num" id="statSaved">0</div><div class="stat-label">Saved</div></div>
+                <div class="stat-card"><div class="stat-icon"><i class="bi bi-fire"></i></div><div class="stat-num" id="statStreak">0</div><div class="stat-label">Day Streak</div></div>
             </div>
 
             <div class="dash-tabs" id="dashTabs">
@@ -160,7 +162,30 @@
                 ).join('');
             }
 
-            async function loadDashboard() {
+            // ─── Streak Calculation ────────────────────────────────────────
+
+function calculateStreak(completions) {
+    if (!completions.length) return 0;
+    // Sort by date (newest first)
+    const dates = [...new Set(completions.map(c => c.date?.split('T')[0] || c.completed_at?.split('T')[0]).filter(Boolean))].sort().reverse();
+    if (!dates.length) return 0;
+    const today = new Date().toISOString().split('T')[0];
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    let streak = 0;
+    let checkDate = dates[0] === today || dates[0] === yesterday ? dates[0] : null;
+    if (!checkDate) return 0;
+    streak = 1;
+    for (let i = 1; i < dates.length; i++) {
+        const prev = new Date(dates[i - 1]);
+        const curr = new Date(dates[i]);
+        const diff = Math.round((prev - curr) / 86400000);
+        if (diff === 1) streak++;
+        else break;
+    }
+    return streak;
+}
+
+async function loadDashboard() {
                 if (!isLoggedIn()) {
                     sessionStorage.setItem('pending-redirect', 'my-learning.html');
                     openAuthModal('login');
@@ -179,6 +204,17 @@
                 document.getElementById('statInProgress').textContent = inProgress.length;
                 document.getElementById('statCompleted').textContent = completed.length;
                 document.getElementById('statCertificates').textContent = certs.length;
+
+                // Calculate streak
+                try {
+                    const streakData = await apiFetch('/api/progress/streak');
+                    document.getElementById('statStreak').textContent = streakData?.streak || 0;
+                } catch {
+                    // Fallback: calculate from localStorage
+                    const lessonCompletions = JSON.parse(localStorage.getItem('lessonCompletions') || '[]');
+                    const streak = calculateStreak(lessonCompletions);
+                    document.getElementById('statStreak').textContent = streak;
+                }
 
                 renderCourseList(inProgress, 'inProgressList', true);
                 renderCourseList(completed, 'completedList', false);

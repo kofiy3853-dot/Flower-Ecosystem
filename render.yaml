@@ -32,7 +32,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: ADMIN_PASSWORD
-        value: Nharnah12345
+        value: ""
       - key: CORS_ORIGIN
         value: https://flower-ecosystem.onrender.com
       - key: CLOUDINARY_CLOUD_NAME

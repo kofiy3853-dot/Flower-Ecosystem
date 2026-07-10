@@ -17,10 +17,11 @@
         thumbnail_url: '', promo_video_url: '', gallery: [],
         resources: [],
         quiz: { title: '', passing_score: 70, questions: [] },
-        assignment: { title: '', instructions: '', deadline: '' },
-        has_certificate: true,
+        assignment: { title: '', instructions: '', deadline: '', allow_files: true, allowed_file_types: ['pdf', 'doc', 'zip', 'img'], max_file_size: 20 },
+        has_certificate: true, certificate_title: 'Certificate of Completion', certificate_desc: 'Awarded to {{studentName}} for completing {{courseTitle}}', certificate_signature: '', certificate_logo: '',
         is_free: true, price: 0, discount_price: 0, enrollment_limit: 0, visibility: 'public',
-        status: 'draft', course_id: null
+        status: 'draft', course_id: null,
+        seo_slug: '', meta_title: '', meta_description: ''
     };
 
     // ─── Init ───────────────────────────────────────────────────────────
@@ -101,6 +102,9 @@
 
         // Scroll to top
         document.querySelector('.cc-main').scrollTop = 0;
+
+        // Analytics: track step view
+        trackStepView(currentStep);
     }
 
     // ─── Validation ─────────────────────────────────────────────────────
@@ -139,6 +143,10 @@
                 courseData.short_description = document.getElementById('ccShortDesc').value;
                 courseData.description = document.getElementById('ccFullDesc').value;
                 courseData.target_audience = Array.from(document.querySelectorAll('#ccAudience .cc-checkbox.selected')).map(el => el.dataset.value);
+                // SEO fields
+                courseData.seo_slug = document.getElementById('ccSeoSlug').value;
+                courseData.meta_title = document.getElementById('ccMetaTitle').value;
+                courseData.meta_description = document.getElementById('ccMetaDesc').value;
                 break;
             case 5:
                 courseData.quiz.title = document.getElementById('ccQuizTitle').value;
@@ -175,6 +183,11 @@
                 document.querySelectorAll('#ccAudience .cc-checkbox').forEach(el => {
                     el.classList.toggle('selected', courseData.target_audience.includes(el.dataset.value));
                 });
+                // SEO fields
+                document.getElementById('ccSeoSlug').value = courseData.seo_slug || '';
+                document.getElementById('ccMetaTitle').value = courseData.meta_title || '';
+                document.getElementById('ccMetaDesc').value = courseData.meta_description || '';
+                document.getElementById('ccMetaDescCount').textContent = (courseData.meta_description || '').length;
                 break;
             case 2:
                 renderCurriculum();
@@ -333,6 +346,54 @@
                 </div>
             </div>
         `).join('');
+
+        // Initialize SortableJS for sections and lessons
+        setTimeout(() => initSortable(), 0);
+    }
+
+    function initSortable() {
+        if (typeof Sortable === 'undefined') return;
+
+        // Sortable for sections
+        const sectionsContainer = document.getElementById('ccCurriculum');
+        if (sectionsContainer && !sectionsContainer.sortableInstance) {
+            sectionsContainer.sortableInstance = new Sortable(sectionsContainer, {
+                animation: 200,
+                handle: '.cc-drag',
+                dragClass: 'sortable-drag',
+                ghostClass: 'sortable-ghost',
+                onEnd: evt => {
+                    const oldIndex = evt.oldIndex;
+                    const newIndex = evt.newIndex;
+                    if (oldIndex !== newIndex) {
+                        const [moved] = courseData.sections.splice(oldIndex, 1);
+                        courseData.sections.splice(newIndex, 0, moved);
+                        updateSummary();
+                    }
+                }
+            });
+        }
+
+        // Sortable for lessons within each section
+        document.querySelectorAll('.cc-lessons').forEach((container, si) => {
+            if (!container.sortableInstance) {
+                container.sortableInstance = new Sortable(container, {
+                    animation: 200,
+                    handle: '.cc-drag',
+                    dragClass: 'sortable-drag',
+                    ghostClass: 'sortable-ghost',
+                    onEnd: evt => {
+                        const oldIndex = evt.oldIndex;
+                        const newIndex = evt.newIndex;
+                        if (oldIndex !== newIndex) {
+                            const [moved] = courseData.sections[si].lessons.splice(oldIndex, 1);
+                            courseData.sections[si].lessons.splice(newIndex, 0, moved);
+                            updateSummary();
+                        }
+                    }
+                });
+            }
+        });
     }
 
     // ─── Media Upload ───────────────────────────────────────────────────
@@ -352,6 +413,13 @@
         const url = await uploadFile(file, true);
         if (url) {
             courseData.promo_video_url = url;
+            // Detect video duration
+            detectVideoDuration(file).then(duration => {
+                if (duration) {
+                    courseData.promo_video_duration = duration;
+                    renderMedia();
+                }
+            });
             renderMedia();
         }
     };
@@ -376,8 +444,25 @@
 
     window.removeVideo = function() {
         courseData.promo_video_url = '';
+        courseData.promo_video_duration = null;
         renderMedia();
     };
+
+    async function detectVideoDuration(file) {
+        return new Promise(resolve => {
+            const video = document.createElement('video');
+            video.preload = 'metadata';
+            video.onloadedmetadata = () => {
+                resolve(Math.round(video.duration));
+                URL.revokeObjectURL(video.src);
+            };
+            video.onerror = () => {
+                resolve(null);
+                URL.revokeObjectURL(video.src);
+            };
+            video.src = URL.createObjectURL(file);
+        });
+    }
 
     async function uploadFile(file, isVideo) {
         const formData = new FormData();
@@ -469,9 +554,32 @@
     window.addQuizQuestion = function() {
         courseData.quiz.questions.push({
             question: '',
-            options: ['', '', '', ''],
+            options: ['', '', ''],
             correct_answer: 0
         });
+        renderQuizQuestions();
+    };
+
+    window.addQuizOption = function(qIdx) {
+        const q = courseData.quiz.questions[qIdx];
+        if (q.options.length >= 6) {
+            showToast('Maximum 6 options per question', 'error');
+            return;
+        }
+        q.options.push('');
+        renderQuizQuestions();
+    };
+
+    window.removeQuizOption = function(qIdx, oIdx) {
+        const q = courseData.quiz.questions[qIdx];
+        if (q.options.length <= 2) {
+            showToast('Minimum 2 options required', 'error');
+            return;
+        }
+        q.options.splice(oIdx, 1);
+        if (q.correct_answer >= oIdx) {
+            q.correct_answer = Math.max(0, q.correct_answer - 1);
+        }
         renderQuizQuestions();
     };
 
@@ -508,8 +616,13 @@
                     <div class="cc-quiz-option">
                         <input type="radio" name="qq${qi}" ${q.correct_answer === oi ? 'checked' : ''} onchange="setCorrectAnswer(${qi}, ${oi})">
                         <input type="text" class="cc-input" value="${escapeHtml(opt)}" placeholder="Option ${oi + 1}" onchange="updateQuizOption(${qi}, ${oi}, this.value)" style="flex:1;">
+                        <button class="cc-btn cc-btn-outline cc-btn-sm" onclick="removeQuizOption(${qi}, ${oi})" style="padding:0.2rem 0.5rem;font-size:0.7rem;" title="Remove option"><i class="bi bi-x"></i></button>
                     </div>
                 `).join('')}
+                <div style="margin-top:0.5rem;">
+                    <button class="cc-btn cc-btn-outline cc-btn-sm" onclick="addQuizOption(${qi})" style="font-size:0.75rem;"><i class="bi bi-plus"></i> Add Option</button>
+                    <span style="margin-left:0.5rem;font-size:0.75rem;color:var(--text-muted);">${q.options.length}/6 options</span>
+                </div>
             </div>
         `).join('');
     }
@@ -644,6 +757,15 @@
     // ─── Submit for Review ──────────────────────────────────────────────
     window.submitForReview = async function() {
         saveStepData(currentStep);
+        
+        // Check for duplicate course title
+        const isDuplicate = await checkDuplicateCourse();
+        if (isDuplicate) {
+            if (!confirm('A course with this title already exists. Do you want to submit anyway?')) {
+                return;
+            }
+        }
+        
         try {
             const token = localStorage.getItem('flower-token');
             const body = buildPayload();
@@ -689,7 +811,7 @@
         }
     };
 
-    // ─── Build API Payload ──────────────────────────────────────────────
+// ─── Build API Payload ──────────────────────────────────────────────
     function buildPayload() {
         return {
             title: courseData.title,
@@ -702,8 +824,12 @@
             learning_outcomes: courseData.learning_outcomes,
             requirements: courseData.requirements,
             target_audience: courseData.target_audience,
+            seo_slug: courseData.seo_slug,
+            meta_title: courseData.meta_title,
+            meta_description: courseData.meta_description,
             thumbnail_url: courseData.thumbnail_url,
             promo_video_url: courseData.promo_video_url,
+            promo_video_duration: courseData.promo_video_duration,
             gallery: courseData.gallery,
             is_free: courseData.is_free,
             price: courseData.is_free ? 0 : courseData.price,
@@ -711,17 +837,84 @@
             enrollment_limit: courseData.enrollment_limit,
             visibility: courseData.visibility,
             has_certificate: courseData.has_certificate,
+            certificate_title: courseData.certificate_title,
+            certificate_description: courseData.certificate_description,
+            certificate_signature: courseData.certificate_signature,
+            certificate_logo: courseData.certificate_logo,
             sections: courseData.sections,
             resources: courseData.resources,
             quiz: courseData.quiz.questions.length > 0 ? courseData.quiz : null,
-            assignment: courseData.assignment.title ? courseData.assignment : null
+            assignment: courseData.assignment.title ? courseData.assignment : null,
+            allow_files: courseData.allow_files,
+            assignment_file_types: courseData.assignment_file_types,
+            max_file_size: courseData.max_file_size,
+            certificate_title: courseData.certificate_title,
+            certificate_description: courseData.certificate_description,
+            certificate_signature: courseData.certificate_signature,
+            certificate_logo: courseData.certificate_logo
         };
+    }
+
+    // ─── Analytics ──────────────────────────────────────────────────────
+    function trackStepView(step) {
+        const stepNames = {
+            1: 'course_details',
+            2: 'curriculum',
+            3: 'media',
+            4: 'resources',
+            5: 'assessments',
+            6: 'pricing',
+            7: 'publish'
+        };
+        const eventName = 'course_creation_step_view';
+        const stepName = stepNames[step] || `step_${step}`;
+        
+        // Send to analytics endpoint (non-blocking)
+        fetch('/api/analytics/event', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') },
+            body: JSON.stringify({ event: eventName, step: stepName, timestamp: Date.now() })
+        }).catch(() => {});
+    }
+
+    // ─── Duplicate Prevention ───────────────────────────────────────────
+    function checkDuplicateCourse() {
+        if (!courseData.title) return Promise.resolve(false);
+        return fetch('/api/courses/check-duplicate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') },
+            body: JSON.stringify({ title: courseData.title, exclude_id: courseData.course_id })
+        }).then(r => r.json()).then(r => r.is_duplicate).catch(() => false);
     }
 
     // ─── Helpers ────────────────────────────────────────────────────────
     function escapeHtml(str) {
         if (!str) return '';
-        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        return str.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
+    }
+
+    // ─── Analytics Tracking ───────────────────────────────────────────────
+    function trackStepView(step) {
+        // Send analytics event to backend
+        fetch('/api/analytics/track', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('flower-token')
+            },
+            body: JSON.stringify({
+                event: 'course_creation_step_view',
+                step: step,
+                course_id: courseData.course_id,
+                timestamp: new Date().toISOString()
+            })
+        }).catch(() => {}); // Silently fail
+
+        // Also store locally for offline support
+        const analytics = JSON.parse(localStorage.getItem('cc_analytics') || '[]');
+        analytics.push({ step, timestamp: Date.now() });
+        if (analytics.length > 50) analytics.shift();
+        localStorage.setItem('cc_analytics', JSON.stringify(analytics));
     }
 
     // ─── Boot ───────────────────────────────────────────────────────────

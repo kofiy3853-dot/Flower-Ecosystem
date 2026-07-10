@@ -126,6 +126,29 @@
         .pc-discover-item h4 { font-size:0.85rem; margin-bottom:0.15rem; }
         .pc-discover-item p { font-size:0.72rem; color:var(--text-light); }
 
+        /* ─── Skeleton Loaders ────────────────────────────────────── */
+        .pc-skeleton { display:grid; gap:1.25rem; }
+        .pc-skeleton.courses { grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); }
+        .pc-skeleton.items { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); }
+        .pc-skeleton.people { grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); }
+        .pc-sk-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; overflow:hidden; }
+        .pc-sk-card .sk-img { height:160px; background:linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size:200% 100%; animation:pc-shimmer 1.5s infinite; }
+        .pc-sk-card .sk-body { padding:1.25rem; }
+        .pc-sk-card .sk-line { height:12px; border-radius:4px; background:linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size:200% 100%; animation:pc-shimmer 1.5s infinite; margin-bottom:0.6rem; }
+        .pc-sk-card .sk-line.w50 { width:50%; }
+        .pc-sk-card .sk-line.w70 { width:70%; }
+        .pc-sk-item { background:var(--bg-white); border:1px solid var(--border-color); border-radius:10px; overflow:hidden; }
+        .pc-sk-item .sk-img { height:100px; background:linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size:200% 100%; animation:pc-shimmer 1.5s infinite; }
+        .pc-sk-item .sk-body { padding:0.75rem; }
+        .pc-sk-item .sk-line { height:10px; border-radius:4px; background:linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size:200% 100%; animation:pc-shimmer 1.5s infinite; margin-bottom:0.4rem; }
+        .pc-sk-item .sk-line.w60 { width:60%; }
+        .pc-sk-person { background:var(--bg-white); border:1px solid var(--border-color); border-radius:14px; padding:1.25rem; text-align:center; }
+        .pc-sk-person .sk-avatar { width:70px; height:70px; border-radius:50%; margin:0 auto 0.75rem; background:linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size:200% 100%; animation:pc-shimmer 1.5s infinite; }
+        .pc-sk-person .sk-line { height:12px; border-radius:4px; background:linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size:200% 100%; animation:pc-shimmer 1.5s infinite; margin:0 auto 0.4rem; }
+        .pc-sk-person .sk-line.w50 { width:50%; }
+        .pc-sk-person .sk-line.w70 { width:70%; }
+        @keyframes pc-shimmer { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
+
         @media(max-width:768px) {
             .pc-categories { grid-template-columns:repeat(2,1fr); }
             .pc-labs { grid-template-columns:repeat(2,1fr); }
@@ -153,8 +176,8 @@
             <h1><i class="bi bi-flower2"></i> Plant Care Academy</h1>
             <p>Master the science and art of caring for flowers and plants through practical lessons, expert guidance, and hands-on activities.</p>
             <div class="pc-hero-btns">
-                <a href="#courses" class="btn btn-white-green"><i class="bi-play-circle"></i> Start Learning</a>
-                <a href="#path" class="btn btn-outline-white"><i class="bi-bar-chart"></i> Learning Path</a>
+                <a href="#courses" class="btn btn-white-green"><i class="bi bi-play-circle"></i> Start Learning</a>
+                <a href="#path" class="btn btn-outline-white"><i class="bi bi-bar-chart"></i> Learning Path</a>
             </div>
         </div>
     </section>
@@ -184,17 +207,17 @@
                 <h2><i class="bi bi-diagram-3" style="color:#059669;"></i> Learning Path</h2>
             </div>
             <div class="pc-path">
-                <div class="pc-path-step active"><div class="icon"><i class="bi-seedling"></i></div><div>Basics</div></div>
+                <div class="pc-path-step active"><div class="icon"><i class="bi bi-seedling"></i></div><div>Basics</div></div>
                 <div class="pc-path-arrow">→</div>
-                <div class="pc-path-step"><div class="icon"><i class="bi bi-flower1"></i>div>Watering</div></div>
+                <div class="pc-path-step"><div class="icon"><i class="bi bi-droplet"></i></div><div>Watering</div></div>
                 <div class="pc-path-arrow">→</div>
-                <div class="pc-path-step"><div class="icon"><i class="bi bi-flower1"></i>div>Soil</div></div>
+                <div class="pc-path-step"><div class="icon"><i class="bi bi-seedling"></i></div><div>Soil</div></div>
                 <div class="pc-path-arrow">→</div>
-                <div class="pc-path-step"><div class="icon">→</div><div>Light</div></div>
+                <div class="pc-path-step"><div class="icon"><i class="bi bi-sun"></i></div><div>Light</div></div>
                 <div class="pc-path-arrow">→</div>
-                <div class="pc-path-step"><div class="icon">→</div><div>Pruning</div></div>
+                <div class="pc-path-step"><div class="icon"><i class="bi bi-scissors"></i></div><div>Pruning</div></div>
                 <div class="pc-path-arrow">→</div>
-                <div class="pc-path-step"><div class="icon"><i class="bi bi-flower1"></i>div>Disease</div></div>
+                <div class="pc-path-step"><div class="icon"><i class="bi bi-bug"></i></div><div>Disease</div></div>
                 <div class="pc-path-arrow">→</div>
                 <div class="pc-path-step"><div class="icon">🏆</div><div>Advanced</div></div>
             </div>
@@ -208,15 +231,15 @@
                 <h2><i class="bi bi-grid" style="color:#059669;"></i> Care Categories</h2>
             </div>
             <div class="pc-categories">
-                <div class="pc-cat"><div class="pc-cat-icon"><i class="bi bi-flower1"></i>h4>Watering</h4><p>How much, how often, signs of overwatering</p></div>
+                <div class="pc-cat"><div class="pc-cat-icon"><i class="bi bi-droplet"></i></div><h4>Watering</h4><p>How much, how often, signs of overwatering</p></div>
                 <div class="pc-cat"><div class="pc-cat-icon">→</div><h4>Light</h4><p>Full sun, partial shade, indoor lighting, grow lights</p></div>
-                <div class="pc-cat"><div class="pc-cat-icon"><i class="bi-seedling"></i></div><h4>Soil</h4><p>Choosing soil, drainage, pH, repotting</p></div>
-                <div class="pc-cat"><div class="pc-cat-icon"><i class="bi-leaf"></i></div><h4>Fertilizer</h4><p>Organic, chemical, application schedules</p></div>
+                <div class="pc-cat"><div class="pc-cat-icon"><i class="bi bi-seedling"></i></div><h4>Soil</h4><p>Choosing soil, drainage, pH, repotting</p></div>
+                <div class="pc-cat"><div class="pc-cat-icon"><i class="bi bi-leaf"></i></div><h4>Fertilizer</h4><p>Organic, chemical, application schedules</p></div>
                 <div class="pc-cat"><div class="pc-cat-icon">→</div><h4>Pruning</h4><p>Deadheading, seasonal pruning, cleaning tools</p></div>
-                <div class="pc-cat"><div class="pc-cat-icon"><i class="bi bi-flower1"></i>h4>Repotting</h4><p>Choosing pots, root care, repotting safely</p></div>
-                <div class="pc-cat"><div class="pc-cat-icon"><i class="bi bi-flower1"></i>h4>Pest Control</h4><p>Aphids, spider mites, whiteflies, scale</p></div>
-                <div class="pc-cat"><div class="pc-cat-icon"><i class="bi bi-flower1"></i>h4>Plant Diseases</h4><p>Root rot, powdery mildew, leaf spot</p></div>
-                <div class="pc-cat"><div class="pc-cat-icon"><i class="bi bi-flower1"></i>v><h4>Environment</h4><p>Humidity, temperature, air circulation</p></div>
+                <div class="pc-cat"><div class="pc-cat-icon"><i class="bi bi-arrow-repeat"></i></div><h4>Repotting</h4><p>Choosing pots, root care, repotting safely</p></div>
+                <div class="pc-cat"><div class="pc-cat-icon"><i class="bi bi-bug"></i></div><h4>Pest Control</h4><p>Aphids, spider mites, whiteflies, scale</p></div>
+                <div class="pc-cat"><div class="pc-cat-icon"><i class="bi bi-activity"></i></div><h4>Plant Diseases</h4><p>Root rot, powdery mildew, leaf spot</p></div>
+                <div class="pc-cat"><div class="pc-cat-icon"><i class="bi bi-cloud"></i></div><h4>Environment</h4><p>Humidity, temperature, air circulation</p></div>
             </div>
         </div>
     </section>
@@ -325,8 +348,8 @@
             </div>
             <div class="pc-discover">
                 <a href="care-guides-hub.html" class="pc-discover-item"><i class="bi bi-heart-pulse"></i><h4>Care Guides</h4><p>Specific flower care</p></a>
-                <a href="flower-encyclopedia.html" class="pc-discover-item"><i class="bi-book"></i><h4>Encyclopedia</h4><p>500+ flower species</p></a>
-                <a href="ai-scanner.html" class="pc-discover-item"><i class="bi-camera"></i><h4>Identify Plants</h4><p>AI flower scanner</p></a>
+                <a href="flower-encyclopedia.html" class="pc-discover-item"><i class="bi bi-book"></i><h4>Encyclopedia</h4><p>500+ flower species</p></a>
+                <a href="ai-scanner.html" class="pc-discover-item"><i class="bi bi-camera"></i><h4>Identify Plants</h4><p>AI flower scanner</p></a>
                 <a href="flower-meanings.html" class="pc-discover-item"><i class="bi bi-heart"></i><h4>Flower Meanings</h4><p>Symbolism & meaning</p></a>
             </div>
         </div>
@@ -361,7 +384,18 @@
     <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/api.js?v=4.0"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+                            // ─── Skeleton Helpers ────────────────────────────────────────────
+        function skCourses(id, n) { var el = document.getElementById(id); if (el) { el.className = 'pc-skeleton courses'; el.innerHTML = Array(n).fill('<div class="pc-sk-card"><div class="sk-img"></div><div class="sk-body"><div class="sk-line w50"></div><div class="sk-line w70"></div><div class="sk-line w50"></div></div></div>').join(''); } }
+        function skItems(id, n) { var el = document.getElementById(id); if (el) { el.className = 'pc-skeleton items'; el.innerHTML = Array(n).fill('<div class="pc-sk-item"><div class="sk-img"></div><div class="sk-body"><div class="sk-line w60"></div><div class="sk-line"></div></div></div>').join(''); } }
+        function skPeople(id, n) { var el = document.getElementById(id); if (el) { el.className = 'pc-skeleton people'; el.innerHTML = Array(n).fill('<div class="pc-sk-person"><div class="sk-avatar"></div><div class="sk-line w50"></div><div class="sk-line w70"></div></div>').join(''); } }
+        function showEmpty(id, msg) { var el = document.getElementById(id); if (el) { el.className = ''; el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-light);">' + msg + '</div>'; } }
+        function showError(id, msg) { var el = document.getElementById(id); if (el) { el.className = ''; el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-light);"><i class="bi bi-exclamation-triangle" style="font-size:1.5rem;display:block;margin-bottom:0.5rem;opacity:0.5;"></i><p>' + msg + '</p><button class="btn btn-sm" style="margin-top:0.5rem;border-color:#059669;color:#059669;" onclick="location.reload()">Retry</button></div>'; } }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            skCourses('courseGrid', 4);
+            skItems('workshopGrid', 3);
+            skPeople('instructorGrid', 4);
+            skItems('marketplaceGrid', 6);
             loadCourses();
             loadWorkshops();
             loadInstructors();
@@ -372,6 +406,7 @@
         async function loadCourses() {
             try {
                 const res = await fetch('/api/courses?category=plant-care&limit=8');
+                if (!res.ok) throw new Error(res.status);
                 const data = await res.json();
                 const courses = Array.isArray(data) ? data : (data.courses || []);
 
@@ -385,6 +420,7 @@
                     return;
                 }
 
+                grid.className = 'pc-courses';
                 grid.innerHTML = courses.map(c => `
                     <a href="course-detail.html?id=${c.id}" class="pc-course">
                         <div class="pc-course-img">
@@ -398,7 +434,7 @@
                                 <div style="width:22px;height:22px;border-radius:50%;background:#ecfdf5;display:flex;align-items:center;justify-content:center;font-size:0.55rem;color:#059669;">${(c.instructor || 'I').charAt(0)}</div>
                                 ${c.instructor || 'Expert'}
                             </div>
-                            <div class="pc-course-rating">${'→'.repeat(Math.round(c.rating || 0))}${'→'.repeat(5 - Math.round(c.rating || 0))} ${(c.rating || 0).toFixed(1)} <span style="color:var(--text-muted);">(${c.students || c.students_count || 0})</span></div>
+                            <div class="pc-course-rating">${'★'.repeat(Math.round(c.rating || 0))}${'★'.repeat(5 - Math.round(c.rating || 0))} ${(c.rating || 0).toFixed(1)} <span style="color:var(--text-muted);">(${c.students || c.students_count || 0})</span></div>
                             <div class="pc-course-meta">
                                 ${c.duration ? `<span><i class="bi bi-clock"></i> ${c.duration}</span>` : ''}
                                 ${c.lessons ? `<span><i class="bi bi-collection-play"></i> ${c.lessons} lessons</span>` : ''}
@@ -410,7 +446,9 @@
                         </div>
                     </a>
                 `).join('');
-            } catch {}
+            } catch {
+                showError('courseGrid', 'Could not load courses.');
+            }
         }
 
         function applyFilters() {}
@@ -419,10 +457,12 @@
         async function loadWorkshops() {
             try {
                 const res = await fetch('/api/events?category=workshop&limit=3');
+                if (!res.ok) throw new Error(res.status);
                 const data = await res.json();
                 const events = Array.isArray(data) ? data : (data.events || []);
                 const grid = document.getElementById('workshopGrid');
                 if (events.length) {
+                    grid.className = 'pc-workshops';
                     grid.innerHTML = events.map(e => {
                         const d = e.date ? new Date(e.date) : null;
                         return `
@@ -440,25 +480,30 @@
                 } else {
                     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-light);">No upcoming workshops.</div>';
                 }
-            } catch {}
+            } catch {
+                showError('workshopGrid', 'Could not load workshops.');
+            }
         }
 
         // →→ Instructors →→→→→→→→→→→→→→→→→→→→→→→
         async function loadInstructors() {
             try {
                 const res = await fetch('/api/products/list/florists?limit=4');
+                if (!res.ok) throw new Error(res.status);
                 const data = await res.json();
                 const instructors = Array.isArray(data) ? data : (data.florists || []);
-                document.getElementById('instructorGrid').innerHTML = instructors.length ? instructors.map(i => `
-                    <div class="pc-instructor">
-                        <div class="pc-instructor-avatar">
-                            <img src="${i.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 70 70%22><rect fill=%22%23ecfdf5%22 width=%2270%22 height=%2270%22/><text x=%2235%22 y=%2242%22 text-anchor=%22middle%22 fill=%22%23059669%22 font-size=%2224%22>${(i.name || 'I').charAt(0)}</text></svg>'}" alt="${i.name}">
-                        </div>
-                        <h3>${i.name}</h3>
-                        <p>${i.role || i.specialty || 'Plant Care Expert'}</p>
-                    </div>
-                `).join('') : '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-light);">Instructors coming soon!</div>';
-            } catch {}
+                var el = document.getElementById('instructorGrid');
+                if (instructors.length) {
+                    el.className = 'pc-instructors';
+                    el.innerHTML = instructors.map(function(i) {
+                        return '<div class="pc-instructor"><div class="pc-instructor-avatar"><img src="' + (i.image || '') + '" alt="' + (i.name || '') + '"></div><h3>' + (i.name || '') + '</h3><p>' + (i.role || i.specialty || 'Plant Care Expert') + '</p></div>';
+                    }).join('');
+                } else {
+                    showEmpty('instructorGrid', 'Instructors coming soon!');
+                }
+            } catch {
+                showError('instructorGrid', 'Could not load instructors.');
+            }
         }
 
         // →→ Marketplace →→→→→→→→→→→→→→→→→→→→→→→
@@ -471,7 +516,7 @@
                 { name: 'Moisture Meter', image: 'https://images.unsplash.com/photo-1444021465936-c6ca81d39b84?q=200&auto=format&fit=crop', price: 'GHS 55' },
                 { name: 'Pruning Shears', image: 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=200&auto=format&fit=crop', price: 'GHS 40' }
             ];
-            document.getElementById('marketplaceGrid').innerHTML = items.map(item => `
+            var mgrid = document.getElementById('marketplaceGrid'); mgrid.className = 'pc-marketplace'; mgrid.innerHTML = items.map(item => `
                 <a href="marketplace.html?q=${encodeURIComponent(item.name)}" class="pc-mp-item">
                     <img src="${item.image}" alt="${item.name}" loading="lazy">
                     <div class="info">
@@ -483,6 +528,8 @@
         }
 
         // →→ AI Coach →→→→→→→→→→→→→→→→→→→→→→→→→
+        function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
         async function askAI() {
             const q = document.getElementById('aiQuestion')?.value?.trim();
             if (!q) return;
@@ -499,7 +546,8 @@
                     ]})
                 });
                 const data = await res.json();
-                resultEl.innerHTML = `<div style="font-size:0.92rem;line-height:1.7;">${(data.reply || data.message || 'I can help with plant care questions.').replace(/\n/g, '<br>')}</div>`;
+                const safe = escHtml(data.reply || data.message || 'I can help with plant care questions.').replace(/\n/g, '<br>');
+                resultEl.innerHTML = '<div style="font-size:0.92rem;line-height:1.7;">' + safe + '</div>';
             } catch {
                 resultEl.innerHTML = '<p style="color:var(--error-color);">Failed to get response.</p>';
             }

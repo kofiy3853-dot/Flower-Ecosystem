@@ -6,6 +6,7 @@ let currentFilter = 'all';
 let currentTab = 'courses';
 let currentPage = 1;
 let totalPages = 1;
+let savedCourses = new Set(); // Track saved course IDs
 
 const LEARNING_CATEGORIES = [
     { slug: 'floral-design', name: 'Floral Design', icon: 'bi-flower1', color: '#e74c3c', link: 'floral-design.html' },
@@ -55,6 +56,43 @@ function renderStars(rating) {
 
 // ─── Init ──────────────────────────────────────────────────────────────
 
+function renderSkeletons(count) {
+    const container = document.getElementById('learnContainer');
+    if (!container) return;
+    container.className = 'learn-skeleton';
+    container.innerHTML = Array(count).fill(`
+        <div class="learn-skeleton-card">
+            <div class="sk-img"></div>
+            <div class="sk-body">
+                <div class="sk-line w50"></div>
+                <div class="sk-line w90 h16"></div>
+                <div class="sk-line w70"></div>
+                <div class="sk-line w50"></div>
+            </div>
+        </div>`).join('');
+    document.getElementById('pagination').innerHTML = '';
+}
+
+function renderCourseError(msg) {
+    const container = document.getElementById('learnContainer');
+    if (!container) return;
+    container.className = '';
+    container.innerHTML = `
+        <div class="empty-state">
+            <i class="bi bi-exclamation-triangle"></i>
+            <h3>Could not load content</h3>
+            <p>${escapeHtml(msg)}</p>
+            <button class="btn btn-primary" onclick="retryLoadCourses()"><i class="bi bi-arrow-clockwise"></i> Try Again</button>
+        </div>`;
+    document.getElementById('pagination').innerHTML = '';
+}
+
+async function retryLoadCourses() {
+    renderSkeletons(8);
+    await loadCourses();
+}
+window.retryLoadCourses = retryLoadCourses;
+
 async function initLearningPage() {
     // Read tab from URL parameter
     const urlParams = new URLSearchParams(window.location.search);
@@ -63,6 +101,7 @@ async function initLearningPage() {
         currentTab = tabParam;
     }
 
+    await loadSavedCourses();
     renderCategoryCards();
     renderSidebarCategories();
     renderLearningPaths();
@@ -73,7 +112,7 @@ async function initLearningPage() {
     await Promise.all([
         loadCourses(),
         loadProgress(),
-        loadContinueLearning(),
+        loadHeroContinueLearning(),
         loadTopInstructors()
     ]);
 }
@@ -219,6 +258,7 @@ function scrollToCourses(e) {
 // ─── Load Courses ──────────────────────────────────────────────────────
 
 async function loadCourses() {
+    renderSkeletons(8);
     const searchEl = document.getElementById('heroSearch');
     const search = searchEl ? searchEl.value.trim() : '';
     const params = new URLSearchParams({ sort: currentSort, page: currentPage, limit: 20 });
@@ -232,6 +272,7 @@ async function loadCourses() {
     if (currentFilter === 'advanced') params.set('level', 'advanced');
 
     let data;
+    let fetchError = false;
     try {
         if (currentTab === 'articles') {
             data = await api.fetchJSON(`/api/articles?${params}`);
@@ -246,21 +287,31 @@ async function loadCourses() {
             data = await api.fetchJSON(`/api/courses?${params}`);
             data.courses = data.courses || data || [];
         }
+        if (!data) { data = { courses: [], total: 0, pages: 1 }; fetchError = true; }
     } catch {
         data = { courses: [], total: 0, pages: 1 };
+        fetchError = true;
     }
 
     const container = document.getElementById('learnContainer');
     if (!container) return;
 
+    if (fetchError) {
+        renderCourseError('Network error. Please check your connection and try again.');
+        return;
+    }
+
     totalPages = data.pages || 1;
     const courses = data.courses || [];
 
     if (!courses.length) {
+        container.className = '';
         container.innerHTML = '<div class="empty-state"><i class="bi bi-book"></i><h3>No content found</h3><p>Try a different search or category.</p></div>';
         document.getElementById('pagination').innerHTML = '';
         return;
     }
+
+    container.className = 'learn-grid';
 
     container.innerHTML = courses.map(c => {
         const title = c.title || c.name || 'Untitled';
@@ -273,6 +324,7 @@ async function loadCourses() {
         const duration = c.duration_minutes || c.duration || 0;
         const lessons = c.lesson_count || c.lessons || c.modules || 0;
         const progress = c.progress || 0;
+        const isSaved = window.savedCourses?.has?.(String(c.id)) || false;
 
         return `
         <div class="learn-card" onclick="window.location.href='course-detail.html?id=${c.id}'">
@@ -283,8 +335,12 @@ async function loadCourses() {
                     ${price == 0 ? '<span class="learn-badge free">Free</span>' : ''}
                     ${c.is_new ? '<span class="learn-badge new">New</span>' : ''}
                     ${c.has_certificate ? '<span class="learn-badge certificate"><i class="bi bi-award"></i></span>' : ''}
+                    ${progress > 0 && progress < 100 ? `<span class="learn-badge progress">${progress}%</span>` : ''}
                 </div>
                 ${duration ? `<div class="learn-card-duration"><i class="bi bi-clock"></i> ${formatDuration(duration)}</div>` : ''}
+                <button class="learn-card-save ${isSaved ? 'saved' : ''}" data-id="${c.id}" onclick="event.stopPropagation(); toggleSaveCourse(this, '${c.id}')" aria-label="${isSaved ? 'Remove from saved' : 'Save for later'}">
+                    <i class="bi ${isSaved ? 'bi-heart-fill' : 'bi-heart'}"></i>
+                </button>
             </div>
             <div class="learn-card-body">
                 <span class="learn-card-category">${escapeHtml(currentTab === 'articles' ? 'Article' : currentTab === 'videos' ? 'Video' : currentTab === 'quizzes' ? 'Quiz' : 'Course')}</span>
@@ -360,6 +416,44 @@ async function loadProgress() {
     } catch {}
 }
 
+async function loadHeroContinueLearning() {
+    const card = document.getElementById('continueLearningCard');
+    const titleEl = document.getElementById('continueCourseTitle');
+    const progressEl = document.getElementById('continueCourseProgress');
+    const progressBar = document.getElementById('continueProgressBar');
+    const btn = document.getElementById('continueLearningBtn');
+    if (!card) return;
+    if (!userLoggedIn()) {
+        card.style.display = 'none';
+        return;
+    }
+    try {
+        const data = await api.fetchJSON('/api/courses/enrolled');
+        const courses = data.courses || data || [];
+        if (!courses.length) {
+            card.style.display = 'none';
+            return;
+        }
+        // Find course with most recent activity (highest progress < 100)
+        const inProgress = courses.filter(c => (c.progress || 0) > 0 && (c.progress || 0) < 100);
+        const course = inProgress[0] || courses[0];
+        if (!course) {
+            card.style.display = 'none';
+            return;
+        }
+        const progress = course.progress || 0;
+        titleEl.textContent = course.title || course.name || 'Course';
+        progressEl.textContent = `${progress}% complete`;
+        progressBar.style.width = progress + '%';
+        card.style.display = 'block';
+        btn.onclick = () => {
+            window.location.href = `course-detail.html?id=${course.id}`;
+        };
+    } catch {
+        card.style.display = 'none';
+    }
+}
+
 async function loadContinueLearning() {
     const el = document.getElementById('continueCourses');
     if (!el) return;
@@ -414,6 +508,55 @@ async function loadTopInstructors() {
     } catch {}
 }
 
+// ─── Saved Courses ─────────────────────────────────────────
+
+async function loadSavedCourses() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('ml-saved') || '[]');
+        savedCourses = new Set(saved);
+    } catch {
+        savedCourses = new Set();
+    }
+}
+
+async function toggleSaveCourse(courseId, btn) {
+    if (!userLoggedIn()) {
+        if (typeof openAuthModal === 'function') openAuthModal('login');
+        else window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+        return;
+    }
+    const isSaved = savedCourses.has(courseId);
+    try {
+        if (isSaved) {
+            await api.removeFavorite(courseId);
+            savedCourses.delete(courseId);
+            btn.innerHTML = '<i class="bi bi-heart"></i>';
+            btn.classList.remove('saved');
+            btn.setAttribute('aria-label', 'Save for later');
+        } else {
+            await api.addFavorite(courseId);
+            savedCourses.add(courseId);
+            btn.innerHTML = '<i class="bi bi-heart-fill"></i>';
+            btn.classList.add('saved');
+            btn.setAttribute('aria-label', 'Remove from saved');
+        }
+        localStorage.setItem('ml-saved', JSON.stringify([...savedCourses]));
+        if (typeof showToast === 'function') showToast(isSaved ? 'Removed from saved' : 'Saved for later', isSaved ? 'info' : 'success');
+    } catch (err) {
+        console.error('Save toggle error:', err);
+        // Fallback to localStorage only
+        if (isSaved) {
+            savedCourses.delete(courseId);
+            btn.innerHTML = '<i class="bi bi-heart"></i>';
+            btn.classList.remove('saved');
+        } else {
+            savedCourses.add(courseId);
+            btn.innerHTML = '<i class="bi bi-heart-fill"></i>';
+            btn.classList.add('saved');
+        }
+        localStorage.setItem('ml-saved', JSON.stringify([...savedCourses]));
+    }
+}
 // ─── Mobile Filter Drawer ──────────────────────────────────────────────
 
 function openMobileFilter() {

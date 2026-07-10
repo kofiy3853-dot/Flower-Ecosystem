@@ -1,51 +1,66 @@
 // js/shared/auth.js
+// Authentication with HttpOnly cookies + CSRF protection
 
 const AUTH_KEY = 'flower-auth';
-const TOKEN_KEY = 'flower-token';
+
+// ─── Utilities ────────────────────────────────────────────────────────────
 
 function isLoggedIn() {
-    try { return !!localStorage.getItem(TOKEN_KEY) || !!localStorage.getItem(AUTH_KEY); } catch { return false; }
+    try { 
+        // Check for user data in localStorage (user info only, not token)
+        return !!localStorage.getItem('flower-user'); 
+    } catch { 
+        return false; 
+    }
 }
 
 function getCurrentUser() {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (token) {
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            return { id: payload.id, email: payload.email, role: (payload.role || '').toLowerCase(), name: payload.name || payload.email?.split('@')[0] };
-        } catch { }
-    }
-    const data = localStorage.getItem(AUTH_KEY);
+    const data = localStorage.getItem('flower-user');
     if (!data) return null;
-    const user = JSON.parse(data);
-    if (user && user.role) user.role = user.role.toLowerCase();
-    return user;
+    try {
+        const user = JSON.parse(data);
+        if (user && user.role) user.role = user.role.toLowerCase();
+        return user;
+    } catch { return null; }
 }
 
 function getToken() {
-    try { return localStorage.getItem(TOKEN_KEY); } catch { return null; }
+    // Token is now in HttpOnly cookie, not accessible via JS
+    // This function is kept for compatibility but returns null
+    // The actual access token is in HttpOnly cookie
+    return null;
 }
 
 function setLoggedIn(user, token) {
-    if (token) localStorage.setItem(TOKEN_KEY, token);
-    localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+    if (user) localStorage.setItem('flower-user', JSON.stringify(user));
+    // Token is set via HttpOnly cookie by server
 }
 
 function logout() {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (token) {
-        fetch('/api/auth/logout', {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}`, 'X-Requested-With': 'XMLHttpRequest' }
-        }).catch(() => {});
-    }
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(AUTH_KEY);
+    // Call logout endpoint to clear server-side session and cookies
+    fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        credentials: 'include'
+    }).catch(() => {});
+    localStorage.removeItem('flower-user');
 }
 
-async function apiLogin(email, password) {
+// ─── API Functions ────────────────────────────────────────────────────────
+
+async function apiLogin(email, password, twoFactorCode = null, csrfToken = null) {
+    const body = { email, password };
+    if (twoFactorCode) body.two_factor_code = twoFactorCode;
+    const headers = { 
+        'Content-Type': 'application/json', 
+        'X-Requested-With': 'XMLHttpRequest' 
+    };
+    if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
+    
     const res = await fetch('/api/auth/login', {
-        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        credentials: 'include',
         body: JSON.stringify({ email, password })
     });
     if (!res.ok) {
@@ -59,6 +74,7 @@ async function apiRegister(formData) {
     const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        credentials: 'include',
         body: formData
     });
     if (!res.ok) {
@@ -67,6 +83,26 @@ async function apiRegister(formData) {
     }
     return await res.json();
 }
+
+async function apiLogout() {
+    await fetch('/api/auth/logout', { 
+        method: 'POST', 
+        credentials: 'include',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+}
+
+async function apiRefresh() {
+    const res = await fetch('/api/auth/refresh', { 
+        method: 'POST', 
+        credentials: 'include',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+    if (!res.ok) throw new Error('Token refresh failed');
+    return res.json();
+}
+
+// ─── Auth Modal ──────────────────────────────────────────────────────────
 
 function openAuthModal(tab) {
     const existing = document.getElementById('auth-modal');
@@ -130,31 +166,31 @@ function loadAuthModal() {
 
             <form class="auth-form" id="loginForm" novalidate>
                 <div class="form-group">
-                    <label for="login-email">Email Address</label>
+                    <label for="login-email">Email Address <span style="color:var(--error-color);">*</span></label>
                     <input type="email" id="login-email" name="email" placeholder="your@email.com" required autocomplete="email" aria-describedby="loginEmailError">
                     <span class="error-message" id="loginEmailError" aria-live="polite"></span>
                 </div>
 
                 <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <div style="position:relative">
-                        <input type="password" id="login-password" name="password" placeholder="••••••••" required autocomplete="current-password" aria-describedby="loginPasswordError" style="padding-right:2.5rem">
+                    <label for="login-password">Password <span style="color:var(--error-color);">*</span></label>
+                    <div style="position:relative;">
+                        <input type="password" id="login-password" name="password" placeholder="Enter your password" required autocomplete="current-password" aria-describedby="loginPasswordError" style="padding-right:2.5rem;">
                         <button type="button" id="toggle-login-password" class="password-toggle" aria-label="Toggle password visibility"><i class="bi bi-eye"></i></button>
                     </div>
                     <span class="error-message" id="loginPasswordError" aria-live="polite"></span>
                 </div>
 
                 <div class="form-check">
-                    <input type="checkbox" id="remember-me" name="remember">
+                    <input type="checkbox" id="login-remember" name="remember">
                     <label for="remember-me">Remember me</label>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">Sign In</button>
+                <button type="submit" class="btn btn-primary w-100" style="padding:0.85rem;font-size:1rem;">Sign In</button>
                 <p id="loginApiError" class="error-message" style="text-align:center; margin-top:0.5rem; display:none;"></p>
             </form>
 
             <p class="form-link">Forgot password? <a href="forgot-password.html">Reset here</a></p>
-            <p style="font-size:0.8rem; text-align:center; margin-top:1rem; color:var(--text-light); border-top:1px solid var(--border-color); padding-top:1rem;"><a href="#" id="switchToRegister" style="color:var(--primary-color);">Don't have an account?</a></p>
+            <p style="font-size:0.85rem; text-align:center; margin-top:1rem; color:var(--text-light); border-top:1px solid var(--border-color); padding-top:1rem;"><a href="#" id="switchToRegister" style="color:var(--primary-color);font-weight:500;">Don't have an account?</a></p>
         </div>
 
         <div id="register-tab" class="modal-tab-content" role="tabpanel" aria-labelledby="registerTabBtn">
@@ -163,29 +199,34 @@ function loadAuthModal() {
 
             <form class="auth-form" id="registerForm" novalidate>
                 <div class="form-group">
-                    <label for="register-name">Full Name</label>
+                    <label for="register-name">Full Name <span style="color:var(--error-color);">*</span></label>
                     <input type="text" id="register-name" name="name" placeholder="John Doe" required autocomplete="name" aria-describedby="registerNameError">
                     <span class="error-message" id="registerNameError" aria-live="polite"></span>
                 </div>
 
                 <div class="form-group">
-                    <label for="register-email">Email Address</label>
+                    <label for="register-email">Email Address <span style="color:var(--error-color);">*</span></label>
                     <input type="email" id="register-email" name="email" placeholder="your@email.com" required autocomplete="email" aria-describedby="registerEmailError">
                     <span class="error-message" id="registerEmailError" aria-live="polite"></span>
                 </div>
 
                 <div class="form-group">
-                    <label for="register-password">Password</label>
-                    <div style="position:relative">
-                        <input type="password" id="register-password" name="password" placeholder="••••••••" required minlength="8" autocomplete="new-password" aria-describedby="registerPasswordError registerPasswordHint" style="padding-right:2.5rem">
-                        <button type="button" id="toggle-register-password" class="password-toggle" aria-label="Toggle password visibility"><i class="bi bi-eye"></i></button>
-                    </div>
-                    <span class="error-message" id="registerPasswordError" aria-live="polite"></span>
-                    <span class="form-hint" id="registerPasswordHint">At least 8 characters</span>
+                    <label for="register-phone">Phone Number</label>
+                    <input type="tel" id="register-phone" name="phone" placeholder="+233 XX XXX XXXX" autocomplete="tel">
                 </div>
 
                 <div class="form-group">
-                    <label for="register-role">I am a:</label>
+                    <label for="register-password">Password <span style="color:var(--error-color);">*</span></label>
+                    <div style="position:relative;">
+                        <input type="password" id="register-password" name="password" placeholder="Min. 12 characters" required minlength="12" autocomplete="new-password" aria-describedby="registerPasswordError registerPasswordHint" style="padding-right:2.5rem;">
+                        <button type="button" id="toggle-register-password" class="password-toggle" aria-label="Toggle password visibility"><i class="bi bi-eye"></i></button>
+                    </div>
+                    <span class="error-message" id="registerPasswordError" aria-live="polite"></span>
+                    <span class="form-hint" id="registerPasswordHint">At least 12 characters</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="register-role">I am a: <span style="color:var(--error-color);">*</span></label>
                     <select id="register-role" name="role" required aria-describedby="registerRoleError" onchange="document.getElementById('sellerFields').style.display = ['seller','grower'].includes(this.value) ? 'block' : 'none'">
                         <option value="">Select your role</option>
                         <option value="buyer">Buyer</option>
@@ -220,10 +261,10 @@ function loadAuthModal() {
                     <span class="error-message" id="termsError" aria-live="polite"></span>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">Create Account</button>
+                <button type="submit" class="btn btn-primary w-100" style="padding:0.85rem;font-size:1rem;">Create Account</button>
                 <p id="registerApiError" class="error-message" style="text-align:center; margin-top:0.5rem; display:none;"></p>
             </form>
-            <p style="font-size:0.8rem; text-align:center; margin-top:1rem; color:var(--text-light); border-top:1px solid var(--border-color); padding-top:1rem;"><a href="#" id="switchToLogin" style="color:var(--primary-color);">Already have an account?</a></p>
+            <p style="font-size:0.85rem; text-align:center; margin-top:1rem; color:var(--text-light); border-top:1px solid var(--border-color); padding-top:1rem;"><a href="#" id="switchToLogin" style="color:var(--primary-color);font-weight:500;">Already have an account?</a></p>
         </div>
     </div>
 </div>`;
@@ -244,7 +285,8 @@ function afterAuth() {
                 await Promise.all(localCart.map(item =>
                     fetch('/api/cart/items', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('flower-token'), 'X-Requested-With': 'XMLHttpRequest' },
+                        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                        credentials: 'include',
                         body: JSON.stringify({ product_id: item.id, quantity: item.qty || 1 })
                     }).catch(() => {})
                 ));
@@ -303,8 +345,8 @@ function handleAuthSubmit(formId, apiFn, getData) {
             const userEmail = data.get ? data.get('email') : (data.email || '');
             const userName = data.get ? data.get('name') : (data.name || '');
             const userObj = result.user || { email: userEmail, name: userName || userEmail };
-            if (result.token) localStorage.setItem(TOKEN_KEY, result.token);
-            localStorage.setItem(AUTH_KEY, JSON.stringify(userObj));
+            // Token is set via HttpOnly cookie by server
+            localStorage.setItem('flower-user', JSON.stringify(userObj));
             afterAuth();
         } catch (err) {
             if (errorEl) { errorEl.textContent = err.message || 'An error occurred'; errorEl.style.display = 'block'; }
@@ -334,10 +376,7 @@ async function checkEnrollment() {
     }
 
     try {
-        const token = getToken();
-        const res = await fetch('/api/courses/enrolled', {
-            headers: { 'Authorization': 'Bearer ' + token }
-        });
+        const res = await fetch('/api/courses/enrolled', { credentials: 'include' });
         if (res.ok) {
             const data = await res.json();
             const courses = data.courses || [];
@@ -348,7 +387,6 @@ async function checkEnrollment() {
             return hasEnrolled;
         }
     } catch {}
-
     return false;
 }
 
@@ -434,10 +472,7 @@ async function updateNotificationBadge() {
         return;
     }
     try {
-        const token = getToken();
-        const res = await fetch('/api/notifications/unread-count', {
-            headers: { 'Authorization': 'Bearer ' + token, 'X-Requested-With': 'XMLHttpRequest' }
-        });
+        const res = await fetch('/api/notifications/unread-count', { credentials: 'include' });
         if (res.ok) {
             const data = await res.json();
             const count = data.count || 0;
@@ -494,7 +529,7 @@ function initAuth() {
                 if (errorEl) { errorEl.textContent = msg; errorEl.style.display = 'block'; }
             }
             if (!name || !email || !password) { showErr('All fields are required'); return null; }
-            if (password.length < 8) { showErr('Password must be at least 8 characters'); return null; }
+            if (password.length < 12) { showErr('Password must be at least 12 characters'); return null; }
             if (role && !role.value) { showErr('Please select a role'); return null; }
             if (errorEl) errorEl.style.display = 'none';
             return new FormData(form);
@@ -627,7 +662,26 @@ function shouldInitAuth() {
     return true;
 }
 
-window.getToken = getToken;
+function getToken() { 
+    // Token is in HttpOnly cookie, not accessible via JS
+    // This is kept for compatibility but returns null
+    return null; 
+}
+
+function handleHeaderAccountClick() {
+    const user = getCurrentUser();
+    if (user) {
+        const role = (user.role || '').toLowerCase();
+        if (['admin', 'superadmin'].includes(role)) window.location.href = 'admin.html';
+        else if (['instructor'].includes(role)) window.location.href = 'instructor-dashboard.html';
+        else if (['student'].includes(role)) window.location.href = 'student-dashboard.html';
+        else if (['seller', 'florist', 'grower'].includes(role)) window.location.href = 'seller-dashboard.html';
+        else window.location.href = 'buyer-dashboard.html';
+    } else {
+        openAuthModal('login');
+    }
+}
+
 function handleHeaderAccountClick() {
     const user = getCurrentUser();
     if (user) {

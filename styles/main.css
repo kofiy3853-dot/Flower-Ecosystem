@@ -1383,6 +1383,20 @@ h3 { font-size: 1.15rem; margin-bottom: 0.5rem; font-weight: 600; }
     100% { background-position: 200% 0; }
 }
 
+/* Skeleton Loaders */
+.skeleton-card { background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; }
+.skeleton-card .skeleton-img { height: 220px; background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+.skeleton-card .skeleton-body { padding: 1rem; }
+.skeleton-card .skeleton-line { height: 14px; border-radius: 4px; background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; margin-bottom: 0.5rem; }
+.skeleton-card .skeleton-line.w60 { width: 60%; }
+.skeleton-card .skeleton-line.w40 { width: 40%; }
+.skeleton-card .skeleton-line.w80 { width: 80%; }
+.skeleton-card .skeleton-line.h20 { height: 20px; }
+
+:root.dark-mode .skeleton-card { background: var(--bg-white); border-color: var(--border-color); }
+:root.dark-mode .skeleton-card .skeleton-img,
+:root.dark-mode .skeleton-card .skeleton-line { background: linear-gradient(90deg, #333 25%, #444 50%, #333 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+
 /* ─── Marketplace Shop Styles ──────────────────────────────────── */
 .shop-layout { display: grid; grid-template-columns: 260px 1fr; gap: 2rem; }
 .shop-sidebar { position: sticky; top: 80px; height: fit-content; max-height: calc(100vh - 100px); overflow-y: auto; }

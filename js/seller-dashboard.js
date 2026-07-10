@@ -6,6 +6,26 @@ var pendingImages = [];
 var pendingVideo = null;
 var pendingTags = [];
 
+function getToken() {
+    return localStorage.getItem('flower-token');
+}
+
+function authHeaders() {
+    const token = getToken();
+    return token ? { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } : { 'Content-Type': 'application/json' };
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, c => ({ '&': '&', '<': '<', '>': '>', '"': '"', "'": '\'' }[c]));
+}
+
+function handleError(err, msg) {
+    console.error(msg, err);
+    if (typeof showToast === 'function') showToast(msg, 'error');
+    else alert(msg + ': ' + (err?.message || err));
+}
+
 function timeAgo(d) {
     const diff = Math.floor((Date.now() - new Date(d)) / 1000);
     if (diff < 60) return 'just now';
@@ -145,7 +165,7 @@ async function loadDashboard() {
         const productList = Array.isArray(products) ? products : (products.products || []);
         const lowStock = productList.filter(p => p.stock_quantity <= 10 && p.stock_quantity > 0);
         const outOfStock = productList.filter(p => p.stock_quantity === 0);
-        const alerts = [...outStock.map(p => ({...p, type: 'out'})), ...lowStock.map(p => ({...p, type: 'low'}))].slice(0, 5);
+        const alerts = [...outOfStock.map(p => ({...p, type: 'out'})), ...lowStock.map(p => ({...p, type: 'low'}))].slice(0, 5);
 
         const el = document.getElementById('lowStockAlerts');
         if (el) el.innerHTML = alerts.length ? alerts.map(p => `
@@ -317,7 +337,6 @@ function toggleProductSelect(id) {
 function toggleSelectAll(checked) {
     if (checked) allProducts.forEach(p => selectedProducts.add(p.id));
     else selectedProducts.clear();
-    filterProducts();
     updateBulkBar();
 }
 
@@ -380,7 +399,10 @@ async function toggleProductStatus(id, currentActive) {
 let allOrders = [];
 
 async function loadOrders() {
-    try { allOrders = await fetch('/api/seller/orders', { headers: authHeaders() }).then(r => r.json()); } catch { allOrders = []; }
+    try { 
+        const data = await fetch('/api/seller/orders', { headers: authHeaders() }).then(r => r.json());
+        allOrders = Array.isArray(data) ? data : (data.orders || []); 
+    } catch { allOrders = []; }
     renderOrderStats();
     filterOrders();
 }
@@ -517,7 +539,10 @@ document.addEventListener('click', (e) => {
 
 async function loadReviews() {
     let reviews;
-    try { reviews = await fetch('/api/seller/reviews', { headers: authHeaders() }).then(r => r.json()); } catch { reviews = []; }
+    try { 
+        const data = await fetch('/api/seller/reviews', { headers: authHeaders() }).then(r => r.json());
+        reviews = Array.isArray(data) ? data : (data.reviews || []); 
+    } catch { reviews = []; }
     const el = document.getElementById('reviewsSection');
     if (!el) return;
     if (!reviews.length) { el.innerHTML = '<div class="empty-state"><i class="bi bi-star"></i><p>No reviews yet.</p></div>'; return; }
@@ -537,7 +562,10 @@ async function loadReviews() {
 let allNotifications = [];
 
 async function loadNotifications() {
-    try { allNotifications = await fetch('/api/notifications', { headers: authHeaders() }).then(r => r.json()); } catch { allNotifications = []; }
+    try { 
+        const data = await fetch('/api/notifications', { headers: authHeaders() }).then(r => r.json());
+        allNotifications = Array.isArray(data) ? data : (data.notifications || []); 
+    } catch { allNotifications = []; }
     updateNotifBadge();
     filterNotifications();
 }
@@ -634,7 +662,10 @@ async function markAllRead() {
 
 async function loadMessages() {
     let conversations;
-    try { conversations = await fetch('/api/messages/conversations', { headers: authHeaders() }).then(r => r.json()); } catch { conversations = []; }
+    try { 
+        const data = await fetch('/api/messages/conversations', { headers: authHeaders() }).then(r => r.json());
+        conversations = Array.isArray(data) ? data : (data.conversations || []); 
+    } catch { conversations = []; }
     const el = document.getElementById('messagesSection');
     if (!el) return;
     if (!conversations.length) { el.innerHTML = '<div class="empty-state"><i class="bi bi-chat-dots"></i><p>No conversations yet.</p><p style="font-size:0.85rem;">When buyers contact you, conversations will appear here.</p></div>'; return; }
@@ -803,7 +834,8 @@ let editingProductId = null;
 
 async function editProduct(id) {
     try {
-        const products = await fetch('/api/seller/products', { headers: authHeaders() }).then(r => r.json());
+        const data = await fetch('/api/seller/products', { headers: authHeaders() }).then(r => r.json());
+        const products = Array.isArray(data) ? data : (data.products || []);
         const p = products.find(x => x.id === id);
         if (!p) { alert('Product not found'); return; }
         editingProductId = id;
@@ -817,11 +849,18 @@ async function editProduct(id) {
         setVal(p.shipping_fee, 'prodShippingFee'); setVal(p.seo_slug, 'prodSeoSlug');
         setVal(p.meta_description, 'prodMetaDesc'); setVal(p.shelf_life_days, 'prodLifespan');
         setVal(p.currency, 'prodCurrency'); setVal(p.unit, 'prodUnit');
+        setVal(p.headline, 'prodHeadline'); setVal(p.height, 'prodHeight');
+        setVal(p.flowering_time, 'prodFloweringTime'); setVal(p.sunlight, 'prodSunlight');
+        setVal(p.watering, 'prodWatering'); setVal(p.soil_type, 'prodSoil');
+        setVal(p.temperature, 'prodTemperature'); setVal(p.fertilizer, 'prodFertilizer');
+        setVal(p.care_tips, 'prodCareTips'); setVal(p.guarantee_details, 'prodGuaranteeDetails');
         setSel(p.category_name || p.category, 'prodCategory');
         setSel(p.flower_cond, 'prodType'); setSel(p.occasion, 'prodOccasion');
         setSel(p.flower_type, 'prodFlowerType'); setSel(p.fragrance, 'prodFragrance');
         setSel(p.bloom_season, 'prodBloomSeason'); setSel(p.care_level, 'prodCareLevel');
-        setSel(p.delivery_time, 'prodDeliveryTime');
+        setSel(p.delivery_time, 'prodDeliveryTime'); setSel(p.flower_form, 'prodFlowerForm');
+        setSel(p.foliage_type, 'prodFoliage'); setSel(p.light, 'prodLight');
+        setSel(p.bloom_time, 'prodBloomTime'); setSel(p.guarantee, 'prodGuarantee');
 
         if (p.delivery_areas && Array.isArray(p.delivery_areas)) {
             setVal(p.delivery_areas.join(', '), 'prodDeliveryAreas');
@@ -978,10 +1017,10 @@ function resetProductForm() {
     editingProductId = null;
     const title = document.getElementById('formTitle');
     if (title) title.textContent = 'Upload New Flower Product';
-    ['prodName','prodPrice','prodDesc','prodColor','prodOrigin','prodSku','prodDeliveryAreas','prodSeoSlug','prodMetaDesc','prodTagInput'].forEach(id => {
+    ['prodName','prodPrice','prodDesc','prodColor','prodOrigin','prodSku','prodDeliveryAreas','prodSeoSlug','prodMetaDesc','prodTagInput','prodHeadline','prodHeight','prodFloweringTime','prodSunlight','prodWatering','prodSoil','prodTemperature','prodFertilizer','prodCareTips','prodGuaranteeDetails','prodLifespan'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = '';
     });
-    ['prodCategory','prodType','prodOccasion','prodCurrency','prodUnit','prodFlowerType','prodFragrance','prodBloomSeason','prodCareLevel','prodDeliveryTime'].forEach(id => {
+    ['prodCategory','prodType','prodOccasion','prodCurrency','prodUnit','prodFlowerType','prodFragrance','prodBloomSeason','prodCareLevel','prodDeliveryTime','prodFlowerForm','prodFoliage','prodLight','prodBloomTime','prodGuarantee'].forEach(id => {
         const el = document.getElementById(id); if (el) el.selectedIndex = 0;
     });
     const stock = document.getElementById('prodStock'); if (stock) stock.value = '10';
@@ -991,7 +1030,7 @@ function resetProductForm() {
     const featured = document.getElementById('prodFeatured'); if (featured) featured.checked = false;
     const bestSeller = document.getElementById('prodBestSeller'); if (bestSeller) bestSeller.checked = false;
     const newArrival = document.getElementById('prodNewArrival'); if (newArrival) newArrival.checked = false;
-    pendingImages = []; pendingVideo = []; pendingTags = [];
+    pendingImages = []; pendingVideo = null; pendingTags = [];
     const previews = document.getElementById('imagePreviews'); if (previews) previews.innerHTML = '';
     const videoPrev = document.getElementById('videoPreview'); if (videoPrev) { videoPrev.style.display = 'none'; videoPrev.src = ''; }
     const videoText = document.getElementById('videoPromptText'); if (videoText) videoText.textContent = 'Add a short video (max 30 sec)';

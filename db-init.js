@@ -36,7 +36,7 @@ async function run() {
         }
 
         // Run migrations independently (each handles its own errors)
-        const migrations = ['001_add_grower_role.sql', '002_add_missing_columns.sql'];
+        const migrations = ['001_add_grower_role.sql', '002_add_missing_columns.sql', '011_newsletter_subscribers.sql'];
         for (const m of migrations) {
             const mPath = path.join(__dirname, 'migrations', m);
             if (fs.existsSync(mPath)) {

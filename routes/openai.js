@@ -14,18 +14,21 @@ if (!OPENROUTER_API_KEY) {
 // ─── Rate Limiting ──────────────────────────────────────────────────────
 const rateLimitMap = new Map();
 const RATE_LIMIT_WINDOW = 60000; // 1 minute
-const RATE_LIMIT_MAX = 10; // max requests per window per user
+const RATE_LIMIT_MAX = 10; // max requests per window per authenticated user
+const ANON_RATE_LIMIT_MAX = 5; // stricter limit for unauthenticated (IP-based) requests
 
-function checkRateLimit(userId) {
+function checkRateLimit(userId, isAnonymous = false) {
     const now = Date.now();
-    const record = rateLimitMap.get(userId) || { count: 0, resetAt: now + RATE_LIMIT_WINDOW };
+    const max = isAnonymous ? ANON_RATE_LIMIT_MAX : RATE_LIMIT_MAX;
+    const key = isAnonymous ? `anon:${userId}` : userId;
+    const record = rateLimitMap.get(key) || { count: 0, resetAt: now + RATE_LIMIT_WINDOW };
     if (now > record.resetAt) {
         record.count = 0;
         record.resetAt = now + RATE_LIMIT_WINDOW;
     }
     record.count++;
-    rateLimitMap.set(userId, record);
-    return record.count <= RATE_LIMIT_MAX;
+    rateLimitMap.set(key, record);
+    return record.count <= max;
 }
 
 // Clean up old entries every 5 minutes
@@ -404,16 +407,9 @@ router.post('/chat', express.json(), asyncHandler(async (req, res) => {
     // The previous plan specified `requireAuth` in the plan text but the widget is usually public.
     // Let's stick to the plan but make it robust. Wait, the plan had requireAuth. Let's use requireAuth.
     if (!OPENROUTER_API_KEY) return res.status(500).json({ error: 'AI service not configured.' });
-    
-    // For rate limiting, checkRateLimit(req.user?.id || req.ip) might be better, but the plan 
-    // says checkRateLimit(req.user.id). Let's use requireAuth.
-    // But wait, the ai-assistant component is in the footer of all pages. 
-    // If I add requireAuth, non-logged-in users will get a 401. 
-    // Let's modify the rate limiting slightly to support req.ip if req.user is absent, 
-    // and remove requireAuth from the route signature so anyone can chat.
-    
+    const isAnonymous = !req.user;
     const userId = req.user ? req.user.id : (req.headers['x-forwarded-for'] || req.socket.remoteAddress);
-    if (!checkRateLimit(userId)) return res.status(429).json({ error: 'Rate limit exceeded.' });
+    if (!checkRateLimit(userId, isAnonymous)) return res.status(429).json({ error: 'Rate limit exceeded.' });
 
     const userMessages = req.body.messages;
     if (!Array.isArray(userMessages)) {

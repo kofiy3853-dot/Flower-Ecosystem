@@ -208,6 +208,48 @@ const api = {
     addFavorite(productId) { return apiFetchWithBody('/api/buyer/favorites', 'POST', { product_id: productId }); },
     removeFavorite(productId) { return apiFetchWithBody('/api/buyer/favorites/' + productId, 'DELETE'); },
 
+    // ─── Learning Center ───────────────────────────────────
+    fetchCourse(id) { return apiFetch('/api/learning/courses/' + id); },
+    fetchCourses(params) { return apiFetch('/api/learning/courses?' + new URLSearchParams(params).toString()); },
+    fetchEnrolledCourses() { return apiFetch('/api/learning/enrolled'); },
+    fetchEnrolledCourses() { return apiFetch('/api/courses/enrolled'); },
+    fetchCertificates() { return apiFetch('/api/certificates'); },
+    fetchLearningPaths() { return apiFetch('/api/learning/paths'); },
+    fetchLearningPath(slug) { return apiFetch('/api/learning/paths/' + encodeURIComponent(slug)); },
+    updateProgress(courseId, lessonId, progress) {
+        return apiFetchWithBody('/api/learning/courses/' + courseId + '/progress', 'PUT', { lesson_id: lessonId, progress });
+    },
+    fetchLearningPathCourses(pathId) { return apiFetch('/api/learning/paths/' + pathId + '/courses'); },
+    fetchQuiz(courseId) { return apiFetch('/api/learning/courses/' + courseId + '/quiz'); },
+    submitQuizAnswers(courseId, answers) { return apiFetchWithBody('/api/learning/courses/' + courseId + '/quiz/attempt', 'POST', { answers }); },
+    fetchDiscussions(courseId) { return apiFetch('/api/learning/courses/' + courseId + '/discussions'); },
+    createDiscussion(courseId, data) { return apiFetchWithBody('/api/learning/courses/' + courseId + '/discussions', 'POST', data); },
+    fetchResources(courseId) { return apiFetch('/api/learning/courses/' + courseId + '/resources'); },
+    fetchRelatedCourses(courseId) { return apiFetch('/api/learning/courses/' + courseId + '/related'); },
+    fetchCourseEnrollments(courseId) { return apiFetch('/api/learning/courses/' + courseId + '/enrollments'); },
+
+    // ─── Video Streaming ───────────────────────────────────
+    fetchVideoSignedUrl(videoId) { return apiFetch('/api/videos/' + encodeURIComponent(videoId) + '/signed-url'); },
+
+    // ─── Search ─────────────────────────────────────────────
+    search(q, filters) {
+        const params = new URLSearchParams({ q });
+        if (filters) {
+            Object.entries(filters).forEach(([k, v]) => {
+                if (v != null) params.set(k, v);
+            });
+        }
+        return apiFetch('/api/search?' + params.toString());
+    },
+
+    // ─── Certificate ───────────────────────────────────────
+    generateCertificate(courseId) {
+        return apiFetchWithBody('/api/certificates/generate', 'POST', { course_id: courseId });
+    },
+    verifyCertificate(code) {
+        return apiFetch('/api/certificates/verify/' + encodeURIComponent(code));
+    },
+
     // ─── Admin ───────────────────────────────────────────
     fetchAdminUsers() { return fetch('/api/admin/users', { headers: authHeaders() }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
     updateAdminUserRole(id, role) { return apiFetchWithBody('/api/admin/users/' + id + '/role', 'PUT', { role }); },
@@ -231,16 +273,26 @@ const api = {
     fetchInstructorCertificates() { return apiFetchWithBody('/api/instructor/certificates', 'GET'); },
     fetchInstructorAnalytics() { return apiFetchWithBody('/api/instructor/analytics', 'GET'); },
 
-    // ─── Instructor Application ────────────────────────────
-    submitInstructorApplication(data) { return apiFetchWithBody('/api/instructor/apply', 'POST', data); },
-    fetchMyInstructorApplication() { return apiFetchWithBody('/api/instructor/my-application', 'GET'); },
-    fetchMyInstructorLevel() { return apiFetchWithBody('/api/instructor/my-level', 'GET'); },
-    fetchInstructorApplications(status) { return apiFetchWithBody('/api/instructor/applications' + (status ? '?status=' + status : ''), 'GET'); },
-    fetchInstructorApplicationDetail(id) { return apiFetchWithBody('/api/instructor/applications/' + id, 'GET'); },
-    updateInstructorApplication(id, data) { return apiFetchWithBody('/api/instructor/applications/' + id, 'PUT', data); },
-    fetchInstructorLevels() { return apiFetchWithBody('/api/instructor/levels', 'GET'); },
-    updateInstructorLevel(userId, data) { return apiFetchWithBody('/api/instructor/levels/' + userId, 'PUT', data); },
-    fetchInstructorStats() { return apiFetchWithBody('/api/instructor/stats', 'GET'); },
+    // ─── Instructor Resources ────────────────────────────────
+    fetchInstructorResources() { return apiFetchWithBody('/api/instructor/resources', 'GET'); },
+    uploadInstructorResource(data) { return apiFetchWithBody('/api/instructor/resources', 'POST', data); },
+    deleteInstructorResource(id) { return apiFetchWithBody('/api/instructor/resources/' + id, 'DELETE'); },
+
+    // ─── Instructor Discussions ──────────────────────────────
+    fetchInstructorDiscussions() { return apiFetchWithBody('/api/instructor/discussions', 'GET'); },
+    createInstructorDiscussion(data) { return apiFetchWithBody('/api/instructor/discussions', 'POST', data); },
+    replyInstructorDiscussion(discussionId, content) { return apiFetchWithBody('/api/instructor/discussions/' + discussionId + '/reply', 'POST', { content }); },
+
+    // ─── Instructor Recordings ────────────────────────────────
+    fetchInstructorRecordings() { return apiFetchWithBody('/api/instructor/recordings', 'GET'); },
+    deleteInstructorRecording(id) { return apiFetchWithBody('/api/instructor/recordings/' + id, 'DELETE'); },
+
+    // ─── Instructor Certificates ─────────────────────────────
+    fetchInstructorCertificates() { return apiFetchWithBody('/api/instructor/certificates', 'GET'); },
+    issueCertificate(data) { return apiFetchWithBody('/api/instructor/certificates/issue', 'POST', data); },
+
+    // ─── Instructor Analytics ────────────────────────────────
+    fetchInstructorAnalytics() { return apiFetchWithBody('/api/instructor/analytics', 'GET'); },
 
     // ─── Notifications ────────────────────────────────────
     fetchNotifications() { return apiFetchWithBody('/api/notifications', 'GET'); },
@@ -252,7 +304,34 @@ const api = {
     fetchConversations() { return apiFetchWithBody('/api/notifications/conversations', 'GET'); },
     createConversation(userId) { return apiFetchWithBody('/api/notifications/conversations', 'POST', { user_id: userId }); },
     fetchMessages(conversationId) { return apiFetchWithBody('/api/notifications/' + conversationId, 'GET'); },
-    sendMessage(conversationId, content) { return apiFetchWithBody('/api/notifications/' + conversationId, 'POST', { content }); }
+    sendMessage(conversationId, content) { return apiFetchWithBody('/api/notifications/' + conversationId, 'POST', { content }); },
+
+    // ─── Profile ──────────────────────────────────────────
+    updateProfile(data) { return apiFetchWithBody('/api/auth/profile', 'PUT', data); },
+    changePassword(data) { return apiFetchWithBody('/api/auth/password', 'PUT', data); },
+    fetchProfile() { return apiFetchWithBody('/api/auth/profile', 'GET'); },
+
+    // ─── Search ─────────────────────────────────────────────
+    search(q, filters) {
+        const params = new URLSearchParams({ q });
+        if (filters) {
+            Object.entries(filters).forEach(([k, v]) => {
+                if (v != null) params.set(k, v);
+            });
+        }
+        return apiFetch('/api/search?' + params.toString());
+    },
+
+    // ─── Certificate ───────────────────────────────────────
+    generateCertificate(courseId) {
+        return apiFetchWithBody('/api/certificates/generate', 'POST', { course_id: courseId });
+    },
+    verifyCertificate(code) {
+        return apiFetch('/api/certificates/verify/' + encodeURIComponent(code));
+    },
+
+    // ─── Admin ───────────────────────────────────────────
+
 };
 
 window.api = api;

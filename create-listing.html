@@ -10,29 +10,26 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/main.css?v=3.0">
+    <link rel="stylesheet" href="styles/dashboard.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <style>
         .cl-hero { background:linear-gradient(135deg, #fdf2f6 0%, #fce7f0 50%, #f8d7e8 100%); padding:5rem 0 3rem; text-align:center; }
         .cl-hero h1 { font-size:clamp(2rem, 4vw, 2.8rem); margin-bottom:0.5rem; }
         .cl-hero p { color:var(--text-light); font-size:1.05rem; max-width:600px; margin:0 auto; }
 
-        /* Progress */
         .cl-progress { display:flex; justify-content:center; margin:2rem 0; flex-wrap:wrap; gap:0.5rem; }
         .cl-step { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 1rem; border-radius:50px; font-size:0.85rem; color:var(--text-light); background:var(--bg-light); }
         .cl-step.active { background:var(--primary-color); color:white; font-weight:600; }
         .cl-step.done { background:#10b981; color:white; }
         .cl-step-num { width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:600; }
 
-        /* Cards */
         .cl-card { background:var(--bg-white); border:1px solid var(--border-color); border-radius:16px; padding:2rem; margin-bottom:1.5rem; }
         .cl-card h2 { font-size:1.35rem; margin-bottom:0.5rem; }
         .cl-card > p { color:var(--text-light); font-size:0.9rem; margin-bottom:1.5rem; }
 
-        /* Grid */
         .cl-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
         .cl-full { grid-column:1/-1; }
 
-        /* Form Groups */
         .cl-group { margin-bottom:1rem; }
         .cl-label { display:block; font-weight:500; font-size:0.88rem; margin-bottom:0.35rem; }
         .cl-label .req { color:var(--error-color); }
@@ -40,7 +37,6 @@
         .cl-input:focus { outline:none; border-color:var(--primary-color); box-shadow:0 0 0 3px rgba(216,68,124,0.1); }
         .cl-hint { font-size:0.78rem; color:var(--text-light); margin-top:0.25rem; }
 
-        /* Listing Type Cards */
         .type-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:1rem; }
         .type-card { border:2px solid var(--border-color); border-radius:12px; padding:1.5rem; text-align:center; cursor:pointer; transition:all 0.3s; }
         .type-card:hover { border-color:var(--primary-color); transform:translateY(-3px); }
@@ -49,51 +45,85 @@
         .type-card-name { font-weight:600; font-size:0.95rem; margin-bottom:0.25rem; }
         .type-card-desc { font-size:0.8rem; color:var(--text-light); }
 
-        /* Checkboxes */
         .cl-checks { display:flex; flex-wrap:wrap; gap:0.75rem; }
         .cl-check { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.75rem; border:1px solid var(--border-color); border-radius:8px; cursor:pointer; font-size:0.88rem; transition:all 0.2s; }
         .cl-check:hover { border-color:var(--primary-color); }
         .cl-check.selected { border-color:var(--primary-color); background:var(--primary-light); }
         .cl-check input { accent-color:var(--primary-color); }
 
-        /* File Upload */
         .cl-upload { border:2px dashed var(--border-color); border-radius:12px; padding:2rem; text-align:center; cursor:pointer; transition:all 0.2s; }
         .cl-upload:hover { border-color:var(--primary-color); background:var(--primary-light); }
+        .cl-upload.drag-over { border-color:var(--primary-color); background:var(--primary-light); }
         .cl-upload-icon { font-size:2rem; color:var(--text-light); margin-bottom:0.5rem; }
         .cl-upload-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:0.5rem; margin-top:1rem; }
         .cl-upload-thumb { position:relative; }
         .cl-upload-thumb img { width:100%; height:80px; object-fit:cover; border-radius:8px; }
         .cl-upload-remove { position:absolute; top:-5px; right:-5px; width:20px; height:20px; border-radius:50%; background:var(--error-color); color:white; border:none; font-size:0.7rem; cursor:pointer; }
 
-        /* Nav */
         .cl-nav { display:flex; justify-content:space-between; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border-color); }
 
-        /* Success */
         .cl-success { text-align:center; padding:3rem; }
         .cl-success-icon { width:80px; height:80px; border-radius:50%; background:#d4edda; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; font-size:2.5rem; color:#155724; }
+
+        .tags-input { display:flex; flex-wrap:wrap; gap:0.4rem; padding:0.5rem; border:1px solid var(--border-color); border-radius:8px; min-height:44px; }
+        .tags-input:focus-within { border-color:var(--primary-color); box-shadow:0 0 0 3px rgba(216,68,124,0.1); }
+        .tag-chip { display:inline-flex; align-items:center; gap:0.3rem; padding:0.3rem 0.6rem; background:rgba(139,92,246,0.1); color:var(--primary-color); border-radius:20px; font-size:0.8rem; }
+        .tag-chip button { background:none; border:none; color:var(--primary-color); cursor:pointer; font-size:1rem; line-height:1; padding:0; display:flex; align-items:center; justify-content:center; width:18px; height:18px; }
+        .tag-chip button:hover { color:#fff; background:var(--primary-color); border-radius:50%; }
+        .tags-input input { flex:1; min-width:100px; border:none; outline:none; padding:0.25rem; font-size:0.88rem; font-family:inherit; }
+
+        .video-upload-zone { border:2px dashed var(--border-color); border-radius:10px; padding:1.5rem; text-align:center; cursor:pointer; transition:all 0.2s; }
+        .video-upload-zone:hover { border-color:var(--primary-color); background:var(--primary-light); }
+        .video-upload-zone.has-video { border-color:#16a34a; background:rgba(22,163,74,0.05); }
+        .video-preview { width:100%; max-height:200px; border-radius:8px; margin-top:0.5rem; }
+
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+
+        .live-preview { background:var(--bg-light); border-radius:10px; padding:1rem; margin-top:1rem; }
+        .live-preview img { width:100%; max-height:200px; object-fit:cover; border-radius:8px; }
 
         @media (max-width:768px) {
             .cl-grid { grid-template-columns:1fr; }
             .type-grid { grid-template-columns:repeat(2, 1fr); }
             .cl-upload-grid { grid-template-columns:repeat(3, 1fr); }
+            .form-row { grid-template-columns:1fr; }
         }
+
+        .section-hidden { display:none !important; }
+        .btn { padding:0.75rem 1.5rem; border-radius:8px; font-weight:500; font-size:0.9rem; cursor:pointer; transition:all 0.2s; border:none; display:inline-flex; align-items:center; gap:0.5rem; }
+        .btn-primary { background:var(--primary-color); color:white; }
+        .btn-primary:hover { background:var(--primary-dark); transform:translateY(-1px); box-shadow:0 4px 12px rgba(216,68,124,0.3); }
+        .btn-outline { background:var(--bg-white); color:var(--primary-color); border:1px solid var(--primary-color); }
+        .btn-outline:hover { background:var(--primary-light); }
+        .btn-secondary { background:var(--bg-light); color:var(--text-main); border:1px solid var(--border-color); }
+        .btn-secondary:hover { background:var(--border-color); }
+        .btn-sm { padding:0.5rem 1rem; font-size:0.8rem; }
+        .btn:disabled { opacity:0.6; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
     </style>
 </head>
 <body>
 
-    <div id="header-container"></div>
+<div id="header-container"></div>
 
-    <section class="cl-hero">
-        <div class="container">
-            <h1>Create New Listing</h1>
-            <p>List your flowers, arrangements, or services on Flower Ecosystem</p>
-        </div>
-    </section>
+<section class="cl-hero">
+    <div class="container">
+        <h1>Create New Listing</h1>
+        <p>List your flowers, arrangements, plants, or services on Flower Ecosystem</p>
+    </div>
+</section>
 
-    <div class="container" style="max-width:800px;">
-        <div class="cl-progress" id="clProgress"></div>
+<div class="container" style="max-width:900px;">
+    <div class="cl-progress" id="clProgress"></div>
 
-        <!-- Step 1: What are you listing? -->
+    <div id="loginPrompt" class="login-prompt" style="display:none; text-align:center; padding:3rem;">
+        <i class="bi bi-person-circle" style="font-size:3rem; display:block; margin-bottom:1rem; color:var(--text-light);"></i>
+        <h2>Sign In Required</h2>
+        <p style="color:var(--text-light);">Sign in to create a listing.</p>
+        <button class="btn btn-primary" onclick="openAuthModal('login')">Sign In</button>
+    </div>
+
+    <div id="clContent" style="display:none;">
+
         <div class="cl-section" id="step1">
             <div class="cl-card">
                 <h2>What are you listing?</h2>
@@ -102,141 +132,265 @@
             </div>
         </div>
 
-        <!-- Step 2: Basic Info -->
-        <div class="cl-section" id="step2" style="display:none;">
+        <div class="cl-section section-hidden" id="step2">
             <div class="cl-card">
                 <h2>Basic Information</h2>
                 <p>Tell us about your listing.</p>
                 <div class="cl-grid">
                     <div class="cl-group cl-full">
                         <label class="cl-label">Title <span class="req">*</span></label>
-                        <input type="text" id="listingTitle" class="cl-input" placeholder="e.g., Premium Red Roses" required>
+                        <input type="text" id="listingTitle" class="cl-input" placeholder="e.g., Premium Red Rose Bouquet" required maxlength="200">
                     </div>
                     <div class="cl-group cl-full">
                         <label class="cl-label">Description <span class="req">*</span></label>
-                        <textarea id="listingDesc" class="cl-input" rows="3" placeholder="Describe your product or service..." required></textarea>
+                        <textarea id="listingDesc" class="cl-input" rows="4" placeholder="Describe freshness, occasions, size, packaging, care instructions..." required maxlength="5000"></textarea>
+                        <div class="cl-hint"><span id="descCharCount">0</span>/5000 characters</div>
                     </div>
                     <div class="cl-group">
                         <label class="cl-label">Category <span class="req">*</span></label>
                         <input type="text" id="listingCategory" class="cl-input" list="categoryList" placeholder="Search category..." autocomplete="off" required>
-                        <datalist id="categoryList">
-                            <option value="Roses">
-                            <option value="Bouquets">
-                            <option value="Orchids">
-                            <option value="Tulips">
-                            <option value="Lilies">
-                            <option value="Sunflowers">
-                            <option value="Peonies">
-                            <option value="Carnations">
-                            <option value="Daisies">
-                            <option value="Lavender">
-                            <option value="Hydrangeas">
-                            <option value="Chrysanthemums">
-                            <option value="Indoor Plants">
-                            <option value="Seeds">
-                            <option value="Pots & Planters">
-                            <option value="Garden Tools">
-                        </datalist>
+                        <datalist id="categoryList"></datalist>
                     </div>
                     <div class="cl-group">
                         <label class="cl-label">Price <span class="req">*</span></label>
-                        <input type="number" id="listingPrice" class="cl-input" placeholder="GHS" min="0" step="0.01" required>
+                        <div style="display:flex; gap:0.5rem;">
+                            <select id="listingCurrency" class="cl-input" style="width:80px; flex-shrink:0;">
+                                <option value="GHS">GHS</option>
+                                <option value="USD">USD</option>
+                                <option value="NGN">NGN</option>
+                                <option value="GBP">GBP</option>
+                                <option value="EUR">EUR</option>
+                            </select>
+                            <input type="number" id="listingPrice" class="cl-input" placeholder="0.00" min="0" step="0.01" required style="flex:1;">
+                        </div>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Unit</label>
+                        <select id="listingUnit" class="cl-input">
+                            <option value="Piece">Piece</option>
+                            <option value="Bouquet">Bouquet</option>
+                            <option value="Pot">Pot</option>
+                            <option value="Box">Box</option>
+                            <option value="Stem">Stem</option>
+                            <option value="Bundle">Bundle</option>
+                        </select>
                     </div>
                     <div class="cl-group">
                         <label class="cl-label">Location</label>
                         <input type="text" id="listingLocation" class="cl-input" list="locationList" placeholder="Search location..." autocomplete="off">
-                        <datalist id="locationList">
-                            <option value="Greater Accra">
-                            <option value="Ashanti">
-                            <option value="Western">
-                            <option value="Central">
-                            <option value="Eastern">
-                            <option value="Northern">
-                            <option value="Volta">
-                            <option value="Upper East">
-                            <option value="Upper West">
-                            <option value="Brong-Ahafo">
-                            <option value="Western North">
-                            <option value="Ahafo">
-                            <option value="Bono East">
-                            <option value="Oti">
-                            <option value="Savannah">
-                            <option value="North East">
-                        </datalist>
+                        <datalist id="locationList"></datalist>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Step 3: Dynamic Fields (based on listing type) -->
-        <div class="cl-section" id="step3" style="display:none;">
-            <!-- FLOWER fields -->
-            <div class="cl-card" id="flowerFields" style="display:none;">
+        <div class="cl-section section-hidden" id="step3">
+            <div class="cl-card" id="flowerFields">
                 <h2>Flower Details</h2>
                 <div class="cl-grid">
                     <div class="cl-group">
-                        <label class="cl-label">Flower Variety</label>
-                        <select id="flowerVariety" class="cl-input">
-                            <option value="">Select</option>
-                            <option value="roses">Roses</option>
-                            <option value="tulips">Tulips</option>
-                            <option value="orchids">Orchids</option>
-                            <option value="sunflowers">Sunflowers</option>
-                            <option value="lilies">Lilies</option>
-                            <option value="peonies">Peonies</option>
-                            <option value="carnations">Carnations</option>
-                            <option value="daisies">Daisies</option>
-                            <option value="lavender">Lavender</option>
-                            <option value="hydrangeas">Hydrangeas</option>
-                            <option value="chrysanthemums">Chrysanthemums</option>
-                            <option value="babys-breath">Baby's Breath</option>
-                            <option value="hibiscus">Hibiscus</option>
-                            <option value="marigolds">Marigolds</option>
+                        <label class="cl-label">Headline</label>
+                        <input type="text" id="prodHeadline" class="cl-input" placeholder="e.g., Premium Long-Stem Red Roses">
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Flower Type</label>
+                        <select id="prodFlowerType" class="cl-input">
+                            <option value="">Select Type</option>
+                            <option>Rose</option><option>Tulip</option><option>Orchid</option><option>Lily</option>
+                            <option>Sunflower</option><option>Carnation</option><option>Peony</option><option>Hydrangea</option>
+                            <option>Dahlia</option><option>Gerbera</option><option>Chrysanthemum</option><option>Ranunculus</option>
+                            <option>Anemone</option><option>Freesia</option><option>Alstroemeria</option><option>Statice</option>
+                            <option>Limonium</option><option>Gypsophila</option><option>Eucalyptus</option><option>Protea</option>
+                            <option>Bird of Paradise</option><option>Anthurium</option><option>Heliconia</option><option>Ginger</option>
+                            <option>Calla Lily</option><option>Lisianthus</option><option>Stock</option><option>Snapdragon</option>
+                            <option>Delphinium</option><option>Foxglove</option><option>Lupine</option><option>Hollyhock</option>
+                            <option>Gladiolus</option><option>Iris</option><option>Narcissus</option><option>Hyacinth</option>
+                            <option>Muscari</option><option>Crocus</option><option>Snowdrop</option><option>Other</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Condition</label>
+                        <select id="prodType" class="cl-input">
+                            <option value="">Select Condition</option>
+                            <option>Fresh Cut</option><option>Potted</option><option>Artificial</option><option>Dried</option>
+                            <option>Preserved</option><option>Silk</option><option>Freeze-Dried</option><option>Live Plant</option>
+                            <option>Bulb</option><option>Bare Root</option><option>Seedling</option><option>Mature Plant</option>
                         </select>
                     </div>
                     <div class="cl-group">
                         <label class="cl-label">Color</label>
-                        <select id="flowerColor" class="cl-input">
+                        <input type="text" id="prodColor" class="cl-input" placeholder="e.g., Red, White, Pink">
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Occasion</label>
+                        <select id="prodOccasion" class="cl-input">
+                            <option value="">Select Occasion</option>
+                            <option>Wedding</option><option>Birthday</option><option>Anniversary</option>
+                            <option>Sympathy</option><option>Just Because</option><option>Corporate</option>
+                            <option>Mother's Day</option><option>Valentine's Day</option><option>Graduation</option>
+                            <option>Engagement</option><option>Housewarming</option><option>New Baby</option>
+                            <option>Get Well</option><option>Thank You</option><option>Congratulations</option>
+                            <option>Christmas</option><option>Easter</option><option>Thanksgiving</option><option>New Year</option>
+                            <option>Funeral</option><option>Memorial</option><option>Retirement</option><option>Promotion</option>
+                            <option>Date Night</option><option>Apology</option><option>Friendship</option><option>Self Care</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Flower Form</label>
+                        <select id="prodFlowerForm" class="cl-input">
                             <option value="">Select</option>
-                            <option value="red">Red</option>
-                            <option value="pink">Pink</option>
-                            <option value="white">White</option>
-                            <option value="yellow">Yellow</option>
-                            <option value="purple">Purple</option>
-                            <option value="orange">Orange</option>
-                            <option value="multi">Multi-color</option>
+                            <option>Spray</option><option>Standard</option><option>Miniature</option><option>Climbing</option><option>Shrub</option><option>Tree</option>
+                            <option>Groundcover</option><option>Trailing</option><option>Upright</option><option>Compact</option>
+                            <option>Vining</option><option>Mounding</option><option>Columnar</option><option>Weeping</option>
+                            <option>Rambling</option><option>Bush</option><option>Herbaceous</option><option>Woody</option>
+                            <option>Succulent</option><option>Cactus</option><option>Fern</option><option>Grass</option>
+                            <option>Bulb</option><option>Rhizome</option><option>Tuber</option><option>Corm</option>
                         </select>
                     </div>
                     <div class="cl-group">
-                        <label class="cl-label">Freshness</label>
-                        <select id="flowerFresh" class="cl-input">
-                            <option value="fresh">Fresh Cut</option>
-                            <option value="potted">Potted</option>
-                            <option value="dried">Dried</option>
-                            <option value="artificial">Artificial</option>
+                        <label class="cl-label">Foliage Type</label>
+                        <select id="prodFoliage" class="cl-input">
+                            <option value="">Select</option>
+                            <option>Deciduous</option><option>Evergreen</option><option>Semi-evergreen</option><option>None</option>
+                            <option>Herbaceous</option><option>Needle-leaved</option><option>Broad-leaved</option><option>Variegated</option>
+                            <option>Silver/Gray</option><option>Red/Purple</option><option>Golden/Yellow</option><option>Blue-green</option>
+                            <option>Palmate</option><option>Pinnate</option><option>Simple</option><option>Compound</option>
+                            <option>Succulent</option><option>Grass-like</option><option>Fern-like</option><option>Scale-like</option>
                         </select>
                     </div>
                     <div class="cl-group">
-                        <label class="cl-label">Stem Length</label>
-                        <input type="text" id="stemLength" class="cl-input" placeholder="e.g., 40-50cm">
+                        <label class="cl-label">Height</label>
+                        <input type="text" id="prodHeight" class="cl-input" placeholder="e.g., 30-50cm">
                     </div>
                     <div class="cl-group">
-                        <label class="cl-label">Grade / Quality</label>
-                        <select id="flowerGrade" class="cl-input">
-                            <option value="premium">Premium</option>
-                            <option value="standard">Standard</option>
-                            <option value="economy">Economy</option>
+                        <label class="cl-label">Light Requirements</label>
+                        <select id="prodLight" class="cl-input">
+                            <option value="">Select</option>
+                            <option>Full Sun</option><option>Partial Shade</option><option>Full Shade</option><option>Indirect Light</option>
+                            <option>Morning Sun</option><option>Afternoon Sun</option><option>Dappled Light</option><option>Bright Indirect</option>
+                            <option>Low Light</option><option>Medium Light</option><option>High Light</option><option>Artificial Light</option>
+                            <option>Filtered Sun</option><option>Deep Shade</option><option>Reflected Light</option><option>Grow Lights</option>
                         </select>
                     </div>
                     <div class="cl-group">
-                        <label class="cl-label">Quantity Available</label>
-                        <input type="number" id="flowerQty" class="cl-input" placeholder="Number of stems" min="0">
+                        <label class="cl-label">Flowering Time</label>
+                        <input type="text" id="prodFloweringTime" class="cl-input" placeholder="e.g., May - September">
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Bloom Time</label>
+                        <select id="prodBloomTime" class="cl-input">
+                            <option value="">Select</option>
+                            <option>Early Spring</option><option>Mid Spring</option><option>Late Spring</option>
+                            <option>Early Summer</option><option>Mid Summer</option><option>Late Summer</option>
+                            <option>Autumn</option><option>Winter</option><option>All Year</option>
+                            <option>Spring</option><option>Summer</option><option>Fall</option><option>Winter</option>
+                            <option>Easter</option><option>Mother's Day</option><option>Valentine's Day</option><option>Christmas</option>
+                            <option>Continuous</option><option>Repeat Bloomer</option><option>Once Bloomer</option><option>Seasonal</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Fragrance</label>
+                        <select id="prodFragrance" class="cl-input">
+                            <option value="">Select</option>
+                            <option>Strong</option><option>Medium</option><option>Mild</option><option>None</option>
+                            <option>Sweet</option><option>Spicy</option><option>Citrus</option><option>Floral</option>
+                            <option>Fruity</option><option>Musky</option><option>Herbal</option><option>Earthy</option>
+                            <option>Honey</option><option>Vanilla</option><option>Rose</option><option>Jasmine</option>
+                            <option>Lily</option><option>Gardenia</option><option>Lavender</option><option>Custom</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Bloom Season</label>
+                        <select id="prodBloomSeason" class="cl-input">
+                            <option value="">Select Season</option>
+                            <option>Spring</option><option>Summer</option><option>Autumn</option><option>Winter</option><option>All Year</option>
+                            <option>Early Spring</option><option>Late Spring</option><option>Early Summer</option><option>Late Summer</option>
+                            <option>Early Fall</option><option>Late Fall</option><option>Early Winter</option><option>Late Winter</option>
+                            <option>Spring-Summer</option><option>Summer-Fall</option><option>Fall-Winter</option><option>Winter-Spring</option>
+                            <option>Perennial</option><option>Annual</option><option>Biennial</option><option>Indeterminate</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Lifespan (days)</label>
+                        <input type="number" id="prodLifespan" class="cl-input" placeholder="e.g., 7" min="1">
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Care Level</label>
+                        <select id="prodCareLevel" class="cl-input">
+                            <option value="">Select</option>
+                            <option>Easy</option><option>Moderate</option><option>Advanced</option>
+                            <option>Beginner</option><option>Intermediate</option><option>Expert</option>
+                            <option>Low Maintenance</option><option>High Maintenance</option><option>Specialist Only</option>
+                        </select>
+                    </div>
+                    <div class="cl-group cl-full">
+                        <label class="cl-label">Origin</label>
+                        <input type="text" id="prodOrigin" class="cl-input" placeholder="e.g., Aburi Gardens, Ghana">
+                    </div>
+                </div>
+
+                <div class="cl-card" style="margin-top:1rem;">
+                    <h3 style="margin-bottom:1rem;">Planting & Care</h3>
+                    <div class="form-row">
+                        <div class="cl-group">
+                            <label class="cl-label">Sunlight</label>
+                            <input type="text" id="prodSunlight" class="cl-input" placeholder="e.g., 6-8 hours direct sun">
+                        </div>
+                        <div class="cl-group">
+                            <label class="cl-label">Watering</label>
+                            <input type="text" id="prodWatering" class="cl-input" placeholder="e.g., Twice a week">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="cl-group">
+                            <label class="cl-label">Soil Type</label>
+                            <input type="text" id="prodSoil" class="cl-input" placeholder="e.g., Well-draining loamy soil">
+                        </div>
+                        <div class="cl-group">
+                            <label class="cl-label">Temperature</label>
+                            <input type="text" id="prodTemperature" class="cl-input" placeholder="e.g., 18-24°C">
+                        </div>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Fertilizer</label>
+                        <input type="text" id="prodFertilizer" class="cl-input" placeholder="e.g., Balanced NPK monthly">
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Care Tips</label>
+                        <textarea id="prodCareTips" class="cl-input" rows="3" placeholder="Additional care instructions..."></textarea>
+                    </div>
+                </div>
+
+                <div class="cl-card" style="margin-top:1rem;">
+                    <h3 style="margin-bottom:1rem;">Our Guarantee</h3>
+                    <div class="cl-group">
+                        <label class="cl-label">Guarantee</label>
+                        <select id="prodGuarantee" class="cl-input">
+                            <option value="">Select Guarantee</option>
+                            <option>Freshness Guarantee (5+ days)</option>
+                            <option>Freshness Guarantee (7+ days)</option>
+                            <option>Freshness Guarantee (10+ days)</option>
+                            <option>Satisfaction Guarantee</option>
+                            <option>Money-Back Guarantee</option>
+                            <option>No-Questions Return</option>
+                            <option>Replace if Damaged</option>
+                            <option>Replace if Not as Described</option>
+                            <option>Lifetime Guarantee (plants)</option>
+                            <option>1-Year Guarantee (plants)</option>
+                            <option>Seasonal Guarantee</option>
+                            <option>Bloom Guarantee</option>
+                            <option>Root Establishment Guarantee</option>
+                            <option>No Guarantee</option>
+                        </select>
+                    </div>
+                    <div class="cl-group">
+                        <label class="cl-label">Guarantee Details</label>
+                        <textarea id="prodGuaranteeDetails" class="cl-input" rows="2" placeholder="Describe your guarantee policy..."></textarea>
                     </div>
                 </div>
             </div>
 
-            <!-- ARRANGEMENT fields -->
-            <div class="cl-card" id="arrangementFields" style="display:none;">
+            <div class="cl-card section-hidden" id="arrangementFields">
                 <h2>Arrangement Details</h2>
                 <div class="cl-grid">
                     <div class="cl-group">
@@ -247,6 +401,21 @@
                             <option value="vase">Vase Arrangement</option>
                             <option value="box">Gift Box</option>
                             <option value="wedding">Wedding Arrangement</option>
+                            <option value="corsage">Corsage</option>
+                            <option value="boutonniere">Boutonniere</option>
+                            <option value="wreath">Wreath</option>
+                            <option value="garland">Garland</option>
+                            <option value="centerpiece">Centerpiece</option>
+                            <option value="arch">Arch / Chuppah</option>
+                            <option value="aisle">Aisle Decor</option>
+                            <option value="pew">Pew Marker</option>
+                            <option value="table">Table Runner</option>
+                            <option value="bouquet_toss">Toss Bouquet</option>
+                            <option value="flower_crown">Flower Crown</option>
+                            <option value="hand_tied">Hand-tied Bouquet</option>
+                            <option value="presentation">Presentation Bouquet</option>
+                            <option value="loose">Loose Stems</option>
+                            <option value="other">Other</option>
                         </select>
                     </div>
                     <div class="cl-group">
@@ -260,6 +429,28 @@
                             <option value="romantic">Romantic</option>
                             <option value="corporate">Corporate</option>
                             <option value="everyday">Everyday</option>
+                            <option value="engagement">Engagement</option>
+                            <option value="housewarming">Housewarming</option>
+                            <option value="new_baby">New Baby</option>
+                            <option value="get_well">Get Well</option>
+                            <option value="thank_you">Thank You</option>
+                            <option value="congratulations">Congratulations</option>
+                            <option value="valentines">Valentine's Day</option>
+                            <option value="mothers_day">Mother's Day</option>
+                            <option value="fathers_day">Father's Day</option>
+                            <option value="christmas">Christmas</option>
+                            <option value="easter">Easter</option>
+                            <option value="graduation">Graduation</option>
+                            <option value="prom">Prom</option>
+                            <option value="retirement">Retirement</option>
+                            <option value="promotion">Promotion</option>
+                            <option value="apology">Apology</option>
+                            <option value="friendship">Friendship</option>
+                            <option value="self_care">Self Care</option>
+                            <option value="memorial">Memorial</option>
+                            <option value="christening">Christening</option>
+                            <option value="bar_mitzvah">Bar/Bat Mitzvah</option>
+                            <option value="other">Other</option>
                         </select>
                     </div>
                     <div class="cl-group cl-full">
@@ -280,59 +471,188 @@
                 </div>
             </div>
 
-            <!-- PLANT fields -->
-            <div class="cl-card" id="plantFields" style="display:none;">
+            <div class="cl-card section-hidden" id="plantFields">
                 <h2>Plant Details</h2>
                 <div class="cl-grid">
                     <div class="cl-group">
                         <label class="cl-label">Plant Type</label>
                         <select id="plantType" class="cl-input">
+                            <optgroup label="Indoor Plants">
                             <option value="indoor">Indoor Plant</option>
+                            <option value="tropical">Tropical Plant</option>
+                            <option value="air_plant">Air Plant (Tillandsia)</option>
+                            <option value="carnivorous">Carnivorous Plant</option>
+                            <option value="bonsai">Bonsai</option>
+                            <option value="terrarium">Terrarium Plant</option>
+                            <option value="hydroponic">Hydroponic Plant</option>
+                            </optgroup>
+                            <optgroup label="Outdoor Plants">
                             <option value="outdoor">Outdoor Plant</option>
+                            <option value="perennial">Perennial</option>
+                            <option value="annual">Annual</option>
+                            <option value="biennial">Biennial</option>
+                            <option value="shrub">Shrub</option>
+                            <option value="tree">Tree</option>
+                            <option value="vine">Vine / Climber</option>
+                            <option value="groundcover">Groundcover</option>
+                            <option value="ornamental_grass">Ornamental Grass</option>
+                            <option value="hedge">Hedge Plant</option>
+                            <option value="fruit_tree">Fruit Tree</option>
+                            <option value="vegetable">Vegetable Plant</option>
+                            <option value="herb">Herb Plant</option>
+                            </optgroup>
+                            <optgroup label="Succulents & Cacti">
                             <option value="succulent">Succulent</option>
+                            <option value="cactus">Cactus</option>
+                            <option value="echeveria">Echeveria</option>
+                            <option value="sedum">Sedum</option>
+                            <option value="haworthia">Haworthia</option>
+                            <option value="aloe">Aloe</option>
+                            <option value="crassula">Crassula</option>
+                            <option value="lithops">Lithops</option>
+                            <option value="euphorbia">Euphorbia</option>
+                            <option value="agave">Agave</option>
+                            <option value="sempervivum">Sempervivum</option>
+                            </optgroup>
+                            <optgroup label="Ferns">
                             <option value="fern">Fern</option>
+                            <option value="maidenhair">Maidenhair Fern</option>
+                            <option value="boston">Boston Fern</option>
+                            <option value="birdnest">Bird's Nest Fern</option>
+                            <option value="staghorn">Staghorn Fern</option>
+                            <option value="asparagus">Asparagus Fern</option>
+                            </optgroup>
+                            <optgroup label="Palms">
                             <option value="palm">Palm</option>
+                            <option value="areca">Areca Palm</option>
+                            <option value="kentia">Kentia Palm</option>
+                            <option value="parlor">Parlor Palm</option>
+                            <option value="majesty">Majesty Palm</option>
+                            <option value="sago">Sago Palm</option>
+                            <option value="ponytail">Ponytail Palm</option>
+                            </optgroup>
+                            <optgroup label="Specialty">
+                            <option value="orchid">Orchid</option>
+                            <option value="bromeliad">Bromeliad</option>
+                            <option value="carnivorous">Carnivorous</option>
+                            <option value="bamboo">Bamboo</option>
+                            <option value="cycad">Cycad</option>
+                            <option value="other">Other</option>
+                            </optgroup>
                         </select>
                     </div>
                     <div class="cl-group">
                         <label class="cl-label">Size</label>
                         <select id="plantSize" class="cl-input">
-                            <option value="small">Small (under 30cm)</option>
+                            <option value="seedling">Seedling (2-5cm)</option>
+                            <option value="starter">Starter Plug (5-10cm)</option>
+                            <option value="small">Small (10-30cm)</option>
                             <option value="medium">Medium (30-60cm)</option>
-                            <option value="large">Large (60cm+)</option>
+                            <option value="large">Large (60-100cm)</option>
+                            <option value="xlarge">Extra Large (1-2m)</option>
+                            <option value="specimen">Specimen (2m+)</option>
+                            <option value="standard">Standard (30-40cm)</option>
+                            <option value="dwarf">Dwarf Variety</option>
+                            <option value="mature">Mature / Full Grown</option>
                         </select>
                     </div>
                     <div class="cl-group">
                         <label class="cl-label">Pot Included?</label>
                         <select id="plantPot" class="cl-input">
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
+                            <option value="yes">Yes - Nursery Pot</option>
+                            <option value="yes_decorative">Yes - Decorative Pot</option>
+                            <option value="yes_self_watering">Yes - Self-Watering</option>
+                            <option value="yes_terracotta">Yes - Terracotta</option>
+                            <option value="yes_ceramic">Yes - Ceramic</option>
+                            <option value="yes_hanging">Yes - Hanging Basket</option>
+                            <option value="yes_fabric">Yes - Fabric Grow Bag</option>
+                            <option value="no">No - Bare Root / Plug</option>
+                            <option value="no_bring_own">No - Bring Your Own Pot</option>
                         </select>
                     </div>
                     <div class="cl-group">
                         <label class="cl-label">Care Level</label>
                         <select id="plantCare" class="cl-input">
-                            <option value="easy">Easy</option>
-                            <option value="moderate">Moderate</option>
-                            <option value="difficult">Difficult</option>
+                            <option value="easy">Easy / Beginner</option>
+                            <option value="moderate">Moderate / Intermediate</option>
+                            <option value="difficult">Difficult / Advanced</option>
+                            <option value="expert">Expert Only</option>
+                            <option value="low">Low Maintenance</option>
+                            <option value="high">High Maintenance</option>
+                            <option value="specialist">Specialist Care Required</option>
+                            <option value="forgiving">Very Forgiving</option>
+                            <option value="sensitive">Sensitive / Finicky</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            <!-- SERVICE fields -->
-            <div class="cl-card" id="serviceFields" style="display:none;">
+            <div class="cl-card section-hidden" id="serviceFields">
                 <h2>Service Details</h2>
                 <div class="cl-grid">
                     <div class="cl-group">
                         <label class="cl-label">Service Category</label>
                         <select id="svcCategory" class="cl-input">
-                            <option value="wedding">Wedding Decoration</option>
-                            <option value="landscaping">Landscaping</option>
-                            <option value="maintenance">Garden Maintenance</option>
-                            <option value="delivery">Flower Delivery</option>
-                            <option value="consultation">Plant Consultation</option>
-                            <option value="interior">Interior Plant Styling</option>
+                            <optgroup label="Weddings & Events">
+                            <option value="wedding_decor">Wedding Decoration</option>
+                            <option value="event_flowers">Event Floral Design</option>
+                            <option value="bridal_bouquets">Bridal Bouquets</option>
+                            <option value="ceremony_arch">Ceremony Arch / Chuppah</option>
+                            <option value="reception_decor">Reception Centerpieces</option>
+                            <option value="floral_installation">Floral Installations</option>
+                            <option value="event_styling">Full Event Styling</option>
+                            </optgroup>
+                            <optgroup label="Landscaping & Design">
+                            <option value="landscape_design">Landscape Design</option>
+                            <option value="garden_design">Garden Design</option>
+                            <option value="hardscaping">Hardscaping</option>
+                            <option value="irrigation">Irrigation Systems</option>
+                            <option value="outdoor_lighting">Outdoor Lighting</option>
+                            <option value="water_features">Water Features</option>
+                            <option value="rooftop_garden">Rooftop / Balcony Garden</option>
+                            </optgroup>
+                            <optgroup label="Maintenance & Care">
+                            <option value="garden_maintenance">Garden Maintenance</option>
+                            <option value="lawn_care">Lawn Care</option>
+                            <option value="pruning">Pruning & Trimming</option>
+                            <option value="fertilizing">Fertilizing & Feeding</option>
+                            <option value="pest_control">Pest / Disease Management</option>
+                            <option value="seasonal_cleanup">Seasonal Cleanup</option>
+                            <option value="mulching">Mulching</option>
+                            <option value="weeding">Weed Control</option>
+                            </optgroup>
+                            <optgroup label="Delivery & Logistics">
+                            <option value="flower_delivery">Flower Delivery</option>
+                            <option value="plant_delivery">Plant Delivery</option>
+                            <option value="same_day">Same-Day Delivery</option>
+                            <option value="subscription">Subscription Delivery</option>
+                            <option value="corporate_delivery">Corporate / Office Delivery</option>
+                            <option value="funeral_delivery">Funeral / Sympathy Delivery</option>
+                            </optgroup>
+                            <optgroup label="Consultation & Education">
+                            <option value="plant_consultation">Plant Consultation</option>
+                            <option value="design_consultation">Design Consultation</option>
+                            <option value="plant_selection">Plant Selection Help</option>
+                            <option value="care_workshop">Care Workshops</option>
+                            <option value="garden_coaching">Garden Coaching</option>
+                            <option value="virtual_consult">Virtual Consultation</option>
+                            </optgroup>
+                            <optgroup label="Interior & Styling">
+                            <option value="interior_styling">Interior Plant Styling</option>
+                            <option value="office_plants">Office Plant Service</option>
+                            <option value="living_walls">Living Walls / Green Walls</option>
+                            <option value="moss_walls">Preserved Moss Walls</option>
+                            <option value="terrariums">Terrarium Building</option>
+                            <option value="floral_subscriptions">Floral Subscriptions</option>
+                            </optgroup>
+                            <optgroup label="Specialty">
+                            <option value="floral_preservation">Floral Preservation</option>
+                            <option value="dried_flowers">Dried Flower Arrangements</option>
+                            <option value="wreath_making">Wreath Making</option>
+                            <option value="christmas_decor">Christmas / Holiday Decor</option>
+                            <option value="funeral_services">Funeral Floral Services</option>
+                            <option value="other">Other Service</option>
+                            </optgroup>
                         </select>
                     </div>
                     <div class="cl-group">
@@ -341,299 +661,200 @@
                             <option value="fixed">Fixed Price</option>
                             <option value="hourly">Hourly Rate</option>
                             <option value="quote">Custom Quote</option>
+                            <option value="per_project">Per Project</option>
+                            <option value="per_sqm">Per Square Meter</option>
+                            <option value="per_stem">Per Stem</option>
+                            <option value="per_arrangement">Per Arrangement</option>
+                            <option value="subscription">Monthly Subscription</option>
+                            <option value="retainer">Monthly Retainer</option>
+                            <option value="day_rate">Day Rate</option>
+                            <option value="package">Package Pricing</option>
+                            <option value="tiered">Tiered Packages</option>
+                            <option value="cost_plus">Cost Plus Markup</option>
                         </select>
                     </div>
-                    <div class="cl-group">
+                    <div class="cl-group cl-full">
                         <label class="cl-label">Coverage Areas</label>
-                        <input type="text" id="svcAreas" class="cl-input" placeholder="e.g., Accra, Kumasi, Eastern Region">
+                        <input type="text" id="svcAreas" class="cl-input" placeholder="e.g., Accra, Kumasi, Eastern Region (comma-separated)">
                     </div>
                     <div class="cl-group">
-                        <label class="cl-label">Experience</label>
-                        <select id="svcExp" class="cl-input">
-                            <option value="1-3">1-3 years</option>
-                            <option value="3-5">3-5 years</option>
-                            <option value="5-10">5-10 years</option>
-                            <option value="10+">10+ years</option>
+                        <label class="cl-label">Experience Level</label>
+                        <select id="svcExperience" class="cl-input">
+                            <option value="beginner">Beginner (0-2 years)</option>
+                            <option value="intermediate">Intermediate (3-5 years)</option>
+                            <option value="expert">Expert (5-10 years)</option>
+                            <option value="master">Master (10+ years)</option>
+                            <option value="certified">Certified Professional</option>
+                            <option value="award_winning">Award-Winning</option>
+                            <option value="new_business">New Business</option>
+                            <option value="established">Established (3-5 yrs)</option>
+                            <option value="veteran">Veteran (10-20 yrs)</option>
+                            <option value="legacy">Legacy (20+ yrs)</option>
                         </select>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Step 4: Images -->
-        <div class="cl-section" id="step4" style="display:none;">
+        <div class="cl-section section-hidden" id="step4">
             <div class="cl-card">
-                <h2>Images</h2>
-                <p>Upload photos of your product or service. First image is the main photo.</p>
-                <div class="cl-upload" onclick="document.getElementById('imageInput').click()">
-                    <div class="cl-upload-icon"><i class="bi bi-cloud-arrow-up"></i></div>
-                    <p style="font-size:0.9rem;margin:0;">Click or drag to upload images</p>
-                    <p style="font-size:0.78rem;color:var(--text-light);margin:0.25rem 0 0;">JPG, PNG, WebP — Max 5MB each</p>
+                <h2>Images & Video</h2>
+                <p>Upload up to 8 images (first image becomes the cover) and optionally a video (max 30 seconds).</p>
+
+                <div class="form-row" style="margin-bottom:1rem;">
+                    <div style="flex:1;">
+                        <label class="cl-label">Product Images</label>
+                        <input type="file" id="prodImageInput" accept="image/jpeg,image/png,image/webp" multiple style="display:none;">
+                        <div id="imagePreviews" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;"></div>
+                        <div class="cl-upload" id="imageUploadZone">
+                            <i class="bi bi-cloud-arrow-up cl-upload-icon" id="uploadIcon"></i>
+                            <p id="uploadPromptText" style="margin:0; font-size:0.9rem;">Drag & drop images here</p>
+                            <button class="btn btn-outline btn-sm" style="margin-top:0.5rem;" type="button" onclick="document.getElementById('prodImageInput').click()">Browse</button>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.5rem;">Up to 8 images (JPG, PNG, WEBP)</p>
+                        </div>
+                    </div>
+                    <div style="flex:1;">
+                        <label class="cl-label">Product Video</label>
+                        <input type="file" id="prodVideoInput" accept="video/mp4,video/webm,video/quicktime" style="display:none;">
+                        <div class="video-upload-zone" id="videoUploadZone" onclick="document.getElementById('prodVideoInput').click()">
+                            <i class="bi bi-camera-video" style="font-size:1.5rem; color:var(--text-light); display:block; margin-bottom:0.5rem;"></i>
+                            <p id="videoPromptText" style="margin:0; font-size:0.9rem;">Add a short video (max 30 sec)</p>
+                            <button class="btn btn-outline btn-sm" style="margin-top:0.5rem;" type="button" onclick="event.stopPropagation(); document.getElementById('prodVideoInput').click()">Browse</button>
+                            <video id="videoPreview" controls class="video-preview" style="display:none;"></video>
+                        </div>
+                    </div>
                 </div>
-                <input type="file" id="imageInput" multiple accept="image/*" style="display:none;" onchange="handleImages(this)">
-                <div class="cl-upload-grid" id="imagePreview"></div>
+
+                <div class="live-preview" id="livePreview" style="display:none;">
+                    <strong style="display:block; margin-bottom:0.5rem; font-size:0.85rem;">Live Preview</strong>
+                    <div style="background:#eee; border-radius:8px; height:150px; display:flex; align-items:center; justify-content:center; color:var(--text-light);" id="previewImage"><i class="bi bi-image" style="font-size:2rem;"></i></div>
+                </div>
             </div>
         </div>
 
-        <!-- Step 5: Inventory & Availability -->
-        <div class="cl-section" id="step5" style="display:none;">
+        <div class="cl-section section-hidden" id="step5">
             <div class="cl-card">
-                <h2>Inventory & Availability</h2>
+                <h2>Inventory</h2>
                 <div class="cl-grid">
                     <div class="cl-group">
                         <label class="cl-label">Stock Quantity <span class="req">*</span></label>
-                        <input type="number" id="stockQty" class="cl-input" placeholder="Number available" min="0" required>
+                        <input type="number" id="prodStock" class="cl-input" value="10" min="0" required>
                     </div>
                     <div class="cl-group">
-                        <label class="cl-label">SKU (Optional)</label>
-                        <input type="text" id="sku" class="cl-input" placeholder="Product code">
+                        <label class="cl-label">SKU</label>
+                        <input type="text" id="prodSku" class="cl-input" placeholder="e.g., ROSE-001">
                     </div>
                     <div class="cl-group">
                         <label class="cl-label">Low Stock Alert</label>
-                        <input type="number" id="lowStock" class="cl-input" value="5" min="0">
+                        <input type="number" id="prodLowStock" class="cl-input" value="10" min="0" placeholder="Alert when stock falls below">
                     </div>
-                    <div class="cl-group">
-                        <label class="cl-label">Tags</label>
-                        <input type="text" id="tags" class="cl-input" placeholder="e.g., fresh, luxury, wedding">
+                </div>
+
+                <div class="cl-card" style="margin-top:1rem;">
+                    <h3 style="margin-bottom:1rem;">Product Tags</h3>
+                    <p class="cl-hint" style="margin-bottom:0.5rem;">Press Enter to add. Tags help buyers find your product.</p>
+                    <div class="tags-input" id="tagsContainer"></div>
+                    <input type="text" id="prodTagInput" class="cl-input" placeholder="Type a tag and press Enter" style="margin-top:0.5rem;">
+                </div>
+
+                <div class="cl-card" style="margin-top:1rem;">
+                    <h3 style="margin-bottom:1rem;">Visibility</h3>
+                    <div class="cl-checks">
+                        <label class="cl-check"><input type="checkbox" id="prodFeatured"> <span>Featured</span></label>
+                        <label class="cl-check"><input type="checkbox" id="prodBestSeller"> <span>Best Seller</span></label>
+                        <label class="cl-check"><input type="checkbox" id="prodNewArrival"> <span>New Arrival</span></label>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Step 6: Delivery -->
-        <div class="cl-section" id="step6" style="display:none;">
+        <div class="cl-section section-hidden" id="step6">
             <div class="cl-card">
-                <h2>Delivery Options</h2>
-                <div class="cl-grid">
-                    <div class="cl-group cl-full">
-                        <label class="cl-label">Delivery Methods</label>
-                        <div class="cl-checks">
-                            <label class="cl-check"><input type="checkbox" name="delivery" value="self"> Self Delivery</label>
-                            <label class="cl-check"><input type="checkbox" name="delivery" value="platform"> Platform Delivery</label>
-                            <label class="cl-check"><input type="checkbox" name="delivery" value="pickup"> Customer Pickup</label>
-                        </div>
-                    </div>
-                    <div class="cl-group cl-full">
-                        <label class="cl-label">Delivery Regions</label>
-                        <input type="text" id="deliveryRegions" class="cl-input" placeholder="e.g., Accra, Kumasi, Tema">
-                        <span class="cl-hint">Separate with commas</span>
+                <h2>Delivery Information</h2>
+                <div class="cl-group">
+                    <label class="cl-label">Delivery Areas</label>
+                    <input type="text" id="prodDeliveryAreas" class="cl-input" placeholder="e.g., Accra, Kumasi, Takoradi (comma-separated)">
+                </div>
+                <div class="form-row">
+                    <div class="cl-group">
+                        <label class="cl-label">Delivery Time</label>
+                        <select id="prodDeliveryTime" class="cl-input">
+                            <option value="">Select</option>
+                            <option>Same Day</option>
+                            <option>Next Day</option>
+                            <option>2-3 Days</option>
+                            <option>One Week</option>
+                        </select>
                     </div>
                     <div class="cl-group">
                         <label class="cl-label">Shipping Fee (GHS)</label>
-                        <input type="number" id="shippingFee" class="cl-input" value="0" min="0" step="0.01">
+                        <input type="number" id="prodShippingFee" class="cl-input" step="0.01" value="0" min="0">
                     </div>
+                </div>
+                <div class="cl-group" style="display:flex; align-items:center; gap:0.75rem;">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="prodPickup" checked>
+                        <span class="slider round"></span>
+                    </label>
+                    <span style="font-size:0.9rem;">Pickup Available</span>
                 </div>
             </div>
         </div>
 
-        <!-- Step 7: Review -->
-        <div class="cl-section" id="step7" style="display:none;">
+        <div class="cl-section section-hidden" id="step7">
+            <div class="cl-card">
+                <h2>SEO Settings (Optional)</h2>
+                <p style="color:var(--text-light); margin-bottom:1rem;">Improve search visibility.</p>
+                <div class="cl-group">
+                    <label class="cl-label">Product URL Slug</label>
+                    <input type="text" id="prodSeoSlug" class="cl-input" placeholder="auto-generated from title">
+                </div>
+                <div class="cl-group">
+                    <label class="cl-label">Meta Description</label>
+                    <textarea id="prodMetaDesc" class="cl-input" rows="2" placeholder="Short summary for search engines (max 160 chars)" maxlength="160"></textarea>
+                </div>
+            </div>
+
             <div class="cl-card">
                 <h2>Review & Publish</h2>
-                <p>Please review your listing before publishing.</p>
-                <div id="reviewSummary" style="margin-bottom:1.5rem;"></div>
-                <div class="cl-group">
-                    <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.9rem;">
-                        <input type="checkbox" id="agreeTerms" style="accent-color:var(--primary-color);">
-                        I agree to the <a href="terms.html" style="color:var(--primary-color);">Marketplace Terms</a>
-                    </label>
+                <div id="reviewContent"></div>
+                <div class="cl-group" style="display:flex; align-items:flex-start; gap:0.75rem;">
+                    <input type="checkbox" id="termsAgree" required style="margin-top:0.25rem; accent-color:var(--primary-color);">
+                    <label for="termsAgree" style="font-size:0.85rem; color:var(--text-light);">I agree to the <a href="/terms.html" target="_blank">Terms of Service</a> and <a href="/privacy.html" target="_blank">Privacy Policy</a>.</label>
                 </div>
             </div>
         </div>
 
-        <!-- Success -->
-        <div class="cl-section" id="stepSuccess" style="display:none;">
-            <div class="cl-card">
-                <div class="cl-success">
-                    <div class="cl-success-icon">✅</div>
-                    <h2>Listing Created!</h2>
-                    <p style="color:var(--text-light);max-width:400px;margin:0.5rem auto 1.5rem;">Your listing is now live on the marketplace. You can edit or manage it from your dashboard.</p>
-                    <div style="display:flex;gap:0.75rem;justify-content:center;">
-                        <a href="seller-dashboard.html" class="btn btn-primary">Go to Dashboard</a>
-                        <a href="marketplace.html" class="btn btn-outline">View Marketplace</a>
-                    </div>
+        <div class="cl-section section-hidden" id="stepSuccess">
+            <div class="cl-success">
+                <div class="cl-success-icon"><i class="bi bi-check-lg"></i></div>
+                <h2 style="margin-bottom:0.5rem;">Listing Created!</h2>
+                <p style="color:var(--text-light); margin-bottom:1.5rem;">Your listing has been published successfully.</p>
+                <div style="display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap;">
+                    <a href="seller-dashboard.html" class="btn btn-primary"><i class="bi bi-speedometer2"></i> Go to Dashboard</a>
+                    <button class="btn btn-outline" onclick="resetForm()"><i class="bi bi-plus"></i> Create Another</button>
                 </div>
             </div>
         </div>
 
-        <!-- Navigation -->
         <div class="cl-nav" id="clNav">
-            <button class="btn btn-outline" id="clPrev" onclick="clPrevStep()" style="display:none;">Previous</button>
-            <button class="btn btn-primary" id="clNext" onclick="clNextStep()" style="margin-left:auto;">Next Step</button>
-        </div>
-    </div>
-
-    <div id="footer-container"></div>
-
-    <script src="js/shared/components.js?v=3.1"></script>
-    <script src="js/shared/auth.js?v=3.4"></script>
-    <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/animations.js?v=3.0"></script>
-    <script src="js/shared/api.js?v=4.0"></script>
-    <script src="js/shared/cart.js?v=3.0"></script>
-    <script>
-        let clStep = 1;
-        let listingType = '';
-        const totalSteps = 7;
-        const uploadedImages = [];
-
-        const steps = [
-            { num: 1, label: 'Type' },
-            { num: 2, label: 'Info' },
-            { num: 3, label: 'Details' },
-            { num: 4, label: 'Images' },
-            { num: 5, label: 'Inventory' },
-            { num: 6, label: 'Delivery' },
-            { num: 7, label: 'Publish' }
-        ];
-
-        const listingTypes = [
-            { id: 'flower', icon: '🌹', name: 'Fresh Flower', desc: 'Roses, tulips, orchids, etc.' },
-            { id: 'arrangement', icon: '💐', name: 'Floral Arrangement', desc: 'Bouquets, baskets, vases' },
-            { id: 'plant', icon: '🪴', name: 'Plant', desc: 'Indoor & outdoor plants' },
-            { id: 'service', icon: '💼', name: 'Service', desc: 'Decoration, landscaping, delivery' }
-        ];
-
-        function clRenderProgress() {
-            document.getElementById('clProgress').innerHTML = steps.map(s => {
-                let cls = 'cl-step';
-                if (s.num < clStep) cls += ' done';
-                else if (s.num === clStep) cls += ' active';
-                return `<div class="${cls}"><span class="cl-step-num">${s.num < clStep ? '✓' : s.num}</span> ${s.label}</div>`;
-            }).join('');
-        }
-
-        function clShowSection(step) {
-            document.querySelectorAll('.cl-section').forEach(s => s.style.display = 'none');
-            document.getElementById('step' + step).style.display = 'block';
-            document.getElementById('clNav').style.display = 'flex';
-            document.getElementById('clPrev').style.display = step > 1 ? 'block' : 'none';
-            document.getElementById('clNext').textContent = step === totalSteps ? 'Publish Listing' : 'Next Step';
-            clRenderProgress();
-        }
-
-        function clNextStep() {
-            if (clStep === totalSteps) { clPublish(); return; }
-            if (!clValidate(clStep)) return;
-            clStep++;
-            clShowSection(clStep);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function clPrevStep() {
-            if (clStep <= 1) return;
-            clStep--;
-            clShowSection(clStep);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function clValidate(step) {
-            if (step === 1) { if (!listingType) { alert('Please select a listing type.'); return false; } return true; }
-            if (step === 2) {
-                const title = document.getElementById('listingTitle').value.trim();
-                const desc = document.getElementById('listingDesc').value.trim();
-                const price = document.getElementById('listingPrice').value;
-                if (!title || !desc || !price) { alert('Please fill in all required fields.'); return false; }
-                return true;
-            }
-            if (step === 5) {
-                const stock = document.getElementById('stockQty').value;
-                if (!stock) { alert('Please enter stock quantity.'); return false; }
-                return true;
-            }
-            if (step === 7) {
-                if (!document.getElementById('agreeTerms').checked) { alert('Please agree to the terms.'); return false; }
-                return true;
-            }
-            return true;
-        }
-
-        function clSelectType(el, type) {
-            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            listingType = type;
-            // Show relevant fields in step 3
-            document.getElementById('flowerFields').style.display = type === 'flower' ? 'block' : 'none';
-            document.getElementById('arrangementFields').style.display = type === 'arrangement' ? 'block' : 'none';
-            document.getElementById('plantFields').style.display = type === 'plant' ? 'block' : 'none';
-            document.getElementById('serviceFields').style.display = type === 'service' ? 'block' : 'none';
-        }
-
-        function handleImages(input) {
-            const preview = document.getElementById('imagePreview');
-            for (const file of input.files) {
-                if (uploadedImages.length >= 8) { alert('Maximum 8 images allowed.'); break; }
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    uploadedImages.push(e.target.result);
-                    renderImagePreview();
-                };
-                reader.readAsDataURL(file);
-            }
-            input.value = '';
-        }
-
-        function renderImagePreview() {
-            document.getElementById('imagePreview').innerHTML = uploadedImages.map((img, i) => `
-                <div class="cl-upload-thumb">
-                    <img src="${img}" alt="Upload ${i+1}">
-                    <button class="cl-upload-remove" onclick="removeImage(${i})">×</button>
-                </div>
-            `).join('');
-        }
-
-        function removeImage(idx) {
-            uploadedImages.splice(idx, 1);
-            renderImagePreview();
-        }
-
-        function buildReview() {
-            const typeNames = { flower: '🌹 Fresh Flower', arrangement: '💐 Floral Arrangement', plant: '🪴 Plant', service: '💼 Service' };
-            const location = document.getElementById('listingLocation').value;
-            document.getElementById('reviewSummary').innerHTML = `
-                <div style="background:var(--bg-light);border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
-                    <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Type:</span><strong>${typeNames[listingType] || listingType}</strong></div>
-                    <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Title:</span><strong>${document.getElementById('listingTitle').value}</strong></div>
-                    <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Price:</span><strong>GHS ${Number(document.getElementById('listingPrice').value).toFixed(2)}</strong></div>
-                    ${location ? `<div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Location:</span><strong>${location}</strong></div>` : ''}
-                    <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-light);">Stock:</span><strong>${document.getElementById('stockQty').value} units</strong></div>
-                </div>
-            `;
-        }
-
-        async function clPublish() {
-            const btn = document.getElementById('clNext');
-            btn.disabled = true;
-            btn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.6s linear infinite;"></span> Publishing...';
-            await new Promise(r => setTimeout(r, 1500));
-            document.getElementById('step7').style.display = 'none';
-            document.getElementById('clNav').style.display = 'none';
-            document.getElementById('stepSuccess').style.display = 'block';
-            document.getElementById('clProgress').innerHTML = steps.map(s => `<div class="cl-step done"><span class="cl-step-num">✓</span> ${s.label}</div>`).join('');
-        }
-
-        // Init type cards
-        document.getElementById('listingTypes').innerHTML = listingTypes.map(t => `
-            <div class="type-card" onclick="clSelectType(this, '${t.id}')">
-                <div class="type-card-icon">${t.icon}</div>
-                <div class="type-card-name">${t.name}</div>
-                <div class="type-card-desc">${t.desc}</div>
+            <button class="btn btn-secondary" id="clPrev" onclick="clPrevStep()" style="display:none;"><i class="bi bi-chevron-left"></i> Back</button>
+            <div style="display:flex; gap:0.5rem;">
+                <button class="btn btn-secondary" id="clSaveDraft" onclick="saveDraft()"><i class="bi bi-save"></i> Save Draft</button>
+                <button class="btn btn-primary" id="clNext" onclick="clNextStep()"><i class="bi bi-chevron-right"></i> Next</button>
             </div>
-        `).join('');
+        </div>
 
-        // Build review on step 6
-        document.getElementById('clNext').addEventListener('click', () => {
-            if (clStep === 6) buildReview();
-        });
+    </div>
+</div>
 
-        // Checkbox styling
-        document.addEventListener('change', (e) => {
-            if (e.target.closest('.cl-check')) {
-                e.target.closest('.cl-check').classList.toggle('selected', e.target.checked);
-            }
-        });
+<div id="footer-container"></div>
 
-        clRenderProgress();
-    </script>
+<script src="js/shared/api.js?v=4.0"></script>
+<script src="js/shared/auth.js?v=3.4"></script>
+<script src="js/shared/theme.js?v=3.0"></script>
+<script src="js/shared/ui.js?v=2.0"></script>
+<script src="js/create-listing.js?v=2.0"></script>
+<script>document.addEventListener('DOMContentLoaded', () => initCreateListing());</script>
 </body>
 </html>

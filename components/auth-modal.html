@@ -15,6 +15,7 @@
             <p class="modal-subtitle">Sign in to your account</p>
 
             <form class="auth-form" id="loginForm" novalidate>
+                <input type="hidden" name="csrf_token" id="loginCsrfToken">
                 <div class="form-group">
                     <label for="login-email">Email Address <span style="color:var(--error-color);">*</span></label>
                     <input type="email" id="login-email" name="email" placeholder="your@email.com" required autocomplete="email" aria-describedby="loginEmailError">
@@ -28,6 +29,14 @@
                         <button type="button" id="toggle-login-password" class="password-toggle" aria-label="Toggle password visibility"><i class="bi bi-eye"></i></button>
                     </div>
                     <span class="error-message" id="loginPasswordError" aria-live="polite"></span>
+                </div>
+
+                <!-- 2FA Code Input (hidden by default) -->
+                <div class="form-group" id="login2faGroup" style="display:none;">
+                    <label for="login-2fa">Two-Factor Code <span style="color:var(--error-color);">*</span></label>
+                    <input type="text" id="login-2fa" name="two_factor_code" placeholder="Enter 6-digit code" required autocomplete="one-time-code" aria-describedby="login2faError" maxlength="6" style="letter-spacing: 0.5rem; text-align: center;">
+                    <span class="error-message" id="login2faError" aria-live="polite"></span>
+                    <p class="form-hint">Enter the 6-digit code from your authenticator app</p>
                 </div>
 
                 <div class="form-check">
@@ -51,6 +60,7 @@
             <p class="modal-subtitle">Create your account to get started</p>
 
             <form class="auth-form" id="registerForm" novalidate>
+                <input type="hidden" name="csrf_token" id="registerCsrfToken">
                 <div class="form-group">
                     <label for="register-name">Full Name <span style="color:var(--error-color);">*</span></label>
                     <input type="text" id="register-name" name="name" placeholder="John Doe" required autocomplete="name" aria-describedby="registerNameError">
@@ -71,11 +81,11 @@
                 <div class="form-group">
                     <label for="register-password">Password <span style="color:var(--error-color);">*</span></label>
                     <div style="position:relative;">
-                        <input type="password" id="register-password" name="password" placeholder="Min. 8 characters" required minlength="8" autocomplete="new-password" aria-describedby="registerPasswordError registerPasswordHint" style="padding-right:2.5rem;">
+                        <input type="password" id="register-password" name="password" placeholder="Min. 12 characters" required minlength="12" autocomplete="new-password" aria-describedby="registerPasswordError registerPasswordHint" style="padding-right:2.5rem;">
                         <button type="button" id="toggle-register-password" class="password-toggle" aria-label="Toggle password visibility"><i class="bi bi-eye"></i></button>
                     </div>
                     <span class="error-message" id="registerPasswordError" aria-live="polite"></span>
-                    <span class="form-hint" id="registerPasswordHint">At least 8 characters</span>
+                    <span class="form-hint" id="registerPasswordHint">At least 12 characters</span>
                 </div>
 
                 <div class="form-group">

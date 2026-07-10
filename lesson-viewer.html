@@ -421,20 +421,29 @@
         function prevLesson() { if (currentIdx > 0) loadLesson(currentIdx - 1); }
         function nextLesson() { if (currentIdx < lessons.length - 1) loadLesson(currentIdx + 1); }
 
-        // Notes
+// Notes
         async function loadNotes(lessonId) {
-            const notes = localStorage.getItem(`notes_${course.id}_${lessonId}`) || '';
-            document.getElementById('personalNotes').value = notes;
+            try {
+                const data = await api.fetchLessonNotes(lessonId);
+                document.getElementById('personalNotes').value = data.notes || '';
+            } catch {
+                const notes = localStorage.getItem(`notes_${course.id}_${lessonId}`) || '';
+                document.getElementById('personalNotes').value = notes;
+            }
             document.getElementById('saveStatus').textContent = 'Auto-saved';
         }
 
         function autoSaveNotes() {
             clearTimeout(noteSaveTimer);
             document.getElementById('saveStatus').textContent = 'Saving...';
-            noteSaveTimer = setTimeout(() => {
+            noteSaveTimer = setTimeout(async () => {
                 const lesson = lessons[currentIdx];
                 if (lesson) {
-                    localStorage.setItem(`notes_${course.id}_${lesson.id}`, document.getElementById('personalNotes').value);
+                    const notes = document.getElementById('personalNotes').value;
+                    localStorage.setItem(`notes_${course.id}_${lesson.id}`, notes);
+                    try {
+                        await api.saveLessonNotes(lesson.id, notes);
+                    } catch {}
                     document.getElementById('saveStatus').textContent = 'Auto-saved';
                 }
             }, 1000);
@@ -458,11 +467,16 @@
             `).join('');
         }
 
-        // Discussion
+// Discussion
         let discussions = [];
-        function loadDiscussion(lessonId) {
-            const stored = JSON.parse(localStorage.getItem(`discuss_${course.id}_${lessonId}`) || '[]');
-            discussions = stored;
+        async function loadDiscussion(lessonId) {
+            try {
+                const data = await api.fetchLessonDiscussion(lessonId);
+                discussions = data.discussions || data || [];
+            } catch {
+                const stored = JSON.parse(localStorage.getItem(`discuss_${course.id}_${lessonId}`) || '[]');
+                discussions = stored;
+            }
             renderDiscussion();
         }
 
@@ -470,15 +484,15 @@
             document.getElementById('discussionList').innerHTML = discussions.length ? discussions.map(d => `
                 <div class="lv-discussion">
                     <div class="lv-discussion-header">
-                        <span class="lv-discussion-author">${escapeHtml(d.author)}</span>
-                        <span class="lv-discussion-time">${d.time}</span>
+                        <span class="lv-discussion-author">${escapeHtml(d.author || d.author_name)}</span>
+                        <span class="lv-discussion-time">${d.time || d.created_at}</span>
                     </div>
-                    <div class="lv-discussion-text">${escapeHtml(d.text)}</div>
+                    <div class="lv-discussion-text">${escapeHtml(d.text || d.content)}</div>
                 </div>
             `).join('') : '<p style="font-size:0.82rem;color:var(--text-light);text-align:center;padding:1rem;">No questions yet. Be the first to ask!</p>';
         }
 
-        function postDiscussion() {
+        async function postDiscussion() {
             const input = document.getElementById('discussionInput');
             const text = input.value.trim();
             if (!text) return;
@@ -488,10 +502,14 @@
             localStorage.setItem(`discuss_${course.id}_${lesson.id}`, JSON.stringify(discussions));
             input.value = '';
             renderDiscussion();
+
+            try {
+                await api.createLessonDiscussion(lesson.id, { content: text });
+            } catch {}
         }
 
-        // Quiz
-        function loadQuiz(lesson) {
+// Quiz
+        async function loadQuiz(lesson) {
             const quiz = lesson.quiz || course.quiz;
             const qEl = document.getElementById('quizContent');
             if (!quiz || !quiz.questions) {
@@ -517,6 +535,33 @@
                 if (i === correct) o.classList.add('correct');
                 else if (i === oi && i !== correct) o.classList.add('wrong');
             });
+        }
+
+        async function submitQuiz() {
+            const lesson = lessons[currentIdx];
+            if (!lesson || !lesson.quiz) return;
+            const answers = [];
+            document.querySelectorAll('.lv-quiz-q').forEach((q, i) => {
+                const selected = q.querySelector('.lv-quiz-opt.selected');
+                answers[i] = selected ? parseInt(selected.dataset.index || Array.from(selected.parentNode.children).indexOf(selected)) : -1;
+            });
+            try {
+                const result = await api.submitLessonQuiz(lesson.id, answers);
+                alert(`Quiz submitted! Score: ${result.score}% (${result.correct}/${result.total})`);
+            } catch (err) {
+                console.error('Quiz submit error:', err);
+                // Fallback to local scoring
+                let correct = 0;
+                document.querySelectorAll('.lv-quiz-q').forEach((q, i) => {
+                    const correctIdx = parseInt(q.dataset.correct || '0');
+                    const selected = q.querySelector('.lv-quiz-opt.selected');
+                    if (selected) {
+                        const selectedIdx = parseInt(selected.dataset.index || Array.from(selected.parentNode.children).indexOf(selected));
+                        if (selectedIdx === correctIdx) correct++;
+                    }
+                });
+                alert(`Quiz submitted! Score: ${Math.round((correct / document.querySelectorAll('.lv-quiz-q').length) * 100)}%`);
+            }
         }
 
         // AI

@@ -383,6 +383,7 @@ router.get('/:id/related', asyncHandler(async (req, res) => {
             );
             // If not enough related products, add random ones
             if (r.rows.length < 4) {
+                const extraLimit = 4 - r.rows.length;
                 const extra = await pool.query(
                     `SELECT p.id, p.name, p.price, p.image_url, p.badge, p.rating, p.currency,
                             c.name AS category_name,
@@ -390,8 +391,8 @@ router.get('/:id/related', asyncHandler(async (req, res) => {
                      FROM marketplace.products p
                      JOIN marketplace.categories c ON c.id = p.category_id
                      WHERE p.id != $1 AND p.is_active = true
-                     ORDER BY RANDOM() LIMIT ${4 - r.rows.length}`,
-                    [req.params.id]
+                     ORDER BY RANDOM() LIMIT $2`,
+                    [req.params.id, extraLimit]
                 );
                 r.rows = [...r.rows, ...extra.rows];
             }

@@ -5,6 +5,8 @@ const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 const crypto = require('crypto');
+const speakeasy = require('speakeasy');
+const qrcode = require('qrcode');
 
 const useCloudinary = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET;
 
@@ -55,6 +57,7 @@ const pool = new Pool({
 });
 
 const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
 
 const blacklistedTokens = new Set();
 
@@ -64,6 +67,34 @@ function hashToken(token) {
 
 function isTokenBlacklisted(token) {
     return blacklistedTokens.has(hashToken(token));
+}
+
+function csrfProtection(req, res, next) {
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+        const xRequestedWith = req.get('X-Requested-With');
+        const hasAuth = !!req.get('Authorization');
+        const contentType = req.get('Content-Type') || '';
+        const isJson = contentType.includes('application/json');
+        const isMultipart = contentType.includes('multipart/form-data');
+        if (xRequestedWith !== 'XMLHttpRequest' && !hasAuth && !isJson && !isMultipart) {
+            return res.status(403).json({ error: 'Missing required header' });
+        }
+    }
+    next();
+}
+
+function validateCSRF(req, res, next) {
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+        const csrfToken = req.headers['x-csrf-token'] || req.body?.csrf_token || req.cookies?.csrf_token;
+        if (!csrfToken) {
+            return res.status(403).json({ error: 'CSRF token required' });
+        }
+        const cookieCsrf = req.cookies?.csrf_token;
+        if (!cookieCsrf || csrfToken !== cookieCsrf) {
+            return res.status(403).json({ error: 'Invalid CSRF token' });
+        }
+    }
+    next();
 }
 
 async function blacklistToken(token) {
@@ -350,9 +381,37 @@ function requireSuperAdmin(req, res, next) {
     requireRole('SUPERADMIN')(req, res, next);
 }
 
+function csrfProtection(req, res, next) {
+    // Skip CSRF for GET, HEAD, OPTIONS requests
+    if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+        return next();
+    }
+    
+    // Skip if no CSRF token cookie (should be set by /api/auth/csrf-token endpoint)
+    const csrfToken = req.cookies?.csrf_token;
+    if (!csrfToken) {
+        return res.status(403).json({ error: 'CSRF token required' });
+    }
+    
+    // Check CSRF token from header or body
+    const clientToken = req.headers['x-csrf-token'] || req.body?.csrf_token;
+    if (!clientToken || clientToken !== csrfToken) {
+        return res.status(403).json({ error: 'Invalid CSRF token' });
+    }
+    
+    next();
+}
+
+function validateCSRF(req, token) {
+    if (!token) return false;
+    const cookieToken = req.cookies?.csrf_token;
+    return token === cookieToken;
+}
+
 module.exports = {
     pool,
     JWT_SECRET,
+    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || JWT_SECRET,
     upload,
     uploadVideo,
     rateLimiter,
@@ -373,4 +432,6 @@ module.exports = {
     cleanupBlacklist,
     getFileUrl,
     useCloudinary,
+    csrfProtection,
+    validateCSRF
 };

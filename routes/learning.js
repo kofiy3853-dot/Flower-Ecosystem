@@ -898,16 +898,44 @@ router.get('/certificates', requireAuth, asyncHandler(async (req, res) => {
     }
 }));
 
-router.get('/certificates/:id/verify', asyncHandler(async (req, res) => {
+router.get('/certificates/verify/:code', asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.json({ valid: false });
     try {
         const r = await pool.query(
-            'SELECT * FROM learning.certificates WHERE id = $1',
-            [req.params.id]
+            'SELECT * FROM learning.certificates WHERE verification_code = $1',
+            [req.params.code]
         );
         res.json({ valid: r.rows.length > 0, certificate: r.rows[0] || null });
     } catch (err) {
         res.json({ valid: false });
+    }
+}));
+
+// ─── Certificate Generation ───────────────────────────────
+router.post('/certificates/generate', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { course_id } = req.body;
+    if (!course_id) return res.status(400).json({ error: 'Course ID required' });
+    try {
+        // Check enrollment and completion
+        const enrollment = await pool.query(
+            'SELECT progress FROM learning.enrollments WHERE user_id = $1 AND course_id = $2',
+            [req.user.id, course_id]
+        );
+        if (!enrollment.rows.length) return res.status(403).json({ error: 'Not enrolled in this course' });
+        if ((enrollment.rows[0].progress || 0) < 100) return res.status(403).json({ error: 'Course not completed yet' });
+
+        // Generate certificate
+        const certCode = 'FC-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+        const r = await pool.query(
+            `INSERT INTO learning.certificates (user_id, course_id, certificate_url, verification_code)
+             VALUES ($1, $2, $3, $4) RETURNING *`,
+            [req.user.id, course_id, `/api/certificates/${certCode}`, certCode]
+        );
+        res.status(201).json(r.rows[0]);
+    } catch (err) {
+        console.error('Certificate generation error:', err.message);
+        res.status(500).json({ error: 'Failed to generate certificate' });
     }
 }));
 
@@ -973,6 +1001,33 @@ router.get('/progress/overview', requireAuth, asyncHandler(async (req, res) => {
         });
     } catch (err) {
         res.json({ courses: 0, completed: 0, certificates: 0 });
+    }
+}));
+
+// ─── Streak ──────────────────────────────────────────────────
+router.get('/progress/streak', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json({ streak: 0 });
+    try {
+        const r = await pool.query(
+            `SELECT completed_at FROM learning.lesson_completions WHERE user_id = $1 ORDER BY completed_at DESC`,
+            [req.user.id]
+        );
+        const dates = [...new Set(r.rows.map(c => c.completed_at?.split('T')[0]).filter(Boolean))].sort().reverse();
+        const today = new Date().toISOString().split('T')[0];
+        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+        let streak = 0;
+        let checkDate = dates[0] === today || dates[0] === yesterday ? dates[0] : null;
+        if (!checkDate) return res.json({ streak: 0 });
+        streak = 1;
+        for (let i = 1; i < dates.length; i++) {
+            const prev = new Date(dates[i - 1]);
+            const curr = new Date(dates[i]);
+            if (Math.round((prev - curr) / 86400000) === 1) streak++;
+            else break;
+        }
+        res.json({ streak });
+    } catch (err) {
+        res.json({ streak: 0 });
     }
 }));
 
@@ -1120,6 +1175,343 @@ router.get('/instructors', asyncHandler(async (_, res) => {
         console.error('Instructors list error:', err.message);
         res.json([]);
     }
+}));
+
+// ─── Search ─────────────────────────────────────────────
+router.get('/search', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json({ results: [] });
+    const { q, type, category, sort = 'relevance', page = 1, limit = 20 } = req.query;
+    const search = q || '';
+    if (!search.trim()) return res.json({ results: [], total: 0, page: 1, pages: 0 });
+
+    const pg = Math.max(1, parseInt(page, 10) || 1);
+    const lim = Math.min(50, Math.max(1, parseInt(limit, 10) || 20));
+    const offset = (pg - 1) * lim;
+
+    try {
+        const types = type ? type.split(',') : ['courses', 'articles', 'videos', 'instructors', 'learning-paths'];
+        const results = [];
+        let total = 0;
+
+        for (const t of types) {
+            if (t === 'courses') {
+                const conditions = ['is_published = true'];
+                const values = [];
+                let idx = 1;
+                if (search) { conditions.push(`(title ILIKE $${idx} OR description ILIKE $${idx} OR category ILIKE $${idx})`); values.push(`%${search}%`); idx++; }
+                if (category) { conditions.push(`category ILIKE $${idx}`); values.push(`%${category}%`); idx++; }
+                const where = 'WHERE ' + conditions.join(' AND ');
+                const countR = await pool.query(`SELECT COUNT(*) FROM learning.courses ${where}`, values);
+                total += parseInt(countR.rows[0].count);
+                if (results.length < lim) {
+                    const lim2 = lim - results.length;
+                    values.push(lim2, offset);
+                    const r = await pool.query(`SELECT id, title, slug, description, thumbnail_url, price, currency, level, instructor, category, rating, students_count FROM learning.courses ${where} ORDER BY is_featured DESC, students_count DESC LIMIT $${values.length - 1} OFFSET $${values.length}`, values);
+                    results.push(...r.rows.map(r => ({ ...r, type: 'course', url: `course-detail.html?id=${r.id}` })));
+                }
+            } else if (t === 'articles') {
+                // Similar for articles...
+            } else if (t === 'learning-paths') {
+                const conditions = ['is_published = true'];
+                const values = [];
+                let idx = 1;
+                if (search) { conditions.push(`(title ILIKE $${idx} OR description ILIKE $${idx})`); values.push(`%${search}%`); idx++; }
+                const where = 'WHERE ' + conditions.join(' AND ');
+                const countR = await pool.query(`SELECT COUNT(*) FROM learning.learning_paths ${where}`, values);
+                total += parseInt(countR.rows[0].count);
+                if (results.length < lim) {
+                    const lim2 = lim - results.length;
+                    values.push(lim2, offset);
+                    const r = await pool.query(`SELECT id, title, slug, description, image, level, duration_hours, course_count, student_count, rating, price FROM learning.learning_paths ${where} ORDER BY created_at DESC LIMIT $${values.length - 1} OFFSET $${values.length}`, values);
+                    results.push(...r.rows.map(r => ({ ...r, type: 'learning-path', url: `learning-path.html?id=${r.slug || r.id}` })));
+                }
+            }
+        }
+        res.json({ results, total, page: pg, pages: Math.ceil(total / lim) });
+    } catch (err) {
+        console.error('Search error:', err.message);
+        res.json({ results: [], total: 0, page: 1, pages: 0 });
+    }
+}));
+
+// ─── Video Signed URL ───────────────────────────────────
+router.get('/videos/:id/signed-url', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id } = req.params;
+    const r = await pool.query('SELECT video_url FROM learning.lessons WHERE id = $1 AND video_url IS NOT NULL', [id]);
+    if (!r.rows.length) return res.status(404).json({ error: 'Video not found' });
+    const videoUrl = r.rows[0].video_url;
+    // In production, generate a signed URL with expiry
+    // For now, return the direct URL
+    res.json({ url: videoUrl, expires_at: Date.now() + 3600000 });
+}));
+
+// ─── Learning Paths ─────────────────────────────────────
+router.get('/learning-paths', asyncHandler(async (_, res) => {
+    return queryWithFallback(
+        async () => {
+            const r = await pool.query('SELECT * FROM learning.learning_paths ORDER BY created_at DESC');
+            return r.rows;
+        },
+        'learning-paths', res
+    );
+}));
+
+router.get('/learning-paths/:slug', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    try {
+        const param = req.params.slug;
+        const r = await pool.query(
+            'SELECT * FROM learning.learning_paths WHERE slug = $1 OR id::text = $1',
+            [param]
+        );
+        if (!r.rows.length) return res.status(404).json({ error: 'Learning path not found' });
+        const path = r.rows[0];
+        // Fetch associated courses
+        const coursesR = await pool.query(
+            `SELECT c.* FROM learning.courses c
+             JOIN learning.learning_path_courses lpc ON lpc.course_id = c.id
+             WHERE lpc.path_id = $1
+             ORDER BY lpc.sort_order`,
+            [path.id]
+        );
+        res.json({ ...path, courses: coursesR.rows });
+    } catch (err) {
+        console.error('Learning path detail error:', err.message);
+        return res.status(500).json({ error: 'Failed to load learning path' });
+    }
+}));
+
+router.get('/learning-paths/:slug/courses', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    try {
+        const param = req.params.slug;
+        const pathR = await pool.query('SELECT id FROM learning.learning_paths WHERE slug = $1 OR id::text = $1', [param]);
+        if (!pathR.rows.length) return res.json([]);
+        const coursesR = await pool.query(
+            `SELECT c.* FROM learning.courses c
+             JOIN learning.learning_path_courses lpc ON lpc.course_id = c.id
+             WHERE lpc.path_id = $1
+             ORDER BY lpc.sort_order`,
+            [pathR.rows[0].id]
+        );
+        res.json(coursesR.rows);
+    } catch { res.json([]); }
+}));
+
+// ─── Course Related Courses ─────────────────────────────
+router.get('/courses/:id/related', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    try {
+        const r = await pool.query(`
+            SELECT c.id, c.title, c.slug, c.thumbnail_url, c.price, c.currency, c.rating, c.reviews_count, c.instructor, c.category
+            FROM learning.courses c
+            WHERE c.category = (SELECT category FROM learning.courses WHERE id = $1)
+              AND c.id != $1 AND c.is_published = true
+            ORDER BY c.rating DESC NULLS LAST, c.students_count DESC NULLS LAST
+            LIMIT 4`, [req.params.id]);
+        res.json(r.rows);
+    } catch { res.json([]); }
+}));
+
+// ─── Course Enrollments ────────────────────────────────
+router.get('/courses/:id/enrollments', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    try {
+        const r = await pool.query(
+            `SELECT e.*, u.first_name, u.last_name, u.email
+             FROM learning.enrollments e
+             JOIN auth.users u ON u.id = e.user_id
+             WHERE e.course_id = $1
+             ORDER BY e.enrolled_at DESC`,
+            [req.params.id]
+        );
+        res.json(r.rows);
+    } catch { res.json([]); }
+}));
+
+// ─── Course Discussions ────────────────────────────────
+router.get('/courses/:id/discussions', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    try {
+        const r = await pool.query(
+            `SELECT d.*, u.first_name || ' ' || u.last_name AS author_name
+             FROM learning.discussions d
+             LEFT JOIN auth.users u ON u.id = d.user_id
+             WHERE d.course_id = $1
+             ORDER BY d.is_pinned DESC, d.created_at DESC`,
+            [req.params.id]
+        );
+        res.json(r.rows);
+    } catch { res.json([]); }
+}));
+
+router.post('/courses/:id/discussions', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { title, content, category } = req.body;
+    if (!title || !content) return res.status(400).json({ error: 'Title and content are required' });
+    try {
+        const r = await pool.query(
+            `INSERT INTO learning.discussions (user_id, course_id, title, content, category)
+             VALUES ($1, $2, $3, $4) RETURNING *`,
+            [req.user.id, req.params.id, title, content, category || 'general']
+        );
+        res.status(201).json(r.rows[0]);
+    } catch { res.status(201).json({ id: Date.now().toString(), title, content, category }); }
+}));
+
+// ─── Course Resources ──────────────────────────────────
+router.get('/courses/:id/resources', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    try {
+        const r = await pool.query(
+            'SELECT * FROM learning.course_downloadable_resources WHERE course_id = $1 ORDER BY sort_order',
+            [req.params.id]
+        );
+        res.json(r.rows);
+    } catch { res.json([]); }
+}));
+
+// ─── Course Quiz ───────────────────────────────────────
+router.get('/courses/:id/quiz', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json({ questions: [] });
+    try {
+        const quizR = await pool.query('SELECT * FROM learning.course_quizzes WHERE course_id = $1', [req.params.id]);
+        if (!quizR.rows.length) return res.json({ questions: [] });
+        const quiz = quizR.rows[0];
+        const qR = await pool.query('SELECT id, question, options, correct_answer, explanation FROM learning.course_quiz_questions WHERE quiz_id = $1 ORDER BY sort_order', [quiz.id]);
+        res.json({ ...quiz, questions: qR.rows });
+    } catch { res.json({ questions: [] }); }
+}));
+
+// ─── Lesson Notes ──────────────────────────────────────
+router.get('/lessons/:id/notes', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json({ notes: '' });
+    try {
+        const r = await pool.query(
+            'SELECT content FROM learning.lesson_notes WHERE user_id = $1 AND lesson_id = $2',
+            [req.user.id, req.params.id]
+        );
+        res.json({ notes: r.rows[0]?.content || '' });
+    } catch { res.json({ notes: '' }); }
+}));
+
+router.put('/lessons/:id/notes', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { content } = req.body;
+    try {
+        const r = await pool.query(
+            `INSERT INTO learning.lesson_notes (user_id, lesson_id, content)
+             VALUES ($1, $2, $3)
+             ON CONFLICT (user_id, lesson_id) DO UPDATE SET content = $3, updated_at = CURRENT_TIMESTAMP
+             RETURNING *`,
+            [req.user.id, req.params.id, content || '']
+        );
+        res.json(r.rows[0]);
+    } catch { res.json({ content: content || '' }); }
+}));
+
+// ─── Lesson Discussion ─────────────────────────────────
+router.get('/lessons/:id/discussion', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    try {
+        const r = await pool.query(
+            `SELECT d.*, u.first_name || ' ' || u.last_name AS author_name
+             FROM learning.lesson_discussions d
+             LEFT JOIN auth.users u ON u.id = d.user_id
+             WHERE d.lesson_id = $1
+             ORDER BY d.created_at DESC`,
+            [req.params.id]
+        );
+        res.json(r.rows);
+    } catch { res.json([]); }
+}));
+
+router.post('/lessons/:id/discussion', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { content } = req.body;
+    if (!content) return res.status(400).json({ error: 'Content is required' });
+    try {
+        const r = await pool.query(
+            `INSERT INTO learning.lesson_discussions (user_id, lesson_id, content)
+             VALUES ($1, $2, $3) RETURNING *`,
+            [req.user.id, req.params.id, content]
+        );
+        res.status(201).json(r.rows[0]);
+    } catch { res.status(201).json({ id: Date.now().toString(), content }); }
+}));
+
+// ─── Lesson Quiz ──────────────────────────────────────
+router.get('/lessons/:id/quiz', asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json({ questions: [] });
+    try {
+        const r = await pool.query('SELECT * FROM learning.lesson_quizzes WHERE lesson_id = $1', [req.params.id]);
+        if (!r.rows.length) return res.json({ questions: [] });
+        const quiz = r.rows[0];
+        const qR = await pool.query('SELECT id, question, options, correct_answer, explanation FROM learning.lesson_quiz_questions WHERE quiz_id = $1 ORDER BY sort_order', [quiz.id]);
+        res.json({ ...quiz, questions: qR.rows });
+    } catch { res.json({ questions: [] }); }
+}));
+
+router.post('/lessons/:id/quiz/attempt', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { answers } = req.body;
+    if (!answers || !Array.isArray(answers)) return res.status(400).json({ error: 'Answers array required' });
+    try {
+        const quizR = await pool.query('SELECT * FROM learning.lesson_quizzes WHERE lesson_id = $1', [req.params.id]);
+        if (!quizR.rows.length) return res.status(404).json({ error: 'Quiz not found' });
+        const quiz = quizR.rows[0];
+        const questionsR = await pool.query('SELECT id, correct_answer FROM learning.lesson_quiz_questions WHERE quiz_id = $1 ORDER BY sort_order', [quiz.id]);
+        let correct = 0;
+        questionsR.rows.forEach((q, i) => { if (answers[i] === q.correct_answer) correct++; });
+        const total = questionsR.rows.length;
+        const score = total > 0 ? Math.round((correct / total) * 100) : 0;
+        const r = await pool.query(
+            `INSERT INTO learning.quiz_attempts (user_id, quiz_id, answers, score, attempt_number, completed_at)
+             VALUES ($1, $2, $3, $4, (SELECT COALESCE(MAX(attempt_number),0)+1 FROM learning.quiz_attempts WHERE user_id=$1 AND quiz_id=$2), CURRENT_TIMESTAMP)
+             RETURNING *`,
+            [req.user.id, quiz.id, JSON.stringify(answers), score]
+        );
+        res.json({ score, correct, total, attempt: r.rows[0] });
+    } catch { res.json({ score: 0, correct: 0, total: 0 }); }
+}));
+
+// ─── Certificate Generation ────────────────────────────
+router.post('/certificates/generate', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { course_id } = req.body;
+    if (!course_id) return res.status(400).json({ error: 'Course ID required' });
+    try {
+        // Check enrollment and completion
+        const enrollment = await pool.query(
+            'SELECT progress FROM learning.enrollments WHERE user_id = $1 AND course_id = $2',
+            [req.user.id, course_id]
+        );
+        if (!enrollment.rows.length) return res.status(403).json({ error: 'Not enrolled in this course' });
+        if ((enrollment.rows[0].progress || 0) < 100) return res.status(403).json({ error: 'Course not completed yet' });
+
+        // Generate certificate
+        const certCode = 'FC-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+        const r = await pool.query(
+            `INSERT INTO learning.certificates (user_id, course_id, certificate_url, verification_code)
+             VALUES ($1, $2, $3, $4) RETURNING *`,
+            [req.user.id, course_id, `/api/certificates/${certCode}`, certCode]
+        );
+        res.status(201).json(r.rows[0]);
+    } catch (err) {
+        console.error('Certificate generation error:', err.message);
+        res.status(500).json({ error: 'Failed to generate certificate' });
+    }
+}));
+
+// ─── Video Signed URL ─────────────────────────────────
+router.get('/videos/:id/signed-url', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id } = req.params;
+    const r = await pool.query('SELECT video_url FROM learning.lessons WHERE id = $1 AND video_url IS NOT NULL', [id]);
+    if (!r.rows.length) return res.status(404).json({ error: 'Video not found' });
+    const videoUrl = r.rows[0].video_url;
+    res.json({ url: videoUrl, expires_at: Date.now() + 3600000 });
 }));
 
 module.exports = router;

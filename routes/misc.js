@@ -54,10 +54,24 @@ function parseMoov(data, start, end) {
 }
 
 // Newsletter
-router.post('/newsletter/subscribe', asyncHandler(async (req, res) => {
+router.post('/newsletter/subscribe', rateLimiter(5, 60000), asyncHandler(async (req, res) => {
     const { email } = req.body;
     if (!email || typeof email !== 'string') return res.status(400).json({ error: 'Email is required' });
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Invalid email format' });
+
+    if (await dbAvailable()) {
+        try {
+            await pool.query(
+                `INSERT INTO community.newsletter_subscribers (email, subscribed_at)
+                 VALUES ($1, CURRENT_TIMESTAMP)
+                 ON CONFLICT (email) DO UPDATE SET subscribed_at = CURRENT_TIMESTAMP, unsubscribed = false`,
+                [email.toLowerCase()]
+            );
+        } catch (err) {
+            // Table may not exist yet — non-fatal
+            if (err.code !== '42P01') console.error('Newsletter subscribe error:', err.message);
+        }
+    }
     console.log(`Newsletter subscription: ${email}`);
     res.json({ message: 'Successfully subscribed' });
 }));

@@ -209,7 +209,7 @@
                     <div id="ordersContainer"></div>
 
                     <!-- Order Detail Modal -->
-                    <div id="orderModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;padding:1rem;">
+                    <div id="orderModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:1rem;">
                         <div style="background:var(--bg-white);border-radius:16px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;padding:1.5rem;">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
                                 <h2 style="margin:0;font-size:1.2rem;" id="modalOrderTitle">Order Details</h2>
@@ -433,16 +433,60 @@
                                         <label>Flower Type</label>
                                         <select id="prodFlowerType">
                                             <option value="">Select Type</option>
+                                            <optgroup label="Popular Cut Flowers">
                                             <option>Rose</option><option>Tulip</option><option>Orchid</option><option>Lily</option>
                                             <option>Sunflower</option><option>Carnation</option><option>Peony</option><option>Hydrangea</option>
-                                            <option>Dahlia</option><option>Gerbera</option><option>Chrysanthemum</option><option>Other</option>
+                                            <option>Dahlia</option><option>Gerbera</option><option>Chrysanthemum</option><option>Alstroemeria</option>
+                                            <option>Anemone</option><option>Ranunculus</option><option>Freesia</option><option>Lisianthus</option>
+                                            </optgroup>
+                                            <optgroup label="Spring Bulbs">
+                                            <option>Daffodil</option><option>Hyacinth</option><option>Crocus</option><option>Snowdrop</option>
+                                            <option>Muscari</option><option>Allium</option><option>Fritillaria</option><option>Scilla</option>
+                                            </optgroup>
+                                            <optgroup label="Summer Blooms">
+                                            <option>Gladiolus</option><option>Dahlia</option><option>Zinnia</option><option>Cosmos</option>
+                                            <option>Marigold</option><option>Petunia</option><option>Begonia</option><option>Impatiens</option>
+                                            </optgroup>
+                                            <optgroup label="Foliage & Greens">
+                                            <option>Eucalyptus</option><option>Ferns</option><option>Ruscus</option><option>Leatherleaf</option>
+                                            <option>Salal</option><option>Pittosporum</option><option>Boxwood</option><option>Ivy</option>
+                                            </optgroup>
+                                            <optgroup label="Tropical & Exotic">
+                                            <option>Bird of Paradise</option><option>Anthurium</option><option>Heliconia</option><option>Ginger</option>
+                                            <option>Protea</option><option>Banksia</option><option>Leucadendron</option><option>Waratah</option>
+                                            </optgroup>
+                                            <optgroup label="Wildflowers & Natives">
+                                            <option>Wildflower Mix</option><option>Coneflower</option><option>Black-eyed Susan</option><option>Lupine</option>
+                                            <option>Poppy</option><option>Cornflower</option><option>Queen Anne's Lace</option><option>Yarrow</option>
+                                            </optgroup>
+                                            <option>Other</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label>Condition</label>
                                         <select id="prodType">
                                             <option value="">Select Condition</option>
-                                            <option>Fresh Cut</option><option>Potted</option><option>Artificial</option><option>Dried</option>
+                                            <optgroup label="Fresh">
+                                            <option>Fresh Cut</option><option>Fresh Cut - Premium</option><option>Fresh Cut - Standard</option>
+                                            <option>Fresh Cut - Bud Stage</option><option>Fresh Cut - Open Blooms</option>
+                                            </optgroup>
+                                            <optgroup label="Living">
+                                            <option>Potted</option><option>Potted - Blooming</option><option>Potted - Bud Stage</option>
+                                            <option>Bare Root</option><option>Bulb</option><option>Corm</option><option>Rhizome</option>
+                                            <option>Seedling</option><option>Plug Plant</option><option>Starter Plant</option>
+                                            </optgroup>
+                                            <optgroup label="Preserved">
+                                            <option>Dried</option><option>Preserved</option><option>Freeze-dried</option><option>Silica-dried</option>
+                                            <option>Glycerin-preserved</option><option>Pressed</option>
+                                            </optgroup>
+                                            <optgroup label="Artificial">
+                                            <option>Artificial - Silk</option><option>Artificial - Plastic</option><option>Artificial - Latex</option>
+                                            <option>Artificial - Polyester</option><option>Artificial - Foam</option><option>Artificial - Paper</option>
+                                            </optgroup>
+                                            <optgroup label="Specialty">
+                                            <option>Wax-dipped</option><option>Bleached</option><option>Dyed</option><option>Tinted</option>
+                                            <option>Glittered</option><option>Scented</option>
+                                            </optgroup>
                                         </select>
                                     </div>
                                 </div>
@@ -455,6 +499,11 @@
                                             <option>Wedding</option><option>Birthday</option><option>Anniversary</option>
                                             <option>Sympathy</option><option>Just Because</option><option>Corporate</option>
                                             <option>Mother's Day</option><option>Valentine's Day</option><option>Graduation</option>
+                                            <option>Engagement</option><option>Housewarming</option><option>New Baby</option>
+                                            <option>Get Well</option><option>Thank You</option><option>Congratulations</option>
+                                            <option>Christmas</option><option>Easter</option><option>Thanksgiving</option><option>New Year</option>
+                                            <option>Funeral</option><option>Memorial</option><option>Retirement</option><option>Promotion</option>
+                                            <option>Date Night</option><option>Apology</option><option>Friendship</option><option>Self Care</option>
                                         </select>
                                     </div>
                                 </div>
@@ -464,6 +513,11 @@
                                         <select id="prodFlowerForm">
                                             <option value="">Select</option>
                                             <option>Spray</option><option>Standard</option><option>Miniature</option><option>Climbing</option><option>Shrub</option><option>Tree</option>
+                                            <option>Groundcover</option><option>Trailing</option><option>Upright</option><option>Compact</option>
+                                            <option>Vining</option><option>Mounding</option><option>Columnar</option><option>Weeping</option>
+                                            <option>Rambling</option><option>Bush</option><option>Herbaceous</option><option>Woody</option>
+                                            <option>Succulent</option><option>Cactus</option><option>Fern</option><option>Grass</option>
+                                            <option>Bulb</option><option>Rhizome</option><option>Tuber</option><option>Corm</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -471,6 +525,10 @@
                                         <select id="prodFoliage">
                                             <option value="">Select</option>
                                             <option>Deciduous</option><option>Evergreen</option><option>Semi-evergreen</option><option>None</option>
+                                            <option>Herbaceous</option><option>Needle-leaved</option><option>Broad-leaved</option><option>Variegated</option>
+                                            <option>Silver/Gray</option><option>Red/Purple</option><option>Golden/Yellow</option><option>Blue-green</option>
+                                            <option>Palmate</option><option>Pinnate</option><option>Simple</option><option>Compound</option>
+                                            <option>Succulent</option><option>Grass-like</option><option>Fern-like</option><option>Scale-like</option>
                                         </select>
                                     </div>
                                 </div>
@@ -484,6 +542,9 @@
                                         <select id="prodLight">
                                             <option value="">Select</option>
                                             <option>Full Sun</option><option>Partial Shade</option><option>Full Shade</option><option>Indirect Light</option>
+                                            <option>Morning Sun</option><option>Afternoon Sun</option><option>Dappled Light</option><option>Bright Indirect</option>
+                                            <option>Low Light</option><option>Medium Light</option><option>High Light</option><option>Artificial Light</option>
+                                            <option>Filtered Sun</option><option>Deep Shade</option><option>Reflected Light</option><option>Grow Lights</option>
                                         </select>
                                     </div>
                                 </div>
@@ -499,6 +560,9 @@
                                             <option>Early Spring</option><option>Mid Spring</option><option>Late Spring</option>
                                             <option>Early Summer</option><option>Mid Summer</option><option>Late Summer</option>
                                             <option>Autumn</option><option>Winter</option><option>All Year</option>
+                                            <option>Spring</option><option>Summer</option><option>Fall</option><option>Winter</option>
+                                            <option>Easter</option><option>Mother's Day</option><option>Valentine's Day</option><option>Christmas</option>
+                                            <option>Continuous</option><option>Repeat Bloomer</option><option>Once Bloomer</option><option>Seasonal</option>
                                         </select>
                                     </div>
                                 </div>
@@ -508,6 +572,10 @@
                                         <select id="prodFragrance">
                                             <option value="">Select</option>
                                             <option>Strong</option><option>Medium</option><option>Mild</option><option>None</option>
+                                            <option>Sweet</option><option>Spicy</option><option>Citrus</option><option>Floral</option>
+                                            <option>Fruity</option><option>Musky</option><option>Herbal</option><option>Earthy</option>
+                                            <option>Honey</option><option>Vanilla</option><option>Rose</option><option>Jasmine</option>
+                                            <option>Lily</option><option>Gardenia</option><option>Lavender</option><option>Custom</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -515,6 +583,10 @@
                                         <select id="prodBloomSeason">
                                             <option value="">Select Season</option>
                                             <option>Spring</option><option>Summer</option><option>Autumn</option><option>Winter</option><option>All Year</option>
+                                            <option>Early Spring</option><option>Late Spring</option><option>Early Summer</option><option>Late Summer</option>
+                                            <option>Early Fall</option><option>Late Fall</option><option>Early Winter</option><option>Late Winter</option>
+                                            <option>Spring-Summer</option><option>Summer-Fall</option><option>Fall-Winter</option><option>Winter-Spring</option>
+                                            <option>Perennial</option><option>Annual</option><option>Biennial</option><option>Indeterminate</option>
                                         </select>
                                     </div>
                                 </div>
@@ -525,6 +597,9 @@
                                         <select id="prodCareLevel">
                                             <option value="">Select</option>
                                             <option>Easy</option><option>Moderate</option><option>Advanced</option>
+                                            <option>Beginner</option><option>Intermediate</option><option>Expert</option>
+                                            <option>Low Maintenance</option><option>High Maintenance</option><option>Specialist Only</option>
+                                            <option>Very Forgiving</option><option>Sensitive / Finicky</option>
                                         </select>
                                     </div>
                                 </div>
@@ -554,9 +629,18 @@
                                     <select id="prodGuarantee">
                                         <option value="">Select Guarantee</option>
                                         <option>Freshness Guarantee (5+ days)</option>
+                                        <option>Freshness Guarantee (7+ days)</option>
+                                        <option>Freshness Guarantee (10+ days)</option>
                                         <option>Satisfaction Guarantee</option>
+                                        <option>Money-Back Guarantee</option>
                                         <option>No-Questions Return</option>
                                         <option>Replace if Damaged</option>
+                                        <option>Replace if Not as Described</option>
+                                        <option>Lifetime Guarantee (plants)</option>
+                                        <option>1-Year Guarantee (plants)</option>
+                                        <option>Seasonal Guarantee</option>
+                                        <option>Bloom Guarantee</option>
+                                        <option>Root Establishment Guarantee</option>
                                         <option>No Guarantee</option>
                                     </select>
                                 </div>
