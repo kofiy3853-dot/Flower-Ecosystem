@@ -298,7 +298,7 @@ router.post('/login', rateLimiter(10, 60000), asyncHandler(async (req, res) => {
     res.json({ 
         user: { id: user.id, name: user.first_name, email: user.email, role: user.role, profile_image: user.profile_image },
         access_token: accessToken
-    };
+    });
 }));
 
 router.post('/logout', requireAuth, asyncHandler(async (req, res) => {
