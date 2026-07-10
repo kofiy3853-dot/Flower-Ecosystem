@@ -51,6 +51,18 @@ async function run() {
             }
         }
 
+        // Run auth fixes (login_attempts, sessions, refresh_tokens, etc.)
+        const authFixesPath = path.join(__dirname, 'sql', 'auth-fixes.sql');
+        if (fs.existsSync(authFixesPath)) {
+            console.log('Running auth-fixes.sql...');
+            try {
+                await client.query(fs.readFileSync(authFixesPath, 'utf8'));
+                console.log('Auth fixes applied.');
+            } catch (e) {
+                console.log('Auth fixes partially applied:', e.message.split('\n')[0]);
+            }
+        }
+
         // Run messaging schema
         const msgSchemaPath = path.join(__dirname, 'sql', 'notifications-messaging.sql');
         if (fs.existsSync(msgSchemaPath)) {
