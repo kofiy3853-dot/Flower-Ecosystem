@@ -77,6 +77,15 @@ app.use((req, res, next) => {
     }
     next();
 });
+
+app.get('/favicon.ico', (req, res) => res.redirect('/favicon.svg'));
+app.use(express.static(path.join(__dirname), {
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        } else if (filePath.match(/\.(js|css)$/)) {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        } else if (filePath.match(/\.(jpg|jpeg|png|gif|webp|svg|ico)$/i)) {
             res.setHeader('Cache-Control', 'public, max-age=2592000, stale-while-revalidate=86400');
         }
     }
