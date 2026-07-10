@@ -202,15 +202,12 @@ router.post('/verify-email', rateLimiter(10, 60000), asyncHandler(async (req, re
 }));
 
 router.post('/login', rateLimiter(10, 60000), asyncHandler(async (req, res) => {
-    const { email, password, two_factor_code, csrf_token } = req.body;
+    const { email, password, two_factor_code } = req.body;
     if (!email || !password) {
         return res.status(400).json({ error: 'Email and password are required' });
     }
     if (typeof email !== 'string' || typeof password !== 'string') {
         return res.status(400).json({ error: 'Invalid input types' });
-    }
-    if (!validateCSRF(req, csrf_token)) {
-        return res.status(403).json({ error: 'Invalid CSRF token' });
     }
 
     if (!(await dbAvailable())) {
