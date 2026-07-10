@@ -103,6 +103,7 @@ app.get('/flowers/category/:slug', (_, res) => res.sendFile(path.join(__dirname,
 app.get('/marketplace', (_, res) => res.sendFile(path.join(__dirname, 'marketplace.html')));
 app.get('/ai-scanner', (_, res) => res.sendFile(path.join(__dirname, 'ai-scanner.html')));
 app.get('/flower-encyclopedia', (_, res) => res.sendFile(path.join(__dirname, 'flower-encyclopedia.html')));
+app.get('/learning-center', (_, res) => res.redirect(301, '/learning'));
 app.get('/flower-meanings', (_, res) => res.sendFile(path.join(__dirname, 'flower-meanings.html')));
 app.get('/flower-finder', (_, res) => res.sendFile(path.join(__dirname, 'flower-finder.html')));
 app.get('/care-guides-hub', (_, res) => res.sendFile(path.join(__dirname, 'care-guides-hub.html')));
@@ -369,6 +370,7 @@ app.use('/api', require('./routes/badges'));
 app.use('/api', require('./routes/members'));
 app.use('/api/instructor', require('./routes/instructor'));
 app.use('/api', require('./routes/my-activities'));
+app.get('/api/flower-encyclopedia', (_, res) => res.redirect(301, '/api/flowers'));
 app.use('/api', require('./routes/flower-encyclopedia'));
 app.use('/api', require('./routes/flower-meanings'));
 app.use('/api', require('./routes/care-guides-enhanced'));
