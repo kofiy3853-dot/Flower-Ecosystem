@@ -7,7 +7,7 @@ var allNotifications = [];
 var currentFilter = { orders: 'all', saved: 'all' };
 
 function initBuyerDashboard() {
-    if (!localStorage.getItem('flower-token')) {
+    if (!localStorage.getItem('flower-user')) {
         sessionStorage.setItem('pending-redirect', 'buyer-dashboard.html');
         sessionStorage.setItem('pending-auth', 'login');
         if (typeof openAuthModal === 'function') openAuthModal('login');
@@ -806,11 +806,10 @@ function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, c => ({ '&': '&', '<': '<', '>': '>', '"': '"', "'": '\'' }[c]));
 }
 
-function getToken() { return localStorage.getItem('flower-token'); }
+function getToken() { return null; }
 
 function authHeaders() {
-    const token = getToken();
-    return token ? { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } : { 'Content-Type': 'application/json' };
+    return { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
 }
 
 function handleError(err, msg) {

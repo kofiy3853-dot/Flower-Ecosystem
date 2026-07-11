@@ -38,28 +38,27 @@ function setupUserAvatar() {
 
 function getUserName() {
   try {
-    const p = JSON.parse(atob((localStorage.getItem('flower-token') || '').split('.')[1]));
+    const p = JSON.parse(atob((localStorage.getItem('flower-user') || '').split('.')[1]));
     return p.name || p.email || 'User';
   } catch { return 'User'; }
 }
 
 function getUserAvatar() {
   try {
-    const p = JSON.parse(atob((localStorage.getItem('flower-token') || '').split('.')[1]));
+    const p = JSON.parse(atob((localStorage.getItem('flower-user') || '').split('.')[1]));
     return p.avatar || p.profile_image || null;
   } catch { return null; }
 }
 
 function getCurrentUserId() {
   try {
-    const p = JSON.parse(atob((localStorage.getItem('flower-token') || '').split('.')[1]));
+    const p = JSON.parse(atob((localStorage.getItem('flower-user') || '').split('.')[1]));
     return p.id || p.sub || null;
   } catch { return null; }
 }
 
 function authHeaders() {
-  const token = localStorage.getItem('flower-token');
-  return token ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
+  return { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
 }
 
 // ─── Tabs ──────────────────────────────────────────────────────

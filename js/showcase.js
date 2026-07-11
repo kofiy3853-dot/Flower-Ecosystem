@@ -210,7 +210,7 @@ async function submitShowcaseProject() {
     formData.append('location', document.getElementById('scLocation').value || '');
     formData.append('product_ids', document.getElementById('scProductIds')?.value || '');
 
-    const token = getToken ? getToken() : localStorage.getItem('flower-token');
+    const token = getToken ? getToken() : localStorage.getItem('flower-user');
     const res = await fetch('/api/showcase', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}` },

@@ -128,7 +128,7 @@ function updateCartBadge() {
 }
 
 function userLoggedIn() {
-    return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token');
+    return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-user');
 }
 
 function handleError(err, msg) {
@@ -137,8 +137,7 @@ function handleError(err, msg) {
 }
 
 function authHeaders() {
-    const token = localStorage.getItem('flower-token');
-    return token ? { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } : { 'Content-Type': 'application/json' };
+    return { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
 }
 
 async function handleCartAction(action, idx, delta) {

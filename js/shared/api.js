@@ -54,27 +54,20 @@ window.renderStars  = renderStars;
 
 function getCurrentUserId() {
     try {
-        const token = localStorage.getItem('flower-token');
-        if (!token) return null;
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.id || payload.sub || null;
+        const user = JSON.parse(localStorage.getItem('flower-user') || 'null');
+        return user?.id || null;
     } catch { return null; }
 }
 
 function getCurrentUserRole() {
     try {
-        const token = localStorage.getItem('flower-token');
-        if (!token) return null;
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        return (payload.role || '').toUpperCase();
+        const user = JSON.parse(localStorage.getItem('flower-user') || 'null');
+        return (user?.role || '').toUpperCase();
     } catch { return null; }
 }
 
 function authHeaders() {
-    const headers = { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
-    const token = localStorage.getItem('flower-token');
-    if (token) headers['Authorization'] = 'Bearer ' + token;
-    return headers;
+    return { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
 }
 
 window.getCurrentUserId = getCurrentUserId;
@@ -94,10 +87,7 @@ window.handleError = function(err, context) {
 
 async function apiFetch(url, fallbackKey) {
     try {
-        const headers = {};
-        const token = localStorage.getItem('flower-token');
-        if (token) headers['Authorization'] = 'Bearer ' + token;
-        const res = await fetch(url, { headers });
+        const res = await fetch(url, { credentials: 'include' });
         if (res.ok) {
             const data = await res.json();
             return data;
@@ -117,9 +107,7 @@ function apiFetchWithBody(url, method, body) {
         'Content-Type': 'application/json',
         'X-Requested-With': 'XMLHttpRequest'
     };
-    const token = localStorage.getItem('flower-token');
-    if (token) headers['Authorization'] = 'Bearer ' + token;
-    return fetch(url, { method, headers, body: body ? JSON.stringify(body) : undefined })
+    return fetch(url, { method, headers, credentials: 'include', body: body ? JSON.stringify(body) : undefined })
         .then(async res => {
             let data;
             try {

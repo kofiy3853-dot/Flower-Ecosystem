@@ -122,7 +122,7 @@ async function init(){
     // Check application status for INSTRUCTOR role
     if(role==='INSTRUCTOR'){
         try{
-            const token=localStorage.getItem('flower-token');
+            const token=localStorage.getItem('flower-user');
             const res=await fetch('/api/instructor/my-application',{
                 headers:{'Authorization':'Bearer '+token,'X-Requested-With':'XMLHttpRequest'}
             });
@@ -174,7 +174,7 @@ async function init(){
 // ─── Load User Profile ─────────────────────────────────
 async function loadUserProfile(){
     try{
-        const token=localStorage.getItem('flower-token');
+        const token=localStorage.getItem('flower-user');
         const res=await fetch('/api/auth/me',{headers:{'Authorization':'Bearer '+token}});
         if(!res.ok) return;
         const user=await res.json();
@@ -296,7 +296,7 @@ window.editCourse=id=>{
     document.getElementById('editCourseForm').addEventListener('submit',async e=>{
         e.preventDefault();
         try{
-            const token=localStorage.getItem('flower-token');
+            const token=localStorage.getItem('flower-user');
             const headers={'Content-Type':'application/json'};
             if(token)headers['Authorization']='Bearer '+token;
             const res=await fetch('/api/courses/'+id,{method:'PUT',headers,body:JSON.stringify({
@@ -330,7 +330,7 @@ window.manageCourse=id=>{
 window.deleteCourse=async id=>{
     if(!confirm('Are you sure you want to delete this course?'))return;
     try{
-        const token=localStorage.getItem('flower-token');
+        const token=localStorage.getItem('flower-user');
         const headers={};
         if(token)headers['Authorization']='Bearer '+token;
         const res=await fetch('/api/courses/'+id,{method:'DELETE',headers});
@@ -458,7 +458,7 @@ window.openResourceUpload=()=>{
         const file=$('#resFile').files[0];
         if(!file){showToast('Please select a file','error');return;}
         try{
-            const token=localStorage.getItem('flower-token');
+            const token=localStorage.getItem('flower-user');
             const fd=new FormData();
             fd.append('title',$('#resTitle').value);
             fd.append('type',$('#resType').value);
@@ -557,7 +557,8 @@ window.saveSettings=async()=>{
             fd.append('file', settingsPhotoFile);
             const uploadRes = await fetch('/api/upload', {
                 method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') },
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'include',
                 body: fd
             });
             if (uploadRes.ok) {
@@ -618,7 +619,7 @@ document.addEventListener('submit',async e=>{
             price:parseFloat($('#mCoursePrice').value)||0
         };
         try{
-            const token=localStorage.getItem('flower-token');
+            const token=localStorage.getItem('flower-user');
             const headers={'Content-Type':'application/json'};
             if(token)headers['Authorization']='Bearer '+token;
             const res=await fetch('/api/courses',{method:'POST',headers,body:JSON.stringify(data)});

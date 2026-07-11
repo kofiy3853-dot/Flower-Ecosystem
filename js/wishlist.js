@@ -17,7 +17,7 @@
     }
 
     function isLoggedIn() {
-        try { return !!localStorage.getItem('flower-token'); } catch { return false; }
+        try { return !!localStorage.getItem('flower-user'); } catch { return false; }
     }
 
     async function fetchServerFavorites() {

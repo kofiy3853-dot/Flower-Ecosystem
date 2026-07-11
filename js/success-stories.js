@@ -6,7 +6,7 @@ let currentPage = 1;
 let totalPages = 1;
 
 function userLoggedIn() {
-    return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token');
+    return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-user');
 }
 
 // ─── Stories Listing Page ─────────────────────────────────────────────────
@@ -406,7 +406,7 @@ async function deleteStoryComment(commentId, storyId) {
 
 function getCurrentUserId() {
     try {
-        const token = localStorage.getItem('flower-token');
+        const token = localStorage.getItem('flower-user');
         if (token) return JSON.parse(atob(token.split('.')[1])).id;
     } catch {}
     return null;
@@ -414,7 +414,7 @@ function getCurrentUserId() {
 
 function getCurrentUserRole() {
     try {
-        const token = localStorage.getItem('flower-token');
+        const token = localStorage.getItem('flower-user');
         if (token) return JSON.parse(atob(token.split('.')[1])).role || '';
     } catch {}
     return '';

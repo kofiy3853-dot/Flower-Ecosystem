@@ -166,7 +166,7 @@
             placeBtn.disabled = true;
             placeBtn.innerHTML = '<span class="chk-spinner"></span> Processing...';
 
-            let token; try { token = localStorage.getItem('flower-token'); } catch { token = null; }
+            let token; try { token = localStorage.getItem('flower-user'); } catch { token = null; }
 
             if (token) {
                 try {

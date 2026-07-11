@@ -253,7 +253,7 @@ class Marketplace {
     }
 
     isAuthenticated() {
-        return localStorage.getItem('flower-token') !== null;
+        return localStorage.getItem('flower-user') !== null;
     }
 
     // ========================================================================

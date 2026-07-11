@@ -235,7 +235,7 @@ async function voteAnswer(answerId, voteType) {
     } catch {}
 }
 
-function userLoggedIn() { return !!localStorage.getItem('flower-token'); }
+function userLoggedIn() { return !!localStorage.getItem('flower-user'); }
 
 async function loadLeaderboard() {
     try {
@@ -255,7 +255,7 @@ async function loadLeaderboard() {
 // ─── Ask Question Page ────────────────────────────────────────────────────
 
 async function initAskQuestion() {
-    if (!localStorage.getItem('flower-token')) { sessionStorage.setItem('pending-redirect', 'ask-question.html'); sessionStorage.setItem('pending-auth', 'login'); if (typeof openAuthModal === 'function') openAuthModal('login'); return; }
+    if (!localStorage.getItem('flower-user')) { sessionStorage.setItem('pending-redirect', 'ask-question.html'); sessionStorage.setItem('pending-auth', 'login'); if (typeof openAuthModal === 'function') openAuthModal('login'); return; }
 
     let cats;
     try { cats = await fetch('/api/qa/categories').then(r => r.json()); } catch { cats = []; }
@@ -306,7 +306,7 @@ async function initAskQuestion() {
         uploadedFiles.forEach(f => formData.append('images', f));
 
         try {
-            const res = await fetch('/api/qa/questions', { method: 'POST', headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') }, body: formData });
+            const res = await fetch('/api/qa/questions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'include', body: formData });
             if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Failed'); }
             const data = await res.json();
             window.location.href = `question-detail.html?id=${data.id}`;

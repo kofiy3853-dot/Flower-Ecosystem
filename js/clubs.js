@@ -288,10 +288,9 @@ function timeAgo(dateStr) {
 }
 
 function authHeaders() {
-  const token = localStorage.getItem('flower-token');
-  return token ? { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
+  return { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
 }
 
 function userLoggedIn() {
-  return !!localStorage.getItem('flower-token');
+  return !!localStorage.getItem('flower-user');
 }

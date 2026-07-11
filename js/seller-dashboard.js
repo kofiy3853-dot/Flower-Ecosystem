@@ -7,12 +7,11 @@ var pendingVideo = null;
 var pendingTags = [];
 
 function getToken() {
-    return localStorage.getItem('flower-token');
+    return null;
 }
 
 function authHeaders() {
-    const token = getToken();
-    return token ? { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } : { 'Content-Type': 'application/json' };
+    return { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
 }
 
 function escapeHtml(str) {
@@ -47,7 +46,7 @@ function formatDate(dateStr) {
 }
 
 async function initSellerDashboard() {
-    if (!localStorage.getItem('flower-token')) {
+    if (!localStorage.getItem('flower-user')) {
         sessionStorage.setItem('pending-redirect', 'seller-dashboard.html');
         sessionStorage.setItem('pending-auth', 'login');
         if (typeof openAuthModal === 'function') openAuthModal('login');
@@ -923,7 +922,8 @@ async function saveProduct(status) {
             pendingImages.forEach(f => fd.append('images', f));
             const uploadRes = await fetch('/api/upload', {
                 method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + getToken(), 'X-Requested-With': 'XMLHttpRequest' },
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'include',
                 body: fd
             });
             if (!uploadRes.ok) throw new Error('Image upload failed');
@@ -936,7 +936,8 @@ async function saveProduct(status) {
             fd.append('video', pendingVideo);
             const uploadRes = await fetch('/api/upload/video', {
                 method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + getToken(), 'X-Requested-With': 'XMLHttpRequest' },
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'include',
                 body: fd
             });
             if (!uploadRes.ok) throw new Error('Video upload failed');
@@ -1071,7 +1072,8 @@ async function saveSettings() {
             fd.append('images', file);
             const uploadRes = await fetch('/api/upload', {
                 method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + getToken(), 'X-Requested-With': 'XMLHttpRequest' },
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'include',
                 body: fd
             });
             if (!uploadRes.ok) throw new Error('Image upload failed');

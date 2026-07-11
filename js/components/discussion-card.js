@@ -82,7 +82,7 @@ function renderStartDiscussionCard() {
 
 function getUserInitial() {
   try {
-    const p = JSON.parse(atob((localStorage.getItem('flower-token') || '').split('.')[1]));
+    const p = JSON.parse(atob((localStorage.getItem('flower-user') || '').split('.')[1]));
     const name = p.name || p.email || '?';
     const avatar = p.avatar || p.profile_image;
     if (avatar) return `<img src="${escapeHtml(avatar)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
@@ -96,5 +96,5 @@ function openStartDiscussion(mode) {
 }
 
 function userLoggedIn() {
-  try { return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token'); } catch { return false; }
+  try { return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-user'); } catch { return false; }
 }

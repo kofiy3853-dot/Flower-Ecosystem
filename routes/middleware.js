@@ -293,23 +293,24 @@ async function queryWithFallback(queryFn, jsonKey, res, single = false, fallback
 }
 
 async function requireAuth(req, res, next) {
-    const header = req.headers.authorization;
-    const token = header?.replace('Bearer ', '') || req.cookies?.access_token;
-    if (!token) return res.status(401).json({ error: 'Authorization required' });
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        req.user = decoded;
-        if (isTokenBlacklisted(token)) {
-            return res.status(401).json({ error: 'Token has been revoked' });
+    // Try Authorization header first, then fall back to cookie
+    const headerToken = req.headers.authorization?.replace('Bearer ', '');
+    const cookieToken = req.cookies?.access_token;
+    const candidates = [headerToken, cookieToken].filter(Boolean);
+
+    for (const token of candidates) {
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET);
+            req.user = decoded;
+            if (isTokenBlacklisted(token)) continue;
+            const userHash = crypto.createHash('sha256').update(`user:${decoded.id}`).digest('hex');
+            if (blacklistedTokens.has(userHash)) continue;
+            return next();
+        } catch {
+            // Try next candidate
         }
-        const userHash = crypto.createHash('sha256').update(`user:${decoded.id}`).digest('hex');
-        if (blacklistedTokens.has(userHash)) {
-            return res.status(401).json({ error: 'Token has been revoked' });
-        }
-        next();
-    } catch {
-        res.status(401).json({ error: 'Invalid or expired token' });
     }
+    return res.status(401).json({ error: 'Authorization required' });
 }
 
 function requireAdmin(req, res, next) {

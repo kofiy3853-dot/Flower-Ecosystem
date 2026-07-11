@@ -21,7 +21,7 @@ const CATEGORIES = [
 // ─── Utilities ─────────────────────────────────────────────────────────
 
 function userLoggedIn() {
-    try { return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token'); } catch { return false; }
+    try { return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-user'); } catch { return false; }
 }
 
 function formatNumber(n) {
@@ -550,7 +550,7 @@ async function submitReply(discussionId) {
         const formData = new FormData();
         formData.append('content', content || '');
         if (replyVideoFile) formData.append('video', replyVideoFile);
-        const token = localStorage.getItem('flower-token');
+        const token = localStorage.getItem('flower-user');
         const res = await fetch(`/api/discussions/${discussionId}/comments`, {
             method: 'POST',
             headers: token ? { 'Authorization': 'Bearer ' + token } : {},
@@ -780,7 +780,7 @@ async function initCreateDiscussion() {
         uploadedFiles.forEach(f => formData.append('images', f));
 
         try {
-            const token = localStorage.getItem('flower-token');
+            const token = localStorage.getItem('flower-user');
             const res = await fetch('/api/discussions', {
                 method: 'POST',
                 headers: token ? { 'Authorization': 'Bearer ' + token } : {},

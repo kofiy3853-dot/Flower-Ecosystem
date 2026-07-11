@@ -12,8 +12,8 @@ var MA = {
     }
 };
 
-function isLoggedIn() { return !!localStorage.getItem('flower-token'); }
-function getToken() { return localStorage.getItem('flower-token'); }
+function isLoggedIn() { return !!localStorage.getItem('flower-user'); }
+function getToken() { return null; }
 
 function authFetch(url, opts) {
     opts = opts || {};

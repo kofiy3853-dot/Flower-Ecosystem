@@ -7,7 +7,7 @@ const moodEmojis = { 'Happy': '😊', 'Excited': '🎉', 'Proud': '💪', 'Peace
 let currentTab = 'entries';
 
 async function initGardenJournal() {
-    if (!localStorage.getItem('flower-token')) {
+    if (!localStorage.getItem('flower-user')) {
         const lp = document.getElementById('loginPrompt');
         if (lp) lp.style.display = 'block';
         return;

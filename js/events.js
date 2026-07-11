@@ -34,7 +34,7 @@ function showToast(msg) {
 }
 
 function userLoggedIn() {
-    try { return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-token'); } catch { return false; }
+    try { return typeof window.isLoggedIn === 'function' ? window.isLoggedIn() : !!localStorage.getItem('flower-user'); } catch { return false; }
 }
 
 function formatNumber(n) {

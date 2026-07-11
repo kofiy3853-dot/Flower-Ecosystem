@@ -197,7 +197,7 @@ async function mbFollow(btn) {
   if (!userLoggedIn()) { openAuthModal('login'); return; }
   const id = btn.dataset.id;
   try {
-    await fetch(`/api/users/${id}/follow`, { method: 'POST', headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token'), 'Content-Type': 'application/json' } });
+    await fetch(`/api/users/${id}/follow`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'include' });
     btn.textContent = '✓';
     btn.classList.add('saved');
     btn.disabled = true;
@@ -205,10 +205,9 @@ async function mbFollow(btn) {
 }
 
 function authHeaders() {
-  const token = localStorage.getItem('flower-token');
-  return { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+  return { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
 }
 
 function userLoggedIn() {
-  return !!localStorage.getItem('flower-token');
+  return !!localStorage.getItem('flower-user');
 }

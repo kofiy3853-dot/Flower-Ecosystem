@@ -139,7 +139,7 @@ async function submitPost() {
   }
 
   try {
-    const token = localStorage.getItem('flower-token');
+    const token = localStorage.getItem('flower-user');
     const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
     const res = await fetch('/api/feed', { method: 'POST', headers, body: formData });
     if (!res.ok) throw new Error('Failed');

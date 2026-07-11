@@ -25,7 +25,7 @@ const steps = [
 // ─── Init ──────────────────────────────────────────────
 async function init() {
     // Check if user is logged in
-    const token = localStorage.getItem('flower-token');
+    const token = localStorage.getItem('flower-user');
     if (!token) {
         window.location.href = '/';
         return;
@@ -352,7 +352,7 @@ async function submitApplication() {
     btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Submitting...';
 
     try {
-        const token = localStorage.getItem('flower-token');
+        const token = localStorage.getItem('flower-user');
         const expertise = getSelectedTags('expertiseTags');
 
         // Upload portfolio images

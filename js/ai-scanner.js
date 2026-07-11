@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return '🌸';
   }
 
-  function getToken() { return localStorage.getItem('flower-token'); }
+  function getToken() { return localStorage.getItem('flower-user'); }
 
   // ─── Upload handling ──────────────────────────────────────────────────
   const enableButton = () => {

@@ -26,7 +26,7 @@
 
     // ─── Init ───────────────────────────────────────────────────────────
     function init() {
-        if (!localStorage.getItem('flower-token')) {
+        if (!localStorage.getItem('flower-user')) {
             window.location.href = 'login.html';
             return;
         }
@@ -468,7 +468,7 @@
         const formData = new FormData();
         formData.append(isVideo ? 'video' : 'images', file);
         try {
-            const token = localStorage.getItem('flower-token');
+            const token = localStorage.getItem('flower-user');
             const res = await fetch('/api/upload' + (isVideo ? '/video' : ''), {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer ' + token },
@@ -721,7 +721,7 @@
     window.saveDraft = async function() {
         saveStepData(currentStep);
         try {
-            const token = localStorage.getItem('flower-token');
+            const token = localStorage.getItem('flower-user');
             const body = buildPayload();
             body.status = 'draft';
 
@@ -767,7 +767,7 @@
         }
         
         try {
-            const token = localStorage.getItem('flower-token');
+            const token = localStorage.getItem('flower-user');
             const body = buildPayload();
             body.status = 'review';
             body.is_published = false;
@@ -872,7 +872,8 @@
         // Send to analytics endpoint (non-blocking)
         fetch('/api/analytics/event', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') },
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            credentials: 'include',
             body: JSON.stringify({ event: eventName, step: stepName, timestamp: Date.now() })
         }).catch(() => {});
     }
@@ -882,7 +883,8 @@
         if (!courseData.title) return Promise.resolve(false);
         return fetch('/api/courses/check-duplicate', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') },
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            credentials: 'include',
             body: JSON.stringify({ title: courseData.title, exclude_id: courseData.course_id })
         }).then(r => r.json()).then(r => r.is_duplicate).catch(() => false);
     }
@@ -900,8 +902,9 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('flower-token')
+                'X-Requested-With': 'XMLHttpRequest'
             },
+            credentials: 'include',
             body: JSON.stringify({
                 event: 'course_creation_step_view',
                 step: step,

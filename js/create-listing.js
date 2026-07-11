@@ -11,7 +11,7 @@ function initCreateListing() {
     const urlParams = new URLSearchParams(window.location.search);
     editingListingId = urlParams.get('id');
 
-    if (!localStorage.getItem('flower-token')) {
+    if (!localStorage.getItem('flower-user')) {
         sessionStorage.setItem('pending-redirect', 'create-listing.html' + (editingListingId ? '?id=' + editingListingId : ''));
         sessionStorage.setItem('pending-auth', 'login');
         if (typeof openAuthModal === 'function') openAuthModal('login');
@@ -585,11 +585,10 @@ function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, c => ({ '&': '&', '<': '<', '>': '>', '"': '"', "'": '\'' }[c]));
 }
 
-function getToken() { return localStorage.getItem('flower-token'); }
+function getToken() { return null; }
 
 function authHeaders() {
-    const token = getToken();
-    return token ? { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } : { 'Content-Type': 'application/json' };
+    return { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
 }
 
 function handleError(err, msg) {
