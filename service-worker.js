@@ -1,12 +1,9 @@
-const CACHE_NAME = 'flower-ecosystem-v1';
+const CACHE_NAME = 'flower-ecosystem-v2';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
     '/styles/main.css',
     '/js/shared/components.js',
-    '/js/shared/api.js',
-    '/js/shared/auth.js',
-    '/js/shared/theme.js',
     '/favicon.svg',
     '/manifest.json'
 ];
@@ -62,7 +59,23 @@ self.addEventListener('fetch', event => {
         return;
     }
 
-    // Cache first for static assets
+    // Network first for JS/CSS (version-busted via query strings)
+    if (url.pathname.match(/\.(js|css)$/)) {
+        event.respondWith(
+            fetch(request)
+                .then(response => {
+                    if (response.ok) {
+                        const clone = response.clone();
+                        caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
+                    }
+                    return response;
+                })
+                .catch(() => caches.match(request))
+        );
+        return;
+    }
+
+    // Cache first for other static assets (images, fonts, etc.)
     event.respondWith(
         caches.match(request).then(cached => {
             if (cached) return cached;

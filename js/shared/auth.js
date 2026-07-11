@@ -105,6 +105,11 @@ async function apiRefresh() {
 // ─── Auth Modal ──────────────────────────────────────────────────────────
 
 function openAuthModal(tab) {
+    // Don't open modal if already logged in
+    if (isLoggedIn()) {
+        afterAuth();
+        return;
+    }
     const existing = document.getElementById('auth-modal');
     if (!existing) {
         loadAuthModal();
@@ -275,6 +280,8 @@ function loadAuthModal() {
 
 function afterAuth() {
     closeAuthModal();
+    // Clear any pending auth state to prevent modal from reopening
+    sessionStorage.removeItem('pending-auth');
     if (typeof updateAccountUI === 'function') updateAccountUI();
 
     // Merge localStorage cart into server cart after login

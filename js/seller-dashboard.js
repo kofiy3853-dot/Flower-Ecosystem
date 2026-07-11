@@ -76,7 +76,7 @@ async function initSellerDashboard() {
 }
 
 async function loadProfile() {
-    try { profile = await fetch('/api/seller/profile', { headers: authHeaders() }).then(r => r.json()); } catch { profile = { shop_name: 'My Shop' }; }
+    try { profile = await fetch('/api/seller/profile', { headers: authHeaders(), credentials: 'include' }).then(r => r.json()); } catch { profile = { shop_name: 'My Shop' }; }
     const shopName = profile.shop_name || 'My Shop';
     document.getElementById('welcomeTitle').textContent = `Welcome Back, ${escapeHtml(shopName)}`;
     
@@ -118,21 +118,22 @@ async function loadSection(section) {
 
 async function loadDashboard() {
     try {
-        const stats = await fetch('/api/seller/analytics', { headers: authHeaders() }).then(r => r.json());
+        const stats = await fetch('/api/seller/analytics', { headers: authHeaders(), credentials: 'include' }).then(r => r.json());
         const statsEl = document.getElementById('statsGrid');
         if (statsEl) statsEl.innerHTML = `
-            <div class="stat-card"><div class="icon"><i class="bi bi-box-seam"></i></div><div class="num">${stats.products}</div><div class="label">Products</div></div>
-            <div class="stat-card"><div class="icon"><i class="bi bi-receipt"></i></div><div class="num">${stats.total_orders}</div><div class="label">Total Orders</div></div>
+            <div class="stat-card"><div class="icon"><i class="bi bi-box-seam"></i></div><div class="num">${stats.products || 0}</div><div class="label">Products</div></div>
+            <div class="stat-card"><div class="icon"><i class="bi bi-receipt"></i></div><div class="num">${stats.total_orders || 0}</div><div class="label">Total Orders</div></div>
             <div class="stat-card"><div class="icon"><i class="bi bi-currency-dollar"></i></div><div class="num">GHS ${(stats.revenue || 0).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</div><div class="label">Revenue</div></div>
-            <div class="stat-card"><div class="icon"><i class="bi bi-hourglass-split"></i></div><div class="num">${stats.pending_orders}</div><div class="label">Pending</div></div>
-            <div class="stat-card"><div class="icon"><i class="bi bi-star-fill"></i></div><div class="num">${(stats.avg_rating || 0).toFixed(1)}</div><div class="label">Avg Rating</div></div>
+            <div class="stat-card"><div class="icon"><i class="bi bi-hourglass-split"></i></div><div class="num">${stats.pending_orders || 0}</div><div class="label">Pending</div></div>
+            <div class="stat-card"><div class="icon"><i class="bi bi-star-fill"></i></div><div class="num">${(stats.avg_rating || 0).toFixed ? (stats.avg_rating || 0).toFixed(1) : '0.0'}</div><div class="label">Avg Rating</div></div>
             <div class="stat-card"><div class="icon"><i class="bi bi-truck"></i></div><div class="num">${stats.delivered_orders || 0}</div><div class="label">Delivered</div></div>
         `;
     } catch {}
 
     try {
-        const orders = await fetch('/api/seller/orders', { headers: authHeaders() }).then(r => r.json());
-        const recent = orders.slice(0, 5);
+        const orders = await fetch('/api/seller/orders', { headers: authHeaders(), credentials: 'include' }).then(r => r.json());
+        const orderList = Array.isArray(orders) ? orders : (orders.orders || []);
+        const recent = orderList.slice(0, 5);
         const ordersEl = document.getElementById('recentOrders');
         if (ordersEl) ordersEl.innerHTML = recent.length ? recent.map(o => `
             <div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 0;border-bottom:1px solid var(--border-light);font-size:0.9rem;">
@@ -146,8 +147,9 @@ async function loadDashboard() {
     } catch {}
 
     try {
-        const reviews = await fetch('/api/seller/reviews', { headers: authHeaders() }).then(r => r.json());
-        const recent = reviews.slice(0, 3);
+        const reviews = await fetch('/api/seller/reviews', { headers: authHeaders(), credentials: 'include' }).then(r => r.json());
+        const reviewList = Array.isArray(reviews) ? reviews : (reviews.reviews || []);
+        const recent = reviewList.slice(0, 3);
         const reviewsEl = document.getElementById('latestReviews');
         if (reviewsEl) reviewsEl.innerHTML = recent.length ? recent.map(r => `
             <div class="review-card">
@@ -160,7 +162,7 @@ async function loadDashboard() {
 
     // Low Stock Alerts
     try {
-        const products = await fetch('/api/seller/products', { headers: authHeaders() }).then(r => r.json());
+        const products = await fetch('/api/seller/products', { headers: authHeaders(), credentials: 'include' }).then(r => r.json());
         const productList = Array.isArray(products) ? products : (products.products || []);
         const lowStock = productList.filter(p => p.stock_quantity <= 10 && p.stock_quantity > 0);
         const outOfStock = productList.filter(p => p.stock_quantity === 0);
@@ -183,7 +185,7 @@ async function loadDashboard() {
 
     // Top Products
     try {
-        const products = await fetch('/api/seller/products', { headers: authHeaders() }).then(r => r.json());
+        const products = await fetch('/api/seller/products', { headers: authHeaders(), credentials: 'include' }).then(r => r.json());
         const productList = Array.isArray(products) ? products : (products.products || []);
         const sorted = [...productList].sort((a, b) => (b.sales || b.sold || 0) - (a.sales || a.sold || 0)).slice(0, 5);
 
