@@ -10,3 +10,6 @@ t.json
 t1.json
 t2.json
 t*.json
+cookies.txt
+login-body.json
+*.log
