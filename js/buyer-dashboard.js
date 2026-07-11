@@ -13,6 +13,15 @@ function initBuyerDashboard() {
         if (typeof openAuthModal === 'function') openAuthModal('login');
         return;
     }
+    // Redirect non-buyer roles to their correct dashboard
+    try {
+        const user = JSON.parse(localStorage.getItem('flower-user'));
+        const role = (user?.role || '').toLowerCase();
+        if (['admin', 'superadmin'].includes(role)) { window.location.href = 'admin.html'; return; }
+        if (['instructor'].includes(role)) { window.location.href = 'instructor-dashboard.html'; return; }
+        if (['student'].includes(role)) { window.location.href = 'student-dashboard.html'; return; }
+        if (['seller', 'florist', 'grower'].includes(role)) { window.location.href = 'seller-dashboard.html'; return; }
+    } catch {}
 
     const dc = document.getElementById('dashContent');
     if (dc) dc.style.display = 'block';

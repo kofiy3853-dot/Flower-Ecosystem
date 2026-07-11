@@ -457,6 +457,13 @@ async function run() {
             await client.query('CREATE INDEX IF NOT EXISTS idx_course_lessons_course ON learning.course_lessons(course_id)');
         } catch {}
 
+        // Clear any locked accounts from failed login attempts
+        try {
+            await client.query("DELETE FROM auth.login_attempts WHERE locked_until IS NOT NULL AND locked_until < NOW()");
+            await client.query("UPDATE auth.login_attempts SET failed_attempts = 0, locked_until = NULL WHERE locked_until IS NOT NULL AND locked_until <= NOW()");
+            console.log('Cleared expired login locks.');
+        } catch {}
+
         console.log('Database initialized successfully.');
     } catch (err) {
         console.error('DB init error:', err.message);
