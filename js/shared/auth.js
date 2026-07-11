@@ -63,11 +63,11 @@ async function apiLogin(email, password, twoFactorCode = null, csrfToken = null)
         credentials: 'include',
         body: JSON.stringify(body)
     });
-    if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || 'Login failed');
-    }
-    return await res.json();
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch { throw new Error('Server error — please try again'); }
+    if (!res.ok) throw new Error(data.error || 'Login failed');
+    return data;
 }
 
 async function apiRegister(formData) {
@@ -77,11 +77,11 @@ async function apiRegister(formData) {
         credentials: 'include',
         body: formData
     });
-    if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || 'Registration failed');
-    }
-    return await res.json();
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch { throw new Error('Server error — please try again'); }
+    if (!res.ok) throw new Error(data.error || 'Registration failed');
+    return data;
 }
 
 async function apiLogout() {
