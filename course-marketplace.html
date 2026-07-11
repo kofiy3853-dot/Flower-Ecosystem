@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Course Marketplace → Browse, compare, and enroll in floristry courses. Find the perfect course for your learning goals.">
+    <meta name="description" content="Course Marketplace ? Browse, compare, and enroll in floristry courses. Find the perfect course for your learning goals.">
     <title>Course Marketplace | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="styles/main.css?v=3.0">
@@ -137,8 +137,8 @@
             </div>
             <div class="cm-filter-row">
                 <button class="cm-filter active" onclick="filterCategory('all',this)">All Courses</button>
-                <button class="cm-filter" onclick="filterCategory('floral-design',this)">💐 Floral Design</button>
-                <button class="cm-filter" onclick="filterCategory('wedding',this)">💒 Wedding</button>
+                <button class="cm-filter" onclick="filterCategory('floral-design',this)">?? Floral Design</button>
+                <button class="cm-filter" onclick="filterCategory('wedding',this)">?? Wedding</button>
                 <button class="cm-filter" onclick="filterCategory('business',this)"><i class="bi bi-flower1"></i>ss</button>
                 <button class="cm-filter" onclick="filterCategory('care',this)"><i class="bi-leaf"></i> Plant Care</button>
                 <button class="cm-filter" onclick="filterCategory('farming',this)"><i class="bi-seedling"></i> Farming</button>
@@ -162,7 +162,7 @@
         <div class="container">
             <div class="cm-section-header">
                 <h2><i class="bi bi-star" style="color:#f59e0b;"></i> Featured Courses</h2>
-                <a href="learning.html" style="color:#2563eb;font-size:0.9rem;">View All →</a>
+                <a href="learning.html" style="color:#2563eb;font-size:0.9rem;">View All ?</a>
             </div>
             <div class="cm-featured" id="featuredGrid"></div>
         </div>
@@ -198,7 +198,7 @@
         <div class="container">
             <div class="cm-section-header">
                 <h2><i class="bi bi-person-badge" style="color:#2563eb;"></i> Top Instructors</h2>
-                <a href="instructors.html" style="color:#2563eb;font-size:0.9rem;">View All →</a>
+                <a href="instructors.html" style="color:#2563eb;font-size:0.9rem;">View All ?</a>
             </div>
             <div class="cm-instructors" id="instructorGrid"></div>
         </div>
@@ -229,7 +229,7 @@
     <div id="footer-container"></div>
 
     <script src="js/shared/components.js?v=3.1"></script>
-    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/auth.js?v=3.5"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/api.js?v=4.0"></script>
     <script>
@@ -242,7 +242,7 @@
             loadTestimonials();
         });
 
-        // →→ Courses →→→→→→→→→→→→→→→→→→→→→→→→→
+        // ?? Courses ?????????????????????????
         async function loadCourses(category = '') {
             try {
                 let url = '/api/courses?limit=12';
@@ -259,7 +259,7 @@
                 const instructors = [...new Set(courses.map(c => c.instructor).filter(Boolean))];
                 document.getElementById('statInstructors').textContent = instructors.length;
                 const avgRating = courses.length ? (courses.reduce((s, c) => s + (c.rating || 0), 0) / courses.length).toFixed(1) : '0';
-                document.getElementById('statRating').textContent = avgRating + '→';
+                document.getElementById('statRating').textContent = avgRating + '?';
 
                 const grid = document.getElementById('featuredGrid');
                 if (!courses.length) {
@@ -283,7 +283,7 @@
                                 ${c.instructor || 'Expert Instructor'}
                             </div>
                             <div class="cm-card-rating">
-                                <span class="stars">${'→'.repeat(Math.round(c.rating || 0))}${'→'.repeat(5 - Math.round(c.rating || 0))}</span>
+                                <span class="stars">${'?'.repeat(Math.round(c.rating || 0))}${'?'.repeat(5 - Math.round(c.rating || 0))}</span>
                                 <span>${(c.rating || 0).toFixed(1)}</span>
                                 <span style="color:var(--text-muted);">(${c.students || c.students_count || 0})</span>
                             </div>
@@ -314,11 +314,11 @@
             loadCourses(currentCategory);
         }
 
-        // →→ Bundles →→→→→→→→→→→→→→→→→→→→→→→→→
+        // ?? Bundles ?????????????????????????
         function loadBundles() {
             const bundles = [
-                { name: 'Complete Florist Bundle', desc: 'Everything you need to become a professional florist → from fundamentals to business.', courses: 8, price: 599, original: 1200, savings: '50%', color: '#2563eb', icon: '<i class="bi bi-flower1"></i>              { name: 'Wedding Specialist Bundle', desc: 'Master wedding floristry with courses on bridal bouquets, venue styling, and pricing.', courses: 5, price: 399, original: 750, savings: '47%', color: '#ec4899', icon: '💒' },
-                { name: 'Beginner Starter Pack', desc: 'Start your floral journey with 4 beginner-friendly courses at a special price.', courses: 4, price: 149, original: 300, savings: '50%', color: '#10b981', icon: '🌱' }
+                { name: 'Complete Florist Bundle', desc: 'Everything you need to become a professional florist ? from fundamentals to business.', courses: 8, price: 599, original: 1200, savings: '50%', color: '#2563eb', icon: '<i class="bi bi-flower1"></i>              { name: 'Wedding Specialist Bundle', desc: 'Master wedding floristry with courses on bridal bouquets, venue styling, and pricing.', courses: 5, price: 399, original: 750, savings: '47%', color: '#ec4899', icon: '??' },
+                { name: 'Beginner Starter Pack', desc: 'Start your floral journey with 4 beginner-friendly courses at a special price.', courses: 4, price: 149, original: 300, savings: '50%', color: '#10b981', icon: '??' }
             ];
 
             document.getElementById('bundlesGrid').innerHTML = bundles.map(b => `
@@ -336,7 +336,7 @@
             `).join('');
         }
 
-        // →→ Instructors →→→→→→→→→→→→→→→→→→→→→→→
+        // ?? Instructors ???????????????????????
         async function loadInstructors() {
             try {
                 const res = await fetch('/api/products/list/florists?limit=4');
@@ -350,7 +350,7 @@
                         <h3>${i.name}</h3>
                         <p>${i.role || i.specialty || 'Floristry Expert'}</p>
                         <div class="cm-instructor-stats">
-                            <span>📖 ${i.courses || 3} courses</span>
+                            <span>?? ${i.courses || 3} courses</span>
                             <span><i class="bi bi-people"></i> ${i.students || 500}+ students</span>
                         </div>
                     </div>
@@ -358,7 +358,7 @@
             } catch {}
         }
 
-        // →→ Testimonials →→→→→→→→→→→→→→→→→→→→→→→
+        // ?? Testimonials ???????????????????????
         function loadTestimonials() {
             const testimonials = [
                 { name: 'Akua Mensah', course: 'Floral Design Fundamentals', rating: 5, text: 'This course transformed my passion into a profession. The hands-on projects were incredibly valuable.' },
@@ -369,7 +369,7 @@
 
             document.getElementById('testimonialGrid').innerHTML = testimonials.map(t => `
                 <div class="cm-testimonial">
-                    <div class="cm-testimonial-stars">${'→'.repeat(t.rating)}${'→'.repeat(5 - t.rating)}</div>
+                    <div class="cm-testimonial-stars">${'?'.repeat(t.rating)}${'?'.repeat(5 - t.rating)}</div>
                     <div class="cm-testimonial-text">"${t.text}"</div>
                     <div class="cm-testimonial-author">
                         <div class="cm-testimonial-avatar">${t.name.charAt(0)}</div>

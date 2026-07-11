@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -181,7 +181,7 @@
     <div id="footer-container"></div>
 
     <script src="js/shared/components.js?v=3.1"></script>
-    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/auth.js?v=3.5"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/api.js?v=4.0"></script>
     <script>
@@ -312,7 +312,7 @@
                 document.getElementById('rdRelated').innerHTML = related.map(r => `
                     <a href="research-detail.html?slug=${r.slug || r.id}" class="rd-related-item">
                         <div class="rd-related-title">${escapeHtml(r.title)}</div>
-                        <div class="rd-related-meta">${r.category_icon || ''} ${escapeHtml(r.category_name || '')} Â· ${r.publication_date ? new Date(r.publication_date).getFullYear() : ''}</div>
+                        <div class="rd-related-meta">${r.category_icon || ''} ${escapeHtml(r.category_name || '')} · ${r.publication_date ? new Date(r.publication_date).getFullYear() : ''}</div>
                     </a>
                 `).join('');
             }
@@ -333,7 +333,7 @@
             document.getElementById('rdContent').style.display = 'none';
         }
 
-        // →→ Actions →→→→→→→→→→→→→→→→→→→→→→→→
+        // ?? Actions ????????????????????????
         async function toggleBookmark() {
             const token = getToken();
             if (!token) { window.location.href = 'login.html'; return; }
@@ -355,7 +355,7 @@
 
         function shareArticle() {
             if (!article) return;
-            const text = `${article.title} → Flower Ecosystem Research Hub`;
+            const text = `${article.title} ? Flower Ecosystem Research Hub`;
             if (navigator.share) {
                 navigator.share({ title: article.title, text, url: window.location.href });
             } else if (navigator.clipboard) {

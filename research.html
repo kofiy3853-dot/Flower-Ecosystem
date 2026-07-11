@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Floriculture Research Hub → Explore scientific research, industry insights, and innovations in flowers and horticulture.">
+    <meta name="description" content="Floriculture Research Hub ? Explore scientific research, industry insights, and innovations in flowers and horticulture.">
     <title>Floriculture Research Hub | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="styles/main.css?v=3.0">
@@ -127,7 +127,7 @@
         <div class="container">
             <div class="res-section-header">
                 <h2><i class="bi bi-star" style="color:#f59e0b;"></i> Featured Research</h2>
-                <a href="#library" style="color:#2563eb;font-size:0.9rem;">View All →</a>
+                <a href="#library" style="color:#2563eb;font-size:0.9rem;">View All ?</a>
             </div>
             <div class="res-featured" id="featuredGrid"></div>
         </div>
@@ -219,7 +219,7 @@
     <div id="footer-container"></div>
 
     <script src="js/shared/components.js?v=3.1"></script>
-    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/auth.js?v=3.5"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
     <script src="js/shared/api.js?v=4.0"></script>
     <script>
@@ -243,7 +243,7 @@
 
         function getToken() { return localStorage.getItem('flower-token'); }
 
-        // →→ Categories →→→→→→→→→→→→→→→→→→→→→→→
+        // ?? Categories ???????????????????????
         async function loadCategories() {
             try {
                 const res = await fetch('/api/research/categories');
@@ -257,7 +257,7 @@
             } catch {}
         }
 
-        // →→ Featured →→→→→→→→→→→→→→→→→→→→→→→→
+        // ?? Featured ????????????????????????
         async function loadFeatured() {
             try {
                 const res = await fetch('/api/research/featured');
@@ -266,7 +266,7 @@
             } catch {}
         }
 
-        // →→ Latest →→→→→→→→→→→→→→→→→→→→→→→→→
+        // ?? Latest ?????????????????????????
         async function loadLatest() {
             try {
                 const res = await fetch('/api/research/latest');
@@ -275,7 +275,7 @@
             } catch {}
         }
 
-        // →→ Library →→→→→→→→→→→→→→→→→→→→→→→→→
+        // ?? Library ?????????????????????????
         async function loadLibrary(page = 1) {
             const q = document.getElementById('resSearch')?.value?.trim() || currentLibraryQuery;
             let url = `/api/research?page=${page}&limit=12`;
@@ -318,7 +318,7 @@
             loadLibrary(1);
         }
 
-        // →→ Render →→→→→→→→→→→→→→→→→→→→→→→→→
+        // ?? Render ?????????????????????????
         function renderCards(articles, containerId) {
             const grid = document.getElementById(containerId);
             if (!grid || !articles?.length) { if (grid) grid.innerHTML = ''; return; }
@@ -348,13 +348,13 @@
                                 ${a.views ? `<span><i class="bi bi-eye"></i> ${a.views}</span>` : ''}
                                 ${a.bookmark_count ? `<span><i class="bi bi-bookmark"></i> ${a.bookmark_count}</span>` : ''}
                             </div>
-                            <span style="color:#2563eb;font-size:0.82rem;font-weight:500;">Read →</span>
+                            <span style="color:#2563eb;font-size:0.82rem;font-weight:500;">Read ?</span>
                         </div>
                     </div>
                 </a>`;
         }
 
-        // →→ AI Assistant →→→→→→→→→→→→→→→→→→→→→→
+        // ?? AI Assistant ??????????????????????
         async function askAI() {
             const q = document.getElementById('aiQuestion')?.value?.trim();
             if (!q) return;
@@ -382,7 +382,7 @@
             }
         }
 
-        // →→ Submit →→→→→→→→→→→→→→→→→→→→→→→→→
+        // ?? Submit ?????????????????????????
         async function loadSubmitCategories() {
             try {
                 const res = await fetch('/api/research/categories');

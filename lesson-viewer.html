@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -148,7 +148,7 @@
                     <h2 id="lessonTitle">Loading...</h2>
                     <div class="lv-topbar-meta">
                         <span id="lessonModule">Module 1</span>
-                        <span>→</span>
+                        <span>?</span>
                         <span id="lessonDuration">0 min</span>
                     </div>
                 </div>
@@ -237,7 +237,7 @@
 
     <script src="js/shared/api.js?v=4.0"></script>
     <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/auth.js?v=3.4"></script>
+    <script src="js/shared/auth.js?v=3.5"></script>
     <script src="js/shared/components.js?v=3.1"></script>
     <script>
         let course = null, lessons = [], currentIdx = 0;
@@ -316,7 +316,7 @@
 
             document.getElementById('lessonTitle').textContent = lesson.title || 'Lesson ' + (idx + 1);
             document.getElementById('lessonModule').textContent = lesson.module || lesson.module_title || 'Module 1';
-            document.getElementById('lessonDuration').textContent = (lesson.duration_minutes || '→') + ' min';
+            document.getElementById('lessonDuration').textContent = (lesson.duration_minutes || '?') + ' min';
             document.getElementById('contentTitle').textContent = lesson.title || 'Lesson ' + (idx + 1);
             document.getElementById('contentBody').innerHTML = lesson.content || '<p style="color:var(--text-light);">No content available for this lesson yet.</p>';
 
@@ -460,7 +460,7 @@
                     <div class="lv-resource-icon"><i class="bi bi-file-earmark-${r.type === 'pdf' ? 'pdf' : 'text'}"></i></div>
                     <div class="lv-resource-info">
                         <div class="lv-resource-name">${escapeHtml(r.name || 'Resource')}</div>
-                        <div class="lv-resource-meta">${r.type || 'File'} → ${r.size || ''}</div>
+                        <div class="lv-resource-meta">${r.type || 'File'} ? ${r.size || ''}</div>
                     </div>
                     <i class="bi bi-download" style="color:var(--text-light);"></i>
                 </div>
