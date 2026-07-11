@@ -430,7 +430,8 @@ async function run() {
             "ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE",
             "ALTER TABLE auth.sessions ADD COLUMN IF NOT EXISTS user_agent TEXT",
             "ALTER TABLE auth.sessions ADD COLUMN IF NOT EXISTS ip_address INET",
-            "ALTER TABLE auth.sessions ADD COLUMN IF NOT EXISTS last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+            "ALTER TABLE auth.sessions ADD COLUMN IF NOT EXISTS last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            "ALTER TABLE auth.sessions ALTER COLUMN token DROP NOT NULL"
         ];
         for (const sql of authFixups) {
             try { await client.query(sql); } catch {}
