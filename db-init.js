@@ -12,6 +12,26 @@ const pool = new Pool({
     ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : (process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false),
 });
 
+// Run SQL file by splitting into individual statements (pg doesn't handle multi-statement well)
+async function runSqlFile(client, filePath, label) {
+    const sql = fs.readFileSync(filePath, 'utf8');
+    // Split on semicolons that are followed by a newline (avoids splitting inside strings)
+    const statements = sql.split(/;\s*\n/).map(s => s.trim()).filter(s => s.length > 0 && !s.startsWith('--'));
+    let applied = 0, skipped = 0;
+    for (const stmt of statements) {
+        try {
+            await client.query(stmt + ';');
+            applied++;
+        } catch (e) {
+            // Most errors are "already exists" — skip silently
+            if (!e.message.includes('already exists') && !e.message.includes('does not exist')) {
+                skipped++;
+            }
+        }
+    }
+    console.log(`${label}: ${applied} applied, ${skipped} skipped`);
+}
+
 async function run() {
     let client;
     try {
@@ -25,14 +45,8 @@ async function run() {
         // Run schema.sql (may fail on existing databases, that's OK)
         const schemaPath = path.join(__dirname, 'sql', 'schema.sql');
         if (fs.existsSync(schemaPath)) {
-            const schema = fs.readFileSync(schemaPath, 'utf8');
             console.log('Running schema.sql...');
-            try {
-                await client.query(schema);
-                console.log('Schema applied.');
-            } catch (e) {
-                console.log('Schema partially applied (some objects may already exist):', e.message.split('\n')[0]);
-            }
+            await runSqlFile(client, schemaPath, 'Schema');
         }
 
         // Run migrations independently (each handles its own errors)
@@ -55,38 +69,21 @@ async function run() {
         const authFixesPath = path.join(__dirname, 'sql', 'auth-fixes.sql');
         if (fs.existsSync(authFixesPath)) {
             console.log('Running auth-fixes.sql...');
-            try {
-                await client.query(fs.readFileSync(authFixesPath, 'utf8'));
-                console.log('Auth fixes applied.');
-            } catch (e) {
-                console.log('Auth fixes partially applied:', e.message.split('\n')[0]);
-            }
+            await runSqlFile(client, authFixesPath, 'Auth fixes');
         }
 
         // Run messaging schema
         const msgSchemaPath = path.join(__dirname, 'sql', 'notifications-messaging.sql');
         if (fs.existsSync(msgSchemaPath)) {
-            const msgSchema = fs.readFileSync(msgSchemaPath, 'utf8');
             console.log('Running notifications-messaging.sql...');
-            try {
-                await client.query(msgSchema);
-                console.log('Messaging schema applied.');
-            } catch (e) {
-                console.log('Messaging schema partially applied:', e.message.split('\n')[0]);
-            }
+            await runSqlFile(client, msgSchemaPath, 'Messaging schema');
         }
 
         // Run buyer dashboard schema (profiles, favorites, etc.)
         const buyerSchemaPath = path.join(__dirname, 'sql', 'buyer-dashboard.sql');
         if (fs.existsSync(buyerSchemaPath)) {
-            const buyerSchema = fs.readFileSync(buyerSchemaPath, 'utf8');
             console.log('Running buyer-dashboard.sql...');
-            try {
-                await client.query(buyerSchema);
-                console.log('Buyer dashboard schema applied.');
-            } catch (e) {
-                console.log('Buyer dashboard schema partially applied:', e.message.split('\n')[0]);
-            }
+            await runSqlFile(client, buyerSchemaPath, 'Buyer dashboard');
         }
 
         // Run learning extra tables (workshops, live classes, assignments)
