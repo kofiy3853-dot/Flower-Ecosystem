@@ -312,23 +312,27 @@ function afterAuth() {
 
     const user = getCurrentUser();
     const role = (user?.role || '').toLowerCase();
-    if (['admin', 'superadmin'].includes(role)) {
+    const page = location.pathname.split('/').pop() || 'index.html';
+    if (['admin', 'superadmin'].includes(role) && page !== 'admin.html') {
         window.location.href = 'admin.html';
         return;
     }
-    if (['instructor'].includes(role)) {
+    if (['instructor'].includes(role) && page !== 'instructor-dashboard.html') {
         window.location.href = 'instructor-dashboard.html';
         return;
     }
-    if (['student'].includes(role)) {
+    if (['student'].includes(role) && page !== 'student-dashboard.html') {
         window.location.href = 'student-dashboard.html';
         return;
     }
-    if (['seller', 'florist', 'grower'].includes(role)) {
+    if (['seller', 'florist', 'grower'].includes(role) && page !== 'seller-dashboard.html') {
         window.location.href = 'seller-dashboard.html';
         return;
     }
-    window.location.href = 'buyer-dashboard.html';
+    if (!['admin', 'superadmin', 'instructor', 'student', 'seller', 'florist', 'grower'].includes(role) && page !== 'buyer-dashboard.html') {
+        window.location.href = 'buyer-dashboard.html';
+        return;
+    }
 }
 
 function handleAuthSubmit(formId, apiFn, getData) {
