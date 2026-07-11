@@ -422,6 +422,40 @@ async function run() {
             console.log('Email verification sync skipped:', e.message.split('\n')[0]);
         }
 
+        // Ensure critical auth columns exist (handles pre-existing tables with wrong schema)
+        const authFixups = [
+            "ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS two_factor_enabled BOOLEAN DEFAULT FALSE",
+            "ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS two_factor_secret TEXT",
+            "ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS password_changed_at TIMESTAMP",
+            "ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE",
+            "ALTER TABLE auth.sessions ADD COLUMN IF NOT EXISTS user_agent TEXT",
+            "ALTER TABLE auth.sessions ADD COLUMN IF NOT EXISTS ip_address INET",
+            "ALTER TABLE auth.sessions ADD COLUMN IF NOT EXISTS last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+        ];
+        for (const sql of authFixups) {
+            try { await client.query(sql); } catch {}
+        }
+
+        // Create learning.course_lessons if missing
+        try {
+            await client.query(`
+                CREATE TABLE IF NOT EXISTS learning.course_lessons (
+                    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+                    course_id UUID NOT NULL REFERENCES learning.courses(id) ON DELETE CASCADE,
+                    title TEXT NOT NULL,
+                    description TEXT,
+                    content TEXT,
+                    video_url TEXT,
+                    duration_minutes INTEGER DEFAULT 0,
+                    sort_order INTEGER DEFAULT 0,
+                    is_free BOOLEAN DEFAULT FALSE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
+            await client.query('CREATE INDEX IF NOT EXISTS idx_course_lessons_course ON learning.course_lessons(course_id)');
+        } catch {}
+
         console.log('Database initialized successfully.');
     } catch (err) {
         console.error('DB init error:', err.message);
