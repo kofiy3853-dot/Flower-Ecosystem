@@ -90,7 +90,7 @@
             };
 
             async function loadOrders() {
-                const token = localStorage.getItem('flower-token');
+                const token = localStorage.getItem('flower-user');
                 let serverOrders = [];
 
                 // Fetch real orders from server
@@ -222,7 +222,7 @@
 
         window.cancelOrder = async function(orderId) {
             if (!confirm('Cancel this order? This cannot be undone.')) return;
-            const token = localStorage.getItem('flower-token');
+            const token = localStorage.getItem('flower-user');
             try {
                 const res = await fetch('/api/orders/' + orderId + '/status', {
                     method: 'PUT',

@@ -459,11 +459,11 @@
         }
 
         function authFetch(url, opts = {}) {
-            const token = localStorage.getItem('flower-token');
+            const token = localStorage.getItem('flower-user');
             return fetch(url, { ...opts, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(opts.headers || {}) } })
                 .then(r => {
                     if (r.status === 401 || r.status === 403) {
-                        localStorage.removeItem('flower-token');
+                        localStorage.removeItem('flower-user');
                         localStorage.removeItem('flower-auth');
                         sessionStorage.setItem('pending-auth', 'login');
                         if (typeof openAuthModal === 'function') openAuthModal('login');

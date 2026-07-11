@@ -169,7 +169,7 @@
         });
 
         function checkAuth() {
-            const token = localStorage.getItem('flower-token');
+            const token = localStorage.getItem('flower-user');
             if (!token) {
                 window.location.href = 'login.html';
                 return;
@@ -286,7 +286,7 @@
             try {
                 const res = await fetch(`/api/categories/${selectedCategoryId}/images`, {
                     method: 'POST',
-                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') },
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
                     body: formData
                 });
                 if (res.ok) {
@@ -307,7 +307,7 @@
             try {
                 await fetch(`/api/images/${id}/feature`, {
                     method: 'PATCH',
-                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') }
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 });
                 showToast('Featured image updated');
                 loadImages();
@@ -321,7 +321,7 @@
             try {
                 await fetch(`/api/images/${id}`, {
                     method: 'DELETE',
-                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') }
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 });
                 showToast('Image deleted');
                 loadImages();
@@ -346,7 +346,7 @@
             try {
                 await fetch(`/api/images/${currentImageId}`, {
                     method: 'PUT',
-                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token'), 'Content-Type': 'application/json' },
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         alt_text: document.getElementById('editAltText').value,
                         caption: document.getElementById('editCaption').value,

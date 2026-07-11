@@ -375,7 +375,7 @@
         }
 
         async function loadSavedGardens() {
-            const token = localStorage.getItem('flower-token');
+            const token = localStorage.getItem('flower-user');
             if (!token) return;
             try {
                 const res = await fetch('/api/my-garden', { headers: { 'Authorization': 'Bearer ' + token } });

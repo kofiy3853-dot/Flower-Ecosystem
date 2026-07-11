@@ -94,7 +94,7 @@
     <script src="js/shared/components.js?v=3.1"></script>
     <script src="js/shared/animations.js?v=3.0"></script>
     <script>
-        function authHeaders() { const t = localStorage.getItem('flower-token'); return t ? { 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' }; }
+        function authHeaders() { const t = localStorage.getItem('flower-user'); return t ? { 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' }; }
         function escapeHtml(s) { if (typeof s !== 'string') return String(s || ''); const d = document.createElement('div'); d.appendChild(document.createTextNode(s)); return d.innerHTML; }
         function timeAgo(d) { const diff = Math.floor((Date.now() - new Date(d)) / 1000); if (diff < 60) return 'just now'; if (diff < 3600) return Math.floor(diff/60) + 'm ago'; if (diff < 86400) return Math.floor(diff/3600) + 'h ago'; return Math.floor(diff/86400) + 'd ago'; }
 
@@ -103,7 +103,7 @@
         let selectedRating = 0;
 
         async function init() {
-            if (localStorage.getItem('flower-token')) document.getElementById('writeReview').style.display = 'block';
+            if (localStorage.getItem('flower-user')) document.getElementById('writeReview').style.display = 'block';
             loadReviews();
 
             document.querySelectorAll('#starInput i').forEach(star => {
@@ -194,7 +194,7 @@
         }
 
         async function markHelpful(id) {
-            if (!localStorage.getItem('flower-token')) { alert('Sign in to mark reviews as helpful'); return; }
+            if (!localStorage.getItem('flower-user')) { alert('Sign in to mark reviews as helpful'); return; }
             try { await fetch(`/api/reviews/${id}/helpful`, { method: 'POST', headers: authHeaders() }); loadReviews(); } catch {}
         }
 

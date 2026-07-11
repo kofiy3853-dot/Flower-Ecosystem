@@ -491,7 +491,7 @@
             const resultEl = document.getElementById('aiResult');
             resultEl.innerHTML = '<p style="color:var(--text-light);">Thinking...</p>';
             try {
-                const token = localStorage.getItem('flower-token');
+                const token = localStorage.getItem('flower-user');
                 const res = await fetch('/api/openai/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': 'Bearer ' + token } : {}) },

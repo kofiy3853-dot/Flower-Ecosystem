@@ -148,7 +148,7 @@
         let allFlowers = [];
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (!localStorage.getItem('flower-token')) {
+            if (!localStorage.getItem('flower-user')) {
                 document.getElementById('plantsGrid').innerHTML = '<div class="mg-empty"><i class="bi bi-lock"></i><h3>Sign In Required</h3><p>Please sign in to access your garden.</p><a href="login.html" class="btn btn-primary">Sign In</a></div>';
                 return;
             }
@@ -337,7 +337,7 @@
         }
 
         function authHeaders() {
-            return { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') };
+            return { 'X-Requested-With': 'XMLHttpRequest' };
         }
 
         function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }

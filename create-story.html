@@ -117,7 +117,7 @@
     <script src="js/shared/animations.js?v=3.0"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            if (!localStorage.getItem('flower-token')) { openAuthModal('login'); return; }
+            if (!localStorage.getItem('flower-user')) { openAuthModal('login'); return; }
 
             let uploadedFiles = [];
             const uploadArea = document.getElementById('uploadArea');
@@ -167,7 +167,7 @@
                 uploadedFiles.forEach(f => formData.append('images', f));
 
                 try {
-                    const token = localStorage.getItem('flower-token');
+                    const token = localStorage.getItem('flower-user');
                     const res = await fetch('/api/stories', {
                         method: 'POST',
                         headers: token ? { 'Authorization': 'Bearer ' + token } : {},

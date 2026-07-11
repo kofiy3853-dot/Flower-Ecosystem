@@ -484,7 +484,7 @@
 
             // Bookmark course
             window.bookmarkCourse = async function() {
-                const token = localStorage.getItem('flower-token');
+                const token = localStorage.getItem('flower-user');
                 if (!token) { openAuthModal('login'); return; }
                 const icon = document.getElementById('bookmarkIcon');
                 const isSaved = icon.classList.contains('bi-bookmark-fill');
@@ -846,7 +846,7 @@
                 const resultEl = document.getElementById('aiCourseResult');
                 resultEl.innerHTML = '<p style="color:var(--text-light);font-size:0.85rem;">Thinking...</p>';
                 try {
-                    const token = localStorage.getItem('flower-token');
+                    const token = localStorage.getItem('flower-user');
                     const res = await fetch('/api/openai/chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': 'Bearer ' + token } : {}) },

@@ -330,7 +330,7 @@
         }
 
         function saveGuide() {
-            if (!localStorage.getItem('flower-token')) {
+            if (!localStorage.getItem('flower-user')) {
                 if (typeof openAuthModal === 'function') openAuthModal('login');
                 else window.location.href = 'login.html';
                 return;

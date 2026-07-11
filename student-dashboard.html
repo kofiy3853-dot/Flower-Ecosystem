@@ -274,7 +274,7 @@
 <script src="js/shared/animations.js?v=3.0"></script>
     <script>
         function initDashboard() {
-            if (!localStorage.getItem('flower-token')) {
+            if (!localStorage.getItem('flower-user')) {
                 document.getElementById('loginPrompt').style.display = 'block';
                 return;
             }
@@ -311,7 +311,7 @@
         async function loadDashboard() {
             const apiBase = window.location.origin;
             async function apiFetch(path) {
-                const token = localStorage.getItem('flower-token');
+                const token = localStorage.getItem('flower-user');
                 const r = await fetch(apiBase + path, { headers: { 'Authorization': token ? 'Bearer ' + token : '' } });
                 if (!r.ok) return null;
                 return r.json();

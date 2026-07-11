@@ -421,7 +421,7 @@
             cart[idx].qty = Math.max(1, (cart[idx].qty || 1) + delta);
             saveCart(cart);
             // Sync to server when logged in
-            const token = localStorage.getItem('flower-token');
+            const token = localStorage.getItem('flower-user');
             if (token && cart[idx].cartItemId) {
                 fetch('/api/cart/items/' + cart[idx].cartItemId, {
                     method: 'PUT',
@@ -435,7 +435,7 @@
         function removeItem(idx) {
             const cart = getCart();
             // Sync to server when logged in
-            const token = localStorage.getItem('flower-token');
+            const token = localStorage.getItem('flower-user');
             if (token && cart[idx]?.cartItemId) {
                 fetch('/api/cart/items/' + cart[idx].cartItemId, {
                     method: 'DELETE',
@@ -452,7 +452,7 @@
             const saved = getSaved();
             const item = cart.splice(idx, 1)[0];
             // Remove from server cart when logged in
-            const token = localStorage.getItem('flower-token');
+            const token = localStorage.getItem('flower-user');
             if (token && item?.cartItemId) {
                 fetch('/api/cart/items/' + item.cartItemId, {
                     method: 'DELETE',
@@ -470,7 +470,7 @@
             const cart = getCart();
             const item = saved.splice(idx, 1)[0];
             // Add to server cart when logged in
-            const token = localStorage.getItem('flower-token');
+            const token = localStorage.getItem('flower-user');
             if (token) {
                 fetch('/api/cart/items', {
                     method: 'POST',

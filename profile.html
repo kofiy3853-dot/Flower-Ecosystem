@@ -606,14 +606,14 @@
         async function follow(userId) {
             if (!isLoggedIn()) { if (typeof openAuthModal === 'function') openAuthModal('login'); return; }
             try {
-                await fetch('/api/users/' + userId + '/follow', { method: 'POST', headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') } });
+                await fetch('/api/users/' + userId + '/follow', { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
                 loadFollowButton(userId);
             } catch {}
         }
 
         async function unfollow(userId) {
             try {
-                await fetch('/api/users/' + userId + '/follow', { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + localStorage.getItem('flower-token') } });
+                await fetch('/api/users/' + userId + '/follow', { method: 'DELETE', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
                 loadFollowButton(userId);
             } catch {}
         }

@@ -156,7 +156,7 @@
         let plantCounter = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (!localStorage.getItem('flower-token')) {
+            if (!localStorage.getItem('flower-user')) {
                 sessionStorage.setItem('pending-redirect', 'create-journal-entry.html');
                 sessionStorage.setItem('pending-auth', 'login');
                 if (typeof openAuthModal === 'function') openAuthModal('login');
@@ -211,7 +211,7 @@
                 uploadedFiles.forEach(f => formData.append('photos', f));
 
                 try {
-                    const token = localStorage.getItem('flower-token');
+                    const token = localStorage.getItem('flower-user');
                     const res = await fetch('/api/journal/entries', {
                         method: 'POST',
                         headers: token ? { 'Authorization': 'Bearer ' + token } : {},

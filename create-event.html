@@ -876,7 +876,7 @@
             loadHeaderFooter();
 
             // Check authentication
-            const token = localStorage.getItem('flower-token');
+            const token = localStorage.getItem('flower-user');
             if (!token) {
                 document.getElementById('wizardContainer').innerHTML = `
                     <div style="text-align:center;padding:4rem 2rem;">

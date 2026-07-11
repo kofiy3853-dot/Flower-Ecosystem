@@ -404,7 +404,7 @@
             const lesson = lessons[currentIdx];
             if (!lesson) return;
             try {
-                const token = localStorage.getItem('flower-token');
+                const token = localStorage.getItem('flower-user');
                 await fetch(`/api/learning/courses/${course.id}/progress`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': 'Bearer ' + token } : {}) },
@@ -583,7 +583,7 @@
             renderAI();
 
             try {
-                const token = localStorage.getItem('flower-token');
+                const token = localStorage.getItem('flower-user');
                 const res = await fetch('/api/openai/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': 'Bearer ' + token } : {}) },
