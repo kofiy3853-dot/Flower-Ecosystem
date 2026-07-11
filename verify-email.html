@@ -3,96 +3,334 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Verify your Flower Ecosystem email address.">
+    <meta name="description" content="Verify your Flower Ecosystem account email address.">
     <title>Verify Email | Flower Ecosystem</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/main.css?v=3.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .verify-card { background: var(--bg-white); padding: 3rem; border-radius: 12px; box-shadow: var(--shadow-md); text-align: center; }
-        .verify-icon { font-size: 4rem; margin-bottom: 1.5rem; }
-        .verify-spinner { display: inline-block; width: 48px; height: 48px; border: 4px solid var(--border-color); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        :root {
+            --primary-color: #2E7D32;
+            --primary-dark: #1B5E20;
+            --primary-light: #4CAF50;
+            --accent-color: #FF9800;
+            --error-color: #D32F2F;
+            --success-color: #388E3C;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --text-light: #888;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --transition: all 0.2s ease;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            color: var(--text-primary);
+        }
+        .verify-container {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 3rem 2.5rem;
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .verify-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+        .icon-wrapper {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        }
+        .icon-wrapper svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+        .icon-wrapper.success { background: linear-gradient(135deg, var(--success-color), #4CAF50); }
+        .icon-wrapper.error { background: linear-gradient(135deg, var(--error-color), #EF5350); }
+        .icon-wrapper.loading { background: linear-gradient(135deg, var(--accent-color), #FFB74D); }
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .status-message {
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .status-message.success {
+            background: #E8F5E9;
+            color: var(--success-color);
+            display: flex;
+        }
+        .status-message.error {
+            background: #FFEBEE;
+            color: var(--error-color);
+            display: flex;
+        }
+        .status-message.loading {
+            background: #FFF8E1;
+            color: #F57F17;
+            display: flex;
+        }
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 3px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+        .footer-text {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-top: 1.5rem;
+        }
+        .footer-text a {
+            color: var(--primary-color);
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .footer-text a:hover { text-decoration: underline; }
+        .hidden { display: none !important; }
+        @media (max-width: 480px) {
+            .verify-container { padding: 2rem 1.5rem; }
+            h1 { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
-    <div id="header-container"></div>
-
-    <section class="section-padding" style="padding-top:7rem;">
-        <div class="container" style="max-width:480px;">
-            <!-- Loading state -->
-            <div id="verifyLoading" class="verify-card">
-                <div class="verify-spinner" style="margin:0 auto 1.5rem;"></div>
-                <h2>Verifying Your Email</h2>
-                <p style="color:var(--text-light);">Please wait while we verify your email address...</p>
-            </div>
-
-            <!-- Token missing -->
-            <div id="verifyMissing" class="verify-card" style="display:none;">
-                <div class="verify-icon">&#x274C;</div>
-                <h2>Invalid Verification Link</h2>
-                <p style="color:var(--text-light); margin-bottom:1.5rem;">This email verification link is invalid or missing a token.</p>
-                <a href="javascript:void(0)" onclick="sessionStorage.setItem('pending-auth','login');if(typeof openAuthModal==='function')openAuthModal('login');else window.location.href='index.html';" class="btn btn-primary">Go to Sign In</a>
-            </div>
-
-            <!-- Success -->
-            <div id="verifySuccess" class="verify-card" style="display:none;">
-                <div class="verify-icon">&#x2705;</div>
-                <h2>Email Verified!</h2>
-                <p style="color:var(--text-light); margin-bottom:1.5rem;">Your email address has been verified successfully. You now have full access to all features.</p>
-                <a href="index.html" class="btn btn-primary">Go to Homepage</a>
-            </div>
-
-            <!-- Error -->
-            <div id="verifyError" class="verify-card" style="display:none;">
-                <div class="verify-icon">&#x26A0;&#xFE0F;</div>
-                <h2>Verification Failed</h2>
-                <p id="verifyErrorMsg" style="color:var(--text-light); margin-bottom:1.5rem;">Something went wrong while verifying your email.</p>
-                <a href="javascript:void(0)" onclick="sessionStorage.setItem('pending-auth','login');if(typeof openAuthModal==='function')openAuthModal('login');else window.location.href='index.html';" class="btn btn-primary">Go to Sign In</a>
-            </div>
+    <div class="verify-container" role="main">
+        <div class="icon-wrapper loading" id="iconWrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
         </div>
-    </section>
 
-    <div id="footer-container"></div>
+        <h1 id="title">Verifying Your Email</h1>
+        <p class="subtitle" id="subtitle">Please wait while we verify your email address...</p>
 
-    <script src="js/shared/components.js?v=3.1"></script>
-    <script src="js/shared/auth.js?v=3.4"></script>
-    <script src="js/shared/theme.js?v=3.0"></script>
-    <script src="js/shared/animations.js?v=3.0"></script>
+        <div class="status-message loading" id="statusMessage" role="status" aria-live="polite">
+            <span class="spinner"></span>
+            <span>Verifying...</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <a href="index.html" class="btn btn-primary" id="continueBtn" style="display:none;">
+            Continue to Flower Ecosystem
+        </a>
+        <a href="login.html" class="btn btn-secondary" id="loginBtn" style="display:none;">
+            Back to Login
+        </a>
+
+        <p class="footer-text">
+            Didn't request this? <a href="register.html">Create an account</a>
+        </p>
+    </div>
+
     <script>
         (async function() {
             const params = new URLSearchParams(window.location.search);
             const token = params.get('token');
 
+            const iconWrapper = document.getElementById('iconWrapper');
+            const title = document.getElementById('title');
+            const subtitle = document.getElementById('subtitle');
+            const statusMessage = document.getElementById('statusMessage');
+            const continueBtn = document.getElementById('continueBtn');
+            const loginBtn = document.getElementById('loginBtn');
+
+            function showSuccess() {
+                iconWrapper.className = 'icon-wrapper success';
+                iconWrapper.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                title.textContent = 'Email Verified!';
+                subtitle.textContent = 'Your account is now active. Welcome to Flower Ecosystem!';
+                statusMessage.className = 'status-message success';
+                statusMessage.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Verification successful';
+                continueBtn.style.display = 'inline-flex';
+                loginBtn.style.display = 'inline-flex';
+            }
+
+            function showError(message, email) {
+                iconWrapper.className = 'icon-wrapper error';
+                iconWrapper.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+                title.textContent = 'Verification Failed';
+                subtitle.textContent = message || 'The verification link is invalid or has expired.';
+                statusMessage.className = 'status-message error';
+                statusMessage.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> ${message || 'Invalid or expired verification link'}`;
+                loginBtn.style.display = 'inline-flex';
+                
+                // Add resend button if we have an email
+                if (email) {
+                    const resendBtn = document.createElement('a');
+                    resendBtn.href = '#';
+                    resendBtn.className = 'btn btn-secondary';
+                    resendBtn.style.marginLeft = '0.75rem';
+                    resendBtn.textContent = 'Resend Verification Email';
+                    resendBtn.onclick = async (e) => {
+                        e.preventDefault();
+                        resendBtn.textContent = 'Sending...';
+                        resendBtn.style.pointerEvents = 'none';
+                        try {
+                            const res = await fetch('/api/auth/resend-verification', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                                credentials: 'include',
+                                body: JSON.stringify({ email })
+                            });
+                            const data = await res.json();
+                            if (res.ok) {
+                                statusMessage.className = 'status-message success';
+                                statusMessage.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> ' + (data.message || 'Verification email sent!');
+                            } else {
+                                statusMessage.className = 'status-message error';
+                                statusMessage.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> ' + (data.error || 'Failed to send');
+                            }
+                        } catch {
+                            statusMessage.className = 'status-message error';
+                            statusMessage.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> Network error';
+                        } finally {
+                            resendBtn.remove();
+                        }
+                    };
+                    loginBtn.parentNode.insertBefore(resendBtn, loginBtn.nextSibling);
+                }
+            }
+
             if (!token) {
-                document.getElementById('verifyLoading').style.display = 'none';
-                document.getElementById('verifyMissing').style.display = 'block';
+                const storedEmail = sessionStorage.getItem('pending-verification-email');
+                showError('No verification token provided. Please check your email for the correct link.', storedEmail);
                 return;
             }
+
+            let userEmail = null;
+            
+            // Try to get email from token by calling a decode endpoint or from localStorage
+            // For now, we'll extract from the registration flow if available
+            const storedEmail = sessionStorage.getItem('pending-verification-email');
+            if (storedEmail) userEmail = storedEmail;
 
             try {
                 const res = await fetch('/api/auth/verify-email', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'include',
                     body: JSON.stringify({ token })
                 });
+
                 const data = await res.json();
 
-                document.getElementById('verifyLoading').style.display = 'none';
-
                 if (res.ok) {
-                    document.getElementById('verifySuccess').style.display = 'block';
+                    showSuccess();
+                    continueBtn.href = data.redirect || 'buyer-dashboard.html';
                 } else {
-                    document.getElementById('verifyErrorMsg').textContent = data.error || 'Verification failed.';
-                    document.getElementById('verifyError').style.display = 'block';
+                    showError(data.error || 'Verification failed. Please request a new link.', userEmail);
                 }
-            } catch (e) {
-                document.getElementById('verifyLoading').style.display = 'none';
-                document.getElementById('verifyErrorMsg').textContent = 'Network error. Please try again.';
-                document.getElementById('verifyError').style.display = 'block';
+            } catch (err) {
+                console.error('Verification error:', err);
+                showError('Network error. Please check your connection and try again.', userEmail);
             }
         })();
     </script>

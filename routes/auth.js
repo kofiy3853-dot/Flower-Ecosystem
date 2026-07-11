@@ -110,7 +110,7 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
         `INSERT INTO auth.users (first_name, last_name, email, password_hash, role, phone, location, city, state, country, zip_code,
          description, profile_image, business_name, business_type, business_phone, business_email, website,
          social_instagram, social_facebook, social_twitter, is_active, email_verified)
-         VALUES ($1, '', $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, FALSE)
+         VALUES ($1, '', $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, TRUE, TRUE)
          RETURNING id, first_name, email, role, is_active, created_at`,
         [name, email, hash, dbRole, phone || null, location || null, city || null, state || null, country || null, zip_code || null,
          description || null, profile_image, business_name || null, business_type || null, business_phone || null,
@@ -127,21 +127,7 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
       throw dbErr;
     }
 
-    // Generate email verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    await pool.query(
-        'INSERT INTO auth.email_verifications (user_id, token, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL \'24 hours\')',
-        [user.id, verificationToken]
-    );
-
-    // Send verification email
-    try {
-        await sendVerificationEmail(user.email, verificationToken);
-    } catch (e) {
-        console.error('Failed to send verification email:', e.message);
-    }
-
-    // Generate tokens
+    // Generate tokens (email auto-verified)
     const { accessToken, refreshToken } = generateTokens(user);
     const csrfToken = crypto.randomBytes(32).toString('hex');
 
@@ -152,17 +138,11 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
         [user.id, refreshTokenHash]
     );
 
-    // Send verification email
-    try {
-        await sendVerificationEmail(user.email, verificationToken);
-    } catch (e) {
-        console.error('Failed to send verification email:', e.message);
-    }
-
     setAuthCookies(res, '', refreshToken, crypto.randomBytes(32).toString('hex'));
     res.status(201).json({ 
-        message: 'Registration successful. Please verify your email to activate your account.',
-        requires_verification: true
+        message: 'Registration successful.',
+        accessToken,
+        user: { id: user.id, name: user.first_name, email: user.email, role: user.role }
     });
 }));
 
@@ -199,6 +179,35 @@ router.post('/verify-email', rateLimiter(10, 60000), asyncHandler(async (req, re
     const csrfToken = crypto.randomBytes(32).toString('hex');
     setAuthCookies(res, '', refreshToken, csrfToken);
     res.json({ message: 'Email verified successfully', accessToken, user: { id: u.id, email: u.email, role: u.role } });
+}));
+
+router.post('/resend-verification', rateLimiter(5, 60000), asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    if (!email || typeof email !== 'string') {
+        return res.status(400).json({ error: 'Email is required' });
+    }
+    if (!(await dbAvailable())) {
+        return res.status(503).json({ error: 'Service unavailable' });
+    }
+    const user = await pool.query('SELECT id FROM auth.users WHERE email = $1 AND email_verified = FALSE', [email]);
+    if (user.rows.length) {
+        // Delete old verification tokens for this user
+        await pool.query('DELETE FROM auth.email_verifications WHERE user_id = $1', [user.rows[0].id]);
+        // Generate new token
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        await pool.query(
+            'INSERT INTO auth.email_verifications (user_id, token, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL \'24 hours\')',
+            [user.rows[0].id, verificationToken]
+        );
+        // Send verification email
+        try {
+            await sendVerificationEmail(email, verificationToken);
+        } catch (e) {
+            console.error('Failed to send verification email:', e.message);
+        }
+    }
+    // Always return success to prevent email enumeration
+    res.json({ message: 'If the email exists and is unverified, a new link has been sent.' });
 }));
 
 router.post('/login', rateLimiter(10, 60000), asyncHandler(async (req, res) => {
@@ -246,9 +255,10 @@ router.post('/login', rateLimiter(10, 60000), asyncHandler(async (req, res) => {
     if (user.is_active === false) {
         return res.status(403).json({ error: 'Account has been deactivated. Please contact support.' });
     }
-    if (!user.email_verified) {
-        return res.status(403).json({ error: 'Please verify your email before logging in. Check your inbox for the verification link.' });
-    }
+    // TEMP: Email verification disabled for testing
+    // if (!user.email_verified) {
+    //     return res.status(403).json({ error: 'Please verify your email before logging in. Check your inbox for the verification link.' });
+    // }
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
         await recordFailedAttempt(email);

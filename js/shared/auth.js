@@ -182,7 +182,7 @@ function loadAuthModal() {
 
                 <div class="form-check">
                     <input type="checkbox" id="login-remember" name="remember">
-                    <label for="remember-me">Remember me</label>
+                    <label for="login-remember">Remember me</label>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100" style="padding:0.85rem;font-size:1rem;">Sign In</button>
@@ -347,6 +347,7 @@ function handleAuthSubmit(formId, apiFn, getData) {
             const userObj = result.user || { email: userEmail, name: userName || userEmail };
             // Token is set via HttpOnly cookie by server
             localStorage.setItem('flower-user', JSON.stringify(userObj));
+            
             afterAuth();
         } catch (err) {
             if (errorEl) { errorEl.textContent = err.message || 'An error occurred'; errorEl.style.display = 'block'; }
