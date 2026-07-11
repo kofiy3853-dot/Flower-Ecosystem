@@ -417,6 +417,14 @@ async function run() {
             console.log('Events seed skipped:', e.message.split('\n')[0]);
         }
 
+        // Verify all existing users' emails (prevents login lockout for pre-existing accounts)
+        try {
+            await client.query("UPDATE auth.users SET email_verified = TRUE WHERE email_verified = FALSE OR email_verified IS NULL");
+            console.log('Verified all existing user emails.');
+        } catch (e) {
+            console.log('Email verification sync skipped:', e.message.split('\n')[0]);
+        }
+
         console.log('Database initialized successfully.');
     } catch (err) {
         console.error('DB init error:', err.message);

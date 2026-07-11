@@ -51,17 +51,17 @@ function logout() {
 async function apiLogin(email, password, twoFactorCode = null, csrfToken = null) {
     const body = { email, password };
     if (twoFactorCode) body.two_factor_code = twoFactorCode;
-    const headers = { 
-        'Content-Type': 'application/json', 
-        'X-Requested-With': 'XMLHttpRequest' 
+    const headers = {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
     };
     if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
-    
+
     const res = await fetch('/api/auth/login', {
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        method: 'POST',
+        headers,
         credentials: 'include',
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify(body)
     });
     if (!res.ok) {
         const err = await res.json();
@@ -661,26 +661,6 @@ function initAuth() {
 
 function shouldInitAuth() {
     return true;
-}
-
-function getToken() { 
-    // Token is in HttpOnly cookie, not accessible via JS
-    // This is kept for compatibility but returns null
-    return null; 
-}
-
-function handleHeaderAccountClick() {
-    const user = getCurrentUser();
-    if (user) {
-        const role = (user.role || '').toLowerCase();
-        if (['admin', 'superadmin'].includes(role)) window.location.href = 'admin.html';
-        else if (['instructor'].includes(role)) window.location.href = 'instructor-dashboard.html';
-        else if (['student'].includes(role)) window.location.href = 'student-dashboard.html';
-        else if (['seller', 'florist', 'grower'].includes(role)) window.location.href = 'seller-dashboard.html';
-        else window.location.href = 'buyer-dashboard.html';
-    } else {
-        openAuthModal('login');
-    }
 }
 
 function handleHeaderAccountClick() {

@@ -138,10 +138,9 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
         [user.id, refreshTokenHash]
     );
 
-    setAuthCookies(res, '', refreshToken, crypto.randomBytes(32).toString('hex'));
+    setAuthCookies(res, accessToken, refreshToken, crypto.randomBytes(32).toString('hex'));
     res.status(201).json({ 
         message: 'Registration successful.',
-        accessToken,
         user: { id: user.id, name: user.first_name, email: user.email, role: user.role }
     });
 }));
@@ -177,8 +176,8 @@ router.post('/verify-email', rateLimiter(10, 60000), asyncHandler(async (req, re
         [u.id, refreshTokenHash]
     );
     const csrfToken = crypto.randomBytes(32).toString('hex');
-    setAuthCookies(res, '', refreshToken, csrfToken);
-    res.json({ message: 'Email verified successfully', accessToken, user: { id: u.id, email: u.email, role: u.role } });
+    setAuthCookies(res, accessToken, refreshToken, csrfToken);
+    res.json({ message: 'Email verified successfully', user: { id: u.id, email: u.email, role: u.role } });
 }));
 
 router.post('/resend-verification', rateLimiter(5, 60000), asyncHandler(async (req, res) => {
@@ -292,7 +291,7 @@ router.post('/login', rateLimiter(10, 60000), asyncHandler(async (req, res) => {
         [user.id, refreshTokenHash]
     );
     const csrfToken = crypto.randomBytes(32).toString('hex');
-    setAuthCookies(res, '', refreshToken, csrfToken);
+    setAuthCookies(res, accessToken, refreshToken, csrfToken);
 
     // Record session
     await pool.query(
@@ -303,8 +302,7 @@ router.post('/login', rateLimiter(10, 60000), asyncHandler(async (req, res) => {
     );
 
     res.json({ 
-        user: { id: user.id, name: user.first_name, email: user.email, role: user.role, profile_image: user.profile_image },
-        access_token: accessToken
+        user: { id: user.id, name: user.first_name, email: user.email, role: user.role, profile_image: user.profile_image }
     });
 }));
 
@@ -352,7 +350,7 @@ router.post('/refresh', asyncHandler(async (req, res) => {
     );
     
     const csrfToken = crypto.randomBytes(32).toString('hex');
-    setAuthCookies(res, '', newRefreshToken, csrfToken);
+    setAuthCookies(res, accessToken, newRefreshToken, csrfToken);
     res.json({ access_token: accessToken });
 }));
 
@@ -542,22 +540,6 @@ async function recordFailedAttempt(email) {
         [email, new Date()]
     );
     return r.rows[0];
-}
-
-async function recordFailedAttempt(email) {
-    const now = new Date();
-    await pool.query(
-        `INSERT INTO auth.login_attempts (email, failed_attempts, last_attempt, locked_until)
-         VALUES ($1, 1, $2, NULL)
-         ON CONFLICT (email) DO UPDATE SET
-         failed_attempts = auth.login_attempts.failed_attempts + 1,
-         last_attempt = $2,
-         locked_until = CASE 
-             WHEN auth.login_attempts.failed_attempts + 1 >= 5 THEN $2 + INTERVAL '15 minutes'
-             ELSE auth.login_attempts.locked_until
-         END`,
-        [email, now]
-    );
 }
 
 async function resetFailedAttempts(email) {

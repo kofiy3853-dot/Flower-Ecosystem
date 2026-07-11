@@ -69,34 +69,6 @@ function isTokenBlacklisted(token) {
     return blacklistedTokens.has(hashToken(token));
 }
 
-function csrfProtection(req, res, next) {
-    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
-        const xRequestedWith = req.get('X-Requested-With');
-        const hasAuth = !!req.get('Authorization');
-        const contentType = req.get('Content-Type') || '';
-        const isJson = contentType.includes('application/json');
-        const isMultipart = contentType.includes('multipart/form-data');
-        if (xRequestedWith !== 'XMLHttpRequest' && !hasAuth && !isJson && !isMultipart) {
-            return res.status(403).json({ error: 'Missing required header' });
-        }
-    }
-    next();
-}
-
-function validateCSRF(req, res, next) {
-    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
-        const csrfToken = req.headers['x-csrf-token'] || req.body?.csrf_token || req.cookies?.csrf_token;
-        if (!csrfToken) {
-            return res.status(403).json({ error: 'CSRF token required' });
-        }
-        const cookieCsrf = req.cookies?.csrf_token;
-        if (!cookieCsrf || csrfToken !== cookieCsrf) {
-            return res.status(403).json({ error: 'Invalid CSRF token' });
-        }
-    }
-    next();
-}
-
 async function blacklistToken(token) {
     try {
         const decoded = jwt.decode(token);
@@ -322,9 +294,9 @@ async function queryWithFallback(queryFn, jsonKey, res, single = false, fallback
 
 async function requireAuth(req, res, next) {
     const header = req.headers.authorization;
-    if (!header) return res.status(401).json({ error: 'Authorization required' });
+    const token = header?.replace('Bearer ', '') || req.cookies?.access_token;
+    if (!token) return res.status(401).json({ error: 'Authorization required' });
     try {
-        const token = header.replace('Bearer ', '');
         const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded;
         if (isTokenBlacklisted(token)) {
