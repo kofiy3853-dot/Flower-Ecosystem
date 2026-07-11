@@ -114,7 +114,7 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
          RETURNING id, first_name, email, role, is_active, created_at`,
         [name, email, hash, dbRole, phone || null, location || null, city || null, state || null, country || null, zip_code || null,
          description || null, profile_image, business_name || null, business_type || null, business_phone || null,
-         business_email || null, website || null, social_instagram || null, social_facebook || null, social_twitter || null, isActive]
+         business_email || null, website || null, social_instagram || null, social_facebook || null, social_twitter || null]
       );
       user = r.rows[0];
     } catch (dbErr) {
