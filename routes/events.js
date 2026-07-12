@@ -60,10 +60,10 @@ router.get('/', asyncHandler(async (req, res) => {
                 SELECT e.*,
                     COALESCE(rc.reg_count, 0) AS registrations,
                     COALESCE(sp.speakers, '[]'::json) AS speakers,
-                    (SELECT image_url FROM events.event_speakers WHERE event_id = e.id ORDER BY sort_order LIMIT 1) AS instructor_image
+                    NULL AS instructor_image
                 FROM events.events e
                 LEFT JOIN (SELECT event_id, COUNT(*) AS reg_count FROM events.event_registrations GROUP BY event_id) rc ON rc.event_id = e.id
-                LEFT JOIN (SELECT event_id, json_agg(json_build_object('name', name, 'image_url', image_url) ORDER BY sort_order) AS speakers FROM events.event_speakers GROUP BY event_id) sp ON sp.event_id = e.id
+                LEFT JOIN (SELECT event_id, json_agg(json_build_object('name', name, 'bio', bio) ORDER BY sort_order) AS speakers FROM events.event_speakers GROUP BY event_id) sp ON sp.event_id = e.id
                 ${where}
                 ORDER BY e.is_featured DESC, ${orderBy}
                 LIMIT $${idx} OFFSET $${idx + 1}`;
@@ -89,7 +89,7 @@ router.get('/featured', asyncHandler(async (_, res) => {
         try {
             const r = await pool.query(`
                 SELECT e.*, COALESCE(rc.reg_count, 0) AS registrations,
-                    (SELECT json_agg(json_build_object('name', name, 'bio', bio, 'image_url', image_url))
+                    (SELECT json_agg(json_build_object('name', name, 'bio', bio))
                      FROM events.event_speakers WHERE event_id = e.id) AS speakers
                 FROM events.events e
                 LEFT JOIN (SELECT event_id, COUNT(*) AS reg_count FROM events.event_registrations GROUP BY event_id) rc ON rc.event_id = e.id
@@ -143,7 +143,7 @@ router.get('/:id', asyncHandler(async (req, res) => {
             const r = await pool.query(`
                 SELECT e.*,
                     COALESCE(rc.reg_count, 0) AS registrations,
-                    (SELECT json_agg(json_build_object('id', sp.id, 'name', sp.name, 'title', sp.title, 'bio', sp.bio, 'image_url', sp.image_url, 'experience_years', sp.experience_years, 'students_count', sp.students_count) ORDER BY sp.sort_order)
+                    (SELECT json_agg(json_build_object('id', sp.id, 'name', sp.name, 'bio', sp.bio) ORDER BY sp.sort_order)
                      FROM events.event_speakers sp WHERE sp.event_id = e.id) AS speakers,
                     (SELECT json_agg(json_build_object('id', res.id, 'resource_name', res.resource_name, 'resource_type', res.resource_type, 'resource_url', res.resource_url, 'file_size', res.file_size) ORDER BY res.sort_order)
                      FROM events.event_resources res WHERE res.event_id = e.id) AS resources
