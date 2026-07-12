@@ -271,49 +271,44 @@ pool.query('SELECT 1')
                 await pool.query("UPDATE auth.users SET email_verified = TRUE WHERE role IN ('ADMIN', 'SUPERADMIN') AND email_verified = FALSE");
 
                 // Seed Admin
-                const adminExists = await pool.query("SELECT id, email FROM auth.users WHERE role = 'ADMIN' LIMIT 1");
-                if (!adminExists.rows.length) {
-                    const adminPassword = process.env.ADMIN_PASSWORD;
-                    if (!adminPassword) {
-                        console.error('SEED FAILED: ADMIN_PASSWORD env var not set — no admin account created');
-                        console.error('Set ADMIN_PASSWORD in Render dashboard → Environment');
-                        return;
-                    }
-                    if (adminPassword.length < 12) {
-                        console.error(`SEED FAILED: ADMIN_PASSWORD is ${adminPassword.length} chars (minimum 12)`);
-                        return;
-                    }
+                const adminPassword = process.env.ADMIN_PASSWORD;
+                if (adminPassword && adminPassword.length >= 12) {
                     const hash = await bcrypt.hash(adminPassword, 12);
-                    if (!hash || hash.length < 60) {
-                        console.error('SEED FAILED: bcrypt hash produced invalid output');
-                        return;
+                    const adminExists = await pool.query("SELECT id, email FROM auth.users WHERE role = 'ADMIN' LIMIT 1");
+                    if (!adminExists.rows.length) {
+                        await pool.query(
+                            "INSERT INTO auth.users (first_name, last_name, email, password_hash, role, email_verified) VALUES ('Admin', 'User', $1, $2, 'ADMIN', TRUE)",
+                            [ADMIN_EMAIL, hash]
+                        );
+                        console.log(`SUCCESS: Admin seeded → ${ADMIN_EMAIL}`);
+                    } else {
+                        await pool.query("UPDATE auth.users SET password_hash = $1, email_verified = TRUE WHERE id = $2", [hash, adminExists.rows[0].id]);
+                        console.log(`Admin password updated → ${ADMIN_EMAIL}`);
                     }
-                    await pool.query(
-                        "INSERT INTO auth.users (first_name, last_name, email, password_hash, role, email_verified) VALUES ('Admin', 'User', $1, $2, 'ADMIN', TRUE)",
-                        [ADMIN_EMAIL, hash]
-                    );
-                    console.log(`SUCCESS: Admin seeded → ${ADMIN_EMAIL}`);
+                } else if (!adminPassword) {
+                    console.error('ADMIN_PASSWORD env var not set — admin account not created/updated');
                 } else {
-                    console.log(`Admin already exists: ${adminExists.rows[0].email} (id: ${adminExists.rows[0].id})`);
+                    console.error(`ADMIN_PASSWORD too short (${adminPassword.length} chars, min 12)`);
                 }
 
                 // Seed Super Admin
                 try {
-                    const superAdminExists = await pool.query("SELECT id, email FROM auth.users WHERE role = 'SUPERADMIN' LIMIT 1");
-                    if (!superAdminExists.rows.length) {
-                        const superAdminPassword = process.env.SUPERADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
-                        if (superAdminPassword && superAdminPassword.length >= 12) {
-                            const hash = await bcrypt.hash(superAdminPassword, 12);
+                    const superAdminPassword = process.env.SUPERADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+                    if (superAdminPassword && superAdminPassword.length >= 12) {
+                        const hash = await bcrypt.hash(superAdminPassword, 12);
+                        const superAdminExists = await pool.query("SELECT id, email FROM auth.users WHERE role = 'SUPERADMIN' LIMIT 1");
+                        if (!superAdminExists.rows.length) {
                             await pool.query(
                                 "INSERT INTO auth.users (first_name, last_name, email, password_hash, role, email_verified) VALUES ('Super', 'Admin', $1, $2, 'SUPERADMIN', TRUE)",
                                 [SUPERADMIN_EMAIL, hash]
                             );
                             console.log(`SUCCESS: Super Admin seeded → ${SUPERADMIN_EMAIL}`);
                         } else {
-                            console.log('Super Admin skipped: No valid password set (SUPERADMIN_PASSWORD or ADMIN_PASSWORD)');
+                            await pool.query("UPDATE auth.users SET password_hash = $1, email_verified = TRUE WHERE id = $2", [hash, superAdminExists.rows[0].id]);
+                            console.log(`Super Admin password updated → ${SUPERADMIN_EMAIL}`);
                         }
                     } else {
-                        console.log(`Super Admin already exists: ${superAdminExists.rows[0].email} (id: ${superAdminExists.rows[0].id})`);
+                        console.log('Super Admin skipped: No valid password set (SUPERADMIN_PASSWORD or ADMIN_PASSWORD)');
                     }
                 } catch (e) {
                     console.log('Super Admin seed error:', e.message);
