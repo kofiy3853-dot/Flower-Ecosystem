@@ -364,6 +364,8 @@ function renderOrders(){
     if(!orders.length){body.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-light);"><i class="bi bi-exclamation-circle" style="display:block;margin-bottom:.5rem;"></i>No orders available. Backend may be unreachable.</td></tr>';return;}
     body.innerHTML=orders.map(o=>{
         const statusClass=(o.status||'pending').toLowerCase().replace(/\s+/g,'-');
+        const isShipped=(o.status||'').toUpperCase()==='SHIPPED';
+        const isCancelled=(o.status||'').toUpperCase()==='CANCELLED';
         return `<tr>
             <td style="font-weight:600;color:#d4af37;">#${o.id}</td>
             <td>${escapeHtml(o.customer||'Unknown')}</td>
@@ -373,6 +375,8 @@ function renderOrders(){
             <td><span class="adm-status ${statusClass}">${escapeHtml(o.status||'pending')}</span></td>
             <td><div class="adm-action-btns">
                 <button title="Update Status" onclick="updateOrderStatus(${o.id})"><i class="bi bi-pencil"></i></button>
+                ${isShipped?`<button title="Cancel Shipping" style="color:#e67e22;" onclick="cancelOrderShipping(${o.id})"><i class="bi bi-x-circle"></i></button>`:''}
+                ${isCancelled?`<button title="Delete Order" class="danger" onclick="deleteOrder(${o.id})"><i class="bi bi-trash"></i></button>`:''}
             </div></td>
         </tr>`;
     }).join('');
@@ -389,6 +393,28 @@ window.updateOrderStatus=async function(id){
         renderOrders();
         renderOverview();
         showToast('Order status updated','success');
+    }catch(err){showToast(err.message||'Failed','error');}
+};
+
+window.cancelOrderShipping=async function(id){
+    if(!confirm('Cancel shipping for this order?'))return;
+    try{
+        await api.updateAdminOrderStatus(id,'CANCELLED');
+        orders=orders.map(o=>o.id===id?{...o,status:'CANCELLED'}:o);
+        renderOrders();
+        renderOverview();
+        showToast('Shipping cancelled','success');
+    }catch(err){showToast(err.message||'Failed','error');}
+};
+
+window.deleteOrder=async function(id){
+    if(!confirm('Permanently delete this order? This cannot be undone.'))return;
+    try{
+        await api.deleteAdminOrder(id);
+        orders=orders.filter(o=>o.id!==id);
+        renderOrders();
+        renderOverview();
+        showToast('Order deleted','success');
     }catch(err){showToast(err.message||'Failed','error');}
 };
 

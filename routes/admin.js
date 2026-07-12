@@ -130,6 +130,16 @@ router.put('/orders/:id/status', requireRole('ADMIN', 'SUPERADMIN'), asyncHandle
     res.json(r.rows[0]);
 }));
 
+router.delete('/orders/:id', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { id } = req.params;
+    const existing = await pool.query('SELECT id, status FROM marketplace.orders WHERE id = $1', [id]);
+    if (!existing.rows.length) return res.status(404).json({ error: 'Order not found' });
+    await pool.query('DELETE FROM marketplace.order_items WHERE order_id = $1', [id]).catch(() => {});
+    await pool.query('DELETE FROM marketplace.orders WHERE id = $1', [id]);
+    res.json({ message: 'Order deleted' });
+}));
+
 router.get('/sellers', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) {
         const fallback = readJSON(path.join(__dirname, '..', 'data', 'admin.json'));

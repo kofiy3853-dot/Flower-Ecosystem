@@ -246,6 +246,7 @@ const api = {
     deleteAdminUser(id) { return apiFetchWithBody('/api/admin/users/' + id, 'DELETE'); },
     fetchAdminOrders() { return fetch('/api/admin/orders', { headers: authHeaders() }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
     updateAdminOrderStatus(id, status) { return apiFetchWithBody('/api/admin/orders/' + id + '/status', 'PUT', { status }); },
+    deleteAdminOrder(id) { return fetch('/api/admin/orders/' + id, { method: 'DELETE', headers: authHeaders() }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
     fetchAdminSellers() { return fetch('/api/admin/sellers', { headers: authHeaders() }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
     fetchAdminBuyers() { return fetch('/api/admin/buyers', { headers: authHeaders() }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
     fetchAdminAnalytics() { return fetch('/api/admin/analytics', { headers: authHeaders() }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
