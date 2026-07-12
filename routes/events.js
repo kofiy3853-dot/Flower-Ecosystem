@@ -63,7 +63,7 @@ router.get('/', asyncHandler(async (req, res) => {
                     (SELECT image_url FROM events.event_speakers WHERE event_id = e.id ORDER BY sort_order LIMIT 1) AS instructor_image
                 FROM events.events e
                 LEFT JOIN (SELECT event_id, COUNT(*) AS reg_count FROM events.event_registrations GROUP BY event_id) rc ON rc.event_id = e.id
-                LEFT JOIN (SELECT event_id, json_agg(json_build_object('name', name, 'photo_url', photo_url) ORDER BY sort_order) AS speakers FROM events.event_speakers GROUP BY event_id) sp ON sp.event_id = e.id
+                LEFT JOIN (SELECT event_id, json_agg(json_build_object('name', name, 'image_url', image_url) ORDER BY sort_order) AS speakers FROM events.event_speakers GROUP BY event_id) sp ON sp.event_id = e.id
                 ${where}
                 ORDER BY e.is_featured DESC, ${orderBy}
                 LIMIT $${idx} OFFSET $${idx + 1}`;
@@ -89,7 +89,7 @@ router.get('/featured', asyncHandler(async (_, res) => {
         try {
             const r = await pool.query(`
                 SELECT e.*, COALESCE(rc.reg_count, 0) AS registrations,
-                    (SELECT json_agg(json_build_object('name', name, 'bio', bio, 'photo_url', photo_url))
+                    (SELECT json_agg(json_build_object('name', name, 'bio', bio, 'image_url', image_url))
                      FROM events.event_speakers WHERE event_id = e.id) AS speakers
                 FROM events.events e
                 LEFT JOIN (SELECT event_id, COUNT(*) AS reg_count FROM events.event_registrations GROUP BY event_id) rc ON rc.event_id = e.id
@@ -143,7 +143,7 @@ router.get('/:id', asyncHandler(async (req, res) => {
             const r = await pool.query(`
                 SELECT e.*,
                     COALESCE(rc.reg_count, 0) AS registrations,
-                    (SELECT json_agg(json_build_object('id', sp.id, 'name', sp.name, 'title', sp.title, 'bio', sp.bio, 'photo_url', sp.photo_url, 'experience_years', sp.experience_years, 'students_count', sp.students_count) ORDER BY sp.sort_order)
+                    (SELECT json_agg(json_build_object('id', sp.id, 'name', sp.name, 'title', sp.title, 'bio', sp.bio, 'image_url', sp.image_url, 'experience_years', sp.experience_years, 'students_count', sp.students_count) ORDER BY sp.sort_order)
                      FROM events.event_speakers sp WHERE sp.event_id = e.id) AS speakers,
                     (SELECT json_agg(json_build_object('id', res.id, 'resource_name', res.resource_name, 'resource_type', res.resource_type, 'resource_url', res.resource_url, 'file_size', res.file_size) ORDER BY res.sort_order)
                      FROM events.event_resources res WHERE res.event_id = e.id) AS resources
@@ -225,6 +225,14 @@ router.delete('/:id', requireAuth, asyncHandler(async (req, res) => {
     if (existing.rows[0].organizer_id !== req.user.id && !['ADMIN', 'SUPERADMIN'].includes(userRole)) {
         return res.status(403).json({ error: 'Not authorized' });
     }
+    const childTables = [
+        'event_certificates', 'event_discussions', 'event_gallery', 'event_orders',
+        'event_registrations', 'event_resources', 'event_reviews', 'event_speakers',
+        'event_ticket_types', 'event_tickets'
+    ];
+    for (const table of childTables) {
+        await pool.query(`DELETE FROM events.${table} WHERE event_id = $1`, [id]).catch(() => {});
+    }
     await pool.query('DELETE FROM events.events WHERE id = $1', [id]);
     res.json({ message: 'Event deleted' });
 }));
@@ -275,11 +283,11 @@ router.delete('/:id/register', requireAuth, asyncHandler(async (req, res) => {
 router.post('/:id/speakers', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
     const { id } = req.params;
-    const { name, title, bio, photo_url, experience_years, students_count } = req.body;
+    const { name, title, bio, image_url, experience_years, students_count } = req.body;
     if (!name) return res.status(400).json({ error: 'Speaker name is required' });
     const r = await pool.query(
-        'INSERT INTO events.event_speakers (event_id, name, title, bio, photo_url, experience_years, students_count) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-        [id, name, title || null, bio || null, photo_url || null, experience_years || null, students_count || 0]
+        'INSERT INTO events.event_speakers (event_id, name, title, bio, image_url, experience_years, students_count) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+        [id, name, title || null, bio || null, image_url || null, experience_years || null, students_count || 0]
     );
     res.status(201).json(r.rows[0]);
 }));
