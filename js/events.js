@@ -95,7 +95,7 @@ async function initEventsPage() {
     }
 
     renderCategoryCards();
-    renderMiniCalendar();
+    displayMiniCalendar();
     setupLeftSidebar();
     setupSortTabs();
     setupFilterChips();
@@ -358,7 +358,7 @@ function calNav(delta) {
 
 // ─── Mini Calendar ─────────────────────────────────────────────────────
 
-function renderMiniCalendar() {
+function displayMiniCalendar() {
     const result = renderMiniCalendar(miniCalMonth, miniCalYear);
     document.getElementById('miniCalTitle').textContent = result.title;
     document.getElementById('miniCalGrid').innerHTML = result.html;
@@ -368,7 +368,7 @@ function miniCalNav(delta) {
     miniCalMonth += delta;
     if (miniCalMonth > 11) { miniCalMonth = 0; miniCalYear++; }
     if (miniCalMonth < 0) { miniCalMonth = 11; miniCalYear--; }
-    renderMiniCalendar();
+    displayMiniCalendar();
 }
 
 // ─── Sidebar Data ──────────────────────────────────────────────────────
