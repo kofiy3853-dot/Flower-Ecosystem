@@ -267,6 +267,9 @@ pool.query('SELECT 1')
                 await pool.query("ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS location VARCHAR(255)");
                 await pool.query("ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS description TEXT");
 
+                // Ensure admin/superadmin accounts are email-verified
+                await pool.query("UPDATE auth.users SET email_verified = TRUE WHERE role IN ('ADMIN', 'SUPERADMIN') AND email_verified = FALSE");
+
                 // Seed Admin
                 const adminExists = await pool.query("SELECT id, email FROM auth.users WHERE role = 'ADMIN' LIMIT 1");
                 if (!adminExists.rows.length) {
@@ -286,7 +289,7 @@ pool.query('SELECT 1')
                         return;
                     }
                     await pool.query(
-                        "INSERT INTO auth.users (first_name, last_name, email, password_hash, role) VALUES ('Admin', 'User', $1, $2, 'ADMIN')",
+                        "INSERT INTO auth.users (first_name, last_name, email, password_hash, role, email_verified) VALUES ('Admin', 'User', $1, $2, 'ADMIN', TRUE)",
                         [ADMIN_EMAIL, hash]
                     );
                     console.log(`SUCCESS: Admin seeded → ${ADMIN_EMAIL}`);
@@ -302,7 +305,7 @@ pool.query('SELECT 1')
                         if (superAdminPassword && superAdminPassword.length >= 12) {
                             const hash = await bcrypt.hash(superAdminPassword, 12);
                             await pool.query(
-                                "INSERT INTO auth.users (first_name, last_name, email, password_hash, role) VALUES ('Super', 'Admin', $1, $2, 'SUPERADMIN')",
+                                "INSERT INTO auth.users (first_name, last_name, email, password_hash, role, email_verified) VALUES ('Super', 'Admin', $1, $2, 'SUPERADMIN', TRUE)",
                                 [SUPERADMIN_EMAIL, hash]
                             );
                             console.log(`SUCCESS: Super Admin seeded → ${SUPERADMIN_EMAIL}`);
