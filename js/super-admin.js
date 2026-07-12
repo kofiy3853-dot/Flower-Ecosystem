@@ -538,7 +538,7 @@
 
     // ─── Community ────────────────────────────────────────
     async function renderCommunity() {
-        const res = await saFetch('/api/community/discussions');
+        const res = await saFetch('/api/discussions');
         if (!res) return;
         const data = await res.json();
         const discussions = Array.isArray(data) ? data : (data.discussions || []);
@@ -555,7 +555,7 @@
 
     window.saDeleteDiscussion = async function (id) {
         if (!confirm('Delete this discussion? This cannot be undone.')) return;
-        const res = await saFetch(`/api/community/discussions/${id}`, { method: 'DELETE' });
+        const res = await saFetch(`/api/discussions/${id}`, { method: 'DELETE' });
         if (res && res.ok) {
             showToast('Discussion deleted', 'success');
             renderCommunity();
