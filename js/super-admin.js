@@ -103,13 +103,15 @@
         const pending = pendingRes ? await pendingRes.json() : {};
 
         // Stat cards
+        const userTrend = userMonths.length >= 2 ? userMonths[userMonths.length - 1].count - userMonths[userMonths.length - 2].count : 0;
+        const revTrend = revMonths.length >= 2 ? revMonths[revMonths.length - 1].total - revMonths[revMonths.length - 2].total : 0;
         $('#saOverviewStats').innerHTML = [
-            statCard('bi-people', '#d4af37', overview.users || 0, 'Total Users', '+12%', true),
-            statCard('bi-cash-stack', '#16a34a', 'GHS ' + formatNum(overview.revenue || 0), 'Revenue', '+18%', false),
-            statCard('bi-box-seam', '#3b82f6', overview.products || 0, 'Products', '+8%', false),
-            statCard('bi-book', '#7c3aed', overview.courses || 0, 'Courses', '+5%', false),
-            statCard('bi-chat-dots', '#06b6d4', overview.discussions || 0, 'Discussions', '+3%', false),
-            statCard('bi-calendar-event', '#f59e0b', overview.events || 0, 'Events', '+2%', false)
+            statCard('bi-people', '#d4af37', overview.users || 0, 'Total Users', userTrend >= 0 ? '+' + userTrend : userTrend, true),
+            statCard('bi-cash-stack', '#16a34a', 'GHS ' + formatNum(overview.revenue || 0), 'Revenue', revTrend >= 0 ? '+' + formatNum(revTrend) : formatNum(revTrend), false),
+            statCard('bi-box-seam', '#3b82f6', overview.products || 0, 'Products', overview.sellers || 0 + ' sellers', false),
+            statCard('bi-book', '#7c3aed', overview.courses || 0, 'Courses', 'active', false),
+            statCard('bi-chat-dots', '#06b6d4', overview.discussions || 0, 'Discussions', overview.communityPosts || 0 + ' posts', false),
+            statCard('bi-calendar-event', '#f59e0b', overview.events || 0, 'Events', 'upcoming', false)
         ].join('');
 
         // Quick actions
@@ -121,8 +123,14 @@
         ].join('');
 
         // Charts
-        renderBarChart('saUsersChart', [40, 55, 45, 70, 65, 80], ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']);
-        renderBarChart('saRevenueChart', [30, 45, 55, 40, 65, 75], ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']);
+        const userMonths = overview.monthlyUsers || [];
+        const revMonths = overview.monthlyRevenue || [];
+        const uLabels = userMonths.length ? userMonths.map(r => r.month) : ['No Data'];
+        const uValues = userMonths.length ? userMonths.map(r => r.count) : [0];
+        const rLabels = revMonths.length ? revMonths.map(r => r.month) : ['No Data'];
+        const rValues = revMonths.length ? revMonths.map(r => r.total) : [0];
+        renderBarChart('saUsersChart', uValues, uLabels);
+        renderBarChart('saRevenueChart', rValues, rLabels);
 
         // Pending approvals
         $('#saPendingApprovals').innerHTML = [

@@ -28,6 +28,22 @@ router.get('/overview', requireSuperAdmin, asyncHandler(async (_, res) => {
         SELECT role, COUNT(*)::int AS count FROM auth.users GROUP BY role ORDER BY count DESC
     `).catch(() => ({ rows: [] }));
 
+    const monthlyUsers = await pool.query(`
+        SELECT to_char(created_at, 'Mon') AS month, COUNT(*)::int AS count
+        FROM auth.users
+        WHERE created_at >= NOW() - INTERVAL '6 months'
+        GROUP BY to_char(created_at, 'Mon'), DATE_TRUNC('month', created_at)
+        ORDER BY DATE_TRUNC('month', created_at)
+    `).catch(() => ({ rows: [] }));
+
+    const monthlyRevenue = await pool.query(`
+        SELECT to_char(created_at, 'Mon') AS month, COALESCE(SUM(total_amount), 0)::int AS total
+        FROM marketplace.orders
+        WHERE created_at >= NOW() - INTERVAL '6 months'
+        GROUP BY to_char(created_at, 'Mon'), DATE_TRUNC('month', created_at)
+        ORDER BY DATE_TRUNC('month', created_at)
+    `).catch(() => ({ rows: [] }));
+
     res.json({
         users: parseInt(users.rows[0].count),
         products: parseInt(products.rows[0].count),
@@ -38,7 +54,9 @@ router.get('/overview', requireSuperAdmin, asyncHandler(async (_, res) => {
         communityPosts: parseInt(posts.rows[0].count),
         events: parseInt(events.rows[0].count),
         discussions: parseInt(discussions.rows[0].count),
-        roleBreakdown: roles.rows
+        roleBreakdown: roles.rows,
+        monthlyUsers: monthlyUsers.rows,
+        monthlyRevenue: monthlyRevenue.rows
     });
 }));
 
