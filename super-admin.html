@@ -45,6 +45,7 @@
             <a class="sa-nav-item" data-section="events"><i class="bi bi-calendar-event"></i> Events</a>
 
             <div class="sa-nav-group">Platform</div>
+            <a class="sa-nav-item" data-section="audit-log"><i class="bi bi-clock-history"></i> Audit Log</a>
             <a class="sa-nav-item" data-section="ai-center"><i class="bi bi-robot"></i> AI Center</a>
             <a class="sa-nav-item" data-section="financial"><i class="bi bi-cash-stack"></i> Financial</a>
             <a class="sa-nav-item" data-section="notifications"><i class="bi bi-bell"></i> Notifications</a>
@@ -68,6 +69,7 @@
                 <input type="text" placeholder="Search platform..." id="saGlobalSearch">
             </div>
             <div class="sa-header-actions">
+                <button class="sa-header-btn" id="saAutoRefreshBtn" title="Auto-refresh every 30s" onclick="toggleAutoRefresh()" style="position:relative;"><i class="bi bi-arrow-clockwise"></i><span id="saAutoRefreshDot" style="display:none;position:absolute;top:2px;right:2px;width:8px;height:8px;border-radius:50%;background:#16a34a;"></span></button>
                 <button class="sa-header-btn" id="saNotifBtn"><i class="bi bi-bell"></i><span class="notif-badge" id="saNotifBadge">0</span></button>
                 <button class="sa-header-btn"><i class="bi bi-envelope"></i></button>
                 <div class="sa-header-profile" id="saProfileBtn">
@@ -130,6 +132,21 @@
                     </div>
                 </div>
 
+                <div class="sa-grid-3">
+                    <div class="sa-card">
+                        <div class="sa-card-header"><h3>Revenue by Category</h3></div>
+                        <div class="sa-chart-bars" id="saCategoryChart" style="min-height:150px;"></div>
+                    </div>
+                    <div class="sa-card">
+                        <div class="sa-card-header"><h3>Top Sellers</h3></div>
+                        <div class="sa-chart-bars" id="saSellerChart" style="min-height:150px;"></div>
+                    </div>
+                    <div class="sa-card">
+                        <div class="sa-card-header"><h3>Monthly Revenue</h3></div>
+                        <div class="sa-chart-bars" id="saMonthlyRevenueChart" style="min-height:150px;"></div>
+                    </div>
+                </div>
+
                 <div class="sa-grid-2">
                     <div class="sa-card">
                         <div class="sa-card-header"><h3>Pending Approvals</h3></div>
@@ -155,7 +172,7 @@
 
             <!-- ═══ USERS ═══ -->
             <div class="sa-section" data-section="users">
-                <div class="sa-section-header"><h2>User Management</h2></div>
+                <div class="sa-section-header"><h2>User Management</h2><button onclick="exportCSV('users')" style="padding:.4rem .8rem;border-radius:6px;border:1px solid var(--sa-primary,#d4af37);background:transparent;color:var(--sa-primary,#d4af37);font-size:.8rem;cursor:pointer;"><i class="bi bi-download"></i> Export CSV</button></div>
                 <div class="sa-card">
                     <div class="sa-card-header">
                         <h3>All Users</h3>
@@ -186,7 +203,7 @@
 
             <!-- ═══ SELLERS ═══ -->
             <div class="sa-section" data-section="sellers">
-                <div class="sa-section-header"><h2>Sellers & Florists</h2></div>
+                <div class="sa-section-header"><h2>Sellers & Florists</h2><button onclick="exportCSV('sellers')" style="padding:.4rem .8rem;border-radius:6px;border:1px solid var(--sa-primary,#d4af37);background:transparent;color:var(--sa-primary,#d4af37);font-size:.8rem;cursor:pointer;"><i class="bi bi-download"></i> Export CSV</button></div>
                 <div class="sa-card">
                     <div class="sa-table-wrap">
                         <table class="sa-table">
@@ -270,7 +287,7 @@
 
             <!-- ═══ ORDERS ═══ -->
             <div class="sa-section" data-section="orders">
-                <div class="sa-section-header"><h2>Orders</h2></div>
+                <div class="sa-section-header"><h2>Orders</h2><button onclick="exportCSV('orders')" style="padding:.4rem .8rem;border-radius:6px;border:1px solid var(--sa-primary,#d4af37);background:transparent;color:var(--sa-primary,#d4af37);font-size:.8rem;cursor:pointer;"><i class="bi bi-download"></i> Export CSV</button></div>
                 <div class="sa-card">
                     <div class="sa-card-header">
                         <h3>All Orders</h3>
@@ -357,6 +374,30 @@
             <div class="sa-section" data-section="support">
                 <div class="sa-section-header"><h2>Support Center</h2></div>
                 <div class="sa-placeholder"><i class="bi bi-headset"></i><h3>Support Management</h3><p>Tickets, live chat, reports, and FAQ management coming soon.</p></div>
+            </div>
+
+            <!-- ═══ AUDIT LOG ═══ -->
+            <div class="sa-section" data-section="audit-log">
+                <div class="sa-section-header"><h2>Audit Log</h2><p style="color:var(--sa-text-muted,#8a8aa0);font-size:.85rem;">Track all admin actions across the platform</p></div>
+                <div class="sa-card">
+                    <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;">
+                        <input type="search" placeholder="Search audit log..." id="saAuditSearch" oninput="renderAuditLog()" style="flex:1;min-width:200px;padding:.4rem .7rem;border-radius:6px;border:1px solid var(--sa-border,#2a2a4a);background:var(--sa-bg,#0f0f23);color:var(--sa-text,#e0e0e0);font-size:.85rem;">
+                        <button onclick="exportCSV('audit-log')" style="padding:.4rem .8rem;border-radius:6px;border:1px solid var(--sa-border,#2a2a4a);background:transparent;color:var(--sa-text-muted,#8a8aa0);font-size:.8rem;cursor:pointer;"><i class="bi bi-download"></i> Export</button>
+                    </div>
+                    <div class="sa-table-wrap">
+                        <table class="sa-table">
+                            <thead><tr><th>Time</th><th>Admin</th><th>Action</th><th>Entity</th><th>Details</th></tr></thead>
+                            <tbody id="saAuditBody"></tbody>
+                        </table>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem;">
+                        <span id="saAuditInfo" style="font-size:.8rem;color:var(--sa-text-muted,#8a8aa0);"></span>
+                        <div style="display:flex;gap:.4rem;">
+                            <button id="saAuditPrev" onclick="loadAuditLog(-1)" style="padding:.3rem .7rem;border-radius:6px;border:1px solid var(--sa-border,#2a2a4a);background:transparent;color:var(--sa-text-muted,#8a8aa0);font-size:.8rem;cursor:pointer;" disabled>Prev</button>
+                            <button id="saAuditNext" onclick="loadAuditLog(1)" style="padding:.3rem .7rem;border-radius:6px;border:1px solid var(--sa-border,#2a2a4a);background:transparent;color:var(--sa-text-muted,#8a8aa0);font-size:.8rem;cursor:pointer;">Next</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- ═══ SETTINGS ═══ -->

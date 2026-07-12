@@ -7,6 +7,9 @@
 
     // ─── State ────────────────────────────────────────────
     let users = [], products = [], courses = [], orders = [], sellers = [], overview = {};
+    let autoRefreshInterval = null;
+    let auditOffset = 0;
+    const auditLimit = 25;
 
     // ─── Utilities ────────────────────────────────────────
     function esc(str) { return typeof escapeHtml === 'function' ? escapeHtml(str) : String(str || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
@@ -85,6 +88,7 @@
             case 'courses': renderCourses(); break;
             case 'events': renderEvents(); break;
             case 'community': renderCommunity(); break;
+            case 'audit-log': renderAuditLog(); break;
             case 'settings': renderSettings(); break;
         }
     }
@@ -141,6 +145,24 @@
         renderBarChart('saUsersChart', uValues, uLabels);
         renderBarChart('saRevenueChart', rValues, rLabels);
 
+        // Revenue breakdown charts
+        const from = $('#saDateFrom')?.value || '';
+        const to = $('#saDateTo')?.value || '';
+        const params = new URLSearchParams();
+        if (from) params.set('from', from);
+        if (to) params.set('to', to);
+        const qs = params.toString();
+        saFetch('/api/super-admin/revenue-breakdown' + (qs ? '?' + qs : '')).then(async r => {
+            if (!r) return;
+            const data = await r.json();
+            const cats = data.byCategory || [];
+            const sellers = data.bySeller || [];
+            const months = data.byMonth || [];
+            renderBarChart('saCategoryChart', cats.map(c => c.revenue), cats.map(c => c.category || 'N/A'));
+            renderBarChart('saSellerChart', sellers.map(s => s.revenue), sellers.map(s => (s.seller || 'N/A').split(' ')[0]));
+            renderBarChart('saMonthlyRevenueChart', months.map(m => m.revenue), months.map(m => m.month));
+        });
+
         // Pending approvals
         $('#saPendingApprovals').innerHTML = [
             approvalCard('bi-person-workspace', 'rgba(124,58,237,0.1)', pending.instructors || 0, 'Instructor Applications'),
@@ -174,21 +196,26 @@
     }
 
     function renderSystemHealth(health) {
+        const dbLatency = health.databaseLatency || 0;
+        const poolUsage = health.poolTotal ? ((health.poolTotal - (health.poolIdle || 0)) / health.poolTotal * 100) : 0;
+        const errors = health.recentErrors || 0;
+
         const items = [
-            { label: 'Database', status: health.database === 'ok' ? 'ok' : 'error', value: health.databaseLatency ? health.databaseLatency + 'ms' : '—' },
+            { label: 'Database', status: health.database === 'ok' ? (dbLatency > 200 ? 'warn' : 'ok') : 'error', value: dbLatency ? dbLatency + 'ms' : '—', alert: dbLatency > 500 ? 'High latency!' : '' },
             { label: 'Server', status: 'ok', value: 'Running' },
             { label: 'DB Size', status: 'ok', value: health.dbSize || '—' },
-            { label: 'Pool', status: 'ok', value: `${health.poolIdle || 0} idle / ${health.poolTotal || 0} total` },
+            { label: 'Pool', status: poolUsage > 80 ? 'warn' : 'ok', value: `${health.poolIdle || 0} idle / ${health.poolTotal || 0} total (${Math.round(poolUsage)}% used)`, alert: poolUsage > 80 ? 'Pool nearly exhausted!' : '' },
             { label: 'API', status: 'ok', value: 'Operational' },
-            { label: 'Recent Errors', status: (health.recentErrors || 0) > 0 ? 'warn' : 'ok', value: health.recentErrors || 0 }
+            { label: 'Recent Errors', status: errors > 5 ? 'error' : errors > 0 ? 'warn' : 'ok', value: errors + ' in last hour', alert: errors > 5 ? 'Critical error rate!' : errors > 0 ? 'Errors detected' : '' }
         ];
 
         $('#saSystemHealth').innerHTML = items.map(h => `
-            <div class="sa-health-card">
+            <div class="sa-health-card" ${h.alert ? 'style="border-left:3px solid ' + (h.status === 'error' ? '#ef4444' : '#f59e0b') + ';"' : ''}>
                 <div class="sa-health-dot ${h.status}"></div>
                 <div>
                     <div class="sa-health-label">${h.label}</div>
                     <div class="sa-health-value">${h.value}</div>
+                    ${h.alert ? `<div style="font-size:.7rem;color:${h.status === 'error' ? '#ef4444' : '#f59e0b'};margin-top:2px;">${h.alert}</div>` : ''}
                 </div>
             </div>
         `).join('');
@@ -692,6 +719,80 @@
 
         renderNotifications();
         renderOverview();
+    }
+
+    // ─── Auto Refresh ─────────────────────────────────────
+    window.toggleAutoRefresh = function () {
+        if (autoRefreshInterval) {
+            clearInterval(autoRefreshInterval);
+            autoRefreshInterval = null;
+            const dot = $('#saAutoRefreshDot');
+            if (dot) dot.style.display = 'none';
+            showToast('Auto-refresh disabled', 'success');
+        } else {
+            autoRefreshInterval = setInterval(() => renderOverview(), 30000);
+            const dot = $('#saAutoRefreshDot');
+            if (dot) dot.style.display = 'block';
+            showToast('Auto-refresh enabled (30s)', 'success');
+        }
+    };
+
+    // ─── Export CSV ────────────────────────────────────────
+    window.exportCSV = async function (type) {
+        try {
+            const res = await saFetch('/api/super-admin/export/' + type);
+            if (!res) return;
+            const data = await res.json();
+            if (!data.length) { showToast('No data to export', 'error'); return; }
+            const headers = Object.keys(data[0]);
+            const csv = [headers.join(','), ...data.map(row => headers.map(h => {
+                let val = row[h];
+                if (val === null || val === undefined) val = '';
+                val = String(val).replace(/"/g, '""');
+                return val.includes(',') || val.includes('"') || val.includes('\n') ? `"${val}"` : val;
+            }).join(','))].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = type + '-export-' + new Date().toISOString().split('T')[0] + '.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast(`${type} exported successfully`, 'success');
+        } catch (err) { showToast('Export failed', 'error'); }
+    };
+
+    // ─── Audit Log ────────────────────────────────────────
+    async function renderAuditLog() {
+        auditOffset = 0;
+        await loadAuditLogData();
+    }
+    window.loadAuditLog = async function (dir) {
+        auditOffset = Math.max(0, auditOffset + dir * auditLimit);
+        await loadAuditLogData();
+    };
+    async function loadAuditLogData() {
+        const search = ($('#saAuditSearch')?.value || '').toLowerCase();
+        const res = await saFetch(`/api/super-admin/audit-log?limit=${auditLimit}&offset=${auditOffset}`);
+        if (!res) return;
+        const data = await res.json();
+        let entries = data.entries || [];
+        if (search) entries = entries.filter(e => (e.action + ' ' + e.entity_type + ' ' + e.admin_name + ' ' + e.details).toLowerCase().includes(search));
+        const body = $('#saAuditBody');
+        if (!body) return;
+        body.innerHTML = entries.map(e => `<tr>
+            <td style="font-size:.8rem;white-space:nowrap;">${e.created_at ? new Date(e.created_at).toLocaleString() : '—'}</td>
+            <td>${esc(e.admin_name || 'System')}</td>
+            <td><span class="sa-badge sa-badge-role">${esc(e.action || '—')}</span></td>
+            <td>${esc(e.entity_type || '—')} ${e.entity_id ? '#' + String(e.entity_id).slice(0, 8) : ''}</td>
+            <td style="font-size:.8rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;">${esc(e.details || '—')}</td>
+        </tr>`).join('') || '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--sa-text-muted);">No audit entries found</td></tr>';
+        const info = $('#saAuditInfo');
+        if (info) info.textContent = `Showing ${auditOffset + 1}-${Math.min(auditOffset + entries.length, data.total)} of ${data.total}`;
+        const prev = $('#saAuditPrev');
+        const next = $('#saAuditNext');
+        if (prev) prev.disabled = auditOffset === 0;
+        if (next) next.disabled = auditOffset + auditLimit >= data.total;
     }
 
     // ─── Date Filter ─────────────────────────────────────

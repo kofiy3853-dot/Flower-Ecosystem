@@ -163,4 +163,71 @@ router.get('/audit-log', requireSuperAdmin, asyncHandler(async (req, res) => {
     });
 }));
 
+// ─── Revenue Breakdown ──────────────────────────────────
+router.get('/revenue-breakdown', requireSuperAdmin, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json({ byCategory: [], bySeller: [], byMonth: [] });
+
+    const { from, to } = req.query;
+    const dateFilter = from && to ? 'AND o.created_at BETWEEN $1 AND $2' : '';
+    const dateArgs = from && to ? [from, to + ' 23:59:59'] : [];
+
+    const byCategory = await pool.query(`
+        SELECT COALESCE(p.category, 'Uncategorized') AS category, SUM(oi.unit_price * oi.quantity)::int AS revenue, COUNT(DISTINCT o.id) AS orders
+        FROM marketplace.order_items oi
+        JOIN marketplace.orders o ON o.id = oi.order_id
+        LEFT JOIN marketplace.products p ON p.id = oi.product_id
+        WHERE o.status != 'CANCELLED' ${dateFilter}
+        GROUP BY p.category ORDER BY revenue DESC LIMIT 10
+    `, dateArgs).catch(() => ({ rows: [] }));
+
+    const bySeller = await pool.query(`
+        SELECT u.first_name || ' ' || u.last_name AS seller, SUM(oi.unit_price * oi.quantity)::int AS revenue, COUNT(DISTINCT o.id) AS orders
+        FROM marketplace.order_items oi
+        JOIN marketplace.orders o ON o.id = oi.order_id
+        JOIN auth.users u ON u.id = oi.seller_id
+        WHERE o.status != 'CANCELLED' ${dateFilter}
+        GROUP BY u.id, u.first_name, u.last_name ORDER BY revenue DESC LIMIT 10
+    `, dateArgs).catch(() => ({ rows: [] }));
+
+    const byMonth = await pool.query(`
+        SELECT to_char(o.created_at, 'Mon YYYY') AS month, SUM(o.total_amount)::int AS revenue
+        FROM marketplace.orders o
+        WHERE o.status != 'CANCELLED' ${dateFilter}
+        GROUP BY to_char(o.created_at, 'Mon YYYY'), DATE_TRUNC('month', o.created_at)
+        ORDER BY DATE_TRUNC('month', o.created_at)
+    `, dateArgs).catch(() => ({ rows: [] }));
+
+    res.json({ byCategory: byCategory.rows, bySeller: bySeller.rows, byMonth: byMonth.rows });
+}));
+
+// ─── Platform Stats (for CSV export) ────────────────────
+router.get('/export/:type', requireSuperAdmin, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    const { type } = req.params;
+
+    if (type === 'users') {
+        const r = await pool.query('SELECT id, first_name, last_name, email, role, is_active, created_at FROM auth.users ORDER BY created_at DESC');
+        return res.json(r.rows);
+    }
+    if (type === 'orders') {
+        const r = await pool.query(`
+            SELECT o.id, u.first_name || ' ' || u.last_name AS customer, u.email, o.total_amount, o.status, o.created_at
+            FROM marketplace.orders o JOIN auth.users u ON u.id = o.user_id ORDER BY o.created_at DESC
+        `);
+        return res.json(r.rows);
+    }
+    if (type === 'sellers') {
+        const r = await pool.query(`
+            SELECT u.id, u.first_name || ' ' || u.last_name AS name, u.email, u.role, u.is_active, u.created_at,
+                COALESCE(pc.product_count, 0) AS product_count, COALESCE(oc.order_count, 0) AS order_count, COALESCE(oc.revenue, 0) AS revenue
+            FROM auth.users u
+            LEFT JOIN (SELECT seller_id, COUNT(*) AS product_count FROM marketplace.products GROUP BY seller_id) pc ON pc.seller_id = u.id
+            LEFT JOIN (SELECT seller_id, COUNT(DISTINCT order_id) AS order_count, SUM(unit_price * quantity) AS revenue FROM marketplace.order_items GROUP BY seller_id) oc ON oc.seller_id = u.id
+            WHERE u.role IN ('SELLER','FLORIST','GROWER') ORDER BY u.created_at DESC
+        `);
+        return res.json(r.rows);
+    }
+    res.status(400).json({ error: 'Invalid export type' });
+}));
+
 module.exports = router;
