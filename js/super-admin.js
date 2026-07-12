@@ -146,13 +146,11 @@
         renderBarChart('saRevenueChart', rValues, rLabels);
 
         // Revenue breakdown charts
-        const from = $('#saDateFrom')?.value || '';
-        const to = $('#saDateTo')?.value || '';
-        const params = new URLSearchParams();
-        if (from) params.set('from', from);
-        if (to) params.set('to', to);
-        const qs = params.toString();
-        saFetch('/api/super-admin/revenue-breakdown' + (qs ? '?' + qs : '')).then(async r => {
+        const rbParams = new URLSearchParams();
+        if (from) rbParams.set('from', from);
+        if (to) rbParams.set('to', to);
+        const rbQs = rbParams.toString();
+        saFetch('/api/super-admin/revenue-breakdown' + (rbQs ? '?' + rbQs : '')).then(async r => {
             if (!r) return;
             const data = await r.json();
             const cats = data.byCategory || [];
