@@ -222,7 +222,7 @@ router.delete('/:id', requireAuth, asyncHandler(async (req, res) => {
     const existing = await pool.query('SELECT * FROM events.events WHERE id = $1', [id]);
     if (!existing.rows.length) return res.status(404).json({ error: 'Event not found' });
     const userRole = (req.user.role || '').toUpperCase();
-    if (existing.rows[0].organizer_id !== req.user.id && !['ADMIN', 'SUPERADMIN'].includes(userRole)) {
+    if (!['ADMIN', 'SUPERADMIN'].includes(userRole) && existing.rows[0].organizer_id !== req.user.id) {
         return res.status(403).json({ error: 'Not authorized' });
     }
     const childTables = [

@@ -30,9 +30,9 @@ services:
           name: flower-db
           property: password
       - key: JWT_SECRET
-        generateValue: true
+        value: "3c0815b1b8bd7063f6ce34756259a00a63a80fc4ad23b5aeff49c095426c6a8271ee3365c2380bfe023098bd0a7a8570f3639fca7c0bd103eb250456ff24fe83"
       - key: JWT_REFRESH_SECRET
-        generateValue: true
+        value: "696acde5b6b99d65a05dfad2c2e90ee246f667114fb39990023dbc495779a8ef3e11e63d7d3a2ce49bef409914b2d12ecf759a4b7b5b152976c24b1861ec71a5"
       - key: ADMIN_PASSWORD
         value: "Nharnah@12345"
       - key: SUPERADMIN_PASSWORD
