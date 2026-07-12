@@ -3,6 +3,7 @@
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
 let courses=[],products=[],users=[],orders=[],sellers=[],buyers=[],announcements=[];
+let selectedUserIds=new Set();
 
 // ─── Navigation ──────────────────────────────────────
 function switchSection(name){
@@ -233,7 +234,9 @@ async function renderUsers(){
         const role=(u.role||'CUSTOMER').toUpperCase();
         const roleClass=role==='INSTRUCTOR'?'completed':role==='SELLER'||role==='FLORIST'?'pending':'active';
         const statusClass=u.is_active?'active':'inactive';
+        const checked=selectedUserIds.has(u.id)?'checked':'';
         return `<tr>
+            <td><input type="checkbox" class="user-checkbox" value="${u.id}" ${checked} onchange="toggleUserSelect('${u.id}',this.checked)"></td>
             <td><div class="adm-user-cell"><div class="adm-user-avatar">${escapeHtml((u.first_name||'?')[0])}</div>${escapeHtml(u.first_name||'')} ${escapeHtml(u.last_name||'')}</div></td>
             <td>${escapeHtml(u.email||'')}</td>
             <td><span class="adm-status ${roleClass}">${escapeHtml(u.role||'Customer')}</span></td>
@@ -277,6 +280,32 @@ window.deleteUser=async function(id){
         renderUsers();
         showToast('User deleted','success');
     }catch(err){showToast(err.message||'Failed to delete','error');}
+};
+
+window.toggleSelectAll=function(checkbox){
+    const boxes=document.querySelectorAll('.user-checkbox');
+    boxes.forEach(b=>{b.checked=checkbox.checked;toggleUserSelect(b.value,b.checked);});
+};
+window.toggleUserSelect=function(id,checked){
+    if(checked)selectedUserIds.add(id);else selectedUserIds.delete(id);
+    const count=selectedUserIds.size;
+    const btn=el('bulkDeleteBtn');
+    if(btn){btn.style.display=count>0?'inline-block':'none';}
+    const cnt=el('selectedCount');if(cnt)cnt.textContent=count;
+    const all=document.getElementById('selectAllUsers');
+    if(all)all.checked=count===users.length&&users.length>0;
+};
+window.bulkDeleteUsers=async function(){
+    const ids=[...selectedUserIds];
+    if(!ids.length)return;
+    if(!confirm(`Delete ${ids.length} user(s)? This cannot be undone.`))return;
+    try{
+        await api.bulkDeleteUsers(ids);
+        selectedUserIds.clear();
+        users=await api.fetchAdminUsers();
+        renderUsers();
+        showToast(`${ids.length} user(s) deleted`,'success');
+    }catch(err){showToast(err.message||'Failed to delete users','error');}
 };
 
 // ─── Courses ─────────────────────────────────────────

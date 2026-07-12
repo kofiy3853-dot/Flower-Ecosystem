@@ -180,10 +180,11 @@
                             <input type="search" placeholder="Search users..." class="adm-search-input" id="userSearch">
                             <select class="adm-select" id="userRoleFilter"><option value="all">All Roles</option><option>Customer</option><option>Instructor</option><option>Seller</option><option>Admin</option></select>
                             <select class="adm-select" id="userStatusFilter"><option value="all">All Status</option><option>Active</option><option>Inactive</option></select>
+                            <button id="bulkDeleteBtn" style="display:none;padding:.4rem .8rem;border-radius:6px;border:1px solid #e74c3c;background:#e74c3c;color:#fff;font-size:.8rem;cursor:pointer;" onclick="bulkDeleteUsers()"><i class="bi bi-trash"></i> Delete Selected (<span id="selectedCount">0</span>)</button>
                         </div>
                         <div class="adm-table-wrap">
                             <table class="adm-table">
-                                <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+                                <thead><tr><th><input type="checkbox" id="selectAllUsers" onchange="toggleSelectAll(this)"></th><th>User</th><th>Email</th><th>Role</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
                                 <tbody id="usersBody"></tbody>
                             </table>
                         </div>

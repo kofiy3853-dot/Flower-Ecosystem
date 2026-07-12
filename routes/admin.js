@@ -53,6 +53,16 @@ router.put('/users/:id', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async 
     res.json(r.rows[0]);
 }));
 
+router.post('/users/bulk-delete', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || !ids.length) return res.status(400).json({ error: 'No user IDs provided' });
+    const filtered = ids.filter(id => id !== req.user.id);
+    if (!filtered.length) return res.status(400).json({ error: 'Cannot delete your own account' });
+    await pool.query('DELETE FROM auth.users WHERE id = ANY($1)', [filtered]);
+    res.json({ deleted: filtered.length });
+}));
+
 router.delete('/users/:id', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
     if (req.user.id === req.params.id) return res.status(400).json({ error: 'Cannot delete your own account' });

@@ -244,6 +244,7 @@ const api = {
     toggleAdminUserStatus(id) { return apiFetchWithBody('/api/admin/users/' + id + '/status', 'PUT'); },
     updateAdminUser(id, data) { return apiFetchWithBody('/api/admin/users/' + id, 'PUT', data); },
     deleteAdminUser(id) { return apiFetchWithBody('/api/admin/users/' + id, 'DELETE'); },
+    bulkDeleteUsers(ids) { return fetch('/api/admin/users/bulk-delete', { method: 'POST', headers: { ...authHeaders(), 'Content-Type': 'application/json' }, body: JSON.stringify({ ids }) }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
     fetchAdminOrders() { return fetch('/api/admin/orders', { headers: authHeaders() }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
     updateAdminOrderStatus(id, status) { return apiFetchWithBody('/api/admin/orders/' + id + '/status', 'PUT', { status }); },
     deleteAdminOrder(id) { return fetch('/api/admin/orders/' + id, { method: 'DELETE', headers: authHeaders() }).then(async r => { if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); }); },
