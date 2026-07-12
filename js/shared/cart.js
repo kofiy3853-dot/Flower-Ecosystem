@@ -86,7 +86,7 @@ function isLoggedIn() {
 async function syncCartFromServer() {
     if (!isLoggedIn()) return;
     try {
-        const res = await fetch('/api/cart', { headers: authHeaders() });
+        const res = await fetchWithAuth('/api/cart');
         if (!res.ok) return;
         const data = await res.json();
         const items = (data.items || []).map(i => ({
@@ -105,7 +105,7 @@ async function syncCartFromServer() {
 async function serverAddToCart(productId, quantity = 1) {
     if (!isLoggedIn()) return null;
     try {
-        const res = await fetch('/api/cart/items', {
+        const res = await fetchWithAuth('/api/cart/items', {
             method: 'POST',
             headers: authHeaders(),
             body: JSON.stringify({ product_id: productId, quantity })
@@ -122,7 +122,7 @@ async function serverAddToCart(productId, quantity = 1) {
 
 async function serverUpdateCartItem(cartItemId, quantity) {
     if (!isLoggedIn()) return null;
-    const res = await fetch(`/api/cart/items/${cartItemId}`, {
+    const res = await fetchWithAuth(`/api/cart/items/${cartItemId}`, {
         method: 'PUT',
         headers: authHeaders(),
         body: JSON.stringify({ quantity })
@@ -133,7 +133,7 @@ async function serverUpdateCartItem(cartItemId, quantity) {
 
 async function serverRemoveCartItem(cartItemId) {
     if (!isLoggedIn()) return null;
-    const res = await fetch(`/api/cart/items/${cartItemId}`, {
+    const res = await fetchWithAuth(`/api/cart/items/${cartItemId}`, {
         method: 'DELETE',
         headers: authHeaders()
     });
@@ -143,7 +143,7 @@ async function serverRemoveCartItem(cartItemId) {
 
 async function serverClearCart() {
     if (!isLoggedIn()) return null;
-    const res = await fetch('/api/cart', {
+    const res = await fetchWithAuth('/api/cart', {
         method: 'DELETE',
         headers: authHeaders()
     });

@@ -290,10 +290,9 @@ function afterAuth() {
             const localCart = JSON.parse(localStorage.getItem('flower-cart') || '[]');
             if (localCart.length) {
                 await Promise.all(localCart.map(item =>
-                    fetch('/api/cart/items', {
+                    fetchWithAuth('/api/cart/items', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                        credentials: 'include',
                         body: JSON.stringify({ product_id: item.id, quantity: item.qty || 1 })
                     }).catch(() => {})
                 ));
@@ -392,7 +391,7 @@ async function checkEnrollment() {
     }
 
     try {
-        const res = await fetch('/api/courses/enrolled', { credentials: 'include' });
+        const res = await fetchWithAuth('/api/courses/enrolled');
         if (res.ok) {
             const data = await res.json();
             const courses = data.courses || [];
@@ -489,7 +488,7 @@ async function updateNotificationBadge() {
         return;
     }
     try {
-        const res = await fetch('/api/notifications/unread-count', { credentials: 'include' });
+        const res = await fetchWithAuth('/api/notifications/unread-count');
         if (res.ok) {
             const data = await res.json();
             const count = data.count || 0;
