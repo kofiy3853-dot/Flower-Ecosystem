@@ -36,7 +36,7 @@ services:
       - key: ADMIN_PASSWORD
         value: "Nharnah@12345"
       - key: SUPERADMIN_PASSWORD
-        value: "Super@12345"
+        value: "Super@12345!"
       - key: CORS_ORIGIN
         value: https://flower-ecosystem.onrender.com
       - key: CLOUDINARY_CLOUD_NAME
