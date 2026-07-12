@@ -17,9 +17,7 @@ function getToken() { return null; }
 
 function authFetch(url, opts) {
     opts = opts || {};
-    opts.headers = opts.headers || {};
-    opts.headers['Authorization'] = 'Bearer ' + getToken();
-    return fetch(url, opts).then(function(r) { return r.json(); });
+    return fetchWithAuth(url, opts).then(function(r) { return r.json(); });
 }
 
 function getCurrentUser() {

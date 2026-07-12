@@ -70,9 +70,51 @@ function authHeaders() {
     return { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
 }
 
+// ─── Auto-refresh wrapper ─────────────────────────────────────────────
+// Intercepts 401 responses, refreshes the access token cookie, then retries.
+let _refreshPromise = null;
+
+async function fetchWithAuth(url, options = {}) {
+    // Ensure cookies are always sent
+    const opts = { credentials: 'include', ...options };
+    // Never send a bogus Authorization header — auth is via HttpOnly cookie
+    if (opts.headers) {
+        const h = { ...opts.headers };
+        delete h['Authorization'];
+        delete h['authorization'];
+        opts.headers = h;
+    }
+
+    let res = await fetch(url, opts);
+
+    // If 401, try to refresh the access token once, then retry
+    if (res.status === 401) {
+        try {
+            // Deduplicate concurrent refresh attempts
+            if (!_refreshPromise) {
+                _refreshPromise = fetch('/api/auth/refresh', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                }).finally(() => { _refreshPromise = null; });
+            }
+            const refreshRes = await _refreshPromise;
+            if (refreshRes.ok) {
+                // Retry the original request with fresh cookie
+                res = await fetch(url, opts);
+            }
+        } catch (_) {
+            // Refresh failed — fall through to original 401
+        }
+    }
+
+    return res;
+}
+
 window.getCurrentUserId = getCurrentUserId;
 window.getCurrentUserRole = getCurrentUserRole;
 window.authHeaders = authHeaders;
+window.fetchWithAuth = fetchWithAuth;
 
 window.handleError = function(err, context) {
     const msg = err?.message || String(err) || 'Something went wrong';
@@ -87,7 +129,7 @@ window.handleError = function(err, context) {
 
 async function apiFetch(url, fallbackKey) {
     try {
-        const res = await fetch(url, { credentials: 'include' });
+        const res = await fetchWithAuth(url);
         if (res.ok) {
             const data = await res.json();
             return data;
@@ -104,10 +146,10 @@ async function apiFetch(url, fallbackKey) {
 
 function apiFetchWithBody(url, method, body) {
     const headers = {
-        'Content-Type': 'application/json',
         'X-Requested-With': 'XMLHttpRequest'
     };
-    return fetch(url, { method, headers, credentials: 'include', body: body ? JSON.stringify(body) : undefined })
+    if (body && method !== 'GET') headers['Content-Type'] = 'application/json';
+    return fetchWithAuth(url, { method, headers, body: body ? JSON.stringify(body) : undefined })
         .then(async res => {
             let data;
             try {

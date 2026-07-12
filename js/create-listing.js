@@ -402,7 +402,7 @@ async function clPublish() {
         if (pendingImages.length > 0) {
             const fd = new FormData();
             pendingImages.forEach(f => fd.append('images', f));
-            const res = await fetch('/api/upload', { method: 'POST', headers: { 'Authorization': 'Bearer ' + getToken() }, body: fd });
+            const res = await fetchWithAuth('/api/upload', { method: 'POST', body: fd });
             if (!res.ok) throw new Error('Image upload failed');
             const data = await res.json();
             imageUrls = data.images || [];
@@ -411,7 +411,7 @@ async function clPublish() {
         if (pendingVideo && !pendingVideo.existing) {
             const fd = new FormData();
             fd.append('video', pendingVideo);
-            const res = await fetch('/api/upload/video', { method: 'POST', headers: { 'Authorization': 'Bearer ' + getToken() }, body: fd });
+            const res = await fetchWithAuth('/api/upload/video', { method: 'POST', body: fd });
             if (!res.ok) throw new Error('Video upload failed');
             const data = await res.json();
             videoUrl = data.url || null;

@@ -163,9 +163,8 @@ async function submitHostEvent() {
     if (meetingLink) formData.append('meeting_link', meetingLink);
     if (hostImageFile) formData.append('image', hostImageFile);
 
-    const res = await fetch('/api/events', {
+    const res = await fetchWithAuth('/api/events', {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${getToken()}` },
       body: formData
     });
     const data = await res.json();
