@@ -386,6 +386,7 @@ app.use('/api', require('./routes/bouquet-customizer'));
 app.use('/api', require('./routes/my-garden'));
 app.use('/api', require('./routes/category-images'));
 app.use('/api/research', require('./routes/research'));
+app.use('/api/super-admin', require('./routes/super-admin'));
 
 // ─── Error handling ────────────────────────────────────────────────────────
 

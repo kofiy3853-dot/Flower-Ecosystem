@@ -320,7 +320,11 @@ function afterAuth() {
     const user = getCurrentUser();
     const role = (user?.role || '').toLowerCase();
     const page = location.pathname.split('/').pop() || 'index.html';
-    if (['admin', 'superadmin'].includes(role) && page !== 'admin.html') {
+    if (role === 'superadmin' && page !== 'super-admin.html') {
+        window.location.href = 'super-admin.html';
+        return;
+    }
+    if (role === 'admin' && page !== 'admin.html') {
         window.location.href = 'admin.html';
         return;
     }
@@ -431,7 +435,8 @@ function updateAccountUI() {
             signInLink.onclick = function(e) {
                 e.preventDefault();
                 const role = (user.role || '').toLowerCase();
-                if (['admin', 'superadmin'].includes(role)) window.location.href = 'admin.html';
+                if (role === 'superadmin') window.location.href = 'super-admin.html';
+                else if (role === 'admin') window.location.href = 'admin.html';
                 else if (['instructor'].includes(role)) window.location.href = 'instructor-dashboard.html';
                 else if (['student'].includes(role)) window.location.href = 'student-dashboard.html';
                 else if (['seller', 'florist', 'grower'].includes(role)) window.location.href = 'seller-dashboard.html';
@@ -555,7 +560,9 @@ function initAuth() {
             if (isLoggedIn()) {
                 const user = getCurrentUser();
                 const role = (user?.role || '').toLowerCase();
-                if (['admin', 'superadmin'].includes(role)) {
+                if (role === 'superadmin') {
+                    window.location.href = 'super-admin.html';
+                } else if (role === 'admin') {
                     window.location.href = 'admin.html';
                 } else if (['instructor'].includes(role)) {
                     window.location.href = 'instructor-dashboard.html';
@@ -678,7 +685,8 @@ function handleHeaderAccountClick() {
     const user = getCurrentUser();
     if (user) {
         const role = (user.role || '').toLowerCase();
-        if (['admin', 'superadmin'].includes(role)) window.location.href = 'admin.html';
+        if (role === 'superadmin') window.location.href = 'super-admin.html';
+        else if (role === 'admin') window.location.href = 'admin.html';
         else if (['instructor'].includes(role)) window.location.href = 'instructor-dashboard.html';
         else if (['student'].includes(role)) window.location.href = 'student-dashboard.html';
         else if (['seller', 'florist', 'grower'].includes(role)) window.location.href = 'seller-dashboard.html';

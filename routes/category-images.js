@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const path = require('path');
 const fs = require('fs');
-const { pool, requireAuth, asyncHandler, dbAvailable } = require('./middleware');
+const { pool, requireAuth, requireRole, asyncHandler, dbAvailable } = require('./middleware');
 const multer = require('multer');
 const sharp = require('sharp');
 
@@ -74,7 +74,7 @@ router.get('/categories/:id/images', asyncHandler(async (req, res) => {
 }));
 
 // ─── Upload images to a category ──────────────────────────────────────
-router.post('/categories/:id/images', requireAuth, upload.array('images', 10), asyncHandler(async (req, res) => {
+router.post('/categories/:id/images', requireAuth, requireRole('ADMIN', 'SUPERADMIN'), upload.array('images', 10), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
 
     const { id } = req.params;
@@ -118,7 +118,7 @@ router.post('/categories/:id/images', requireAuth, upload.array('images', 10), a
 }));
 
 // ─── Update image info ────────────────────────────────────────────────
-router.put('/images/:id', requireAuth, asyncHandler(async (req, res) => {
+router.put('/images/:id', requireAuth, requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
 
     const { id } = req.params;
@@ -139,7 +139,7 @@ router.put('/images/:id', requireAuth, asyncHandler(async (req, res) => {
 }));
 
 // ─── Replace image file ───────────────────────────────────────────────
-router.put('/images/:id/replace', requireAuth, upload.single('image'), asyncHandler(async (req, res) => {
+router.put('/images/:id/replace', requireAuth, requireRole('ADMIN', 'SUPERADMIN'), upload.single('image'), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
 
     const { id } = req.params;
@@ -174,7 +174,7 @@ router.put('/images/:id/replace', requireAuth, upload.single('image'), asyncHand
 }));
 
 // ─── Delete image ─────────────────────────────────────────────────────
-router.delete('/images/:id', requireAuth, asyncHandler(async (req, res) => {
+router.delete('/images/:id', requireAuth, requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
 
     const { id } = req.params;
@@ -190,7 +190,7 @@ router.delete('/images/:id', requireAuth, asyncHandler(async (req, res) => {
 }));
 
 // ─── Set featured image ───────────────────────────────────────────────
-router.patch('/images/:id/feature', requireAuth, asyncHandler(async (req, res) => {
+router.patch('/images/:id/feature', requireAuth, requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
 
     const { id } = req.params;
@@ -206,7 +206,7 @@ router.patch('/images/:id/feature', requireAuth, asyncHandler(async (req, res) =
 }));
 
 // ─── Toggle image status ──────────────────────────────────────────────
-router.patch('/images/:id/status', requireAuth, asyncHandler(async (req, res) => {
+router.patch('/images/:id/status', requireAuth, requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
 
     const { id } = req.params;
