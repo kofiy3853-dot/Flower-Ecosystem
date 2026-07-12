@@ -91,9 +91,17 @@
 
     // ─── Overview ─────────────────────────────────────────
     async function renderOverview() {
+        const from = $('#saDateFrom')?.value || '';
+        const to = $('#saDateTo')?.value || '';
+        const params = new URLSearchParams();
+        if (from) params.set('from', from);
+        if (to) params.set('to', to);
+        const qs = params.toString();
+        const url = '/api/super-admin/overview' + (qs ? '?' + qs : '');
+
         // Fetch overview + health + pending + users for activity
         const [ovRes, healthRes, pendingRes] = await Promise.all([
-            saFetch('/api/super-admin/overview'),
+            saFetch(url),
             saFetch('/api/super-admin/system-health'),
             saFetch('/api/super-admin/pending-approvals')
         ]);
@@ -684,6 +692,30 @@
         renderNotifications();
         renderOverview();
     }
+
+    // ─── Date Filter ─────────────────────────────────────
+    window.applyDateFilter = function () { renderOverview(); };
+    window.resetDateFilter = function () {
+        const from = $('#saDateFrom');
+        const to = $('#saDateTo');
+        const preset = $('#saDatePreset');
+        if (from) from.value = '';
+        if (to) to.value = '';
+        if (preset) preset.value = '';
+        renderOverview();
+    };
+    window.applyDatePreset = function (days) {
+        if (!days) return;
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - parseInt(days));
+        const fmt = d => d.toISOString().split('T')[0];
+        const from = $('#saDateFrom');
+        const to = $('#saDateTo');
+        if (from) from.value = fmt(start);
+        if (to) to.value = fmt(end);
+        renderOverview();
+    };
 
     // Start
     if (document.readyState === 'loading') {

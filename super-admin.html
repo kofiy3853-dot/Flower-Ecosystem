@@ -97,6 +97,24 @@
                     <div class="sa-welcome-badge"><i class="bi bi-shield-check"></i> Super Admin Access</div>
                 </div>
 
+                <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:1.5rem;padding:.75rem 1rem;background:var(--sa-card-bg,#1a1a2e);border-radius:10px;border:1px solid var(--sa-border,#2a2a4a);">
+                    <i class="bi bi-calendar3" style="color:var(--sa-primary,#d4af37);font-size:1.1rem;"></i>
+                    <label style="font-size:.8rem;color:var(--sa-text-muted,#8a8aa0);">From</label>
+                    <input type="date" id="saDateFrom" style="padding:.35rem .6rem;border-radius:6px;border:1px solid var(--sa-border,#2a2a4a);background:var(--sa-bg,#0f0f23);color:var(--sa-text,#e0e0e0);font-size:.8rem;">
+                    <label style="font-size:.8rem;color:var(--sa-text-muted,#8a8aa0);">To</label>
+                    <input type="date" id="saDateTo" style="padding:.35rem .6rem;border-radius:6px;border:1px solid var(--sa-border,#2a2a4a);background:var(--sa-bg,#0f0f23);color:var(--sa-text,#e0e0e0);font-size:.8rem;">
+                    <button onclick="applyDateFilter()" style="padding:.35rem .8rem;border-radius:6px;border:none;background:var(--sa-primary,#d4af37);color:#000;font-size:.8rem;font-weight:600;cursor:pointer;">Apply</button>
+                    <button onclick="resetDateFilter()" style="padding:.35rem .8rem;border-radius:6px;border:1px solid var(--sa-border,#2a2a4a);background:transparent;color:var(--sa-text-muted,#8a8aa0);font-size:.8rem;cursor:pointer;">Reset</button>
+                    <select id="saDatePreset" onchange="applyDatePreset(this.value)" style="padding:.35rem .6rem;border-radius:6px;border:1px solid var(--sa-border,#2a2a4a);background:var(--sa-bg,#0f0f23);color:var(--sa-text,#e0e0e0);font-size:.8rem;margin-left:.25rem;">
+                        <option value="">Quick Select</option>
+                        <option value="7">Last 7 Days</option>
+                        <option value="30">Last 30 Days</option>
+                        <option value="90">Last 90 Days</option>
+                        <option value="180">Last 6 Months</option>
+                        <option value="365">Last Year</option>
+                    </select>
+                </div>
+
                 <div class="sa-stat-grid" id="saOverviewStats"></div>
 
                 <div class="sa-grid-4" id="saQuickActions"></div>

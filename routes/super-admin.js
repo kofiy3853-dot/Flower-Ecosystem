@@ -5,7 +5,7 @@ const { pool, asyncHandler, dbAvailable, requireRole } = require('./middleware')
 const requireSuperAdmin = requireRole('SUPERADMIN');
 
 // ─── Overview ───────────────────────────────────────────
-router.get('/overview', requireSuperAdmin, asyncHandler(async (_, res) => {
+router.get('/overview', requireSuperAdmin, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) {
         return res.json({
             users: 0, products: 0, courses: 0, orders: 0,
@@ -13,11 +13,20 @@ router.get('/overview', requireSuperAdmin, asyncHandler(async (_, res) => {
         });
     }
 
+    const { from, to } = req.query;
+    const dateFilter = from && to ? 'AND created_at BETWEEN $1 AND $2' : '';
+    const dateArgs = from && to ? [from, to + ' 23:59:59'] : [];
+    const monthlyFilter = from && to ? 'AND created_at BETWEEN $1 AND $2' : 'AND created_at >= NOW() - INTERVAL \'6 months\'';
+    const monthlyArgs = from && to ? [from, to + ' 23:59:59'] : [];
+
+    const baseUserFilter = dateFilter || ' AND created_at IS NOT NULL';
+    const baseOrderFilter = dateFilter || ' AND created_at IS NOT NULL';
+
     const [users, products, courses, orders, sellers, posts, events, discussions] = await Promise.all([
-        pool.query('SELECT COUNT(*) AS count FROM auth.users'),
+        pool.query(`SELECT COUNT(*) AS count FROM auth.users WHERE 1=1 ${baseUserFilter}`, dateArgs),
         pool.query('SELECT COUNT(*) AS count FROM marketplace.products WHERE is_active = true'),
         pool.query('SELECT COUNT(*) AS count FROM learning.courses').catch(() => ({ rows: [{ count: 0 }] })),
-        pool.query('SELECT COUNT(*) AS count, COALESCE(SUM(total_amount),0) AS revenue FROM marketplace.orders'),
+        pool.query(`SELECT COUNT(*) AS count, COALESCE(SUM(total_amount),0) AS revenue FROM marketplace.orders WHERE 1=1 ${baseOrderFilter}`, dateArgs),
         pool.query("SELECT COUNT(*) AS count FROM auth.users WHERE role IN ('SELLER','FLORIST','GROWER')"),
         pool.query('SELECT COUNT(*) AS count FROM community.posts').catch(() => ({ rows: [{ count: 0 }] })),
         pool.query('SELECT COUNT(*) AS count FROM events.events').catch(() => ({ rows: [{ count: 0 }] })),
@@ -31,18 +40,18 @@ router.get('/overview', requireSuperAdmin, asyncHandler(async (_, res) => {
     const monthlyUsers = await pool.query(`
         SELECT to_char(created_at, 'Mon') AS month, COUNT(*)::int AS count
         FROM auth.users
-        WHERE created_at >= NOW() - INTERVAL '6 months'
+        WHERE 1=1 ${monthlyFilter}
         GROUP BY to_char(created_at, 'Mon'), DATE_TRUNC('month', created_at)
         ORDER BY DATE_TRUNC('month', created_at)
-    `).catch(() => ({ rows: [] }));
+    `, monthlyArgs).catch(() => ({ rows: [] }));
 
     const monthlyRevenue = await pool.query(`
         SELECT to_char(created_at, 'Mon') AS month, COALESCE(SUM(total_amount), 0)::int AS total
         FROM marketplace.orders
-        WHERE created_at >= NOW() - INTERVAL '6 months'
+        WHERE 1=1 ${monthlyFilter}
         GROUP BY to_char(created_at, 'Mon'), DATE_TRUNC('month', created_at)
         ORDER BY DATE_TRUNC('month', created_at)
-    `).catch(() => ({ rows: [] }));
+    `, monthlyArgs).catch(() => ({ rows: [] }));
 
     res.json({
         users: parseInt(users.rows[0].count),
