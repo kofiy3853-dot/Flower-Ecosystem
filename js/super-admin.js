@@ -110,6 +110,9 @@
         const health = healthRes ? await healthRes.json() : {};
         const pending = pendingRes ? await pendingRes.json() : {};
 
+        const userMonths = overview.monthlyUsers || [];
+        const revMonths = overview.monthlyRevenue || [];
+
         // Stat cards
         const userTrend = userMonths.length >= 2 ? userMonths[userMonths.length - 1].count - userMonths[userMonths.length - 2].count : 0;
         const revTrend = revMonths.length >= 2 ? revMonths[revMonths.length - 1].total - revMonths[revMonths.length - 2].total : 0;
@@ -131,8 +134,6 @@
         ].join('');
 
         // Charts
-        const userMonths = overview.monthlyUsers || [];
-        const revMonths = overview.monthlyRevenue || [];
         const uLabels = userMonths.length ? userMonths.map(r => r.month) : ['No Data'];
         const uValues = userMonths.length ? userMonths.map(r => r.count) : [0];
         const rLabels = revMonths.length ? revMonths.map(r => r.month) : ['No Data'];
