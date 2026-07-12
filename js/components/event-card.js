@@ -28,6 +28,24 @@ function renderEventCard(event, view) {
   return renderEventGridCard(event);
 }
 
+function getCategoryColor(category, type) {
+  const c = (category || '').toLowerCase();
+  const t = (type || '').toLowerCase();
+  if (c.includes('workshop') || t === 'workshop') return 'workshop';
+  if (c.includes('webinar') || t === 'webinar') return 'webinar';
+  if (c.includes('exhibition') || t === 'exhibition') return 'exhibition';
+  if (c.includes('competition') || t === 'competition') return 'competition';
+  if (c.includes('festival')) return 'festival';
+  if (c.includes('networking') || c.includes('meetup')) return 'networking';
+  if (c.includes('learning') || c.includes('course')) return 'learning';
+  if (c.includes('farming') || c.includes('gardening')) return 'farming';
+  if (c.includes('floral') || c.includes('design')) return 'floral';
+  if (c.includes('care') || c.includes('medicinal')) return 'care';
+  if (c.includes('business') || c.includes('marketing')) return 'business';
+  if (c.includes('identification')) return 'identification';
+  return 'default';
+}
+
 function renderEventGridCard(event) {
   const spotsLeft = event.max_participants ? event.max_participants - (event.registrations || 0) : null;
   const isFull = spotsLeft !== null && spotsLeft <= 0;
@@ -47,7 +65,7 @@ function renderEventGridCard(event) {
         </div>
       </div>
       <div class="evt-card-body">
-        <span class="evt-card-category">${escapeHtml(event.event_category || event.event_type || '')}</span>
+        <span class="evt-card-category cat-${getCategoryColor(event.event_category, event.event_type)}">${escapeHtml(event.event_category || event.event_type || '')}</span>
         <h3>${escapeHtml(event.title)}</h3>
         <div class="evt-card-meta">
           <span><i class="bi bi-geo-alt"></i> ${escapeHtml(event.location || 'Online')}</span>
@@ -75,6 +93,7 @@ function renderEventListItem(event) {
           ${(!event.location || event.location.toLowerCase() === 'online') ? '<span class="evt-badge online">Online</span>' : ''}
         </div>
         <h3>${escapeHtml(event.title)}</h3>
+        <span class="evt-card-category cat-${getCategoryColor(event.event_category, event.event_type)}">${escapeHtml(event.event_category || event.event_type || '')}</span>
         <div class="evt-list-meta">
           <span><i class="bi bi-geo-alt"></i> ${escapeHtml(event.location || 'Online')}</span>
           <span><i class="bi bi-clock"></i> ${formatTime(event.event_date)}</span>
