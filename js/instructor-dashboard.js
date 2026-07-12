@@ -124,7 +124,8 @@ async function init(){
         try{
             const token=localStorage.getItem('flower-user');
             const res=await fetch('/api/instructor/my-application',{
-                headers:{'Authorization':'Bearer '+token,'X-Requested-With':'XMLHttpRequest'}
+                headers:{'X-Requested-With':'XMLHttpRequest'},
+                credentials:'include'
             });
             if(res.ok){
                 const app=await res.json();
@@ -175,7 +176,7 @@ async function init(){
 async function loadUserProfile(){
     try{
         const token=localStorage.getItem('flower-user');
-        const res=await fetch('/api/auth/me',{headers:{'Authorization':'Bearer '+token}});
+        const res=await fetch('/api/auth/me',{credentials:'include'});
         if(!res.ok) return;
         const user=await res.json();
         const name=user.name||user.first_name||user.email||'Instructor';
@@ -296,10 +297,8 @@ window.editCourse=id=>{
     document.getElementById('editCourseForm').addEventListener('submit',async e=>{
         e.preventDefault();
         try{
-            const token=localStorage.getItem('flower-user');
-            const headers={'Content-Type':'application/json'};
-            if(token)headers['Authorization']='Bearer '+token;
-            const res=await fetch('/api/courses/'+id,{method:'PUT',headers,body:JSON.stringify({
+            const headers={'Content-Type':'application/json','X-Requested-With':'XMLHttpRequest'};
+            const res=await fetch('/api/courses/'+id,{method:'PUT',headers,credentials:'include',body:JSON.stringify({
                 title:$('#ecTitle').value,description:$('#ecDesc').value,level:$('#ecLevel').value,
                 category:$('#ecCategory').value,price:parseFloat($('#ecPrice').value)||0
             })});
@@ -330,10 +329,8 @@ window.manageCourse=id=>{
 window.deleteCourse=async id=>{
     if(!confirm('Are you sure you want to delete this course?'))return;
     try{
-        const token=localStorage.getItem('flower-user');
-        const headers={};
-        if(token)headers['Authorization']='Bearer '+token;
-        const res=await fetch('/api/courses/'+id,{method:'DELETE',headers});
+        const headers={'X-Requested-With':'XMLHttpRequest'};
+        const res=await fetch('/api/courses/'+id,{method:'DELETE',headers,credentials:'include'});
         if(!res.ok)throw new Error((await res.json()).error||'Failed');
         closeModal();showToast('Course deleted!','success');
         courses=await api.fetchInstructorCourses();renderCourses();renderOverview();
@@ -465,9 +462,8 @@ window.openResourceUpload=()=>{
             fd.append('course_id',$('#resCourse').value);
             fd.append('description',$('#resDesc').value);
             fd.append('file',file);
-            const headers={};
-            if(token)headers['Authorization']='Bearer '+token;
-            const res=await fetch('/api/resources',{method:'POST',headers,body:fd});
+            const headers={'X-Requested-With':'XMLHttpRequest'};
+            const res=await fetch('/api/resources',{method:'POST',headers,credentials:'include',body:fd});
             if(!res.ok)throw new Error((await res.json()).error||'Failed');
             closeModal();showToast('Resource uploaded!','success');
             resourcesData=[];
@@ -619,10 +615,8 @@ document.addEventListener('submit',async e=>{
             price:parseFloat($('#mCoursePrice').value)||0
         };
         try{
-            const token=localStorage.getItem('flower-user');
-            const headers={'Content-Type':'application/json'};
-            if(token)headers['Authorization']='Bearer '+token;
-            const res=await fetch('/api/courses',{method:'POST',headers,body:JSON.stringify(data)});
+            const headers={'Content-Type':'application/json','X-Requested-With':'XMLHttpRequest'};
+            const res=await fetch('/api/courses',{method:'POST',headers,credentials:'include',body:JSON.stringify(data)});
             if(!res.ok)throw new Error((await res.json()).error||'Failed');
             closeModal();showToast('Course created!','success');
             courses=await api.fetchInstructorCourses();
