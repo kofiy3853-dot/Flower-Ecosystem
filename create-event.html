@@ -1266,11 +1266,17 @@
             if (btn) { btn.disabled = true; btn.textContent = 'Publishing...'; }
 
             try {
+                const tzOffset = -new Date().getTimezoneOffset();
+                const tzSign = tzOffset >= 0 ? '+' : '-';
+                const tzHours = String(Math.floor(Math.abs(tzOffset) / 60)).padStart(2, '0');
+                const tzMins = String(Math.abs(tzOffset) % 60).padStart(2, '0');
+                const tzStr = `${tzSign}${tzHours}:${tzMins}`;
+
                 const formData = new FormData();
                 formData.append('title', title);
                 formData.append('description', document.getElementById('fullDesc')?.value || document.getElementById('shortDesc')?.value || '');
-                formData.append('event_date', `${eventDate}T${startTime || '09:00'}:00`);
-                if (endTime) formData.append('end_date', `${eventDate}T${endTime}:00`);
+                formData.append('event_date', `${eventDate}T${startTime || '09:00'}:00${tzStr}`);
+                if (endTime) formData.append('end_date', `${eventDate}T${endTime}:00${tzStr}`);
 
                 const eventTypeRadio = document.querySelector('input[name="eventType"]:checked');
                 const eventTypeVal = eventTypeRadio?.value || 'online';

@@ -152,10 +152,16 @@ async function submitHostEvent() {
   btnEl.textContent = 'Creating...';
 
   try {
+    const tzOffset = -new Date().getTimezoneOffset();
+    const tzSign = tzOffset >= 0 ? '+' : '-';
+    const tzHours = String(Math.floor(Math.abs(tzOffset) / 60)).padStart(2, '0');
+    const tzMins = String(Math.abs(tzOffset) % 60).padStart(2, '0');
+    const tzStr = `${tzSign}${tzHours}:${tzMins}`;
+
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description || '');
-    formData.append('event_date', `${eventDate}T${eventTime || '09:00'}:00`);
+    formData.append('event_date', `${eventDate}T${eventTime || '09:00'}:00${tzStr}`);
     formData.append('location', location || 'Online');
     formData.append('event_type', eventType || 'WORKSHOP');
     formData.append('price', String(price));
