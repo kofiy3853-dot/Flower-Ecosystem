@@ -31,8 +31,12 @@ services:
           property: password
       - key: JWT_SECRET
         generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
       - key: ADMIN_PASSWORD
-        value: ""
+        value: "Nharnah@12345"
+      - key: SUPERADMIN_PASSWORD
+        value: "Super@12345"
       - key: CORS_ORIGIN
         value: https://flower-ecosystem.onrender.com
       - key: CLOUDINARY_CLOUD_NAME
