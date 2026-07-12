@@ -199,7 +199,20 @@ function setView(view) {
 
 // ─── Search ────────────────────────────────────────────────────────────
 
+let _toolbarSearchTimer = null;
+
+function debounceToolbarSearch() {
+    clearTimeout(_toolbarSearchTimer);
+    _toolbarSearchTimer = setTimeout(() => {
+        currentPage = 1;
+        loadEvents();
+    }, 300);
+}
+
 function searchFromHero() {
+    const heroVal = document.getElementById('heroSearch')?.value.trim() || '';
+    const toolbarEl = document.getElementById('toolbarSearch');
+    if (toolbarEl) toolbarEl.value = heroVal;
     currentPage = 1;
     loadEvents();
     if (window.innerWidth <= 900) {
@@ -265,8 +278,9 @@ function goToSlide(i) {
 async function loadEvents() {
     if (currentView === 'calendar') return loadCalendar();
 
-    const searchEl = document.getElementById('heroSearch');
-    const search = searchEl ? searchEl.value.trim() : '';
+    const heroVal = document.getElementById('heroSearch')?.value.trim() || '';
+    const toolbarVal = document.getElementById('toolbarSearch')?.value.trim() || '';
+    const search = heroVal || toolbarVal;
     const params = new URLSearchParams({ sort: currentSort, page: currentPage, limit: 20 });
 
     if (currentCategory) params.set('category', currentCategory);
@@ -462,6 +476,10 @@ function applyMobileFilters() {
 
     const activeFilter = document.querySelector('#mobileFilterChips .evt-chip.active');
     if (activeFilter) currentFilter = activeFilter.dataset.filter;
+
+    const mobileSearchVal = document.getElementById('mobileSearch')?.value.trim() || '';
+    const toolbarSearch = document.getElementById('toolbarSearch');
+    if (toolbarSearch) toolbarSearch.value = mobileSearchVal;
 
     document.querySelectorAll('.evt-sort-tab').forEach(t => t.classList.toggle('active', t.dataset.sort === currentSort));
     document.querySelectorAll('.evt-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === currentFilter));

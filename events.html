@@ -93,6 +93,11 @@
         .evt-chip { padding:0.35rem 0.7rem; border:1px solid var(--border-color); border-radius:16px; font-size:0.78rem; cursor:pointer; background:var(--bg-white); color:var(--text-light); transition:all 0.2s; }
         .evt-chip:hover { border-color:var(--primary-color); color:var(--primary-color); }
         .evt-chip.active { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+        .evt-toolbar-search { position:relative; }
+        .evt-toolbar-search i { position:absolute; left:0.75rem; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:0.85rem; }
+        .evt-toolbar-search input { width:180px; padding:0.4rem 0.75rem 0.4rem 2rem; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.82rem; background:var(--bg-white); transition:border-color 0.2s; }
+        .evt-toolbar-search input:focus { outline:none; border-color:var(--primary-color); }
+        @media (max-width:900px) { .evt-toolbar-search { display:none; } }
 
         /* ─── Event Cards ─────────────────────────────────────────── */
         .evt-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:1.25rem; }
@@ -356,6 +361,10 @@
                             </div>
                         </div>
                         <div style="display:flex;align-items:center;gap:0.75rem;">
+                            <div class="evt-toolbar-search">
+                                <i class="bi bi-search"></i>
+                                <input type="text" id="toolbarSearch" placeholder="Search events..." oninput="debounceToolbarSearch()">
+                            </div>
                             <div class="evt-filter-chips" id="filterChips">
                                 <span class="evt-chip active" data-filter="all">All</span>
                                 <span class="evt-chip" data-filter="free">Free</span>
@@ -530,6 +539,13 @@
         <div class="mobile-filter-panel">
             <div class="mobile-filter-handle"></div>
             <h3 style="font-size:1.05rem;margin-bottom:1rem;">Filter Events</h3>
+
+            <div style="margin-bottom:1rem;">
+                <div class="evt-toolbar-search" style="display:block;">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="mobileSearch" placeholder="Search events..." style="width:100%;">
+                </div>
+            </div>
 
             <div style="margin-bottom:1rem;">
                 <h4 style="font-size:0.85rem;margin-bottom:0.5rem;">Sort By</h4>
