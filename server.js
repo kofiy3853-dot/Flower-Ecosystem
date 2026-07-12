@@ -16,6 +16,11 @@ if (!process.env.JWT_SECRET) {
 }
 
 if (!process.env.JWT_REFRESH_SECRET) {
+    if (process.env.NODE_ENV === 'production') {
+        console.error("CRITICAL: JWT_REFRESH_SECRET must be set in production. Generate one with: node -e \"console.log(require('crypto').randomBytes(64).toString('hex'))\"");
+        process.exit(1);
+    }
+    console.warn('WARNING: JWT_REFRESH_SECRET not set — falling back to JWT_SECRET (dev only). Set JWT_REFRESH_SECRET for production.');
     process.env.JWT_REFRESH_SECRET = process.env.JWT_SECRET;
 }
 

@@ -110,7 +110,7 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
         `INSERT INTO auth.users (first_name, last_name, email, password_hash, role, phone, location, city, state, country, zip_code,
          description, profile_image, business_name, business_type, business_phone, business_email, website,
          social_instagram, social_facebook, social_twitter, is_active, email_verified)
-         VALUES ($1, '', $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, TRUE, TRUE)
+         VALUES ($1, '', $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, TRUE, FALSE)
          RETURNING id, first_name, email, role, is_active, created_at`,
         [name, email, hash, dbRole, phone || null, location || null, city || null, state || null, country || null, zip_code || null,
          description || null, profile_image, business_name || null, business_type || null, business_phone || null,
@@ -127,20 +127,23 @@ router.post('/register', upload.single('avatar'), rateLimiter(10, 60000), asyncH
       throw dbErr;
     }
 
-    // Generate tokens (email auto-verified)
-    const { accessToken, refreshToken } = generateTokens(user);
-    const csrfToken = crypto.randomBytes(32).toString('hex');
-
-    // Store refresh token in database
-    const refreshTokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+    // Send verification email
+    const verificationToken = crypto.randomBytes(32).toString('hex');
     await pool.query(
-        'INSERT INTO auth.refresh_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL \'30 days\')',
-        [user.id, refreshTokenHash]
+        'INSERT INTO auth.email_verifications (user_id, token, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL \'24 hours\')',
+        [user.id, verificationToken]
     );
+    const baseUrl = process.env.APP_URL || `http://localhost:${process.env.PORT || 3000}`;
+    const verificationUrl = `${baseUrl}/verify-email.html?token=${verificationToken}`;
+    try {
+        await sendVerificationEmail(email, verificationUrl);
+    } catch (e) {
+        console.error('Failed to send verification email:', e.message);
+    }
 
-    setAuthCookies(res, accessToken, refreshToken, crypto.randomBytes(32).toString('hex'));
-    res.status(201).json({ 
-        message: 'Registration successful.',
+    res.status(201).json({
+        message: 'Registration successful. Please check your email to verify your account.',
+        requiresVerification: true,
         user: { id: user.id, name: user.first_name, email: user.email, role: user.role }
     });
 }));
@@ -254,10 +257,9 @@ router.post('/login', rateLimiter(10, 60000), asyncHandler(async (req, res) => {
     if (user.is_active === false) {
         return res.status(403).json({ error: 'Account has been deactivated. Please contact support.' });
     }
-    // TEMP: Email verification disabled for testing
-    // if (!user.email_verified) {
-    //     return res.status(403).json({ error: 'Please verify your email before logging in. Check your inbox for the verification link.' });
-    // }
+    if (!user.email_verified) {
+        return res.status(403).json({ error: 'Please verify your email before logging in. Check your inbox for the verification link.' });
+    }
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
         await recordFailedAttempt(email);
