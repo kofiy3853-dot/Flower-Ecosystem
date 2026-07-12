@@ -338,7 +338,7 @@ Guidelines for accuracy:
 
                 try {
                     const artResult = await pool.query(
-                        'SELECT id, title, slug, excerpt, thumbnail_url, reading_time, published_at FROM learning.articles WHERE (title ILIKE $1 OR excerpt ILIKE $2) AND is_published = true ORDER BY published_at DESC LIMIT 5',
+                        'SELECT id, title, slug, excerpt, reading_time, published_at, NULL AS thumbnail_url FROM learning.articles WHERE (title ILIKE $1 OR excerpt ILIKE $2) AND is_published = true ORDER BY published_at DESC LIMIT 5',
                         [`%${flowerName}%`, `%${flowerName}%`]
                     );
                     articles = artResult.rows;

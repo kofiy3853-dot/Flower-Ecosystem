@@ -538,8 +538,9 @@ router.get('/articles', asyncHandler(async (req, res) => {
             values.push(offset);
 
             const dataQ = `
-                SELECT a.id, a.title, a.slug, a.excerpt, a.thumbnail_url, a.author_name, a.author_title,
-                       a.reading_time, a.is_featured, a.views, a.published_at, a.category
+                SELECT a.id, a.title, a.slug, a.excerpt, a.author_name,
+                       a.reading_time, a.is_featured, a.views, a.published_at, a.category,
+                       NULL AS thumbnail_url, NULL AS author_title
                 FROM learning.articles a
                 ${where}
                 ORDER BY a.is_featured DESC, ${orderBy}
@@ -561,7 +562,7 @@ router.get('/articles/featured', asyncHandler(async (_, res) => {
     if (await dbAvailable()) {
         try {
             const r = await pool.query(`
-                SELECT a.id, a.title, a.slug, a.excerpt, a.thumbnail_url, a.author_name, a.category
+                SELECT a.id, a.title, a.slug, a.excerpt, a.author_name, a.category, NULL AS thumbnail_url
                 FROM learning.articles a
                 WHERE a.is_featured = true AND a.is_published = true
                 ORDER BY a.published_at DESC LIMIT 4`);
@@ -610,8 +611,8 @@ router.get('/articles/:id/related', asyncHandler(async (req, res) => {
             const current = await pool.query('SELECT category_id FROM learning.articles WHERE id = $1', [id]);
             if (current.rows.length && current.rows[0].category_id) {
                 const r = await pool.query(`
-                    SELECT a.id, a.title, a.slug, a.excerpt, a.thumbnail_url, a.reading_time, a.published_at,
-                           ac.name AS category_name, ac.icon AS category_icon
+                    SELECT a.id, a.title, a.slug, a.excerpt, a.reading_time, a.published_at,
+                           ac.name AS category_name, ac.icon AS category_icon, NULL AS thumbnail_url
                     FROM learning.articles a
                     LEFT JOIN learning.article_categories ac ON ac.id = a.category_id
                     WHERE a.category_id = $1 AND a.id != $2 AND a.is_published = true
@@ -619,8 +620,8 @@ router.get('/articles/:id/related', asyncHandler(async (req, res) => {
                 if (r.rows.length) return res.json(r.rows);
             }
             const r2 = await pool.query(`
-                SELECT a.id, a.title, a.slug, a.excerpt, a.thumbnail_url, a.reading_time, a.published_at,
-                       ac.name AS category_name, ac.icon AS category_icon
+                SELECT a.id, a.title, a.slug, a.excerpt, a.reading_time, a.published_at,
+                       ac.name AS category_name, ac.icon AS category_icon, NULL AS thumbnail_url
                 FROM learning.articles a
                 LEFT JOIN learning.article_categories ac ON ac.id = a.category_id
                 WHERE a.id != $1 AND a.is_published = true
@@ -639,9 +640,8 @@ router.get('/videos', asyncHandler(async (_, res) => {
             // Use simpler query to avoid column existence issues
             const r = await pool.query(`
                 SELECT l.id, l.title, l.content AS description, l.video_url,
-                       COALESCE(l.duration_minutes, 0) as duration_minutes,
                        l.sort_order,
-                       c.title AS course_title, c.instructor, c.category, c.thumbnail_url AS course_image,
+                       c.title AS course_title, c.instructor, c.category,
                        c.id AS course_id
                 FROM learning.lessons l
                 JOIN learning.courses c ON c.id = l.course_id
@@ -654,8 +654,8 @@ router.get('/videos', asyncHandler(async (_, res) => {
                 title: row.title,
                 description: row.description || '',
                 video_url: row.video_url,
-                duration: row.duration_minutes ? `${row.duration_minutes} min` : '',
-                image: row.course_image,
+                duration: '',
+                image: null,
                 instructor: row.instructor,
                 category: row.category || '',
                 tag: 'Course',
@@ -1206,7 +1206,7 @@ router.get('/search', asyncHandler(async (req, res) => {
                 if (results.length < lim) {
                     const lim2 = lim - results.length;
                     values.push(lim2, offset);
-                    const r = await pool.query(`SELECT id, title, slug, description, thumbnail_url, price, currency, level, instructor, category, rating, students_count FROM learning.courses ${where} ORDER BY is_featured DESC, students_count DESC LIMIT $${values.length - 1} OFFSET $${values.length}`, values);
+                    const r = await pool.query(`SELECT id, title, slug, description, price, currency, level, instructor, category, rating, students_count, NULL AS thumbnail_url FROM learning.courses ${where} ORDER BY is_featured DESC, students_count DESC LIMIT $${values.length - 1} OFFSET $${values.length}`, values);
                     results.push(...r.rows.map(r => ({ ...r, type: 'course', url: `course-detail.html?id=${r.id}` })));
                 }
             } else if (t === 'articles') {
@@ -1304,7 +1304,7 @@ router.get('/courses/:id/related', asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.json([]);
     try {
         const r = await pool.query(`
-            SELECT c.id, c.title, c.slug, c.thumbnail_url, c.price, c.currency, c.rating, c.reviews_count, c.instructor, c.category
+            SELECT c.id, c.title, c.slug, c.price, c.currency, c.rating, c.reviews_count, c.instructor, c.category, NULL AS thumbnail_url
             FROM learning.courses c
             WHERE c.category = (SELECT category FROM learning.courses WHERE id = $1)
               AND c.id != $1 AND c.is_published = true
