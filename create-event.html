@@ -1249,10 +1249,62 @@
             alert('Opening preview...');
         }
 
-        function publishEvent() {
-            if (confirm('Are you sure you want to publish this event?')) {
+        async function publishEvent() {
+            const title = document.getElementById('eventTitle')?.value.trim();
+            const eventDate = document.getElementById('eventDate')?.value;
+            const startTime = document.getElementById('startTime')?.value;
+            const endTime = document.getElementById('endTime')?.value;
+
+            if (!title || !eventDate) {
+                alert('Title and date are required');
+                return;
+            }
+            if (!confirm('Are you sure you want to publish this event?')) return;
+
+            const btn = document.querySelector('.publish-btns .btn-primary') || document.querySelector('[onclick="publishEvent()"]');
+            const origText = btn?.textContent;
+            if (btn) { btn.disabled = true; btn.textContent = 'Publishing...'; }
+
+            try {
+                const formData = new FormData();
+                formData.append('title', title);
+                formData.append('description', document.getElementById('fullDesc')?.value || document.getElementById('shortDesc')?.value || '');
+                formData.append('event_date', `${eventDate}T${startTime || '09:00'}:00`);
+                if (endTime) formData.append('end_date', `${eventDate}T${endTime}:00`);
+
+                const eventTypeRadio = document.querySelector('input[name="eventType"]:checked');
+                const eventTypeVal = eventTypeRadio?.value || 'online';
+                const venueName = document.getElementById('venueName')?.value.trim();
+                let location = 'Online';
+                if (eventTypeVal === 'physical') location = venueName || 'Physical Location';
+                else if (eventTypeVal === 'hybrid') location = venueName ? `${venueName} + Online` : 'Hybrid';
+                formData.append('location', location);
+
+                const category = document.getElementById('eventCategory')?.value;
+                if (category) formData.append('event_category', category);
+
+                const typeMap = { 'floristry-workshops': 'WORKSHOP', 'flower-care': 'WORKSHOP', gardening: 'WORKSHOP', 'medicinal-plants': 'WEBINAR', 'business-marketing': 'WEBINAR', 'flower-identification': 'WORKSHOP', webinars: 'WEBINAR', exhibitions: 'EXHIBITION', competitions: 'COMPETITION' };
+                formData.append('event_type', typeMap[category] || 'WORKSHOP');
+
+                const maxAttendees = document.getElementById('maxAttendees')?.value;
+                if (maxAttendees) formData.append('max_participants', maxAttendees);
+
+                const regTypeRadio = document.querySelector('input[name="regType"]:checked');
+                const price = regTypeRadio?.value === 'paid' ? (document.getElementById('ticketPrice')?.value || '0') : '0';
+                formData.append('price', price);
+
+                const coverInput = document.getElementById('coverInput');
+                if (coverInput?.files?.[0]) formData.append('image', coverInput.files[0]);
+
+                const res = await fetchWithAuth('/api/events', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to create event');
+
                 alert('Event published successfully!');
                 window.location.href = 'events.html';
+            } catch (err) {
+                alert('Error: ' + (err.message || 'Failed to publish event'));
+                if (btn) { btn.disabled = false; btn.textContent = origText; }
             }
         }
     </script>
