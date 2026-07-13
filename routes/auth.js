@@ -225,15 +225,17 @@ router.post('/login', rateLimiter(10, 60000), asyncHandler(async (req, res) => {
         return res.status(503).json({ error: 'Service unavailable — database not connected' });
     }
 
-    // Check account lockout
-    const lockout = await pool.query(
-        'SELECT locked_until, failed_attempts FROM auth.login_attempts WHERE email = $1',
-        [email]
-    );
-    if (lockout.rows.length && lockout.rows[0].locked_until && new Date(lockout.rows[0].locked_until) > new Date()) {
-        const mins = Math.ceil((new Date(lockout.rows[0].locked_until) - Date.now()) / 60000);
-        return res.status(429).json({ error: `Account locked. Try again in ${mins} minutes.` });
-    }
+    // Check account lockout (wrapped — table may not exist on first deploy)
+    try {
+        const lockout = await pool.query(
+            'SELECT locked_until, failed_attempts FROM auth.login_attempts WHERE email = $1',
+            [email]
+        );
+        if (lockout.rows.length && lockout.rows[0].locked_until && new Date(lockout.rows[0].locked_until) > new Date()) {
+            const mins = Math.ceil((new Date(lockout.rows[0].locked_until) - Date.now()) / 60000);
+            return res.status(429).json({ error: `Account locked. Try again in ${mins} minutes.` });
+        }
+    } catch {}
 
     if (!(await dbAvailable())) {
         return res.status(503).json({ error: 'Service unavailable — database not connected' });
@@ -241,7 +243,7 @@ router.post('/login', rateLimiter(10, 60000), asyncHandler(async (req, res) => {
 
     let user;
     try {
-        const r = await pool.query('SELECT id, first_name, last_name, email, password_hash, role, is_active, profile_image, email_verified, two_factor_enabled, two_factor_secret FROM auth.users WHERE email = $1', [email]);
+        const r = await pool.query('SELECT id, first_name, last_name, email, password_hash, role, is_active, profile_image, COALESCE(email_verified, is_verified, FALSE) AS email_verified, COALESCE(two_factor_enabled, FALSE) AS two_factor_enabled, two_factor_secret FROM auth.users WHERE email = $1', [email]);
         if (!r.rows.length) {
             // Record failed attempt
             await recordFailedAttempt(email);
@@ -283,15 +285,19 @@ router.post('/login', rateLimiter(10, 60000), asyncHandler(async (req, res) => {
         }
     }
 
-    // Reset failed attempts on successful login
-    await resetFailedAttempts(email);
+    // Reset failed attempts on successful login (wrapped — table may not exist)
+    try { await resetFailedAttempts(email); } catch {}
 
     const { accessToken, refreshToken } = generateTokens(user);
     const refreshTokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
-    await pool.query(
-        'INSERT INTO auth.refresh_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL \'30 days\')',
-        [user.id, refreshTokenHash]
-    );
+    try {
+        await pool.query(
+            'INSERT INTO auth.refresh_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, CURRENT_TIMESTAMP + INTERVAL \'30 days\')',
+            [user.id, refreshTokenHash]
+        );
+    } catch (rtErr) {
+        console.error('Refresh token record failed:', rtErr.message);
+    }
     const csrfToken = crypto.randomBytes(32).toString('hex');
     setAuthCookies(res, accessToken, refreshToken, csrfToken);
 
@@ -531,21 +537,23 @@ router.get('/csrf-token', asyncHandler(async (req, res) => {
 // ─── Account Lockout Helpers ──────────────────────────────────
 
 async function recordFailedAttempt(email) {
-    const now = new Date();
-    const r = await pool.query(
-        `INSERT INTO auth.login_attempts (email, failed_attempts, last_attempt, locked_until)
-         VALUES ($1, 1, $2, NULL)
-         ON CONFLICT (email) DO UPDATE SET
-         failed_attempts = auth.login_attempts.failed_attempts + 1,
-         last_attempt = $2,
-         locked_until = CASE 
-             WHEN auth.login_attempts.failed_attempts + 1 >= 5 THEN $2 + INTERVAL '15 minutes'
-             ELSE auth.login_attempts.locked_until
-         END
-         RETURNING locked_until, failed_attempts`,
-        [email, new Date()]
-    );
-    return r.rows[0];
+    try {
+        const now = new Date();
+        const r = await pool.query(
+            `INSERT INTO auth.login_attempts (email, failed_attempts, last_attempt, locked_until)
+             VALUES ($1, 1, $2, NULL)
+             ON CONFLICT (email) DO UPDATE SET
+             failed_attempts = auth.login_attempts.failed_attempts + 1,
+             last_attempt = $2,
+             locked_until = CASE 
+                 WHEN auth.login_attempts.failed_attempts + 1 >= 5 THEN $2 + INTERVAL '15 minutes'
+                 ELSE auth.login_attempts.locked_until
+             END
+             RETURNING locked_until, failed_attempts`,
+            [email, new Date()]
+        );
+        return r.rows[0];
+    } catch { return null; }
 }
 
 async function resetFailedAttempts(email) {
