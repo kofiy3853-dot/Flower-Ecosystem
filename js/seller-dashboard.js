@@ -14,6 +14,15 @@ function authHeaders() {
     return { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
 }
 
+// Wrapper that uses fetchWithAuth (shared/api.js) for automatic 401→refresh→retry
+const _origFetch = typeof fetchWithAuth === 'function' ? null : fetch;
+async function sellerFetch(url, options = {}) {
+    if (typeof fetchWithAuth === 'function') {
+        return fetchWithAuth(url, options);
+    }
+    return (_origFetch || fetch)(url, { credentials: 'include', ...options });
+}
+
 function escapeHtml(str) {
     if (!str) return '';
     return String(str).replace(/[&<>"']/g, c => ({ '&': '&', '<': '<', '>': '>', '"': '"', "'": '\'' }[c]));
@@ -85,7 +94,7 @@ async function initSellerDashboard() {
 }
 
 async function loadProfile() {
-    try { profile = await fetch('/api/seller/profile', { headers: authHeaders(), credentials: 'include' }).then(r => r.json()); } catch { profile = { shop_name: 'My Shop' }; }
+    try { profile = await sellerFetch('/api/seller/profile', { headers: authHeaders() }).then(r => r.json()); } catch { profile = { shop_name: 'My Shop' }; }
     const shopName = profile.shop_name || 'My Shop';
     document.getElementById('welcomeTitle').textContent = `Welcome Back, ${escapeHtml(shopName)}`;
     
@@ -105,7 +114,7 @@ async function initCategoryDropdown() {
     const sel = document.getElementById('prodCategory');
     if (!sel) return;
     try {
-        const cats = await fetch('/api/products/list/categories').then(r => r.json());
+        const cats = await sellerFetch('/api/products/list/categories').then(r => r.json());
         if (Array.isArray(cats) && cats.length) {
             sel.innerHTML = '<option value="">Select Category</option>' + cats.map(c => `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('');
         }
@@ -127,7 +136,7 @@ async function loadSection(section) {
 
 async function loadDashboard() {
     try {
-        const stats = await fetch('/api/seller/analytics', { headers: authHeaders(), credentials: 'include' }).then(r => r.json());
+        const stats = await sellerFetch('/api/seller/analytics', { headers: authHeaders(), credentials: 'include' }).then(r => r.json());
         const statsEl = document.getElementById('statsGrid');
         if (statsEl) statsEl.innerHTML = `
             <div class="stat-card"><div class="icon"><i class="bi bi-box-seam"></i></div><div class="num">${stats.products || 0}</div><div class="label">Products</div></div>
@@ -140,7 +149,7 @@ async function loadDashboard() {
     } catch {}
 
     try {
-        const orders = await fetch('/api/seller/orders', { headers: authHeaders(), credentials: 'include' }).then(r => r.json());
+        const orders = await sellerFetch('/api/seller/orders', { headers: authHeaders(), credentials: 'include' }).then(r => r.json());
         const orderList = Array.isArray(orders) ? orders : (orders.orders || []);
         const recent = orderList.slice(0, 5);
         const ordersEl = document.getElementById('recentOrders');
@@ -156,7 +165,7 @@ async function loadDashboard() {
     } catch {}
 
     try {
-        const reviews = await fetch('/api/seller/reviews', { headers: authHeaders(), credentials: 'include' }).then(r => r.json());
+        const reviews = await sellerFetch('/api/seller/reviews', { headers: authHeaders(), credentials: 'include' }).then(r => r.json());
         const reviewList = Array.isArray(reviews) ? reviews : (reviews.reviews || []);
         const recent = reviewList.slice(0, 3);
         const reviewsEl = document.getElementById('latestReviews');
@@ -171,7 +180,7 @@ async function loadDashboard() {
 
     // Low Stock Alerts
     try {
-        const products = await fetch('/api/seller/products', { headers: authHeaders(), credentials: 'include' }).then(r => r.json());
+        const products = await sellerFetch('/api/seller/products', { headers: authHeaders(), credentials: 'include' }).then(r => r.json());
         const productList = Array.isArray(products) ? products : (products.products || []);
         const lowStock = productList.filter(p => p.stock_quantity <= 10 && p.stock_quantity > 0);
         const outOfStock = productList.filter(p => p.stock_quantity === 0);
@@ -194,7 +203,7 @@ async function loadDashboard() {
 
     // Top Products
     try {
-        const products = await fetch('/api/seller/products', { headers: authHeaders(), credentials: 'include' }).then(r => r.json());
+        const products = await sellerFetch('/api/seller/products', { headers: authHeaders(), credentials: 'include' }).then(r => r.json());
         const productList = Array.isArray(products) ? products : (products.products || []);
         const sorted = [...productList].sort((a, b) => (b.sales || b.sold || 0) - (a.sales || a.sold || 0)).slice(0, 5);
 
@@ -213,7 +222,7 @@ async function loadDashboard() {
 
     // Recent Messages
     try {
-        const messages = await fetch('/api/messages?limit=3', { headers: authHeaders() }).then(r => r.json());
+        const messages = await sellerFetch('/api/messages?limit=3', { headers: authHeaders() }).then(r => r.json());
         const msgList = Array.isArray(messages) ? messages : (messages.messages || []);
         const el = document.getElementById('recentMessages');
         if (el) el.innerHTML = msgList.length ? msgList.map(m => `
@@ -237,7 +246,7 @@ let selectedProducts = new Set();
 
 async function loadProducts() {
     try {
-        const res = await fetch('/api/seller/products', { headers: authHeaders() });
+        const res = await sellerFetch('/api/seller/products', { headers: authHeaders() });
         if (!res.ok) { allProducts = []; return; }
         const data = await res.json();
         allProducts = Array.isArray(data) ? data : (data.products || []);
@@ -380,11 +389,11 @@ async function bulkAction(action) {
         try {
             let res;
             if (action === 'delete') {
-                res = await fetch(`/api/products/${id}`, { method: 'DELETE', headers: authHeaders() });
+                res = await sellerFetch(`/api/products/${id}`, { method: 'DELETE', headers: authHeaders() });
             } else if (action === 'activate' || action === 'deactivate') {
-                res = await fetch(`/api/products/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ is_active: action === 'activate', status: action === 'activate' ? 'published' : 'inactive' }) });
+                res = await sellerFetch(`/api/products/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ is_active: action === 'activate', status: action === 'activate' ? 'published' : 'inactive' }) });
             } else if (action === 'featured') {
-                res = await fetch(`/api/products/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ featured: true }) });
+                res = await sellerFetch(`/api/products/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ featured: true }) });
             }
             if (res && !res.ok) {
                 const data = await res.json();
@@ -401,7 +410,7 @@ async function bulkAction(action) {
 
 async function toggleProductStatus(id, currentActive) {
     try {
-        await fetch(`/api/products/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ is_active: !currentActive, status: !currentActive ? 'published' : 'inactive' }) });
+        await sellerFetch(`/api/products/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ is_active: !currentActive, status: !currentActive ? 'published' : 'inactive' }) });
         await loadProducts();
     } catch { alert('Failed to update status'); }
 }
@@ -410,7 +419,7 @@ let allOrders = [];
 
 async function loadOrders() {
     try { 
-        const data = await fetch('/api/seller/orders', { headers: authHeaders() }).then(r => r.json());
+        const data = await sellerFetch('/api/seller/orders', { headers: authHeaders() }).then(r => r.json());
         allOrders = Array.isArray(data) ? data : (data.orders || []); 
     } catch { allOrders = []; }
     renderOrderStats();
@@ -491,14 +500,14 @@ function statusBadge(status) {
 async function updateOrderStatus(id, status) {
     if (!status) return;
     try {
-        await fetch(`/api/seller/orders/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ status }) });
+        await sellerFetch(`/api/seller/orders/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ status }) });
         await loadOrders();
     } catch { alert('Failed to update order status'); }
 }
 
 async function viewOrder(id) {
     try {
-        const order = await fetch(`/api/seller/orders/${id}`, { headers: authHeaders() }).then(r => r.json());
+        const order = await sellerFetch(`/api/seller/orders/${id}`, { headers: authHeaders() }).then(r => r.json());
         const modal = document.getElementById('orderModal');
         const content = document.getElementById('modalOrderContent');
         const title = document.getElementById('modalOrderTitle');
@@ -550,7 +559,7 @@ document.addEventListener('click', (e) => {
 async function loadReviews() {
     let reviews;
     try { 
-        const data = await fetch('/api/seller/reviews', { headers: authHeaders() }).then(r => r.json());
+        const data = await sellerFetch('/api/seller/reviews', { headers: authHeaders() }).then(r => r.json());
         reviews = Array.isArray(data) ? data : (data.reviews || []); 
     } catch { reviews = []; }
     const el = document.getElementById('reviewsSection');
@@ -573,7 +582,7 @@ let allNotifications = [];
 
 async function loadNotifications() {
     try { 
-        const data = await fetch('/api/notifications', { headers: authHeaders() }).then(r => r.json());
+        const data = await sellerFetch('/api/notifications', { headers: authHeaders() }).then(r => r.json());
         allNotifications = Array.isArray(data) ? data : (data.notifications || []); 
     } catch { allNotifications = []; }
     updateNotifBadge();
@@ -582,7 +591,7 @@ async function loadNotifications() {
 
 async function updateNotifBadge() {
     try {
-        const data = await fetch('/api/notifications/unread-count', { headers: authHeaders() }).then(r => r.json());
+        const data = await sellerFetch('/api/notifications/unread-count', { headers: authHeaders() }).then(r => r.json());
         const badge = document.getElementById('notifBadge');
         if (badge) {
             if (data.count > 0) {
@@ -655,7 +664,7 @@ async function markNotifRead(id) {
     const notif = allNotifications.find(n => n.id === id);
     if (notif && !notif.is_read) {
         notif.is_read = true;
-        try { await fetch(`/api/notifications/${id}/read`, { method: 'PUT', headers: authHeaders() }); } catch {}
+        try { await sellerFetch(`/api/notifications/${id}/read`, { method: 'PUT', headers: authHeaders() }); } catch {}
         updateNotifBadge();
         filterNotifications();
     }
@@ -663,7 +672,7 @@ async function markNotifRead(id) {
 
 async function markAllRead() {
     try {
-        await fetch('/api/notifications/read', { method: 'PUT', headers: authHeaders() });
+        await sellerFetch('/api/notifications/read', { method: 'PUT', headers: authHeaders() });
         allNotifications.forEach(n => n.is_read = true);
         updateNotifBadge();
         filterNotifications();
@@ -673,7 +682,7 @@ async function markAllRead() {
 async function loadMessages() {
     let conversations;
     try { 
-        const data = await fetch('/api/messages/conversations', { headers: authHeaders() }).then(r => r.json());
+        const data = await sellerFetch('/api/messages/conversations', { headers: authHeaders() }).then(r => r.json());
         conversations = Array.isArray(data) ? data : (data.conversations || []); 
     } catch { conversations = []; }
     const el = document.getElementById('messagesSection');
@@ -693,7 +702,7 @@ async function loadMessages() {
 
 async function loadAnalytics() {
     try {
-        const stats = await fetch('/api/seller/analytics', { headers: authHeaders() }).then(r => r.json());
+        const stats = await sellerFetch('/api/seller/analytics', { headers: authHeaders() }).then(r => r.json());
         const currency = (stats.top_products && stats.top_products[0]?.currency) || 'GHS';
         const el = document.getElementById('analyticsContent');
         if (!el) return;
@@ -844,7 +853,7 @@ let editingProductId = null;
 
 async function editProduct(id) {
     try {
-        const data = await fetch('/api/seller/products', { headers: authHeaders() }).then(r => r.json());
+        const data = await sellerFetch('/api/seller/products', { headers: authHeaders() }).then(r => r.json());
         const products = Array.isArray(data) ? data : (data.products || []);
         const p = products.find(x => x.id === id);
         if (!p) { alert('Product not found'); return; }
@@ -931,7 +940,7 @@ async function saveProduct(status) {
         if (pendingImages.length > 0) {
             const fd = new FormData();
             pendingImages.forEach(f => fd.append('images', f));
-            const uploadRes = await fetch('/api/upload', {
+            const uploadRes = await sellerFetch('/api/upload', {
                 method: 'POST',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' },
                 credentials: 'include',
@@ -945,7 +954,7 @@ async function saveProduct(status) {
         if (pendingVideo) {
             const fd = new FormData();
             fd.append('video', pendingVideo);
-            const uploadRes = await fetch('/api/upload/video', {
+            const uploadRes = await sellerFetch('/api/upload/video', {
                 method: 'POST',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' },
                 credentials: 'include',
@@ -1014,7 +1023,7 @@ async function saveProduct(status) {
         if (imageUrls.length > 0) { body.images = imageUrls; body.image_url = imageUrls[0]; }
         if (videoUrl) body.video_url = videoUrl;
 
-        const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(body) });
+        const res = await sellerFetch(url, { method, headers: authHeaders(), body: JSON.stringify(body) });
         if (!res.ok) { const err = await res.json().catch(() => {}); alert(err?.error || 'Failed to save product'); return; }
         
         resetProductForm();
@@ -1055,7 +1064,7 @@ function resetProductForm() {
 async function deleteProduct(id) {
     if (!confirm('Delete this product?')) return;
     try {
-        const res = await fetch(`/api/products/${id}`, { method: 'DELETE', headers: authHeaders() });
+        const res = await sellerFetch(`/api/products/${id}`, { method: 'DELETE', headers: authHeaders() });
         if (!res.ok) {
             const data = await res.json();
             throw new Error(data.error || 'Delete failed');
@@ -1068,7 +1077,7 @@ async function deleteProduct(id) {
 }
 
 async function updateOrder(id, status) {
-    try { await fetch(`/api/seller/orders/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ status }) }); loadOrders(); loadDashboard(); } catch (err) { handleError(err, 'Failed to update order'); }
+    try { await sellerFetch(`/api/seller/orders/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ status }) }); loadOrders(); loadDashboard(); } catch (err) { handleError(err, 'Failed to update order'); }
 }
 
 async function saveSettings() {
@@ -1081,7 +1090,7 @@ async function saveSettings() {
             if (file.size > 5 * 1024 * 1024) { alert('Image must be under 5MB.'); return; }
             const fd = new FormData();
             fd.append('images', file);
-            const uploadRes = await fetch('/api/upload', {
+            const uploadRes = await sellerFetch('/api/upload', {
                 method: 'POST',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' },
                 credentials: 'include',
@@ -1100,7 +1109,7 @@ async function saveSettings() {
         };
         if (profileImage) body.profile_image = profileImage;
 
-        await fetch('/api/seller/profile', { method: 'PUT', headers: authHeaders(), body: JSON.stringify(body) });
+        await sellerFetch('/api/seller/profile', { method: 'PUT', headers: authHeaders(), body: JSON.stringify(body) });
         await loadProfile();
         alert('Settings saved!');
     } catch (err) { handleError(err, 'Failed to save settings'); }
