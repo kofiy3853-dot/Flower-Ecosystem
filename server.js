@@ -383,6 +383,9 @@ app.use('/api', require('./routes/category-images'));
 app.use('/api/research', require('./routes/research'));
 app.use('/api/super-admin', require('./routes/super-admin'));
 
+// ─── Analytics stub (no-op) ───────────────────────────────────────────────
+app.post('/api/analytics/track', (req, res) => res.json({ ok: true }));
+
 // ─── Error handling ────────────────────────────────────────────────────────
 
 app.use((req, res) => {
