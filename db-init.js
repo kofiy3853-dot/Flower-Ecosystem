@@ -79,6 +79,20 @@ async function run() {
             await runSqlFile(client, msgSchemaPath, 'Messaging schema');
         }
 
+        // Run product enhancements (status, sku, delivery_areas, tags, etc.)
+        const productEnhPath = path.join(__dirname, 'sql', 'product-enhancements.sql');
+        if (fs.existsSync(productEnhPath)) {
+            console.log('Running product-enhancements.sql...');
+            await runSqlFile(client, productEnhPath, 'Product enhancements');
+        }
+
+        // Run seller dashboard schema
+        const sellerDashPath = path.join(__dirname, 'sql', 'seller-dashboard.sql');
+        if (fs.existsSync(sellerDashPath)) {
+            console.log('Running seller-dashboard.sql...');
+            await runSqlFile(client, sellerDashPath, 'Seller dashboard');
+        }
+
         // Run buyer dashboard schema (profiles, favorites, etc.)
         const buyerSchemaPath = path.join(__dirname, 'sql', 'buyer-dashboard.sql');
         if (fs.existsSync(buyerSchemaPath)) {
