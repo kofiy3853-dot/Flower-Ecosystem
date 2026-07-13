@@ -50,7 +50,7 @@ async function run() {
         }
 
         // Run migrations independently (each handles its own errors)
-        const migrations = ['001_add_grower_role.sql', '002_add_missing_columns.sql', '011_newsletter_subscribers.sql'];
+        const migrations = ['001_add_grower_role.sql', '002_add_missing_columns.sql', '011_newsletter_subscribers.sql', '012_fix_articles_columns.sql'];
         for (const m of migrations) {
             const mPath = path.join(__dirname, 'migrations', m);
             if (fs.existsSync(mPath)) {
@@ -251,6 +251,21 @@ async function run() {
                 console.log('care-guides-enhanced.sql partially applied:', e.message.split('\n')[0]);
             }
         }
+
+        // Ensure care_guides table has all columns before seeding
+        try {
+            const careGuideCols = [
+                "ALTER TABLE learning.care_guides ADD COLUMN IF NOT EXISTS plant_name VARCHAR(255)",
+                "ALTER TABLE learning.care_guides ADD COLUMN IF NOT EXISTS light VARCHAR(100)",
+                "ALTER TABLE learning.care_guides ADD COLUMN IF NOT EXISTS water VARCHAR(100)",
+                "ALTER TABLE learning.care_guides ADD COLUMN IF NOT EXISTS temperature VARCHAR(100)",
+                "ALTER TABLE learning.care_guides ADD COLUMN IF NOT EXISTS humidity VARCHAR(100)",
+                "ALTER TABLE learning.care_guides ADD COLUMN IF NOT EXISTS soil VARCHAR(255)",
+                "ALTER TABLE learning.care_guides ADD COLUMN IF NOT EXISTS tips JSONB",
+                "ALTER TABLE learning.care_guides ADD COLUMN IF NOT EXISTS views INTEGER DEFAULT 0"
+            ];
+            for (const sql of careGuideCols) { try { await client.query(sql); } catch {} }
+        } catch {}
 
         // Run care guides base tables (care_categories, care_guides, care_tips)
         const careGuidesBasePath = path.join(__dirname, 'sql', 'care-guides.sql');
@@ -456,6 +471,37 @@ async function run() {
             `);
             await client.query('CREATE INDEX IF NOT EXISTS idx_course_lessons_course ON learning.course_lessons(course_id)');
         } catch {}
+
+        // Ensure learning.articles has all columns expected by routes
+        try {
+            const articleCols = [
+                "ALTER TABLE learning.articles ADD COLUMN IF NOT EXISTS author_name VARCHAR(255)",
+                "ALTER TABLE learning.articles ADD COLUMN IF NOT EXISTS author_title VARCHAR(255)",
+                "ALTER TABLE learning.articles ADD COLUMN IF NOT EXISTS thumbnail_url TEXT",
+                "ALTER TABLE learning.articles ADD COLUMN IF NOT EXISTS reading_time INT",
+                "ALTER TABLE learning.articles ADD COLUMN IF NOT EXISTS category_id INT",
+                "ALTER TABLE learning.articles ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT FALSE",
+                "ALTER TABLE learning.articles ADD COLUMN IF NOT EXISTS views INT DEFAULT 0",
+                "ALTER TABLE learning.articles ADD COLUMN IF NOT EXISTS published_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+                "ALTER TABLE learning.articles ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+                "ALTER TABLE learning.articles ADD COLUMN IF NOT EXISTS table_of_contents TEXT",
+                "UPDATE learning.articles SET author_name = author WHERE author_name IS NULL AND author IS NOT NULL",
+                "UPDATE learning.articles SET published_at = created_at WHERE published_at IS NULL"
+            ];
+            for (const sql of articleCols) { try { await client.query(sql); } catch {} }
+        } catch {}
+
+        // Ensure marketplace.category_images table exists
+        const categoryImagesPath = path.join(__dirname, 'sql', 'category-images.sql');
+        if (fs.existsSync(categoryImagesPath)) {
+            console.log('Running category-images.sql...');
+            try {
+                await client.query(fs.readFileSync(categoryImagesPath, 'utf8'));
+                console.log('Category images table applied.');
+            } catch (e) {
+                console.log('Category images partially applied:', e.message.split('\n')[0]);
+            }
+        }
 
         // Clear all login locks on startup
         try {

@@ -2,6 +2,15 @@ const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const { pool, JWT_SECRET, upload, rateLimiter, asyncHandler, dbAvailable, readJSON, requireAuth, getFileUrl } = require('./middleware');
 
+// Resolve an event param (UUID or slug) to a UUID
+async function resolveEventId(idOrSlug) {
+    if (!idOrSlug) return null;
+    // Already a UUID
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug)) return idOrSlug;
+    const r = await pool.query('SELECT id FROM events.events WHERE slug = $1', [idOrSlug]);
+    return r.rows.length ? r.rows[0].id : null;
+}
+
 router.get('/categories', asyncHandler(async (_, res) => {
     if (!(await dbAvailable())) {
         return res.json([
@@ -194,7 +203,8 @@ router.post('/', requireAuth, upload.single('image'), asyncHandler(async (req, r
 
 router.put('/:id', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id } = req.params;
+    const id = await resolveEventId(req.params.id);
+    if (!id) return res.status(404).json({ error: 'Event not found' });
     const existing = await pool.query('SELECT * FROM events.events WHERE id = $1', [id]);
     if (!existing.rows.length) return res.status(404).json({ error: 'Event not found' });
     const userRole = (req.user.role || '').toUpperCase();
@@ -218,7 +228,8 @@ router.put('/:id', requireAuth, asyncHandler(async (req, res) => {
 
 router.delete('/:id', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id } = req.params;
+    const id = await resolveEventId(req.params.id);
+    if (!id) return res.status(404).json({ error: 'Event not found' });
     const existing = await pool.query('SELECT * FROM events.events WHERE id = $1', [id]);
     if (!existing.rows.length) return res.status(404).json({ error: 'Event not found' });
     const userRole = (req.user.role || '').toUpperCase();
@@ -239,24 +250,25 @@ router.delete('/:id', requireAuth, asyncHandler(async (req, res) => {
 
 router.post('/:id/register', requireAuth, rateLimiter(20, 60000), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.status(404).json({ error: 'Event not found' });
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
-        const event = await client.query('SELECT * FROM events.events WHERE id = $1 FOR UPDATE', [id]);
+        const event = await client.query('SELECT * FROM events.events WHERE id = $1 FOR UPDATE', [eventId]);
         if (!event.rows.length) {
             await client.query('ROLLBACK');
             return res.status(404).json({ error: 'Event not found' });
         }
         if (event.rows[0].max_participants) {
-            const count = await client.query('SELECT COUNT(*) AS cnt FROM events.event_registrations WHERE event_id = $1', [id]);
+            const count = await client.query('SELECT COUNT(*) AS cnt FROM events.event_registrations WHERE event_id = $1', [eventId]);
             if (parseInt(count.rows[0].cnt) >= event.rows[0].max_participants) {
                 await client.query('ROLLBACK');
                 return res.status(400).json({ error: 'Event is full' });
             }
         }
         try {
-            const r = await client.query('INSERT INTO events.event_registrations (event_id, user_id) VALUES ($1, $2) RETURNING *', [id, req.user.id]);
+            const r = await client.query('INSERT INTO events.event_registrations (event_id, user_id) VALUES ($1, $2) RETURNING *', [eventId, req.user.id]);
             await client.query('COMMIT');
             res.status(201).json(r.rows[0]);
         } catch (dbErr) {
@@ -274,53 +286,56 @@ router.post('/:id/register', requireAuth, rateLimiter(20, 60000), asyncHandler(a
 
 router.delete('/:id/register', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id } = req.params;
-    const r = await pool.query('DELETE FROM events.event_registrations WHERE event_id = $1 AND user_id = $2 RETURNING *', [id, req.user.id]);
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.status(404).json({ error: 'Event not found' });
+    const r = await pool.query('DELETE FROM events.event_registrations WHERE event_id = $1 AND user_id = $2 RETURNING *', [eventId, req.user.id]);
     if (!r.rows.length) return res.status(404).json({ error: 'Registration not found' });
     res.json({ message: 'Registration cancelled' });
 }));
 
 router.post('/:id/speakers', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.status(404).json({ error: 'Event not found' });
     const { name, title, bio, image_url, experience_years, students_count } = req.body;
     if (!name) return res.status(400).json({ error: 'Speaker name is required' });
     const r = await pool.query(
         'INSERT INTO events.event_speakers (event_id, name, title, bio, image_url, experience_years, students_count) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-        [id, name, title || null, bio || null, image_url || null, experience_years || null, students_count || 0]
+        [eventId, name, title || null, bio || null, image_url || null, experience_years || null, students_count || 0]
     );
     res.status(201).json(r.rows[0]);
 }));
 
 router.post('/:id/resources', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.status(404).json({ error: 'Event not found' });
     const { resource_name, resource_type, resource_url, file_size } = req.body;
     if (!resource_name || !resource_type) return res.status(400).json({ error: 'Name and type are required' });
     const r = await pool.query(
         'INSERT INTO events.event_resources (event_id, resource_name, resource_type, resource_url, file_size) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-        [id, resource_name, resource_type, resource_url || null, file_size || null]
+        [eventId, resource_name, resource_type, resource_url || null, file_size || null]
     );
     res.status(201).json(r.rows[0]);
 }));
 
 router.get('/:id/certificate', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id } = req.params;
-    const r = await pool.query('SELECT * FROM events.event_certificates WHERE event_id = $1 AND user_id = $2', [id, req.user.id]);
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.status(404).json({ error: 'Event not found' });
+    const r = await pool.query('SELECT * FROM events.event_certificates WHERE event_id = $1 AND user_id = $2', [eventId, req.user.id]);
     if (!r.rows.length) return res.status(404).json({ error: 'Certificate not found' });
     res.json(r.rows[0]);
 }));
 
 router.post('/:id/certificate', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id } = req.params;
-    const event = await pool.query('SELECT id FROM events.events WHERE id = $1', [id]);
-    if (!event.rows.length) return res.status(404).json({ error: 'Event not found' });
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.status(404).json({ error: 'Event not found' });
     try {
         const r = await pool.query(
             'INSERT INTO events.event_certificates (event_id, user_id) VALUES ($1, $2) ON CONFLICT (event_id, user_id) DO NOTHING RETURNING *',
-            [id, req.user.id]
+            [eventId, req.user.id]
         );
         res.status(201).json(r.rows[0] || { message: 'Certificate already issued' });
     } catch (err) { throw err; }
@@ -329,7 +344,8 @@ router.post('/:id/certificate', requireAuth, asyncHandler(async (req, res) => {
 // ─── Discussions ──────────────────────────────────────────────────────
 
 router.get('/:id/discussions', asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.json([]);
     if (await dbAvailable()) {
         try {
             const r = await pool.query(`
@@ -337,7 +353,7 @@ router.get('/:id/discussions', asyncHandler(async (req, res) => {
                 FROM events.event_discussions d
                 JOIN auth.users u ON u.id = d.user_id
                 WHERE d.event_id = $1
-                ORDER BY d.created_at DESC`, [id]);
+                ORDER BY d.created_at DESC`, [eventId]);
             return res.json(r.rows);
         } catch {}
     }
@@ -346,12 +362,13 @@ router.get('/:id/discussions', asyncHandler(async (req, res) => {
 
 router.post('/:id/discussions', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.status(404).json({ error: 'Event not found' });
     const { content, parent_id } = req.body;
     if (!content) return res.status(400).json({ error: 'Content is required' });
     const r = await pool.query(
         'INSERT INTO events.event_discussions (event_id, user_id, content, parent_id) VALUES ($1, $2, $3, $4) RETURNING *',
-        [id, req.user.id, content, parent_id || null]
+        [eventId, req.user.id, content, parent_id || null]
     );
     res.status(201).json(r.rows[0]);
 }));
@@ -359,7 +376,8 @@ router.post('/:id/discussions', requireAuth, asyncHandler(async (req, res) => {
 // ─── Reviews ──────────────────────────────────────────────────────────
 
 router.get('/:id/reviews', asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.json([]);
     if (await dbAvailable()) {
         try {
             const r = await pool.query(`
@@ -367,7 +385,7 @@ router.get('/:id/reviews', asyncHandler(async (req, res) => {
                 FROM events.event_reviews r
                 JOIN auth.users u ON u.id = r.user_id
                 WHERE r.event_id = $1
-                ORDER BY r.created_at DESC`, [id]);
+                ORDER BY r.created_at DESC`, [eventId]);
             return res.json(r.rows);
         } catch {}
     }
@@ -376,12 +394,13 @@ router.get('/:id/reviews', asyncHandler(async (req, res) => {
 
 router.post('/:id/reviews', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.status(404).json({ error: 'Event not found' });
     const { rating, content } = req.body;
     if (!rating || rating < 1 || rating > 5) return res.status(400).json({ error: 'Rating must be 1-5' });
     const r = await pool.query(
         'INSERT INTO events.event_reviews (event_id, user_id, rating, content) VALUES ($1, $2, $3, $4) ON CONFLICT (event_id, user_id) DO UPDATE SET rating = $3, content = $4 RETURNING *',
-        [id, req.user.id, rating, content || null]
+        [eventId, req.user.id, rating, content || null]
     );
     res.status(201).json(r.rows[0]);
 }));
@@ -389,12 +408,13 @@ router.post('/:id/reviews', requireAuth, asyncHandler(async (req, res) => {
 // ─── Gallery ──────────────────────────────────────────────────────────
 
 router.get('/:id/gallery', asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.json([]);
     if (await dbAvailable()) {
         try {
             const r = await pool.query(
                 'SELECT * FROM events.event_gallery WHERE event_id = $1 ORDER BY sort_order, created_at',
-                [id]);
+                [eventId]);
             return res.json(r.rows);
         } catch {}
     }
@@ -403,13 +423,14 @@ router.get('/:id/gallery', asyncHandler(async (req, res) => {
 
 router.post('/:id/gallery', requireAuth, upload.single('image'), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.status(404).json({ error: 'Event not found' });
     const { caption } = req.body;
     const image_url = getFileUrl(req.file);
     if (!image_url) return res.status(400).json({ error: 'Image is required' });
     const r = await pool.query(
         'INSERT INTO events.event_gallery (event_id, user_id, image_url, caption) VALUES ($1, $2, $3, $4) RETURNING *',
-        [id, req.user.id, image_url, caption || null]
+        [eventId, req.user.id, image_url, caption || null]
     );
     res.status(201).json(r.rows[0]);
 }));
@@ -417,7 +438,8 @@ router.post('/:id/gallery', requireAuth, upload.single('image'), asyncHandler(as
 // ─── Attendees ────────────────────────────────────────────────────────
 
 router.get('/:id/attendees', requireAuth, asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.json([]);
     if (await dbAvailable()) {
         try {
             const r = await pool.query(`
@@ -426,7 +448,7 @@ router.get('/:id/attendees', requireAuth, asyncHandler(async (req, res) => {
                 FROM events.event_registrations er
                 JOIN auth.users u ON u.id = er.user_id
                 WHERE er.event_id = $1
-                ORDER BY er.registered_at DESC`, [id]);
+                ORDER BY er.registered_at DESC`, [eventId]);
             return res.json(r.rows);
         } catch {}
     }
@@ -436,7 +458,8 @@ router.get('/:id/attendees', requireAuth, asyncHandler(async (req, res) => {
 // ─── Ticket Types ─────────────────────────────────────────────────────
 
 router.get('/:id/tickets', asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.json([]);
     if (await dbAvailable()) {
         try {
             const r = await pool.query(`
@@ -449,7 +472,7 @@ router.get('/:id/tickets', asyncHandler(async (req, res) => {
                     GROUP BY ticket_type_id
                 ) s ON s.ticket_type_id = t.id
                 WHERE t.event_id = $1
-                ORDER BY t.price ASC`, [id]);
+                ORDER BY t.price ASC`, [eventId]);
             return res.json(r.rows);
         } catch {}
     }
@@ -458,20 +481,23 @@ router.get('/:id/tickets', asyncHandler(async (req, res) => {
 
 router.post('/:id/tickets', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.status(404).json({ error: 'Event not found' });
     const { name, price, quantity, benefits, sale_start, sale_end } = req.body;
     if (!name) return res.status(400).json({ error: 'Ticket name is required' });
     const r = await pool.query(
         `INSERT INTO events.event_ticket_types (event_id, name, price, quantity, benefits, sale_start, sale_end)
          VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-        [id, name, price || 0, quantity || 100, benefits || null, sale_start || null, sale_end || null]
+        [eventId, name, price || 0, quantity || 100, benefits || null, sale_start || null, sale_end || null]
     );
     res.status(201).json(r.rows[0]);
 }));
 
 router.put('/:id/tickets/:ticketId', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id, ticketId } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.status(404).json({ error: 'Event not found' });
+    const { ticketId } = req.params;
     const { name, price, quantity, benefits, sale_start, sale_end, is_active } = req.body;
     const r = await pool.query(
         `UPDATE events.event_ticket_types SET
@@ -480,7 +506,7 @@ router.put('/:id/tickets/:ticketId', requireAuth, asyncHandler(async (req, res) 
             sale_start = COALESCE($5, sale_start), sale_end = COALESCE($6, sale_end),
             is_active = COALESCE($7, is_active)
          WHERE id = $8 AND event_id = $9 RETURNING *`,
-        [name, price, quantity, benefits, sale_start, sale_end, is_active, ticketId, id]
+        [name, price, quantity, benefits, sale_start, sale_end, is_active, ticketId, eventId]
     );
     if (!r.rows.length) return res.status(404).json({ error: 'Ticket type not found' });
     res.json(r.rows[0]);
@@ -490,7 +516,8 @@ router.put('/:id/tickets/:ticketId', requireAuth, asyncHandler(async (req, res) 
 
 router.post('/:id/purchase', requireAuth, rateLimiter(10, 60000), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.status(404).json({ error: 'Event not found' });
     const { ticket_type_id, quantity = 1, payment_method } = req.body;
 
     const client = await pool.connect();
@@ -500,7 +527,7 @@ router.post('/:id/purchase', requireAuth, rateLimiter(10, 60000), asyncHandler(a
         // Get ticket type
         const ticketType = await client.query(
             'SELECT * FROM events.event_ticket_types WHERE id = $1 AND event_id = $2',
-            [ticket_type_id, id]);
+            [ticket_type_id, eventId]);
         if (!ticketType.rows.length) {
             await client.query('ROLLBACK');
             return res.status(404).json({ error: 'Ticket type not found' });
@@ -525,7 +552,7 @@ router.post('/:id/purchase', requireAuth, rateLimiter(10, 60000), asyncHandler(a
         const order = await client.query(
             `INSERT INTO events.event_orders (user_id, event_id, total_amount, payment_method, status)
              VALUES ($1, $2, $3, $4, 'pending') RETURNING *`,
-            [req.user.id, id, total_amount, payment_method || 'card']);
+            [req.user.id, eventId, total_amount, payment_method || 'card']);
 
         // Create tickets
         const tickets = [];
@@ -534,14 +561,14 @@ router.post('/:id/purchase', requireAuth, rateLimiter(10, 60000), asyncHandler(a
             const t = await client.query(
                 `INSERT INTO events.event_tickets (order_id, event_id, user_id, ticket_type_id, ticket_code, price)
                  VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-                [order.rows[0].id, id, req.user.id, ticket_type_id, ticketCode, ticket.price]);
+                [order.rows[0].id, eventId, req.user.id, ticket_type_id, ticketCode, ticket.price]);
             tickets.push(t.rows[0]);
         }
 
         // Update registration
         await client.query(
             'INSERT INTO events.event_registrations (event_id, user_id, order_id) VALUES ($1, $2, $3) ON CONFLICT (event_id, user_id) DO NOTHING',
-            [id, req.user.id, order.rows[0].id]);
+            [eventId, req.user.id, order.rows[0].id]);
 
         await client.query('COMMIT');
 
@@ -689,20 +716,21 @@ router.post('/orders/:orderId/refund', requireAuth, asyncHandler(async (req, res
 
 router.post('/:id/checkin', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.status(404).json({ error: 'Event not found' });
     const { ticket_code } = req.body;
     if (!ticket_code) return res.status(400).json({ error: 'Ticket code is required' });
 
     const r = await pool.query(
         `UPDATE events.event_tickets SET status = 'used', checked_in_at = CURRENT_TIMESTAMP
          WHERE event_id = $1 AND ticket_code = $2 AND status = 'valid'
-         RETURNING *`, [id, ticket_code]);
+         RETURNING *`, [eventId, ticket_code]);
     if (!r.rows.length) return res.status(404).json({ error: 'Invalid or already used ticket' });
 
     // Update registration attendance
     await pool.query(
         'UPDATE events.event_registrations SET attended = true WHERE event_id = $1 AND user_id = $2',
-        [id, r.rows[0].user_id]);
+        [eventId, r.rows[0].user_id]);
 
     res.json({ message: 'Check-in successful', ticket: r.rows[0] });
 }));
@@ -711,16 +739,17 @@ router.post('/:id/checkin', requireAuth, asyncHandler(async (req, res) => {
 
 router.get('/:id/analytics', requireAuth, asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
-    const { id } = req.params;
+    const eventId = await resolveEventId(req.params.id);
+    if (!eventId) return res.status(404).json({ error: 'Event not found' });
 
     const [registrations, revenue, tickets, attendance] = await Promise.all([
-        pool.query('SELECT COUNT(*)::int AS total FROM events.event_registrations WHERE event_id = $1', [id]),
-        pool.query(`SELECT COALESCE(SUM(total_amount), 0)::numeric AS total FROM events.event_orders WHERE event_id = $1 AND status = 'paid'`, [id]),
+        pool.query('SELECT COUNT(*)::int AS total FROM events.event_registrations WHERE event_id = $1', [eventId]),
+        pool.query(`SELECT COALESCE(SUM(total_amount), 0)::numeric AS total FROM events.event_orders WHERE event_id = $1 AND status = 'paid'`, [eventId]),
         pool.query(`SELECT tt.name, COUNT(t.id)::int AS sold FROM events.event_tickets t
             JOIN events.event_ticket_types tt ON tt.id = t.ticket_type_id
             WHERE t.event_id = $1 AND t.status = 'valid'
-            GROUP BY tt.name`, [id]),
-        pool.query('SELECT COUNT(*)::int AS attended FROM events.event_registrations WHERE event_id = $1 AND attended = true', [id])
+            GROUP BY tt.name`, [eventId]),
+        pool.query('SELECT COUNT(*)::int AS attended FROM events.event_registrations WHERE event_id = $1 AND attended = true', [eventId])
     ]);
 
     res.json({
