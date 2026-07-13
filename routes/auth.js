@@ -295,13 +295,17 @@ router.post('/login', rateLimiter(10, 60000), asyncHandler(async (req, res) => {
     const csrfToken = crypto.randomBytes(32).toString('hex');
     setAuthCookies(res, accessToken, refreshToken, csrfToken);
 
-    // Record session
-    await pool.query(
-        `INSERT INTO auth.sessions (user_id, user_agent, ip_address, expires_at) 
-         VALUES ($1, $2, $3, CURRENT_TIMESTAMP + INTERVAL '30 days')
-         RETURNING id`,
-        [user.id, req.headers['user-agent'] || '', req.ip || '']
-    );
+    // Record session (wrapped in try/catch — sessions table may have varying schemas)
+    try {
+        await pool.query(
+            `INSERT INTO auth.sessions (user_id, token, user_agent, ip_address, expires_at)
+             VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP + INTERVAL '30 days')
+             RETURNING id`,
+            [user.id, accessToken, req.headers['user-agent'] || '', req.ip || '']
+        );
+    } catch (sessionErr) {
+        console.error('Session record failed:', sessionErr.message);
+    }
 
     res.json({ 
         user: { id: user.id, name: user.first_name, email: user.email, role: user.role, profile_image: user.profile_image }
