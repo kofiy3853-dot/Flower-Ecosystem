@@ -408,11 +408,12 @@ app.use((err, _req, res, _next) => {
         return res.status(400).json({ error: 'Too many files. Maximum is 10 images.' });
     }
     const status = err.status || 500;
-    const message = process.env.NODE_ENV === 'production' ? 'Internal server error' : (err.message || 'Internal server error');
+    const message = (err.message || 'Internal server error');
+    console.error(`[${_req.method} ${_req.url}] ${status}: ${message}`, err.stack?.split('\n').slice(0, 3).join(' | '));
     if (_req.accepts('html')) {
         return res.status(status).sendFile(path.join(__dirname, '500.html'));
     }
-    res.status(status).json({ error: message });
+    res.status(status).json({ error: message, code: err.code });
 });
 
 // ─── WebSocket Server ─────────────────────────────────────────────────────
