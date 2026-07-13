@@ -284,22 +284,22 @@
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
                             <div>
                                 <h3 style="margin-bottom:1rem;">Business Information</h3>
-                                <div class="form-group"><label>Store Name</label><input type="text" id="storeName" class="form-input" placeholder="My Flower Shop"></div>
-                                <div class="form-group"><label>Tagline</label><input type="text" id="storeTagline" class="form-input" placeholder="Fresh flowers for every occasion"></div>
-                                <div class="form-group"><label>Description</label><textarea id="storeDesc" class="form-input" rows="3" placeholder="Tell customers about your business..."></textarea></div>
-                                <div class="form-group"><label>Location</label><input type="text" id="storeLocation" class="form-input" placeholder="Accra, Ghana"></div>
-                                <div class="form-group"><label>Phone</label><input type="tel" id="storePhone" class="form-input" placeholder="+233 XX XXX XXXX"></div>
-                                <div class="form-group"><label>Email</label><input type="email" id="storeEmail" class="form-input" placeholder="contact@mystore.com"></div>
-                                <div class="form-group"><label>Website</label><input type="url" id="storeWebsite" class="form-input" placeholder="https://mystore.com"></div>
+                                <div class="form-group"><label for="storeName">Store Name</label><input type="text" id="storeName" class="form-input" placeholder="My Flower Shop"></div>
+                                <div class="form-group"><label for="storeTagline">Tagline</label><input type="text" id="storeTagline" class="form-input" placeholder="Fresh flowers for every occasion"></div>
+                                <div class="form-group"><label for="storeDesc">Description</label><textarea id="storeDesc" name="storeDesc" class="form-input" rows="3" placeholder="Tell customers about your business..."></textarea></div>
+                                <div class="form-group"><label for="storeLocation">Location</label><input type="text" id="storeLocation" class="form-input" placeholder="Accra, Ghana"></div>
+                                <div class="form-group"><label for="storePhone">Phone</label><input type="tel" id="storePhone" class="form-input" placeholder="+233 XX XXX XXXX"></div>
+                                <div class="form-group"><label for="storeEmail">Email</label><input type="email" id="storeEmail" class="form-input" placeholder="contact@mystore.com"></div>
+                                <div class="form-group"><label for="storeWebsite">Website</label><input type="url" id="storeWebsite" class="form-input" placeholder="https://mystore.com"></div>
                             </div>
                             <div>
                                 <h3 style="margin-bottom:1rem;">Store Branding</h3>
-                                <div class="form-group"><label>Store Logo</label><div class="upload-zone" onclick="document.getElementById('storeLogo').click()" style="border:2px dashed var(--border-color);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;"><i class="bi bi-cloud-arrow-up" style="font-size:1.5rem;color:var(--text-light);"></i><p style="font-size:0.85rem;margin:0.25rem 0 0;color:var(--text-light);">Click to upload logo</p></div><input type="file" id="storeLogo" accept="image/*" style="display:none;"></div>
-                                <div class="form-group"><label>Cover Banner</label><div class="upload-zone" onclick="document.getElementById('storeBanner').click()" style="border:2px dashed var(--border-color);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;"><i class="bi bi-image" style="font-size:1.5rem;color:var(--text-light);"></i><p style="font-size:0.85rem;margin:0.25rem 0 0;color:var(--text-light);">Click to upload banner</p></div><input type="file" id="storeBanner" accept="image/*" style="display:none;"></div>
+                                <div class="form-group"><label for="storeLogo">Store Logo</label><div class="upload-zone" onclick="document.getElementById('storeLogo').click()" style="border:2px dashed var(--border-color);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;"><i class="bi bi-cloud-arrow-up" style="font-size:1.5rem;color:var(--text-light);"></i><p style="font-size:0.85rem;margin:0.25rem 0 0;color:var(--text-light);">Click to upload logo</p></div><input type="file" id="storeLogo" accept="image/*" style="display:none;"></div>
+                                <div class="form-group"><label for="storeBanner">Cover Banner</label><div class="upload-zone" onclick="document.getElementById('storeBanner').click()" style="border:2px dashed var(--border-color);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;"><i class="bi bi-image" style="font-size:1.5rem;color:var(--text-light);"></i><p style="font-size:0.85rem;margin:0.25rem 0 0;color:var(--text-light);">Click to upload banner</p></div><input type="file" id="storeBanner" accept="image/*" style="display:none;"></div>
                                 <h3 style="margin:1.5rem 0 1rem;">Social Media</h3>
-                                <div class="form-group"><label>Instagram</label><input type="text" class="form-input" placeholder="@username"></div>
-                                <div class="form-group"><label>Facebook</label><input type="text" class="form-input" placeholder="facebook.com/page"></div>
-                                <div class="form-group"><label>WhatsApp</label><input type="tel" class="form-input" placeholder="+233 XX XXX XXXX"></div>
+                                <div class="form-group"><label for="storeInstagram">Instagram</label><input type="text" id="storeInstagram" class="form-input" placeholder="@username"></div>
+                                <div class="form-group"><label for="storeFacebook">Facebook</label><input type="text" id="storeFacebook" class="form-input" placeholder="facebook.com/page"></div>
+                                <div class="form-group"><label for="storeWhatsApp">WhatsApp</label><input type="tel" id="storeWhatsApp" class="form-input" placeholder="+233 XX XXX XXXX"></div>
                             </div>
                         </div>
                         <div style="margin-top:1.5rem;"><button class="btn btn-primary">Save Profile</button></div>
@@ -380,12 +380,12 @@
                             <div class="section-card" style="margin-bottom:1.5rem;">
                                 <h3 style="margin-bottom:1rem;">Product Information</h3>
                                 <div class="form-group">
-                                    <label>Product Name <span style="color:var(--error-color);">*</span></label>
-                                    <input type="text" id="prodName" placeholder="e.g., Premium Red Rose Bouquet" class="input-large" oninput="updatePreview()">
+                                    <label for="prodName">Product Name <span style="color:var(--error-color);">*</span></label>
+                                    <input type="text" id="prodName" name="prodName" placeholder="e.g., Premium Red Rose Bouquet" class="input-large" oninput="updatePreview()">
                                 </div>
                                 <div class="form-group">
-                                    <label>Category <span style="color:var(--error-color);">*</span></label>
-                                    <select id="prodCategory" onchange="updatePreview()">
+                                    <label for="prodCategory">Category <span style="color:var(--error-color);">*</span></label>
+                                    <select id="prodCategory" name="prodCategory" onchange="updatePreview()">
                                         <option value="">Select Category</option>
                                         <option>Bouquets</option><option>Cut Flowers</option><option>Potted Plants</option>
                                         <option>Seeds</option><option>Dried Flowers</option><option>Wedding Flowers</option>
@@ -396,24 +396,22 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Price <span style="color:var(--error-color);">*</span></label>
+                                        <label for="prodPrice">Price <span style="color:var(--error-color);">*</span></label>
                                         <div style="display:flex;gap:0.5rem;">
-                                            <select id="prodCurrency" style="width:80px;flex-shrink:0;" onchange="updatePreview()">
+                                            <select id="prodCurrency" name="prodCurrency" style="width:80px;flex-shrink:0;" onchange="updatePreview()">
                                                 <option value="GHS">GHS</option><option value="USD">USD</option><option value="NGN">NGN</option><option value="GBP">GBP</option><option value="EUR">EUR</option>
                                             </select>
-                                            <input type="number" id="prodPrice" step="0.01" placeholder="0.00" oninput="updatePreview()">
+                                            <input type="number" id="prodPrice" name="prodPrice" step="0.01" placeholder="0.00" oninput="updatePreview()">
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label>Unit</label>
-                                        <select id="prodUnit">
+                                        <label for="prodUnit">Unit</label>\n                                    <select id="prodUnit" name="prodUnit">
                                             <option>Piece</option><option>Bouquet</option><option>Pot</option><option>Box</option><option>Stem</option><option>Bundle</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea id="prodDesc" rows="4" placeholder="Describe freshness, occasions, size, packaging, care instructions..." oninput="updatePreview();updateCharCount()"></textarea>
+                                    <label for="prodDesc">Description</label>\n                                    <textarea id="prodDesc" name="prodDesc" rows="4" placeholder="Describe freshness, occasions, size, packaging, care instructions..." oninput="updatePreview();updateCharCount()"></textarea>
                                     <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem;">
                                         <span>Tell buyers what makes this special</span>
                                         <span id="charCount">0/2000</span>
@@ -425,13 +423,12 @@
                             <div class="section-card" style="margin-bottom:1.5rem;">
                                 <h3 style="margin-bottom:1rem;">Flower Details</h3>
                                 <div class="form-group">
-                                    <label>Headline</label>
-                                    <input type="text" id="prodHeadline" placeholder="e.g., Premium Long-Stem Red Roses">
+                                    <label for="prodHeadline">Headline</label>
+                                    <input type="text" id="prodHeadline" name="prodHeadline" placeholder="e.g., Premium Long-Stem Red Roses">
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Flower Type</label>
-                                        <select id="prodFlowerType">
+                                        <label for="prodFlowerType">Flower Type</label>\n                                    <select id="prodFlowerType" name="prodFlowerType">
                                             <option value="">Select Type</option>
                                             <optgroup label="Popular Cut Flowers">
                                             <option>Rose</option><option>Tulip</option><option>Orchid</option><option>Lily</option>
@@ -463,8 +460,7 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label>Condition</label>
-                                        <select id="prodType">
+                                        <label for="prodType">Condition</label>\n                                    <select id="prodType" name="prodType">
                                             <option value="">Select Condition</option>
                                             <optgroup label="Fresh">
                                             <option>Fresh Cut</option><option>Fresh Cut - Premium</option><option>Fresh Cut - Standard</option>
@@ -491,10 +487,9 @@
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="form-group"><label>Color</label><input type="text" id="prodColor" placeholder="e.g., Red, White, Pink"></div>
+                                    <div class="form-group"><label for="prodColor">Color</label><input type="text" id="prodColor" name="prodColor" placeholder="e.g., Red, White, Pink"></div>
                                     <div class="form-group">
-                                        <label>Occasion</label>
-                                        <select id="prodOccasion">
+                                        <label for="prodOccasion">Occasion</label>\n                                    <select id="prodOccasion" name="prodOccasion">
                                             <option value="">Select Occasion</option>
                                             <option>Wedding</option><option>Birthday</option><option>Anniversary</option>
                                             <option>Sympathy</option><option>Just Because</option><option>Corporate</option>
@@ -509,8 +504,7 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Flower Form</label>
-                                        <select id="prodFlowerForm">
+                                        <label for="prodFlowerForm">Flower Form</label>\n                                    <select id="prodFlowerForm" name="prodFlowerForm">
                                             <option value="">Select</option>
                                             <option>Spray</option><option>Standard</option><option>Miniature</option><option>Climbing</option><option>Shrub</option><option>Tree</option>
                                             <option>Groundcover</option><option>Trailing</option><option>Upright</option><option>Compact</option>
@@ -521,8 +515,7 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label>Foliage Type</label>
-                                        <select id="prodFoliage">
+                                        <label for="prodFoliage">Foliage Type</label>\n                                    <select id="prodFoliage" name="prodFoliage">
                                             <option value="">Select</option>
                                             <option>Deciduous</option><option>Evergreen</option><option>Semi-evergreen</option><option>None</option>
                                             <option>Herbaceous</option><option>Needle-leaved</option><option>Broad-leaved</option><option>Variegated</option>
@@ -534,12 +527,11 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Height</label>
-                                        <input type="text" id="prodHeight" placeholder="e.g., 30-50cm">
+                                        <label for="prodHeight">Height</label>
+                                        <input type="text" id="prodHeight" name="prodHeight" placeholder="e.g., 30-50cm">
                                     </div>
                                     <div class="form-group">
-                                        <label>Light Requirements</label>
-                                        <select id="prodLight">
+                                        <label for="prodLight">Light Requirements</label>\n                                    <select id="prodLight" name="prodLight">
                                             <option value="">Select</option>
                                             <option>Full Sun</option><option>Partial Shade</option><option>Full Shade</option><option>Indirect Light</option>
                                             <option>Morning Sun</option><option>Afternoon Sun</option><option>Dappled Light</option><option>Bright Indirect</option>
@@ -550,12 +542,11 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Flowering Time</label>
-                                        <input type="text" id="prodFloweringTime" placeholder="e.g., May - September">
+                                        <label for="prodFloweringTime">Flowering Time</label>
+                                        <input type="text" id="prodFloweringTime" name="prodFloweringTime" placeholder="e.g., May - September">
                                     </div>
                                     <div class="form-group">
-                                        <label>Bloom Time</label>
-                                        <select id="prodBloomTime">
+                                        <label for="prodBloomTime">Bloom Time</label>\n                                    <select id="prodBloomTime" name="prodBloomTime">
                                             <option value="">Select</option>
                                             <option>Early Spring</option><option>Mid Spring</option><option>Late Spring</option>
                                             <option>Early Summer</option><option>Mid Summer</option><option>Late Summer</option>
@@ -568,8 +559,7 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Fragrance</label>
-                                        <select id="prodFragrance">
+                                        <label for="prodFragrance">Fragrance</label>\n                                    <select id="prodFragrance" name="prodFragrance">
                                             <option value="">Select</option>
                                             <option>Strong</option><option>Medium</option><option>Mild</option><option>None</option>
                                             <option>Sweet</option><option>Spicy</option><option>Citrus</option><option>Floral</option>
@@ -579,8 +569,7 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label>Bloom Season</label>
-                                        <select id="prodBloomSeason">
+                                        <label for="prodBloomSeason">Bloom Season</label>\n                                    <select id="prodBloomSeason" name="prodBloomSeason">
                                             <option value="">Select Season</option>
                                             <option>Spring</option><option>Summer</option><option>Autumn</option><option>Winter</option><option>All Year</option>
                                             <option>Early Spring</option><option>Late Spring</option><option>Early Summer</option><option>Late Summer</option>
@@ -591,10 +580,9 @@
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="form-group"><label>Lifespan (days)</label><input type="number" id="prodLifespan" placeholder="e.g., 7" min="1"></div>
+                                    <div class="form-group"><label for="prodLifespan">Lifespan (days)</label><input type="number" id="prodLifespan" name="prodLifespan" placeholder="e.g., 7" min="1"></div>
                                     <div class="form-group">
-                                        <label>Care Level</label>
-                                        <select id="prodCareLevel">
+                                        <label for="prodCareLevel">Care Level</label>\n                                    <select id="prodCareLevel" name="prodCareLevel">
                                             <option value="">Select</option>
                                             <option>Easy</option><option>Moderate</option><option>Advanced</option>
                                             <option>Beginner</option><option>Intermediate</option><option>Expert</option>
@@ -603,30 +591,29 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="form-group"><label>Origin</label><input type="text" id="prodOrigin" placeholder="e.g., Aburi Gardens, Ghana"></div>
+                                <div class="form-group"><label for="prodOrigin">Origin</label><input type="text" id="prodOrigin" name="prodOrigin" placeholder="e.g., Aburi Gardens, Ghana"></div>
                             </div>
 
                             <!-- Planting & Care -->
                             <div class="section-card" style="margin-bottom:1.5rem;">
                                 <h3 style="margin-bottom:1rem;">Planting & Care</h3>
                                 <div class="form-row">
-                                    <div class="form-group"><label>Sunlight</label><input type="text" id="prodSunlight" placeholder="e.g., 6-8 hours direct sun"></div>
-                                    <div class="form-group"><label>Watering</label><input type="text" id="prodWatering" placeholder="e.g., Twice a week"></div>
+                                    <div class="form-group"><label for="prodSunlight">Sunlight</label><input type="text" id="prodSunlight" name="prodSunlight" placeholder="e.g., 6-8 hours direct sun"></div>
+                                    <div class="form-group"><label for="prodWatering">Watering</label><input type="text" id="prodWatering" name="prodWatering" placeholder="e.g., Twice a week"></div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="form-group"><label>Soil Type</label><input type="text" id="prodSoil" placeholder="e.g., Well-draining loamy soil"></div>
-                                    <div class="form-group"><label>Temperature</label><input type="text" id="prodTemperature" placeholder="e.g., 18-24°C"></div>
+                                    <div class="form-group"><label for="prodSoil">Soil Type</label><input type="text" id="prodSoil" name="prodSoil" placeholder="e.g., Well-draining loamy soil"></div>
+                                    <div class="form-group"><label for="prodTemperature">Temperature</label><input type="text" id="prodTemperature" name="prodTemperature" placeholder="e.g., 18-24°C"></div>
                                 </div>
-                                <div class="form-group"><label>Fertilizer</label><input type="text" id="prodFertilizer" placeholder="e.g., Balanced NPK monthly"></div>
-                                <div class="form-group"><label>Care Tips</label><textarea id="prodCareTips" rows="3" placeholder="Additional care instructions..."></textarea></div>
+                                <div class="form-group"><label for="prodFertilizer">Fertilizer</label><input type="text" id="prodFertilizer" name="prodFertilizer" placeholder="e.g., Balanced NPK monthly"></div>
+                                <div class="form-group"><label for="prodCareTips">Care Tips</label><textarea id="prodCareTips" name="prodCareTips" rows="3" placeholder="Additional care instructions..."></textarea></div>
                             </div>
 
                             <!-- Our Guarantee -->
                             <div class="section-card" style="margin-bottom:1.5rem;">
                                 <h3 style="margin-bottom:1rem;">Our Guarantee</h3>
                                 <div class="form-group">
-                                    <label>Guarantee</label>
-                                    <select id="prodGuarantee">
+                                    <label for="prodGuarantee">Guarantee</label>\n                                    <select id="prodGuarantee" name="prodGuarantee">
                                         <option value="">Select Guarantee</option>
                                         <option>Freshness Guarantee (5+ days)</option>
                                         <option>Freshness Guarantee (7+ days)</option>
@@ -644,39 +631,38 @@
                                         <option>No Guarantee</option>
                                     </select>
                                 </div>
-                                <div class="form-group"><label>Guarantee Details</label><textarea id="prodGuaranteeDetails" rows="2" placeholder="Describe your guarantee policy..."></textarea></div>
+                                <div class="form-group"><label for="prodGuaranteeDetails">Guarantee Details</label><textarea id="prodGuaranteeDetails" name="prodGuaranteeDetails" rows="2" placeholder="Describe your guarantee policy..."></textarea></div>
                             </div>
 
                             <!-- Inventory -->
                             <div class="section-card" style="margin-bottom:1.5rem;">
                                 <h3 style="margin-bottom:1rem;">Inventory</h3>
                                 <div class="form-row">
-                                    <div class="form-group"><label>Stock Quantity <span style="color:var(--error-color);">*</span></label><input type="number" id="prodStock" value="10" min="0"></div>
-                                    <div class="form-group"><label>SKU</label><input type="text" id="prodSku" placeholder="e.g., ROSE-001"></div>
+                                    <div class="form-group"><label for="prodStock">Stock Quantity <span style="color:var(--error-color);">*</span></label><input type="number" id="prodStock" name="prodStock" value="10" min="0"></div>
+                                    <div class="form-group"><label for="prodSku">SKU</label><input type="text" id="prodSku" name="prodSku" placeholder="e.g., ROSE-001"></div>
                                 </div>
-                                <div class="form-group"><label>Low Stock Alert</label><input type="number" id="prodLowStock" value="10" min="0" placeholder="Alert when stock falls below"></div>
+                                <div class="form-group"><label for="prodLowStock">Low Stock Alert</label><input type="number" id="prodLowStock" name="prodLowStock" value="10" min="0" placeholder="Alert when stock falls below"></div>
                             </div>
 
                             <!-- Delivery Information -->
                             <div class="section-card" style="margin-bottom:1.5rem;">
                                 <h3 style="margin-bottom:1rem;">Delivery Information</h3>
                                 <div class="form-group">
-                                    <label>Delivery Areas</label>
-                                    <input type="text" id="prodDeliveryAreas" placeholder="e.g., Accra, Kumasi, Takoradi (comma-separated)">
+                                    <label for="prodDeliveryAreas">Delivery Areas</label>
+                                    <input type="text" id="prodDeliveryAreas" name="prodDeliveryAreas" placeholder="e.g., Accra, Kumasi, Takoradi (comma-separated)">
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Delivery Time</label>
-                                        <select id="prodDeliveryTime">
+                                        <label for="prodDeliveryTime">Delivery Time</label>\n                                    <select id="prodDeliveryTime" name="prodDeliveryTime">
                                             <option value="">Select</option>
                                             <option>Same Day</option><option>Next Day</option><option>2-3 Days</option><option>One Week</option>
                                         </select>
                                     </div>
-                                    <div class="form-group"><label>Shipping Fee (GHS)</label><input type="number" id="prodShippingFee" step="0.01" value="0" min="0"></div>
+                                    <div class="form-group"><label for="prodShippingFee">Shipping Fee (GHS)</label><input type="number" id="prodShippingFee" name="prodShippingFee" step="0.01" value="0" min="0"></div>
                                 </div>
                                 <div class="form-group status-toggle" style="display:flex;align-items:center;gap:0.75rem;">
                                     <label class="toggle-switch">
-                                        <input type="checkbox" id="prodPickup" checked>
+                                        <input type="checkbox" id="prodPickup" name="prodPickup" checked>
                                         <span class="slider round"></span>
                                     </label>
                                     <span style="font-size:0.9rem;">Pickup Available</span>
@@ -687,7 +673,7 @@
                             <div class="section-card" style="margin-bottom:1.5rem;">
                                 <h3 style="margin-bottom:1rem;">Product Tags</h3>
                                 <div id="tagsContainer" style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.5rem;"></div>
-                                <input type="text" id="prodTagInput" placeholder="Type a tag and press Enter" style="width:100%;">
+                                <input type="text" id="prodTagInput" name="prodTagInput" placeholder="Type a tag and press Enter" style="width:100%;">
                                 <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.35rem;">Press Enter to add. Tags help buyers find your product.</p>
                             </div>
 
@@ -695,23 +681,23 @@
                             <div class="section-card" style="margin-bottom:1.5rem;">
                                 <h3 style="margin-bottom:0.25rem;">SEO <span style="font-size:0.75rem;font-weight:400;color:var(--text-light);">(Optional)</span></h3>
                                 <p style="font-size:0.8rem;color:var(--text-light);margin-bottom:1rem;">Improve search visibility.</p>
-                                <div class="form-group"><label>Product URL Slug</label><input type="text" id="prodSeoSlug" placeholder="auto-generated from name"></div>
-                                <div class="form-group"><label>Meta Description</label><textarea id="prodMetaDesc" rows="2" placeholder="Short summary for search engines (max 160 chars)" maxlength="160"></textarea></div>
+                                <div class="form-group"><label for="prodSeoSlug">Product URL Slug</label><input type="text" id="prodSeoSlug" name="prodSeoSlug" placeholder="auto-generated from name"></div>
+                                <div class="form-group"><label for="prodMetaDesc">Meta Description</label><textarea id="prodMetaDesc" name="prodMetaDesc" rows="2" placeholder="Short summary for search engines (max 160 chars)" maxlength="160"></textarea></div>
                             </div>
 
                             <!-- Featured & Badges -->
                             <div class="section-card" style="margin-bottom:1.5rem;">
                                 <h3 style="margin-bottom:0.75rem;">Visibility</h3>
                                 <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.9rem;margin-bottom:0.5rem;">
-                                    <input type="checkbox" id="prodFeatured" style="accent-color:var(--primary-color);width:18px;height:18px;">
+                                    <input type="checkbox" id="prodFeatured" name="prodFeatured" style="accent-color:var(--primary-color);width:18px;height:18px;">
                                     <i class="bi bi-star" style="color:var(--accent-gold);"></i> Featured Product
                                 </label>
                                 <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.9rem;margin-bottom:0.5rem;">
-                                    <input type="checkbox" id="prodBestSeller" style="accent-color:var(--primary-color);width:18px;height:18px;">
+                                    <input type="checkbox" id="prodBestSeller" name="prodBestSeller" style="accent-color:var(--primary-color);width:18px;height:18px;">
                                     <i class="bi bi-trophy" style="color:var(--accent-green);"></i> Best Seller
                                 </label>
                                 <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.9rem;margin-bottom:0.5rem;">
-                                    <input type="checkbox" id="prodNewArrival" style="accent-color:var(--primary-color);width:18px;height:18px;">
+                                    <input type="checkbox" id="prodNewArrival" name="prodNewArrival" style="accent-color:var(--primary-color);width:18px;height:18px;">
                                     <i class="bi bi-lightning" style="color:var(--accent-blue);"></i> New Arrival
                                 </label>
                                 <p style="font-size:0.75rem;color:var(--text-light);margin:0;">Featured, Best Sellers, and New Arrivals show in special sections on the marketplace.</p>
