@@ -1,4 +1,4 @@
-const CACHE_NAME = 'flower-ecosystem-v3';
+const CACHE_NAME = 'flower-ecosystem-v4';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -41,6 +41,9 @@ self.addEventListener('fetch', event => {
     // Skip non-GET requests
     if (request.method !== 'GET') return;
 
+    // Skip cross-origin requests (CDN fonts, icons, external images, APIs)
+    if (url.origin !== self.location.origin) return;
+
     // Skip API calls and dynamic data
     if (url.pathname.startsWith('/api/')) return;
 
@@ -77,7 +80,7 @@ self.addEventListener('fetch', event => {
         return;
     }
 
-    // Cache first for other static assets (images, fonts, etc.)
+    // Cache first for other same-origin static assets (images, fonts, etc.)
     event.respondWith(
         caches.match(request).then(cached => {
             if (cached) return cached;
