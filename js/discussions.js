@@ -324,7 +324,7 @@ async function loadDiscussions() {
 
     let data;
     try {
-        const res = await fetch(`/api/discussions?${params}`, { headers: authHeaders() });
+        const res = await fetchWithAuth(`/api/discussions?${params}`, { headers: authHeaders() });
         data = await res.json();
     } catch {
         data = { discussions: [], total: 0, pages: 1 };
@@ -403,7 +403,7 @@ async function initDiscussionDetail() {
 
     let discussion;
     try {
-        const res = await fetch(`/api/discussions/${id}`, { headers: authHeaders() });
+        const res = await fetchWithAuth(`/api/discussions/${id}`, { headers: authHeaders() });
         if (!res.ok) throw new Error('Not found');
         discussion = await res.json();
     } catch {

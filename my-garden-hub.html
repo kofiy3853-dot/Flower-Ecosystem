@@ -160,7 +160,7 @@
         // ─── Load Garden ─────────────────────────────────────────────
         async function loadGarden() {
             try {
-                const res = await fetch('/api/garden', { headers: authHeaders() });
+                const res = await fetchWithAuth('/api/garden', { headers: authHeaders() });
                 gardenPlants = await res.json();
                 renderPlants();
                 updateStats();
@@ -215,7 +215,7 @@
         // ─── Load Reminders ──────────────────────────────────────────
         async function loadReminders() {
             try {
-                const res = await fetch('/api/garden/reminders', { headers: authHeaders() });
+                const res = await fetchWithAuth('/api/garden/reminders', { headers: authHeaders() });
                 const reminders = await res.json();
                 const el = document.getElementById('remindersList');
 
@@ -291,7 +291,7 @@
         async function removePlant(id) {
             if (!confirm('Remove this plant from your garden?')) return;
             try {
-                await fetch(`/api/garden/${id}`, { method: 'DELETE', headers: authHeaders() });
+                await fetchWithAuth(`/api/garden/${id}`, { method: 'DELETE', headers: authHeaders() });
                 loadGarden();
                 loadReminders();
             } catch {}

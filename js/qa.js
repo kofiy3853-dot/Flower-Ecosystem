@@ -129,7 +129,7 @@ async function initQuestionDetail() {
     if (!id) { document.getElementById('questionContent').innerHTML = '<div class="empty-state"><h3>Question not found</h3></div>'; return; }
 
     let question;
-    try { question = await fetch(`/api/qa/questions/${id}`, { headers: authHeaders() }).then(r => r.json()); } catch { question = null; }
+    try { question = await fetchWithAuth(`/api/qa/questions/${id}`, { headers: authHeaders() }).then(r => r.json()); } catch { question = null; }
     if (!question || question.error) { document.getElementById('questionContent').innerHTML = '<div class="empty-state"><i class="bi bi-question-circle"></i><h3>Question not found</h3></div>'; return; }
 
     document.title = `${question.title} | Flower Ecosystem`;
@@ -214,7 +214,7 @@ async function submitAnswer(questionId) {
     const content = document.getElementById('answerContent').value.trim();
     if (!content) return;
     try {
-        await fetch(`/api/qa/questions/${questionId}/answers`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ content }) });
+        await fetchWithAuth(`/api/qa/questions/${questionId}/answers`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ content }) });
         window.location.reload();
     } catch {}
 }
@@ -222,7 +222,7 @@ async function submitAnswer(questionId) {
 async function acceptAnswer(questionId, answerId) {
     if (!confirm('Accept this as the best answer?')) return;
     try {
-        await fetch(`/api/qa/questions/${questionId}/accept`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ answer_id: answerId }) });
+        await fetchWithAuth(`/api/qa/questions/${questionId}/accept`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ answer_id: answerId }) });
         window.location.reload();
     } catch {}
 }
@@ -230,7 +230,7 @@ async function acceptAnswer(questionId, answerId) {
 async function voteAnswer(answerId, voteType) {
     if (!userLoggedIn()) { openAuthModal('login'); return; }
     try {
-        await fetch(`/api/qa/answers/${answerId}/vote`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ vote_type: voteType }) });
+        await fetchWithAuth(`/api/qa/answers/${answerId}/vote`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ vote_type: voteType }) });
         window.location.reload();
     } catch {}
 }

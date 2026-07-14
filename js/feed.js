@@ -204,7 +204,7 @@ async function loadUpcomingEvents() {
 async function followUser(userId, btn) {
   if (!getCurrentUserId()) { openAuthModal('login'); return; }
   try {
-    await fetch(`/api/users/${userId}/follow`, { method: 'POST', headers: authHeaders() });
+    await fetchWithAuth(`/api/users/${userId}/follow`, { method: 'POST', headers: authHeaders() });
     btn.textContent = 'Following';
     btn.style.background = 'var(--primary-color)';
     btn.style.color = 'white';

@@ -82,7 +82,7 @@ function initBuyerDashboard() {
 
 async function loadUserProfile() {
     try {
-        const user = await fetch('/api/user/profile', { headers: authHeaders() }).then(r => r.json());
+        const user = await fetchWithAuth('/api/user/profile', { headers: authHeaders() }).then(r => r.json());
         document.getElementById('sidebarName').textContent = user.name || 'My Account';
         document.getElementById('sidebarAvatar').textContent = (user.name || 'U')[0].toUpperCase();
         document.getElementById('welcomeTitle').textContent = `Welcome Back, ${user.name || 'there'}`;
@@ -111,13 +111,13 @@ async function loadSection(section) {
 
 async function loadOverview() {
     try {
-        const orders = await fetch('/api/orders', { headers: authHeaders() }).then(r => r.json());
+        const orders = await fetchWithAuth('/api/orders', { headers: authHeaders() }).then(r => r.json());
         const orderList = Array.isArray(orders) ? orders : (orders.orders || []);
 
         const totalSpent = orderList.reduce((s, o) => s + Number(o.total_amount || 0), 0);
         const pending = orderList.filter(o => ['PENDING', 'CONFIRMED', 'PROCESSING'].includes(o.status)).length;
         const delivered = orderList.filter(o => o.status === 'DELIVERED').length;
-        const savedItems = await fetch('/api/buyer/saved', { headers: authHeaders() }).then(r => r.json()).then(d => Array.isArray(d) ? d : (d.items || [])).catch(() => []);
+        const savedItems = await fetchWithAuth('/api/buyer/saved', { headers: authHeaders() }).then(r => r.json()).then(d => Array.isArray(d) ? d : (d.items || [])).catch(() => []);
 
         document.getElementById('statsGrid').innerHTML = `
             <div class="stat-card"><div class="icon"><i class="bi bi-receipt"></i></div><div class="num">${orderList.length}</div><div class="label">Total Orders</div></div>
@@ -142,7 +142,7 @@ async function loadOverview() {
         `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No orders yet. <a href="marketplace.html">Start shopping!</a></p>';
 
         let products = [];
-        try { products = await fetch('/api/products?limit=4&sort=popular', { headers: authHeaders() }).then(r => r.json()); } catch {}
+        try { products = await fetchWithAuth('/api/products?limit=4&sort=popular', { headers: authHeaders() }).then(r => r.json()); } catch {}
         const productList = Array.isArray(products) ? products : (products.products || []);
 
         document.getElementById('recommendations').innerHTML = productList.length ? productList.map(p => `
@@ -158,7 +158,7 @@ async function loadOverview() {
         `).join('') : '<p style="color:var(--text-light);text-align:center;padding:1rem;">No recommendations yet</p>';
 
         let events = [];
-        try { events = await fetch('/api/events?limit=3', { headers: authHeaders() }).then(r => r.json()); } catch {}
+        try { events = await fetchWithAuth('/api/events?limit=3', { headers: authHeaders() }).then(r => r.json()); } catch {}
         const eventList = Array.isArray(events) ? events : (events.events || []);
 
         document.getElementById('dashboardEvents').innerHTML = eventList.length ? eventList.slice(0, 3).map(e => `
@@ -180,7 +180,7 @@ async function loadOverview() {
 
 async function loadOrders() {
     try {
-        allOrders = await fetch('/api/orders', { headers: authHeaders() }).then(r => r.json());
+        allOrders = await fetchWithAuth('/api/orders', { headers: authHeaders() }).then(r => r.json());
         allOrders = Array.isArray(allOrders) ? allOrders : (allOrders.orders || []);
     } catch {
         allOrders = [];
@@ -231,7 +231,7 @@ function renderOrders(orders = allOrders) {
 
 async function viewOrder(id) {
     try {
-        const order = await fetch(`/api/orders/${id}`, { headers: authHeaders() }).then(r => r.json());
+        const order = await fetchWithAuth(`/api/orders/${id}`, { headers: authHeaders() }).then(r => r.json());
         const modal = document.getElementById('orderModal');
         const content = document.getElementById('modalOrderContent');
         const title = document.getElementById('modalOrderTitle');
@@ -280,7 +280,7 @@ function statusBadge(status) {
 async function cancelOrder(id) {
     if (!confirm('Cancel this order?')) return;
     try {
-        await fetch(`/api/orders/${id}/cancel`, { method: 'POST', headers: authHeaders() });
+        await fetchWithAuth(`/api/orders/${id}/cancel`, { method: 'POST', headers: authHeaders() });
         closeOrderModal();
         loadOrders();
         loadOverview();
@@ -301,7 +301,7 @@ document.addEventListener('click', (e) => {
 
 async function loadSavedItems() {
     try {
-        allSavedItems = await fetch('/api/buyer/saved', { headers: authHeaders() }).then(r => r.json());
+        allSavedItems = await fetchWithAuth('/api/buyer/saved', { headers: authHeaders() }).then(r => r.json());
         allSavedItems = Array.isArray(allSavedItems) ? allSavedItems : (allSavedItems.items || []);
     } catch {
         allSavedItems = [];
@@ -359,7 +359,7 @@ function renderSavedItems(items = allSavedItems) {
 async function removeSavedItem(id) {
     if (!confirm('Remove from saved items?')) return;
     try {
-        await fetch(`/api/buyer/saved/${id}`, { method: 'DELETE', headers: authHeaders() });
+        await fetchWithAuth(`/api/buyer/saved/${id}`, { method: 'DELETE', headers: authHeaders() });
         allSavedItems = allSavedItems.filter(item => item.id !== id);
         renderSavedItems();
         if (typeof showToast === 'function') showToast('Removed from saved items', 'success');
@@ -370,7 +370,7 @@ async function removeSavedItem(id) {
 
 async function loadTracking() {
     try {
-        const orders = await fetch('/api/orders', { headers: authHeaders() }).then(r => r.json());
+        const orders = await fetchWithAuth('/api/orders', { headers: authHeaders() }).then(r => r.json());
         const orderList = Array.isArray(orders) ? orders : (orders.orders || []);
         const activeOrders = orderList.filter(o => !['DELIVERED', 'CANCELLED'].includes(o.status));
 
@@ -426,7 +426,7 @@ async function loadRecentlyViewed() {
 
 async function loadLearning() {
     try {
-        const enrollments = await fetch('/api/enrollments', { headers: authHeaders() }).then(r => r.json());
+        const enrollments = await fetchWithAuth('/api/enrollments', { headers: authHeaders() }).then(r => r.json());
         const enrolled = Array.isArray(enrollments) ? enrollments : (enrollments.enrollments || []);
 
         const completed = enrolled.filter(e => e.completed).length;
@@ -491,7 +491,7 @@ async function loadLearning() {
 
 async function loadMyEvents() {
     try {
-        const events = await fetch('/api/events/my', { headers: authHeaders() }).then(r => r.json());
+        const events = await fetchWithAuth('/api/events/my', { headers: authHeaders() }).then(r => r.json());
         const eventList = Array.isArray(events) ? events : (events.events || []);
 
         const upcoming = eventList.filter(e => new Date(e.event_date) >= new Date());
@@ -530,7 +530,7 @@ async function loadMyEvents() {
 
 async function loadCommunity() {
     try {
-        const posts = await fetch('/api/posts?my=1', { headers: authHeaders() }).then(r => r.json());
+        const posts = await fetchWithAuth('/api/posts?my=1', { headers: authHeaders() }).then(r => r.json());
         const postList = Array.isArray(posts) ? posts : (posts.posts || []);
 
         document.getElementById('myPosts').innerHTML = postList.slice(0, 5).length ? postList.slice(0, 5).map(p => `
@@ -540,7 +540,7 @@ async function loadCommunity() {
             </div>
         `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No posts yet. <a href="create-post.html">Create your first post</a></p>';
 
-        const discussions = await fetch('/api/discussions?my=1', { headers: authHeaders() }).then(r => r.json());
+        const discussions = await fetchWithAuth('/api/discussions?my=1', { headers: authHeaders() }).then(r => r.json());
         const discList = Array.isArray(discussions) ? discussions : (discussions.discussions || []);
 
         document.getElementById('myDiscussions').innerHTML = discList.slice(0, 5).length ? discList.slice(0, 5).map(d => `
@@ -550,7 +550,7 @@ async function loadCommunity() {
             </div>
         `).join('') : '<p style="color:var(--text-light);text-align:center;padding:2rem;">No discussions yet. <a href="discussions.html">Join a discussion</a></p>';
 
-        const events = await fetch('/api/events?upcoming=3', { headers: authHeaders() }).then(r => r.json());
+        const events = await fetchWithAuth('/api/events?upcoming=3', { headers: authHeaders() }).then(r => r.json());
         const eventList = Array.isArray(events) ? events : (events.events || []);
 
         document.getElementById('upcomingEvents').innerHTML = eventList.slice(0, 3).length ? eventList.slice(0, 3).map(e => `
@@ -572,7 +572,7 @@ async function loadCommunity() {
 
 async function loadNotifications() {
     try {
-        allNotifications = await fetch('/api/notifications', { headers: authHeaders() }).then(r => r.json());
+        allNotifications = await fetchWithAuth('/api/notifications', { headers: authHeaders() }).then(r => r.json());
         allNotifications = Array.isArray(allNotifications) ? allNotifications : (allNotifications.notifications || []);
     } catch {
         allNotifications = [];
@@ -630,7 +630,7 @@ async function markNotifRead(id) {
     const notif = allNotifications.find(n => n.id === id);
     if (notif && !notif.is_read) {
         notif.is_read = true;
-        try { await fetch(`/api/notifications/${id}/read`, { method: 'PUT', headers: authHeaders() }); } catch {}
+        try { await fetchWithAuth(`/api/notifications/${id}/read`, { method: 'PUT', headers: authHeaders() }); } catch {}
         updateNotifBadge();
         renderNotifications();
     }
@@ -638,7 +638,7 @@ async function markNotifRead(id) {
 
 async function markAllNotifRead() {
     try {
-        await fetch('/api/notifications/read', { method: 'PUT', headers: authHeaders() });
+        await fetchWithAuth('/api/notifications/read', { method: 'PUT', headers: authHeaders() });
         allNotifications.forEach(n => n.is_read = true);
         updateNotifBadge();
         renderNotifications();
@@ -647,7 +647,7 @@ async function markAllNotifRead() {
 
 async function loadActivity() {
     try {
-        const orders = await fetch('/api/orders', { headers: authHeaders() }).then(r => r.json());
+        const orders = await fetchWithAuth('/api/orders', { headers: authHeaders() }).then(r => r.json());
         const orderList = Array.isArray(orders) ? orders : (orders.orders || []);
 
         const activities = orderList.slice(0, 10).map(o => ({
@@ -794,7 +794,7 @@ async function saveSettings(type) {
                 dark_mode: document.getElementById('darkMode')?.checked
             };
         }
-        await fetch('/api/user/preferences', { method: 'PUT', headers: authHeaders(), body: JSON.stringify(body) });
+        await fetchWithAuth('/api/user/preferences', { method: 'PUT', headers: authHeaders(), body: JSON.stringify(body) });
         if (typeof showToast === 'function') showToast('Settings saved!', 'success');
         else alert('Settings saved!');
     } catch (err) {

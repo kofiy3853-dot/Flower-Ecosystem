@@ -41,7 +41,7 @@ async function initGrowerDashboard() {
 
 async function loadProfile() {
     try {
-        profile = await fetch('/api/grower/profile', { headers: authHeaders() }).then(r => r.json());
+        profile = await fetchWithAuth('/api/grower/profile', { headers: authHeaders() }).then(r => r.json());
     } catch { profile = { farm_name: 'My Farm' }; }
     document.getElementById('welcomeTitle').textContent = `Welcome Back, ${escapeHtml(profile.farm_name || 'Grower')}`;
 }
@@ -60,7 +60,7 @@ async function loadSection(section) {
 
 async function loadDashboard() {
     try {
-        const stats = await fetch('/api/grower/analytics', { headers: authHeaders() }).then(r => r.json());
+        const stats = await fetchWithAuth('/api/grower/analytics', { headers: authHeaders() }).then(r => r.json());
         document.getElementById('statsGrid').innerHTML = `
             <div class="stat-card"><div class="icon">🌸</div><div class="num">${stats.crops}</div><div class="label">Flower Varieties</div></div>
             <div class="stat-card"><div class="icon">🌱</div><div class="num">${(stats.total_quantity || 0).toLocaleString()}</div><div class="label">Flowers Growing</div></div>
@@ -71,7 +71,7 @@ async function loadDashboard() {
     } catch {}
 
     try {
-        crops = await fetch('/api/grower/crops', { headers: authHeaders() }).then(r => r.json());
+        crops = await fetchWithAuth('/api/grower/crops', { headers: authHeaders() }).then(r => r.json());
         const recent = crops.slice(0, 5);
         document.getElementById('recentCrops').innerHTML = recent.length ? recent.map(c => `
             <div style="display:flex;justify-content:space-between;align-items:center;padding:0.4rem 0;border-bottom:1px solid var(--border-light);font-size:0.85rem;">
@@ -82,7 +82,7 @@ async function loadDashboard() {
     } catch {}
 
     try {
-        const orders = await fetch('/api/grower/orders', { headers: authHeaders() }).then(r => r.json());
+        const orders = await fetchWithAuth('/api/grower/orders', { headers: authHeaders() }).then(r => r.json());
         const pending = orders.filter(o => o.status === 'pending').slice(0, 5);
         document.getElementById('pendingOrders').innerHTML = pending.length ? pending.map(o => `
             <div style="display:flex;justify-content:space-between;align-items:center;padding:0.4rem 0;border-bottom:1px solid var(--border-light);font-size:0.85rem;">
@@ -95,7 +95,7 @@ async function loadDashboard() {
 
 async function loadCrops() {
     try {
-        crops = await fetch('/api/grower/crops', { headers: authHeaders() }).then(r => r.json());
+        crops = await fetchWithAuth('/api/grower/crops', { headers: authHeaders() }).then(r => r.json());
     } catch { crops = []; }
     const el = document.getElementById('cropsTable');
     if (!crops.length) { el.innerHTML = '<div class="empty-state"><i class="bi bi-flower1"></i><p>No crops yet. Add your first crop!</p></div>'; return; }
@@ -114,7 +114,7 @@ async function loadCrops() {
 
 async function loadHarvests() {
     let harvests;
-    try { harvests = await fetch('/api/grower/harvests', { headers: authHeaders() }).then(r => r.json()); } catch { harvests = []; }
+    try { harvests = await fetchWithAuth('/api/grower/harvests', { headers: authHeaders() }).then(r => r.json()); } catch { harvests = []; }
     const el = document.getElementById('harvestsTable');
     if (!harvests.length) { el.innerHTML = '<div class="empty-state"><i class="bi bi-basket"></i><p>No harvests recorded yet.</p></div>'; return; }
     el.innerHTML = `<table class="data-table"><thead><tr><th>Flower</th><th>Variety</th><th>Date</th><th>Quantity</th><th>Grade</th></tr></thead><tbody>${harvests.map(h => `
@@ -127,7 +127,7 @@ async function loadHarvests() {
 
 async function loadOrders() {
     let orders;
-    try { orders = await fetch('/api/grower/orders', { headers: authHeaders() }).then(r => r.json()); } catch { orders = []; }
+    try { orders = await fetchWithAuth('/api/grower/orders', { headers: authHeaders() }).then(r => r.json()); } catch { orders = []; }
     const el = document.getElementById('ordersTable');
     if (!orders.length) { el.innerHTML = '<div class="empty-state"><i class="bi bi-box-seam"></i><p>No orders yet.</p></div>'; return; }
     el.innerHTML = `<table class="data-table"><thead><tr><th>Order</th><th>Buyer</th><th>Flower</th><th>Quantity</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead><tbody>${orders.map(o => `
@@ -145,7 +145,7 @@ async function loadOrders() {
 
 async function loadListings() {
     let listings;
-    try { listings = await fetch('/api/grower/listings', { headers: authHeaders() }).then(r => r.json()); } catch { listings = []; }
+    try { listings = await fetchWithAuth('/api/grower/listings', { headers: authHeaders() }).then(r => r.json()); } catch { listings = []; }
     const el = document.getElementById('listingsTable');
     if (!listings.length) { el.innerHTML = '<div class="empty-state"><i class="bi bi-shop"></i><p>No listings yet. Create your first listing!</p></div>'; return; }
     el.innerHTML = `<table class="data-table"><thead><tr><th>Flower</th><th>Price</th><th>Available</th><th>Min Order</th><th>Grade</th><th>Status</th><th>Actions</th></tr></thead><tbody>${listings.map(l => `
@@ -163,7 +163,7 @@ async function loadListings() {
 
 async function loadAnalytics() {
     try {
-        const stats = await fetch('/api/grower/analytics', { headers: authHeaders() }).then(r => r.json());
+        const stats = await fetchWithAuth('/api/grower/analytics', { headers: authHeaders() }).then(r => r.json());
         document.getElementById('analyticsContent').innerHTML = `
             <div class="stats-grid" style="margin-bottom:1.5rem;">
                 <div class="stat-card"><div class="num">${stats.crops}</div><div class="label">Active Crops</div></div>
@@ -226,10 +226,10 @@ async function saveCrop() {
             field_location: document.getElementById('cropField').value.trim() || null
         };
         if (editingCropId) {
-            await fetch('/api/grower/crops/' + editingCropId, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(payload) });
+            await fetchWithAuth('/api/grower/crops/' + editingCropId, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(payload) });
             editingCropId = null;
         } else {
-            await fetch('/api/grower/crops', { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
+            await fetchWithAuth('/api/grower/crops', { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
         }
         document.querySelector('#cropModal .modal h3').textContent = 'Add New Crop';
         document.querySelector('#cropModal .modal .btn-primary').textContent = 'Save Crop';
@@ -241,7 +241,7 @@ async function saveCrop() {
 
 async function deleteCrop(id) {
     if (!confirm('Delete this crop?')) return;
-    try { await fetch(`/api/grower/crops/${id}`, { method: 'DELETE', headers: authHeaders() }); loadCrops(); loadDashboard(); } catch {}
+    try { await fetchWithAuth(`/api/grower/crops/${id}`, { method: 'DELETE', headers: authHeaders() }); loadCrops(); loadDashboard(); } catch {}
 }
 
 async function saveHarvest() {
@@ -249,7 +249,7 @@ async function saveHarvest() {
     const qty = parseInt(document.getElementById('harvestQty').value);
     if (!cropId || !qty) return;
     try {
-        await fetch('/api/grower/harvests', { method: 'POST', headers: authHeaders(), body: JSON.stringify({
+        await fetchWithAuth('/api/grower/harvests', { method: 'POST', headers: authHeaders(), body: JSON.stringify({
             crop_id: cropId, quantity: qty, harvest_date: document.getElementById('harvestDate').value || null,
             quality_grade: document.getElementById('harvestGrade').value || null
         })});
@@ -260,7 +260,7 @@ async function saveHarvest() {
 }
 
 async function updateOrder(id, status) {
-    try { await fetch(`/api/grower/orders/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ status }) }); loadOrders(); loadDashboard(); } catch {}
+    try { await fetchWithAuth(`/api/grower/orders/${id}`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ status }) }); loadOrders(); loadDashboard(); } catch {}
 }
 
 async function saveListing() {
@@ -268,7 +268,7 @@ async function saveListing() {
     const price = parseFloat(document.getElementById('listPrice').value);
     if (!flower || !price) return;
     try {
-        await fetch('/api/grower/listings', { method: 'POST', headers: authHeaders(), body: JSON.stringify({
+        await fetchWithAuth('/api/grower/listings', { method: 'POST', headers: authHeaders(), body: JSON.stringify({
             flower_name: flower, price_per_unit: price, unit_type: document.getElementById('listUnit').value,
             available_qty: parseInt(document.getElementById('listQty').value) || 0,
             min_quantity: parseInt(document.getElementById('listMin').value) || 100,
@@ -282,12 +282,12 @@ async function saveListing() {
 
 async function deleteListing(id) {
     if (!confirm('Delete this listing?')) return;
-    try { await fetch(`/api/grower/listings/${id}`, { method: 'DELETE', headers: authHeaders() }); loadListings(); } catch {}
+    try { await fetchWithAuth(`/api/grower/listings/${id}`, { method: 'DELETE', headers: authHeaders() }); loadListings(); } catch {}
 }
 
 async function saveSettings() {
     try {
-        await fetch('/api/grower/profile', { method: 'PUT', headers: authHeaders(), body: JSON.stringify({
+        await fetchWithAuth('/api/grower/profile', { method: 'PUT', headers: authHeaders(), body: JSON.stringify({
             farm_name: document.getElementById('setFarmName').value.trim(),
             description: document.getElementById('setDesc').value.trim(),
             location: document.getElementById('setLocation').value.trim(),

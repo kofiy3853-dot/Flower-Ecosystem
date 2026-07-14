@@ -28,7 +28,7 @@ async function loadRegisterModalDetails(eventId) {
   if (btnEl) btnEl.disabled = true;
 
   try {
-    const res = await fetch(`/api/events/${eventId}`, { headers: authHeaders() });
+    const res = await fetchWithAuth(`/api/events/${eventId}`, { headers: authHeaders() });
     if (!res.ok) throw new Error('Not found');
     const event = await res.json();
 

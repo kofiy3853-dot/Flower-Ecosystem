@@ -300,7 +300,7 @@ async function loadEvents() {
             if (!userLoggedIn()) {
                 data = { events: [], total: 0, pages: 1 };
             } else {
-                const res = await fetch('/api/events/my', { headers: authHeaders() });
+                const res = await fetchWithAuth('/api/events/my', { headers: authHeaders() });
                 const myEvents = await res.json();
                 data = { events: Array.isArray(myEvents) ? myEvents : [], total: myEvents.length, pages: 1 };
             }
@@ -511,7 +511,7 @@ async function initEventDetail() {
 
     let event;
     try {
-        const res = await fetch(`/api/events/${id}`, { headers: authHeaders() });
+        const res = await fetchWithAuth(`/api/events/${id}`, { headers: authHeaders() });
         if (!res.ok) throw new Error('Not found');
         event = await res.json();
     } catch {
@@ -700,7 +700,7 @@ async function cancelRegistration(id) {
 
 async function downloadCertificate(id) {
     try {
-        const res = await fetch(`/api/events/${id}/certificate`, { headers: authHeaders() });
+        const res = await fetchWithAuth(`/api/events/${id}/certificate`, { headers: authHeaders() });
         if (res.ok) {
             const cert = await res.json();
             if (cert.certificate_url) {

@@ -183,7 +183,7 @@ async function loadSuggested() {
   const list = document.getElementById('mbSuggestedList');
   if (!userLoggedIn()) { section.style.display = 'none'; return; }
   try {
-    const res = await fetch('/api/members/suggested', { headers: authHeaders() });
+    const res = await fetchWithAuth('/api/members/suggested', { headers: authHeaders() });
     const members = await res.json();
     if (!members.length) { section.style.display = 'none'; return; }
     section.style.display = 'block';

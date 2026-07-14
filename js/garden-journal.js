@@ -33,8 +33,8 @@ async function initGardenJournal() {
 
 async function loadStats() {
     try {
-        const entries = await fetch('/api/journal/entries', { headers: authHeaders() }).then(r => r.json());
-        const reminders = await fetch('/api/journal/reminders', { headers: authHeaders() }).then(r => r.json());
+        const entries = await fetchWithAuth('/api/journal/entries', { headers: authHeaders() }).then(r => r.json());
+        const reminders = await fetchWithAuth('/api/journal/reminders', { headers: authHeaders() }).then(r => r.json());
         const totalPhotos = entries.reduce((sum, e) => sum + (e.photo_count || 0), 0);
         const totalPlants = new Set(entries.flatMap(e => (e.plants || []).map(p => p.plant_name))).size;
 
@@ -50,7 +50,7 @@ async function loadStats() {
 async function loadEntries() {
     let entries;
     try {
-        entries = await fetch('/api/journal/entries', { headers: authHeaders() }).then(r => r.json());
+        entries = await fetchWithAuth('/api/journal/entries', { headers: authHeaders() }).then(r => r.json());
     } catch {
         entries = [];
     }
@@ -101,7 +101,7 @@ async function loadEntries() {
 async function loadReminders() {
     let reminders;
     try {
-        reminders = await fetch('/api/journal/reminders', { headers: authHeaders() }).then(r => r.json());
+        reminders = await fetchWithAuth('/api/journal/reminders', { headers: authHeaders() }).then(r => r.json());
     } catch {
         reminders = [];
     }
@@ -165,7 +165,7 @@ async function toggleReminder(id, completed) {
 async function deleteReminder(id) {
     if (!confirm('Delete this reminder?')) return;
     try {
-        await fetch(`/api/journal/reminders/${id}`, { method: 'DELETE', headers: authHeaders() });
+        await fetchWithAuth(`/api/journal/reminders/${id}`, { method: 'DELETE', headers: authHeaders() });
         loadReminders();
         loadStats();
     } catch (err) { handleError(err, 'Failed to delete reminder'); }
@@ -174,7 +174,7 @@ async function deleteReminder(id) {
 async function deleteEntry(id) {
     if (!confirm('Delete this journal entry?')) return;
     try {
-        await fetch(`/api/journal/entries/${id}`, { method: 'DELETE', headers: authHeaders() });
+        await fetchWithAuth(`/api/journal/entries/${id}`, { method: 'DELETE', headers: authHeaders() });
         loadEntries();
         loadStats();
     } catch (err) { handleError(err, 'Failed to delete entry'); }

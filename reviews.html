@@ -184,7 +184,7 @@
             const title = document.getElementById('reviewTitle').value.trim();
             const content = document.getElementById('reviewContent').value.trim();
             try {
-                await fetch('/api/reviews', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ rating: selectedRating, title, content }) });
+                await fetchWithAuth('/api/reviews', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ rating: selectedRating, title, content }) });
                 document.getElementById('reviewTitle').value = '';
                 document.getElementById('reviewContent').value = '';
                 selectedRating = 0;
@@ -195,7 +195,7 @@
 
         async function markHelpful(id) {
             if (!localStorage.getItem('flower-user')) { alert('Sign in to mark reviews as helpful'); return; }
-            try { await fetch(`/api/reviews/${id}/helpful`, { method: 'POST', headers: authHeaders() }); loadReviews(); } catch {}
+            try { await fetchWithAuth(`/api/reviews/${id}/helpful`, { method: 'POST', headers: authHeaders() }); loadReviews(); } catch {}
         }
 
         init();

@@ -133,7 +133,7 @@
                         el.scrollTop = el.scrollHeight;
 
                         // Mark as read
-                        fetch(`/api/messages/${msg.conversationId}`, { headers: authHeaders() });
+                        fetchWithAuth(`/api/messages/${msg.conversationId}`, { headers: authHeaders() });
                     }
 
                     if (msg.type === 'message' && msg.conversationId !== currentConv) {
@@ -216,7 +216,7 @@
         }
 
         async function loadConversations() {
-            try { conversations = await fetch('/api/messages/conversations', { headers: authHeaders() }).then(r => r.json()); } catch { conversations = []; }
+            try { conversations = await fetchWithAuth('/api/messages/conversations', { headers: authHeaders() }).then(r => r.json()); } catch { conversations = []; }
             const el = document.getElementById('convList');
             if (!conversations.length) { el.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-light);font-size:0.85rem;">No conversations yet</div>'; return; }
             el.innerHTML = conversations.map(c => `
@@ -256,7 +256,7 @@
 
         async function loadMessages(convId) {
             let msgs;
-            try { msgs = await fetch(`/api/messages/${convId}`, { headers: authHeaders() }).then(r => r.json()); } catch { msgs = []; }
+            try { msgs = await fetchWithAuth(`/api/messages/${convId}`, { headers: authHeaders() }).then(r => r.json()); } catch { msgs = []; }
             const el = document.getElementById('msgBody');
             el.innerHTML = msgs.map(m => `
                 <div class="msg-bubble ${m.sender_id === myId ? 'sent' : 'received'}">
@@ -278,7 +278,7 @@
 
             // Send via API
             try {
-                await fetch(`/api/messages/${currentConv}`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ content }) });
+                await fetchWithAuth(`/api/messages/${currentConv}`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ content }) });
             } catch {}
 
             // Also send via WebSocket for real-time delivery

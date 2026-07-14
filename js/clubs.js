@@ -136,7 +136,7 @@ async function initClubDetail() {
 
   let club;
   try {
-    const res = await fetch(`/api/clubs/${id}`, { headers: authHeaders() });
+    const res = await fetchWithAuth(`/api/clubs/${id}`, { headers: authHeaders() });
     if (!res.ok) throw new Error('Not found');
     club = await res.json();
   } catch {
@@ -227,7 +227,7 @@ function renderClubDetail(club) {
 async function joinClub(clubId) {
   if (!userLoggedIn()) { openAuthModal('login'); return; }
   try {
-    await fetch(`/api/clubs/${clubId}/members`, { method: 'POST', headers: authHeaders() });
+    await fetchWithAuth(`/api/clubs/${clubId}/members`, { method: 'POST', headers: authHeaders() });
     window.location.reload();
   } catch { alert('Failed to join club'); }
 }
@@ -235,7 +235,7 @@ async function joinClub(clubId) {
 async function leaveClub(clubId) {
   if (!confirm('Leave this club?')) return;
   try {
-    await fetch(`/api/clubs/${clubId}/members`, { method: 'DELETE', headers: authHeaders() });
+    await fetchWithAuth(`/api/clubs/${clubId}/members`, { method: 'DELETE', headers: authHeaders() });
     window.location.reload();
   } catch { alert('Failed to leave club'); }
 }

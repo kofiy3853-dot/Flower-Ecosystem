@@ -230,7 +230,7 @@ async function submitShowcaseProject() {
 async function toggleShowcaseLike(postId, btn) {
   if (!userLoggedIn()) { openAuthModal('login'); return; }
   try {
-    const res = await fetch(`/api/showcase/${postId}/like`, { method: 'POST', headers: authHeaders() });
+    const res = await fetchWithAuth(`/api/showcase/${postId}/like`, { method: 'POST', headers: authHeaders() });
     const data = await res.json();
     const icon = btn.querySelector('i');
     icon.className = data.liked ? 'bi bi-heart-fill' : 'bi bi-heart';
@@ -287,7 +287,7 @@ async function initShowcaseDetail() {
 
   let project;
   try {
-    const res = await fetch(`/api/showcase/${id}`, { headers: authHeaders() });
+    const res = await fetchWithAuth(`/api/showcase/${id}`, { headers: authHeaders() });
     if (!res.ok) throw new Error('Not found');
     project = await res.json();
   } catch {
@@ -494,7 +494,7 @@ function switchSCImage(url, el) {
 async function scdToggleLike(projectId) {
   if (!userLoggedIn()) { openAuthModal('login'); return; }
   try {
-    const res = await fetch(`/api/showcase/${projectId}/like`, { method: 'POST', headers: authHeaders() });
+    const res = await fetchWithAuth(`/api/showcase/${projectId}/like`, { method: 'POST', headers: authHeaders() });
     const data = await res.json();
     const btn = document.getElementById('scdLikeBtn');
     const count = document.getElementById('scdLikeCount');

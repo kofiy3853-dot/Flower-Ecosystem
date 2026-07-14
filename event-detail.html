@@ -229,7 +229,7 @@
 
             let event;
             try {
-                const res = await fetch(`/api/events/${id}`, { headers: authHeaders() });
+                const res = await fetchWithAuth(`/api/events/${id}`, { headers: authHeaders() });
                 if (!res.ok) throw new Error('Not found');
                 event = await res.json();
             } catch {

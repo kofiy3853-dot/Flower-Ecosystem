@@ -180,7 +180,7 @@ function renderOverview(analytics){
 
     // Recent Events
     let recentEventsList=[];
-    try{recentEventsList=await fetch('/api/events?limit=5',{headers:authHeaders()}).then(r=>r.json()).then(d=>d.events||[]);}catch{}
+    try{recentEventsList=await fetchWithAuth('/api/events?limit=5',{headers:authHeaders()}).then(r=>r.json()).then(d=>d.events||[]);}catch{}
     const recentEventsEl=$('#recentEvents');
     if(recentEventsEl) recentEventsEl.innerHTML=recentEventsList.length?recentEventsList.slice(0,5).map(e=>`
         <div style="display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border-color);">

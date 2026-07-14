@@ -172,7 +172,7 @@ async function initStoryDetail() {
 
     let story;
     try {
-        const res = await fetch(`/api/stories/${id}`, { headers: authHeaders() });
+        const res = await fetchWithAuth(`/api/stories/${id}`, { headers: authHeaders() });
         if (!res.ok) throw new Error('Not found');
         story = await res.json();
     } catch {
@@ -340,7 +340,7 @@ async function initStoryDetail() {
 async function toggleLike(storyId) {
     if (!userLoggedIn()) { openAuthModal('login'); return; }
     try {
-        const res = await fetch(`/api/stories/${storyId}/like`, { method: 'POST', headers: authHeaders() });
+        const res = await fetchWithAuth(`/api/stories/${storyId}/like`, { method: 'POST', headers: authHeaders() });
         const data = await res.json();
         const btn = document.getElementById('likeBtn');
         const count = document.getElementById('likeCount');
@@ -358,7 +358,7 @@ async function toggleLike(storyId) {
 async function toggleBookmark(storyId) {
     if (!userLoggedIn()) { openAuthModal('login'); return; }
     try {
-        const res = await fetch(`/api/stories/${storyId}/bookmark`, { method: 'POST', headers: authHeaders() });
+        const res = await fetchWithAuth(`/api/stories/${storyId}/bookmark`, { method: 'POST', headers: authHeaders() });
         const data = await res.json();
         const btn = document.getElementById('bookmarkBtn');
         if (data.bookmarked) {
@@ -399,7 +399,7 @@ async function submitStoryComment(storyId) {
 async function deleteStoryComment(commentId, storyId) {
     if (!confirm('Delete this comment?')) return;
     try {
-        await fetch(`/api/stories/comments/${commentId}`, { method: 'DELETE', headers: authHeaders() });
+        await fetchWithAuth(`/api/stories/comments/${commentId}`, { method: 'DELETE', headers: authHeaders() });
         window.location.reload();
     } catch {}
 }

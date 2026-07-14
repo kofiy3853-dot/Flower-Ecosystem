@@ -67,7 +67,7 @@
         async function loadNotifications() {
             if (!localStorage.getItem('flower-user')) { document.getElementById('notifList').innerHTML = '<div class="empty-state"><p>Sign in to view notifications.</p></div>'; return; }
             let notifs;
-            try { notifs = await fetch('/api/notifications', { headers: authHeaders() }).then(r => r.json()); } catch { notifs = []; }
+            try { notifs = await fetchWithAuth('/api/notifications', { headers: authHeaders() }).then(r => r.json()); } catch { notifs = []; }
             const el = document.getElementById('notifList');
             if (!notifs.length) { el.innerHTML = '<div class="empty-state"><i class="bi bi-bell"></i><h3>No notifications</h3><p>You\'re all caught up!</p></div>'; return; }
             const icons = { order: 'bi-bag-check', message: 'bi-chat-dots', system: 'bi-gear' };
@@ -84,7 +84,7 @@
         }
 
         async function markRead(id, link) {
-            try { await fetch(`/api/notifications/${id}/read`, { method: 'PUT', headers: authHeaders() }); } catch {}
+            try { await fetchWithAuth(`/api/notifications/${id}/read`, { method: 'PUT', headers: authHeaders() }); } catch {}
             if (link) {
                 window.location.href = link;
             } else {
@@ -93,7 +93,7 @@
         }
 
         async function markAllRead() {
-            try { await fetch('/api/notifications/read', { method: 'PUT', headers: authHeaders() }); } catch {}
+            try { await fetchWithAuth('/api/notifications/read', { method: 'PUT', headers: authHeaders() }); } catch {}
             loadNotifications();
         }
 

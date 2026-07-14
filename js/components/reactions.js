@@ -63,7 +63,7 @@ function toggleReaction(postId, btn) {
     btn.classList.remove('liked');
     btn.querySelector('i').className = 'bi bi-heart';
     btn.querySelector('span').textContent = 'Like';
-    fetch(`/api/feed/${postId}/react`, { method: 'DELETE', headers: authHeaders() }).catch(() => {});
+    fetchWithAuth(`/api/feed/${postId}/react`, { method: 'DELETE', headers: authHeaders() }).catch(() => {});
   } else {
     reactToPost(postId, 'love', btn);
   }
@@ -75,7 +75,7 @@ function sharePost(postId) {
   else {
     navigator.clipboard.writeText(url).then(() => {
       showToast('Link copied!');
-      fetch(`/api/feed/${postId}/share`, { method: 'POST', headers: authHeaders() }).catch(() => {});
+      fetchWithAuth(`/api/feed/${postId}/share`, { method: 'POST', headers: authHeaders() }).catch(() => {});
     });
   }
 }
@@ -84,7 +84,7 @@ function savePost(postId, btn) {
   if (!getCurrentUserId()) { openAuthModal('login'); return; }
   btn.classList.toggle('liked');
   btn.querySelector('i').className = btn.classList.contains('liked') ? 'bi bi-bookmark-fill' : 'bi bi-bookmark';
-  fetch(`/api/feed/${postId}/save`, { method: 'POST', headers: authHeaders() }).catch(() => {});
+  fetchWithAuth(`/api/feed/${postId}/save`, { method: 'POST', headers: authHeaders() }).catch(() => {});
 }
 
 function renderStars(rating) {
