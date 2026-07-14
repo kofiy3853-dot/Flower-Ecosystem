@@ -10,6 +10,13 @@ router.get('/users', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (_, 
     res.json(r.rows);
 }));
 
+router.get('/users/:id', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+    const r = await pool.query('SELECT id, first_name, last_name, email, role, is_active, created_at, location, description, profile_image FROM auth.users WHERE id = $1', [req.params.id]);
+    if (!r.rows.length) return res.status(404).json({ error: 'User not found' });
+    res.json(r.rows[0]);
+}));
+
 router.put('/users/:id/role', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { role } = req.body;
