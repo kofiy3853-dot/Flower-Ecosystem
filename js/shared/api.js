@@ -70,6 +70,20 @@ function authHeaders() {
     return { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
 }
 
+function getCsrfToken() {
+    const match = document.cookie.match(/(?:^|; )csrf_token=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : null;
+}
+
+function authHeadersWithCsrf() {
+    const csrf = getCsrfToken();
+    return {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        ...(csrf && { 'X-CSRF-Token': csrf })
+    };
+}
+
 // ─── Auto-refresh wrapper ─────────────────────────────────────────────
 // Intercepts 401 responses, refreshes the access token cookie, then retries.
 let _refreshPromise = null;
@@ -111,10 +125,28 @@ async function fetchWithAuth(url, options = {}) {
     return res;
 }
 
+async function fetchWithCsrf(url, options = {}) {
+    const opts = { credentials: 'include', ...options };
+    if (opts.headers) {
+        const h = { ...opts.headers };
+        delete h['Authorization'];
+        delete h['authorization'];
+        opts.headers = h;
+    }
+    const csrf = getCsrfToken();
+    if (csrf) {
+        opts.headers = { ...opts.headers, 'X-CSRF-Token': csrf };
+    }
+    return fetchWithAuth(url, opts);
+}
+
 window.getCurrentUserId = getCurrentUserId;
 window.getCurrentUserRole = getCurrentUserRole;
 window.authHeaders = authHeaders;
+window.authHeadersWithCsrf = authHeadersWithCsrf;
 window.fetchWithAuth = fetchWithAuth;
+window.fetchWithCsrf = fetchWithCsrf;
+window.getCsrfToken = getCsrfToken;
 
 window.handleError = function(err, context) {
     const msg = err?.message || String(err) || 'Something went wrong';

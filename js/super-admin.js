@@ -31,14 +31,29 @@
         return Math.floor(s / 86400) + 'd ago';
     }
 
+    // ─── Loading Helpers ───────────────────────────────────
+    function showLoading(tableId, cols = 5) {
+        const tbody = $('#' + tableId);
+        if (tbody) tbody.innerHTML = '<tr><td colspan="' + cols + '" style="text-align:center;padding:2rem;color:var(--text-light);"><i class="bi bi-hourglass-split" style="font-size:1.5rem;animation:spin 1s linear infinite;"></i> Loading...</td></tr>';
+    }
+
+    function showError(tableId, cols = 5, msg = 'Failed to load data') {
+        const tbody = $('#' + tableId);
+        if (tbody) tbody.innerHTML = '<tr><td colspan="' + cols + '" style="text-align:center;padding:2rem;color:var(--error-color);">' + esc(msg) + '</td></tr>';
+    }
+
+    function showEmpty(tableId, cols = 5, msg = 'No data found') {
+        const tbody = $('#' + tableId);
+        if (tbody) tbody.innerHTML = '<tr><td colspan="' + cols + '" style="text-align:center;padding:2rem;color:var(--text-light);">' + esc(msg) + '</td></tr>';
+    }
+
     async function saFetch(url, opts = {}) {
         try {
-            const res = await fetch(url, {
-                credentials: 'include',
+            const res = await fetchWithAuth(url, {
                 headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', ...(opts.headers || {}) },
                 ...opts
             });
-            if (res.status === 401 || res.status === 403) {
+            if (res && (res.status === 401 || res.status === 403)) {
                 localStorage.removeItem('flower-user');
                 window.location.href = 'index.html';
                 return null;
@@ -46,6 +61,24 @@
             return res;
         } catch (e) {
             console.error('Fetch error:', e);
+            return null;
+        }
+    }
+
+    async function saFetchCsrf(url, opts = {}) {
+        try {
+            const res = await fetchWithCsrf(url, {
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', ...(opts.headers || {}) },
+                ...opts
+            });
+            if (res && (res.status === 401 || res.status === 403)) {
+                localStorage.removeItem('flower-user');
+                window.location.href = 'index.html';
+                return null;
+            }
+            return res;
+        } catch (e) {
+            console.error('Fetch CSRF error:', e);
             return null;
         }
     }
@@ -221,8 +254,9 @@
 
     // ─── Users ────────────────────────────────────────────
     async function renderUsers() {
+        showLoading('saUsersBody', 5);
         const res = await saFetch('/api/admin/users');
-        if (!res) return;
+        if (!res) { showError('saUsersBody', 5); return; }
         const data = await res.json();
         users = Array.isArray(data) ? data : (data.users || []);
         filterUsers();
@@ -253,7 +287,7 @@
 
     window.saToggleStatus = async function (id, active) {
         if (!confirm(`${active ? 'Suspend' : 'Activate'} this user?`)) return;
-        await saFetch(`/api/admin/users/${id}/status`, { method: 'PUT' });
+        await saFetchCsrf(`/api/admin/users/${id}/status`, { method: 'PUT' });
         users = users.map(u => u.id === id ? { ...u, is_active: !active } : u);
         filterUsers();
         showToast(`User ${active ? 'suspended' : 'activated'}`, 'success');
@@ -263,7 +297,7 @@
         const roles = ['CUSTOMER', 'SELLER', 'FLORIST', 'GROWER', 'INSTRUCTOR', 'MODERATOR', 'ADMIN', 'SUPERADMIN'];
         const r = prompt(`Current: ${current}\nNew role (${roles.join(', ')}):`, current);
         if (!r || !roles.includes(r.toUpperCase())) return;
-        await saFetch(`/api/admin/users/${id}/role`, { method: 'PUT', body: JSON.stringify({ role: r.toUpperCase() }) });
+        await saFetchCsrf(`/api/admin/users/${id}/role`, { method: 'PUT', body: JSON.stringify({ role: r.toUpperCase() }) });
         users = users.map(u => u.id === id ? { ...u, role: r.toUpperCase() } : u);
         filterUsers();
         showToast('Role updated', 'success');
@@ -271,7 +305,7 @@
 
     window.saDeleteUser = async function (id) {
         if (!confirm('Permanently delete this user? This cannot be undone.')) return;
-        await saFetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+        await saFetchCsrf(`/api/admin/users/${id}`, { method: 'DELETE' });
         users = users.filter(u => u.id !== id);
         filterUsers();
         showToast('User deleted', 'success');
@@ -303,7 +337,7 @@
                 location: $('#saEditLocation').value,
                 description: $('#saEditDesc').value
             };
-            await saFetch(`/api/admin/users/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+            await saFetchCsrf(`/api/admin/users/${id}`, { method: 'PUT', body: JSON.stringify(data) });
             const idx = users.findIndex(u => String(u.id) === String(id));
             if (idx !== -1) users[idx] = { ...users[idx], ...data, first_name: data.name };
             showToast('User updated', 'success');
@@ -313,10 +347,21 @@
         $('#saModalOverlay').classList.add('active');
     };
 
+    // ─── Loading Helpers ───────────────────────────────────────
+    function showLoading(selector, cols) {
+        const el = $(selector);
+        if (el) el.innerHTML = '<tr><td colspan="' + cols + '" style="text-align:center;padding:2rem;color:var(--text-light);"><i class="bi bi-hourglass-split" style="font-size:1.5rem;animation:spin 1s linear infinite;"></i><div style="margin-top:.5rem;">Loading...</div></tr>';
+    }
+    function showError(selector, cols, msg = 'Failed to load data') {
+        const el = $(selector);
+        if (el) el.innerHTML = '<tr><td colspan="' + cols + '" style="text-align:center;padding:2rem;color:#ef4444;">' + esc(msg) + ' <button class="sa-btn sa-btn-sm sa-btn-outline" style="margin-left:.5rem;" onclick="location.reload()">Retry</button></td></tr>';
+    }
+
     // ─── Sellers ──────────────────────────────────────────
     async function renderSellers() {
+        showLoading('saSellersBody', 6);
         const res = await saFetch('/api/admin/sellers');
-        if (!res) return;
+        if (!res) { showError('saSellersBody', 6); return; }
         sellers = await res.json();
         $('#saSellersBody').innerHTML = sellers.map(s => `<tr>
             <td><div class="sa-user-cell"><div class="sa-user-avatar">${(s.name || '?')[0]}</div><div><div class="sa-user-name">${esc(s.name)}</div><div class="sa-user-email">${esc(s.email)}</div></div></div></td>
@@ -333,8 +378,9 @@
 
     // ─── Instructors ──────────────────────────────────────
     async function renderInstructors() {
+        showLoading('saInstructorsBody', 5);
         const res = await saFetch('/api/admin/users');
-        if (!res) return;
+        if (!res) { showError('saInstructorsBody', 5); return; }
         const data = await res.json();
         const instructors = (Array.isArray(data) ? data : data.users || []).filter(u => u.role === 'INSTRUCTOR');
         $('#saInstructorsBody').innerHTML = instructors.map(u => `<tr>
@@ -351,8 +397,9 @@
 
     // ─── Products ─────────────────────────────────────────
     async function renderProducts() {
+        showLoading('saProductsBody', 6);
         const res = await saFetch('/api/admin/products');
-        if (!res) return;
+        if (!res) { showError('saProductsBody', 6); return; }
         const data = await res.json();
         products = Array.isArray(data) ? data : (data.products || []);
         $('#saProductsBody').innerHTML = products.map(p => `<tr>
@@ -369,7 +416,7 @@
     }
 
     window.saApproveProduct = async function (id, isActive) {
-        await saFetch(`/api/admin/products/${id}/approve`, { method: 'PUT', body: JSON.stringify({ is_active: isActive }) });
+        await saFetchCsrf(`/api/admin/products/${id}/approve`, { method: 'PUT', body: JSON.stringify({ is_active: isActive }) });
         products = products.map(p => p.id === id ? { ...p, is_active: isActive } : p);
         renderProducts();
         showToast('Product updated', 'success');
@@ -377,7 +424,7 @@
 
     window.saDeleteProduct = async function (id) {
         if (!confirm('Delete this product?')) return;
-        await saFetch(`/api/products/${id}`, { method: 'DELETE' });
+        await saFetchCsrf(`/api/products/${id}`, { method: 'DELETE' });
         products = products.filter(p => p.id !== id);
         renderProducts();
         showToast('Product deleted', 'success');
@@ -387,8 +434,9 @@
     let currentCatId = null;
 
     async function renderCategories() {
+        showLoading('saCategoriesBody', 4);
         const res = await saFetch('/api/products/categories');
-        if (!res) return;
+        if (!res) { showError('saCategoriesBody', 4); return; }
         const data = await res.json();
         const cats = Array.isArray(data) ? data : (data.categories || []);
 
@@ -463,7 +511,7 @@
 
     window.saDeleteImage = async function (id) {
         if (!confirm('Delete this image?')) return;
-        const res = await saFetch(`/api/categories/images/${id}`, { method: 'DELETE' });
+        const res = await saFetchCsrf(`/api/categories/images/${id}`, { method: 'DELETE' });
         if (res && res.ok) {
             showToast('Image deleted', 'success');
             saViewCatImages(currentCatId, $('#saCategoryImagesTitle').textContent.replace(' — Images', ''));
@@ -474,7 +522,7 @@
     };
 
     window.saFeatureImage = async function (id) {
-        const res = await saFetch(`/api/categories/images/${id}/feature`, { method: 'PATCH' });
+        const res = await saFetchCsrf(`/api/categories/images/${id}/feature`, { method: 'PATCH' });
         if (res && res.ok) {
             showToast('Featured image updated', 'success');
             saViewCatImages(currentCatId, $('#saCategoryImagesTitle').textContent.replace(' — Images', ''));
@@ -483,7 +531,7 @@
     };
 
     window.saToggleImageStatus = async function (id, status) {
-        const res = await saFetch(`/api/categories/images/${id}/status`, {
+        const res = await saFetchCsrf(`/api/categories/images/${id}/status`, {
             method: 'PATCH', body: JSON.stringify({ status })
         });
         if (res && res.ok) {
@@ -494,8 +542,9 @@
 
     // ─── Orders ───────────────────────────────────────────
     async function renderOrders() {
+        showLoading('saOrdersBody', 6);
         const res = await saFetch('/api/admin/orders');
-        if (!res) return;
+        if (!res) { showError('saOrdersBody', 6); return; }
         orders = await res.json();
         $('#saOrderFilter').onchange = () => filterOrders();
         filterOrders();
@@ -518,7 +567,7 @@
     }
 
     window.saUpdateOrderStatus = async function (id, status) {
-        await saFetch(`/api/admin/orders/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) });
+        await saFetchCsrf(`/api/admin/orders/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) });
         orders = orders.map(o => o.id === id ? { ...o, status } : o);
         filterOrders();
         showToast('Order status updated', 'success');
@@ -526,8 +575,9 @@
 
     // ─── Courses ──────────────────────────────────────────
     async function renderCourses() {
+        showLoading('saCoursesBody', 6);
         const res = await saFetch('/api/courses');
-        if (!res) return;
+        if (!res) { showError('saCoursesBody', 6); return; }
         const data = await res.json();
         courses = Array.isArray(data) ? data : (data.courses || []);
         $('#saCoursesBody').innerHTML = courses.map(c => `<tr>
@@ -543,7 +593,7 @@
     }
 
     window.saApproveCourse = async function (id, publish) {
-        await saFetch(`/api/courses/${id}`, { method: 'PUT', body: JSON.stringify({ is_published: publish }) });
+        await saFetchCsrf(`/api/courses/${id}`, { method: 'PUT', body: JSON.stringify({ is_published: publish }) });
         courses = courses.map(c => c.id === id ? { ...c, is_published: publish } : c);
         renderCourses();
         showToast('Course updated', 'success');
@@ -569,7 +619,7 @@
 
     window.saDeleteEvent = async function (id) {
         if (!confirm('Delete this event? This cannot be undone.')) return;
-        const res = await saFetch(`/api/events/${id}`, { method: 'DELETE' });
+        const res = await saFetchCsrf(`/api/events/${id}`, { method: 'DELETE' });
         if (res && res.ok) {
             showToast('Event deleted', 'success');
             renderEvents();
@@ -597,7 +647,7 @@
 
     window.saDeleteDiscussion = async function (id) {
         if (!confirm('Delete this discussion? This cannot be undone.')) return;
-        const res = await saFetch(`/api/discussions/${id}`, { method: 'DELETE' });
+        const res = await saFetchCsrf(`/api/discussions/${id}`, { method: 'DELETE' });
         if (res && res.ok) {
             showToast('Discussion deleted', 'success');
             renderCommunity();
