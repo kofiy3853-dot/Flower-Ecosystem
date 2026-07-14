@@ -167,9 +167,10 @@ router.get('/:id', asyncHandler(async (req, res) => {
 
             let isRegistered = false;
             let hasCertificate = false;
-            if (req.headers.authorization) {
+            if (req.headers.authorization || req.cookies?.access_token) {
                 try {
-                    const decoded = jwt.verify(req.headers.authorization.replace('Bearer ', ''), JWT_SECRET);
+                    const token = req.headers.authorization?.replace('Bearer ', '') || req.cookies.access_token;
+                    const decoded = jwt.verify(token, JWT_SECRET);
                     const reg = await pool.query('SELECT id FROM events.event_registrations WHERE event_id = $1 AND user_id = $2', [event.id, decoded.id]);
                     isRegistered = reg.rows.length > 0;
                     const cert = await pool.query('SELECT id FROM events.event_certificates WHERE event_id = $1 AND user_id = $2', [event.id, decoded.id]);
