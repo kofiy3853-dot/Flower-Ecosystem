@@ -560,7 +560,7 @@
             <td>${e.event_date ? new Date(e.event_date).toLocaleDateString() : '—'}</td>
             <td><span class="sa-badge sa-badge-role">${esc(e.event_type || e.type || '—')}</span></td>
             <td>${esc(e.location || 'Online')}</td>
-            <td>${e.attendee_count ?? e.registered_count ?? '—'}</td>
+            <td>${e.attendee_count ?? e.registered_count ?? e.registrations ?? '—'}</td>
             <td><div class="sa-action-btns">
                 <button onclick="saDeleteEvent('${e.id}')"><i class="bi bi-trash"></i> Delete</button>
             </div></td>
