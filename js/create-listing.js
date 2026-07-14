@@ -48,7 +48,7 @@ async function loadCategories() {
 
 async function loadListingForEdit(id) {
     try {
-        const res = await fetch(`/api/products/${id}`, { headers: authHeaders() });
+        const res = await fetchWithAuth(`/api/products/${id}`);
         if (!res.ok) throw new Error('Failed to load listing');
         const p = await res.json();
 
@@ -475,7 +475,7 @@ async function clPublish() {
 
         const method = editingListingId ? 'PUT' : 'POST';
         const url = editingListingId ? `/api/products/${editingListingId}` : '/api/products';
-        const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(body) });
+        const res = await fetchWithAuth(url, { method, headers: authHeaders(), body: JSON.stringify(body) });
         if (!res.ok) { const err = await res.json().catch(() => {}); throw new Error(err?.error || 'Failed to save listing'); }
 
         showSuccessStep();
@@ -501,7 +501,7 @@ async function saveDraft() {
 
         const method = editingListingId ? 'PUT' : 'POST';
         const url = editingListingId ? `/api/products/${editingListingId}` : '/api/products';
-        const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(body) });
+        const res = await fetchWithAuth(url, { method, headers: authHeaders(), body: JSON.stringify(body) });
         if (!res.ok) { const err = await res.json().catch(() => {}); throw new Error(err?.error || 'Failed to save draft'); }
 
         if (typeof showToast === 'function') showToast('Draft saved successfully', 'success');
