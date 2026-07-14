@@ -31,8 +31,8 @@ CREATE INDEX IF NOT EXISTS idx_notifications_unread ON platform.notifications(us
 -- Messages (conversations)
 CREATE TABLE IF NOT EXISTS platform.conversations (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    participant_1   UUID NOT NULL REFERENCES auth.users(id),
-    participant_2   UUID NOT NULL REFERENCES auth.users(id),
+    participant_1   UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    participant_2   UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     last_message    TEXT,
     last_message_at TIMESTAMP,
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -46,7 +46,7 @@ CREATE INDEX IF NOT EXISTS idx_conversations_p2 ON platform.conversations(partic
 CREATE TABLE IF NOT EXISTS platform.messages (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     conversation_id UUID NOT NULL REFERENCES platform.conversations(id) ON DELETE CASCADE,
-    sender_id       UUID NOT NULL REFERENCES auth.users(id),
+    sender_id       UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     content         TEXT NOT NULL,
     is_read         BOOLEAN DEFAULT FALSE,
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP

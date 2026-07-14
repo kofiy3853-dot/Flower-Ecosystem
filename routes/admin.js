@@ -75,7 +75,20 @@ router.delete('/users/:id', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(asy
     if (req.user.id === req.params.id) return res.status(400).json({ error: 'Cannot delete your own account' });
     const existing = await pool.query('SELECT id FROM auth.users WHERE id = $1', [req.params.id]);
     if (!existing.rows.length) return res.status(404).json({ error: 'User not found' });
-    await pool.query('DELETE FROM auth.users WHERE id=$1', [req.params.id]);
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        // Clean up dependent records that lack ON DELETE CASCADE
+        await client.query('DELETE FROM platform.conversations WHERE participant_1 = $1 OR participant_2 = $1', [req.params.id]).catch(() => {});
+        await client.query('DELETE FROM platform.messages WHERE sender_id = $1', [req.params.id]).catch(() => {});
+        await client.query('DELETE FROM auth.users WHERE id = $1', [req.params.id]);
+        await client.query('COMMIT');
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+    }
     res.json({ success: true });
 }));
 
