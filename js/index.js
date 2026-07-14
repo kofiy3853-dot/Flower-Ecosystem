@@ -1,5 +1,17 @@
+// Ensure escapeHtml and renderStars are available (api.js loads before this with defer)
+const escapeHtml = window.escapeHtml || function(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'''}[c])); };
+const renderStars = window.renderStars || function(rating) {
+    const r = Number(rating) || 0;
+    const full = Math.floor(r);
+    const half = r % 1 >= 0.5;
+    let html = '';
+    for (let i = 0; i < full; i++) html += '<i class="bi bi-star-fill"></i>';
+    if (half) html += '<i class="bi bi-star-half"></i>';
+    for (let i = full + (half ? 1 : 0); i < 5; i++) html += '<i class="bi bi-star"></i>';
+    return html;
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Show loading states immediately
     ['statProducts', 'statSellers', 'statUsers', 'statCategories'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('loading');
@@ -153,15 +165,6 @@ function renderStats(stats) {
     const trustEl = document.getElementById('trustCount');
     if (trustEl && stats.users) {
         trustEl.textContent = stats.users.toLocaleString() + '+';
-    }
-
-    const exploreEl = document.getElementById('exploreStats');
-    if (exploreEl) {
-        const map = { products: stats.products, sellers: stats.sellers, users: stats.users, categories: stats.categories };
-        exploreEl.querySelectorAll('[data-stat]').forEach(el => {
-            const key = el.dataset.stat;
-            if (map[key] !== undefined) el.textContent = map[key].toLocaleString();
-        });
     }
 }
 
@@ -383,9 +386,9 @@ function renderEvents(data) {
     // Filter out past events
     const now = new Date();
     const items = normalizeArray(data, 'events').filter(e => {
-        const evDate = e.date || e.event_date;
-        if (!evDate) return true;
-        const eventDate = new Date(evDate);
+        const eventDateStr = e.date || e.event_date;
+        if (!eventDateStr) return true;
+        const eventDate = new Date(eventDateStr);
         return isNaN(eventDate) || eventDate >= now;
     }).slice(0, 3);
     
