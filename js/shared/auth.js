@@ -489,6 +489,12 @@ async function updateNotificationBadge() {
     }
     try {
         const res = await fetchWithAuth('/api/notifications/unread-count');
+        if (res.status === 401) {
+            // Session expired - clear local user data and hide badge
+            localStorage.removeItem('flower-user');
+            badge.style.display = 'none';
+            return;
+        }
         if (res.ok) {
             const data = await res.json();
             const count = data.count || 0;
