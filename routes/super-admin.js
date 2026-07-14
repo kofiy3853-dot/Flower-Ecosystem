@@ -24,7 +24,7 @@ router.get('/overview', requireSuperAdmin, asyncHandler(async (req, res) => {
 
     const [users, products, courses, orders, sellers, posts, events, discussions] = await Promise.all([
         pool.query(`SELECT COUNT(*) AS count FROM auth.users WHERE 1=1 ${baseUserFilter}`, dateArgs),
-        pool.query('SELECT COUNT(*) AS count FROM marketplace.products WHERE is_active = true'),
+        pool.query('SELECT COUNT(*) AS count FROM marketplace.products'),
         pool.query('SELECT COUNT(*) AS count FROM learning.courses').catch(() => ({ rows: [{ count: 0 }] })),
         pool.query(`SELECT COUNT(*) AS count, COALESCE(SUM(total_amount),0) AS revenue FROM marketplace.orders WHERE 1=1 ${baseOrderFilter}`, dateArgs),
         pool.query("SELECT COUNT(*) AS count FROM auth.users WHERE role IN ('SELLER','FLORIST','GROWER')"),

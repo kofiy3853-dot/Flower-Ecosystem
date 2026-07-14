@@ -106,6 +106,25 @@ router.get('/users/:id/activity', requireRole('ADMIN', 'SUPERADMIN'), asyncHandl
     });
 }));
 
+router.get('/products', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.json([]);
+    try {
+        const r = await pool.query(`
+            SELECT p.id, p.name, p.price, p.stock_quantity, p.is_active, p.status, p.created_at,
+                   p.image_url, p.seller_id, p.category_id,
+                   u.first_name || ' ' || u.last_name AS seller_name,
+                   c.name AS category_name
+            FROM marketplace.products p
+            LEFT JOIN auth.users u ON u.id = p.seller_id
+            LEFT JOIN marketplace.categories c ON c.id = p.category_id
+            ORDER BY p.created_at DESC`);
+        res.json(r.rows);
+    } catch (err) {
+        console.error('Admin products query error:', err.message);
+        res.json([]);
+    }
+}));
+
 router.put('/products/:id/approve', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async (req, res) => {
     if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
     const { id } = req.params;
@@ -217,7 +236,7 @@ router.get('/analytics', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(async 
     if (!(await dbAvailable())) return res.json({ users: 0, products: 0, orders: 0, revenue: 0 });
     const [users, products, orders] = await Promise.all([
         pool.query('SELECT COUNT(*) FROM auth.users'),
-        pool.query('SELECT COUNT(*) FROM marketplace.products WHERE is_active = true'),
+        pool.query('SELECT COUNT(*) FROM marketplace.products'),
         pool.query('SELECT COUNT(*), COALESCE(SUM(total_amount),0) AS revenue FROM marketplace.orders')
     ]);
     res.json({

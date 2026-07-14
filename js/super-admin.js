@@ -351,7 +351,7 @@
 
     // ─── Products ─────────────────────────────────────────
     async function renderProducts() {
-        const res = await saFetch('/api/products');
+        const res = await saFetch('/api/admin/products');
         if (!res) return;
         const data = await res.json();
         products = Array.isArray(data) ? data : (data.products || []);
