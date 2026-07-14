@@ -421,11 +421,10 @@
             cart[idx].qty = Math.max(1, (cart[idx].qty || 1) + delta);
             saveCart(cart);
             // Sync to server when logged in
-            const token = localStorage.getItem('flower-user');
-            if (token && cart[idx].cartItemId) {
-                fetch('/api/cart/items/' + cart[idx].cartItemId, {
+            if (isLoggedIn() && cart[idx].cartItemId) {
+                fetchWithAuth('/api/cart/items/' + cart[idx].cartItemId, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ quantity: cart[idx].qty })
                 }).catch(() => {});
             }
@@ -435,11 +434,9 @@
         function removeItem(idx) {
             const cart = getCart();
             // Sync to server when logged in
-            const token = localStorage.getItem('flower-user');
-            if (token && cart[idx]?.cartItemId) {
-                fetch('/api/cart/items/' + cart[idx].cartItemId, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': 'Bearer ' + token }
+            if (isLoggedIn() && cart[idx]?.cartItemId) {
+                fetchWithAuth('/api/cart/items/' + cart[idx].cartItemId, {
+                    method: 'DELETE'
                 }).catch(() => {});
             }
             cart.splice(idx, 1);
@@ -452,11 +449,9 @@
             const saved = getSaved();
             const item = cart.splice(idx, 1)[0];
             // Remove from server cart when logged in
-            const token = localStorage.getItem('flower-user');
-            if (token && item?.cartItemId) {
-                fetch('/api/cart/items/' + item.cartItemId, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': 'Bearer ' + token }
+            if (isLoggedIn() && item?.cartItemId) {
+                fetchWithAuth('/api/cart/items/' + item.cartItemId, {
+                    method: 'DELETE'
                 }).catch(() => {});
             }
             saved.unshift(item);
@@ -470,11 +465,10 @@
             const cart = getCart();
             const item = saved.splice(idx, 1)[0];
             // Add to server cart when logged in
-            const token = localStorage.getItem('flower-user');
-            if (token) {
-                fetch('/api/cart/items', {
+            if (isLoggedIn()) {
+                fetchWithAuth('/api/cart/items', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ product_id: item.id, quantity: item.qty || 1 })
                 }).then(res => res.ok ? res.json() : null).then(data => {
                     if (data?.items) {
