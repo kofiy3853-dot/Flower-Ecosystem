@@ -32,7 +32,7 @@ router.get('/categories', asyncHandler(async (_, res) => {
 }));
 
 router.get('/', asyncHandler(async (req, res) => {
-    const { category, search, type, status = 'upcoming', sort = 'date', page = 1, limit = 20, featured, price, location_type } = req.query;
+    const { category, search, type, status, sort = 'date', page = 1, limit = 20, featured, price, location_type } = req.query;
 
     if (await dbAvailable()) {
         try {
