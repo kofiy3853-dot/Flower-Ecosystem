@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const { pool, JWT_SECRET, upload, rateLimiter, asyncHandler, dbAvailable, readJSON, requireAuth, getFileUrl } = require('./middleware');
+const { sendMail } = require('../utils/email');
 
 // Resolve an event param (UUID or slug) to a UUID
 async function resolveEventId(idOrSlug) {
@@ -272,6 +273,22 @@ router.post('/:id/register', requireAuth, rateLimiter(20, 60000), asyncHandler(a
             const r = await client.query('INSERT INTO events.event_registrations (event_id, user_id) VALUES ($1, $2) RETURNING *', [eventId, req.user.id]);
             await client.query('COMMIT');
             res.status(201).json(r.rows[0]);
+            // Send confirmation email (non-blocking)
+            try {
+                const user = await pool.query('SELECT email, first_name FROM auth.users WHERE id = $1', [req.user.id]);
+                const evt = await pool.query('SELECT title, event_date, location FROM events.events WHERE id = $1', [eventId]);
+                if (user.rows.length && evt.rows.length) {
+                    const u = user.rows[0];
+                    const e = evt.rows[0];
+                    const eventDate = new Date(e.event_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+                    sendMail({
+                        to: u.email,
+                        subject: `Registration Confirmed: ${e.title}`,
+                        html: `<!DOCTYPE html><html><head><style>body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;padding:20px}.container{max-width:500px;margin:0 auto;background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.1)}.header{background:linear-gradient(135deg,#d63384,#e84393);padding:30px;text-align:center}.header h1{color:white;margin:0;font-size:22px}.content{padding:30px}.content p{color:#666;line-height:1.6}.detail{background:#f8f9fa;padding:12px;border-radius:8px;margin:15px 0}.detail strong{color:#333}</style></head><body><div class="container"><div class="header"><h1>🎉 Registration Confirmed!</h1></div><div class="content"><p>Hi ${u.first_name || 'there'},</p><p>You're registered for <strong>${e.title}</strong>!</p><div class="detail"><strong>📅 Date:</strong> ${eventDate}<br><strong>📍 Location:</strong> ${e.location || 'Online'}</div><p>We look forward to seeing you there!</p><p style="font-size:12px;color:#999;margin-top:30px;">Flower Ecosystem Team</p></div></div></body></html>`,
+                        text: `Registration Confirmed!\n\nHi ${u.first_name || 'there'},\n\nYou're registered for ${e.title}!\nDate: ${eventDate}\nLocation: ${e.location || 'Online'}\n\nWe look forward to seeing you there!`
+                    }).catch(() => {});
+                }
+            } catch {}
         } catch (dbErr) {
             await client.query('ROLLBACK');
             if (dbErr.code === '23505') return res.status(409).json({ error: 'Already registered for this event' });
@@ -292,6 +309,22 @@ router.delete('/:id/register', requireAuth, asyncHandler(async (req, res) => {
     const r = await pool.query('DELETE FROM events.event_registrations WHERE event_id = $1 AND user_id = $2 RETURNING *', [eventId, req.user.id]);
     if (!r.rows.length) return res.status(404).json({ error: 'Registration not found' });
     res.json({ message: 'Registration cancelled' });
+    // Send cancellation email (non-blocking)
+    try {
+        const user = await pool.query('SELECT email, first_name FROM auth.users WHERE id = $1', [req.user.id]);
+        const evt = await pool.query('SELECT title, event_date, location FROM events.events WHERE id = $1', [eventId]);
+        if (user.rows.length && evt.rows.length) {
+            const u = user.rows[0];
+            const e = evt.rows[0];
+            const eventDate = new Date(e.event_date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+            sendMail({
+                to: u.email,
+                subject: `Registration Cancelled: ${e.title}`,
+                html: `<!DOCTYPE html><html><head><style>body{font-family:'Segoe UI',sans-serif;background:#f5f5f5;padding:20px}.container{max-width:500px;margin:0 auto;background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.1)}.header{background:#6c757d;padding:30px;text-align:center}.header h1{color:white;margin:0;font-size:22px}.content{padding:30px}.content p{color:#666;line-height:1.6}.detail{background:#f8f9fa;padding:12px;border-radius:8px;margin:15px 0}.detail strong{color:#333}</style></head><body><div class="container"><div class="header"><h1>Registration Cancelled</h1></div><div class="content"><p>Hi ${u.first_name || 'there'},</p><p>Your registration for <strong>${e.title}</strong> has been cancelled.</p><div class="detail"><strong>📅 Event Date:</strong> ${eventDate}<br><strong>📍 Location:</strong> ${e.location || 'Online'}</div><p>If this was a mistake, you can re-register from the event page.</p><p style="font-size:12px;color:#999;margin-top:30px;">Flower Ecosystem Team</p></div></div></body></html>`,
+                text: `Registration Cancelled\n\nHi ${u.first_name || 'there'},\n\nYour registration for ${e.title} has been cancelled.\nEvent Date: ${eventDate}\nLocation: ${e.location || 'Online'}\n\nIf this was a mistake, you can re-register from the event page.`
+            }).catch(() => {});
+        }
+    } catch {}
 }));
 
 router.post('/:id/speakers', requireAuth, asyncHandler(async (req, res) => {
