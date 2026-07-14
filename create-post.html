@@ -141,9 +141,9 @@
                             <div class="cp-audience">
                                 <i class="bi bi-globe"></i>
                                 <select id="cpAudience">
-                                    <option value="public">🌍 Public</option>
-                                    <option value="followers">👥 Followers Only</option>
-                                    <option value="private">🔒 Private Draft</option>
+                                    <option value="public"><i class="bi bi-globe"></i> Public</option>
+                                    <option value="followers"><i class="bi bi-people"></i> Followers Only</option>
+                                    <option value="private"><i class="bi bi-lock"></i> Private Draft</option>
                                 </select>
                             </div>
                         </div>
@@ -250,11 +250,11 @@
                         <div style="margin-top:0.75rem;">
                             <select id="cpAchievementType" style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.88rem;font-family:inherit;">
                                 <option value="">Choose achievement type</option>
-                                <option value="course_completed">🎓 Completed a Course</option>
-                                <option value="certificate">🏆 Earned Certificate</option>
-                                <option value="milestone">🎯 Reached a Milestone</option>
-                                <option value="first_sale">💰 First Sale</option>
-                                <option value="contest_won">🥇 Won a Contest</option>
+                                <option value="course_completed"><i class="bi bi-mortarboard"></i> Completed a Course</option>
+                                <option value="certificate"><i class="bi bi-trophy"></i> Earned Certificate</option>
+                                <option value="milestone"><i class="bi bi-bullseye"></i> Reached a Milestone</option>
+                                <option value="first_sale"><i class="bi bi-cash"></i> First Sale</option>
+                                <option value="contest_won"><i class="bi bi-award-fill"></i> Won a Contest</option>
                             </select>
                         </div>
                         <input type="text" id="cpAchievementDetail" placeholder="e.g., Wedding Floristry Masterclass" style="width:100%;padding:0.5rem 0.75rem;border:1px solid var(--border-color);border-radius:8px;font-size:0.88rem;font-family:inherit;margin-top:0.5rem;">
@@ -603,7 +603,7 @@
             if (postType === 'event') {
                 const et = document.getElementById('cpEventTitle').value;
                 const ed = document.getElementById('cpEventDate').value;
-                if (et) html += `<div style="margin-top:0.75rem;padding:0.75rem;border:1px solid var(--border-color);border-radius:8px;"><strong>📅 ${escapeHtml(et)}</strong>${ed ? `<div style="font-size:0.82rem;color:var(--text-light);margin-top:0.25rem;">${ed}</div>` : ''}</div>`;
+                if (et) html += `<div style="margin-top:0.75rem;padding:0.75rem;border:1px solid var(--border-color);border-radius:8px;"><strong><i class="bi bi-calendar"></i> ${escapeHtml(et)}</strong>${ed ? `<div style="font-size:0.82rem;color:var(--text-light);margin-top:0.25rem;">${ed}</div>` : ''}</div>`;
             }
             preview.innerHTML = html;
         }

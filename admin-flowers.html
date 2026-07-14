@@ -73,7 +73,7 @@
             <div id="adminList">
                 <div class="admin-toolbar">
                     <div class="left">
-                        <h1 style="margin:0;font-size:1.4rem;">🌸 Flowers</h1>
+                        <h1 style="margin:0;font-size:1.4rem;"><i class="bi bi-flower2"></i> Flowers</h1>
                         <input type="text" class="admin-search" id="adminSearch" placeholder="Search flowers..." oninput="renderTable()" style="background:var(--bg-light) url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" fill=\"%23999\" viewBox=\"0 0 16 16\"><path d=\"M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85-.017.016zm-5.242.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10z\"/></svg>') no-repeat 0.6rem center;padding-left:2rem;">
                     </div>
                     <button class="btn btn-primary" onclick="openAdd()" style="font-size:0.85rem;padding:0.5rem 1rem;border-radius:8px;">+ Add Flower</button>
@@ -123,13 +123,13 @@
             const filtered = allFlowers.filter(f => f.common_name.toLowerCase().includes(q) || (f.scientific_name || '').toLowerCase().includes(q));
             const wrap = document.getElementById('adminTableWrap');
             if (!filtered.length) { wrap.innerHTML = '<div class="empty-state"><i class="bi bi-flower1"></i><p>No flowers found.</p></div>'; return; }
-            wrap.innerHTML = `<table class="admin-table"><thead><tr><th>Flower</th><th>Scientific Name</th><th>Status</th><th>Actions</th></tr></thead><tbody>${filtered.map(f => `<tr><td><strong>${f.emoji || '🌸'} ${f.common_name}</strong></td><td style="font-style:italic;color:var(--text-light);">${f.scientific_name || '-'}</td><td>${f.is_published ? '<span style="color:#27ae60;">● Published</span>' : '<span style="color:#e74c3c;">● Hidden</span>'}</td><td><div class="admin-actions"><button onclick="openEdit('${f.slug}')"><i class="bi bi-pencil"></i></button><button class="delete" onclick="deleteFlower('${f.slug}')"><i class="bi bi-trash"></i></button></div></td></tr>`).join('')}</tbody></table>`;
+            wrap.innerHTML = `<table class="admin-table"><thead><tr><th>Flower</th><th>Scientific Name</th><th>Status</th><th>Actions</th></tr></thead><tbody>${filtered.map(f => `<tr><td><strong>${f.emoji || '<i class="bi bi-flower2"></i>'} ${f.common_name}</strong></td><td style="font-style:italic;color:var(--text-light);">${f.scientific_name || '-'}</td><td>${f.is_published ? '<span style="color:#27ae60;">● Published</span>' : '<span style="color:#e74c3c;">● Hidden</span>'}</td><td><div class="admin-actions"><button onclick="openEdit('${f.slug}')"><i class="bi bi-pencil"></i></button><button class="delete" onclick="deleteFlower('${f.slug}')"><i class="bi bi-trash"></i></button></div></td></tr>`).join('')}</tbody></table>`;
         }
 
         function renderCatTable() {
             const wrap = document.getElementById('adminCatTableWrap');
             if (!categories.length) { wrap.innerHTML = '<div class="empty-state"><p>No categories.</p></div>'; return; }
-            wrap.innerHTML = `<table class="admin-table"><thead><tr><th>Icon</th><th>Name</th><th>Slug</th><th>Description</th></tr></thead><tbody>${categories.map(c => `<tr><td>${c.icon || '🌸'}</td><td><strong>${c.name}</strong></td><td style="color:var(--text-light);">${c.slug}</td><td style="color:var(--text-light);font-size:0.8rem;">${c.description || ''}</td></tr>`).join('')}</tbody></table>`;
+            wrap.innerHTML = `<table class="admin-table"><thead><tr><th>Icon</th><th>Name</th><th>Slug</th><th>Description</th></tr></thead><tbody>${categories.map(c => `<tr><td>${c.icon || '<i class="bi bi-flower2"></i>'}</td><td><strong>${c.name}</strong></td><td style="color:var(--text-light);">${c.slug}</td><td style="color:var(--text-light);font-size:0.8rem;">${c.description || ''}</td></tr>`).join('')}</tbody></table>`;
         }
 
         function showList() { document.getElementById('adminList').style.display = 'block'; document.getElementById('adminCategories').style.display = 'none'; }

@@ -142,17 +142,17 @@
                     <p>Select what best describes your business. You can add more types later.</p>
                     <div class="type-grid">
                         <div class="type-card" onclick="selectType(this, 'florist')">
-                            <div class="type-card-icon">🌸</div>
+                            <div class="type-card-icon"><i class="bi bi-flower2"></i></div>
                             <div class="type-card-name">Florist</div>
                             <div class="type-card-desc">Bouquets, arrangements, event decoration</div>
                         </div>
                         <div class="type-card" onclick="selectType(this, 'grower')">
-                            <div class="type-card-icon">🌱</div>
+                            <div class="type-card-icon"><i class="bi bi-seedling"></i></div>
                             <div class="type-card-name">Grower</div>
                             <div class="type-card-desc">Flower farms, wholesale, cultivation</div>
                         </div>
                         <div class="type-card" onclick="selectType(this, 'seller')">
-                            <div class="type-card-icon">🛍️</div>
+                            <div class="type-card-icon"><i class="bi bi-bag"></i></div>
                             <div class="type-card-name">Flower Seller</div>
                             <div class="type-card-desc">Retail & wholesale flower sales</div>
                         </div>
@@ -260,7 +260,7 @@
             <div class="sell-step-content" id="step5" style="display:none;">
                 <!-- Florist Section -->
                 <div class="sell-card" id="floristSection" style="display:none;">
-                    <h2>🌸 Florist Details</h2>
+                    <h2><i class="bi bi-flower2"></i> Florist Details</h2>
                     <p>Tell us about your floristry services.</p>
                     <div class="sell-group">
                         <label class="sell-label">Specialties</label>
@@ -286,7 +286,7 @@
 
                 <!-- Grower Section -->
                 <div class="sell-card" id="growerSection" style="display:none;">
-                    <h2>🌱 Grower Details</h2>
+                    <h2><i class="bi bi-seedling"></i> Grower Details</h2>
                     <p>Tell us about your farm.</p>
                     <div class="sell-grid">
                         <div class="sell-group">
@@ -307,12 +307,12 @@
                     <div class="sell-group">
                         <label class="sell-label">Flower Varieties Grown</label>
                         <div class="sell-checks">
-                            <label class="sell-check"><input type="checkbox" name="variety" value="roses"> 🌹 Roses</label>
-                            <label class="sell-check"><input type="checkbox" name="variety" value="sunflowers"> 🌻 Sunflowers</label>
-                            <label class="sell-check"><input type="checkbox" name="variety" value="orchids"> 🌺 Orchids</label>
-                            <label class="sell-check"><input type="checkbox" name="variety" value="tulips"> 🌷 Tulips</label>
-                            <label class="sell-check"><input type="checkbox" name="variety" value="lilies"> 🌸 Lilies</label>
-                            <label class="sell-check"><input type="checkbox" name="variety" value="tropical"> 🌴 Tropical</label>
+                            <label class="sell-check"><input type="checkbox" name="variety" value="roses"> <i class="bi bi-flower2"></i> Roses</label>
+                            <label class="sell-check"><input type="checkbox" name="variety" value="sunflowers"> <i class="bi bi-sun"></i> Sunflowers</label>
+                            <label class="sell-check"><input type="checkbox" name="variety" value="orchids"> <i class="bi bi-flower1"></i> Orchids</label>
+                            <label class="sell-check"><input type="checkbox" name="variety" value="tulips"> <i class="bi bi-flower2"></i> Tulips</label>
+                            <label class="sell-check"><input type="checkbox" name="variety" value="lilies"> <i class="bi bi-flower2"></i> Lilies</label>
+                            <label class="sell-check"><input type="checkbox" name="variety" value="tropical"> <i class="bi bi-tree"></i> Tropical</label>
                         </div>
                     </div>
                     <div class="sell-group">
@@ -326,26 +326,26 @@
                     <div class="sell-group">
                         <label class="sell-label">Farming Practices</label>
                         <div class="sell-checks">
-                            <label class="sell-check"><input type="checkbox" name="practice" value="organic"> 🌱 Organic</label>
-                            <label class="sell-check"><input type="checkbox" name="practice" value="sustainable"> ♻️ Sustainable</label>
-                            <label class="sell-check"><input type="checkbox" name="practice" value="conventional"> 🏭 Conventional</label>
+                            <label class="sell-check"><input type="checkbox" name="practice" value="organic"> <i class="bi bi-seedling"></i> Organic</label>
+                            <label class="sell-check"><input type="checkbox" name="practice" value="sustainable"> <i class="bi bi-recycle"></i> Sustainable</label>
+                            <label class="sell-check"><input type="checkbox" name="practice" value="conventional"> <i class="bi bi-building"></i> Conventional</label>
                         </div>
                     </div>
                 </div>
 
                 <!-- Seller Section -->
                 <div class="sell-card" id="sellerSection" style="display:none;">
-                    <h2>🛍️ Seller Details</h2>
+                    <h2><i class="bi bi-bag"></i> Seller Details</h2>
                     <p>Tell us about your flower selling business.</p>
                     <div class="sell-group">
                         <label class="sell-label">Product Categories</label>
                         <div class="sell-checks">
                             <label class="sell-check"><input type="checkbox" name="category" value="bouquets"> 💐 Bouquets</label>
                             <label class="sell-check"><input type="checkbox" name="category" value="plants"> 🪴 Plants</label>
-                            <label class="sell-check"><input type="checkbox" name="category" value="seeds"> 🌱 Seeds</label>
-                            <label class="sell-check"><input type="checkbox" name="category" value="accessories"> 🎀 Accessories</label>
+                            <label class="sell-check"><input type="checkbox" name="category" value="seeds"> <i class="bi bi-seedling"></i> Seeds</label>
+                            <label class="sell-check"><input type="checkbox" name="category" value="accessories"> <i class="bi bi-stars"></i> Accessories</label>
                             <label class="sell-check"><input type="checkbox" name="category" value="pots"> 🏺 Pots</label>
-                            <label class="sell-check"><input type="checkbox" name="category" value="tools"> 🧰 Garden Tools</label>
+                            <label class="sell-check"><input type="checkbox" name="category" value="tools"> <i class="bi bi-tools"></i> Garden Tools</label>
                         </div>
                     </div>
                     <div class="sell-group">
@@ -364,12 +364,12 @@
                     <div class="sell-group">
                         <label class="sell-label">Service Categories</label>
                         <div class="sell-checks">
-                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="wedding"> 💍 Wedding Decoration</label>
-                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="landscaping"> 🏡 Landscaping</label>
-                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="maintenance"> 🌿 Garden Maintenance</label>
-                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="delivery"> 🚚 Flower Delivery</label>
-                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="consultation"> 🌱 Plant Consultation</label>
-                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="interior"> 🏢 Interior Plant Styling</label>
+                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="wedding"> <i class="bi bi-ring"></i> Wedding Decoration</label>
+                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="landscaping"> <i class="bi bi-house-door"></i> Landscaping</label>
+                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="maintenance"> <i class="bi bi-flower1"></i> Garden Maintenance</label>
+                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="delivery"> <i class="bi bi-truck"></i> Flower Delivery</label>
+                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="consultation"> <i class="bi bi-seedling"></i> Plant Consultation</label>
+                            <label class="sell-check"><input type="checkbox" name="svcCategory" value="interior"> <i class="bi bi-building"></i> Interior Plant Styling</label>
                         </div>
                     </div>
                     <div class="sell-group">
@@ -392,9 +392,9 @@
                         <div class="sell-group sell-full">
                             <label class="sell-label">Delivery Options</label>
                             <div class="sell-checks">
-                                <label class="sell-check"><input type="checkbox" name="delivery" value="self"> 🚚 Self Delivery</label>
-                                <label class="sell-check"><input type="checkbox" name="delivery" value="platform"> 📦 Platform Delivery</label>
-                                <label class="sell-check"><input type="checkbox" name="delivery" value="pickup"> 🏪 Pickup Available</label>
+                                <label class="sell-check"><input type="checkbox" name="delivery" value="self"> <i class="bi bi-truck"></i> Self Delivery</label>
+                                <label class="sell-check"><input type="checkbox" name="delivery" value="platform"> <i class="bi bi-box"></i> Platform Delivery</label>
+                                <label class="sell-check"><input type="checkbox" name="delivery" value="pickup"> <i class="bi bi-shop"></i> Pickup Available</label>
                             </div>
                         </div>
                         <div class="sell-group sell-full">
@@ -405,8 +405,8 @@
                         <div class="sell-group sell-full">
                             <label class="sell-label">Payment Method <span class="required">*</span></label>
                             <div class="sell-checks">
-                                <label class="sell-check"><input type="radio" name="payment" value="mobile"> 📱 Mobile Money</label>
-                                <label class="sell-check"><input type="radio" name="payment" value="bank"> 🏦 Bank Account</label>
+                                <label class="sell-check"><input type="radio" name="payment" value="mobile"> <i class="bi bi-phone"></i> Mobile Money</label>
+                                <label class="sell-check"><input type="radio" name="payment" value="bank"> <i class="bi bi-bank"></i> Bank Account</label>
                                 <label class="sell-check"><input type="radio" name="payment" value="both"> Both</label>
                             </div>
                         </div>
@@ -455,7 +455,7 @@
             <div class="sell-step-content" id="stepSuccess" style="display:none;">
                 <div class="sell-card">
                     <div class="sell-success">
-                        <div class="sell-success-icon">✅</div>
+                        <div class="sell-success-icon"><i class="bi bi-check-circle-fill"></i></div>
                         <h2>Application Submitted!</h2>
                         <p style="color:var(--text-light);max-width:400px;margin:0.5rem auto 1.5rem;">We'll review your application and get back to you within 24-48 hours. You can check your status in your dashboard.</p>
                         <a href="index.html" class="btn btn-primary">Back to Home</a>
@@ -602,7 +602,7 @@
         }
 
         function buildReviewSummary() {
-            const typeLabels = { florist: '🌸 Florist', grower: '🌱 Grower', seller: '🛍️ Flower Seller', service: '💼 Service Provider' };
+            const typeLabels = { florist: '<i class="bi bi-flower2"></i> Florist', grower: '<i class="bi bi-seedling"></i> Grower', seller: '<i class="bi bi-bag"></i> Flower Seller', service: '💼 Service Provider' };
             document.getElementById('reviewSummary').innerHTML = `
                 <div style="background:var(--bg-light);border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
                     <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;"><span style="color:var(--text-light);">Name:</span><strong>${document.getElementById('fullName').value}</strong></div>

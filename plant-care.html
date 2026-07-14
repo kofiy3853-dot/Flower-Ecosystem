@@ -219,7 +219,7 @@
                 <div class="pc-path-arrow">→</div>
                 <div class="pc-path-step"><div class="icon"><i class="bi bi-bug"></i></div><div>Disease</div></div>
                 <div class="pc-path-arrow">→</div>
-                <div class="pc-path-step"><div class="icon">🏆</div><div>Advanced</div></div>
+                <div class="pc-path-step"><div class="icon"><i class="bi bi-trophy"></i></div><div>Advanced</div></div>
             </div>
         </div>
     </section>
@@ -471,7 +471,7 @@
                                 <img src="${e.image || 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=300&auto=format&fit=crop'}" alt="${e.title}" loading="lazy">
                             </div>
                             <div class="pc-workshop-body">
-                                ${d ? `<div class="pc-workshop-date">📅 ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>` : ''}
+                                ${d ? `<div class="pc-workshop-date"><i class="bi bi-calendar"></i> ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>` : ''}
                                 <h3>${e.title}</h3>
                                 <p>${(e.description || '').slice(0, 100)}</p>
                             </div>

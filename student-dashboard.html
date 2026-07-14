@@ -138,32 +138,32 @@
                             <h3><i class="bi bi-trophy" style="color:#f59e0b;"></i> Achievements</h3>
                             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;" id="achievementsGrid">
                                 <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center;">
-                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;">🎉</div>
+                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;"><i class="bi bi-stars"></i></div>
                                     <div style="font-size:0.75rem;font-weight:500;">First Lesson</div>
                                     <div style="font-size:0.65rem;color:var(--text-muted);">Completed</div>
                                 </div>
                                 <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center;">
-                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;">📚</div>
+                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;"><i class="bi bi-book"></i></div>
                                     <div style="font-size:0.75rem;font-weight:500;">5 Lessons</div>
                                     <div style="font-size:0.65rem;color:var(--text-muted);">Completed</div>
                                 </div>
                                 <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center;opacity:0.4;">
-                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;">🏆</div>
+                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;"><i class="bi bi-trophy"></i></div>
                                     <div style="font-size:0.75rem;font-weight:500;">Course Complete</div>
                                     <div style="font-size:0.65rem;color:var(--text-muted);">Locked</div>
                                 </div>
                                 <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center;opacity:0.4;">
-                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;">🌸</div>
+                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;"><i class="bi bi-flower2"></i></div>
                                     <div style="font-size:0.75rem;font-weight:500;">Bouquet Builder</div>
                                     <div style="font-size:0.65rem;color:var(--text-muted);">Locked</div>
                                 </div>
                                 <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center;opacity:0.4;">
-                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;">📝</div>
+                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;"><i class="bi bi-pencil"></i></div>
                                     <div style="font-size:0.75rem;font-weight:500;">Quiz Master</div>
                                     <div style="font-size:0.65rem;color:var(--text-muted);">Locked</div>
                                 </div>
                                 <div style="background:var(--bg-white);border:1px solid var(--border-color);border-radius:10px;padding:1rem;text-align:center;opacity:0.4;">
-                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;">🔥</div>
+                                    <div style="font-size:1.5rem;margin-bottom:0.3rem;"><i class="bi bi-fire"></i></div>
                                     <div style="font-size:0.75rem;font-weight:500;">7-Day Streak</div>
                                     <div style="font-size:0.65rem;color:var(--text-muted);">Locked</div>
                                 </div>
@@ -513,9 +513,9 @@
             const pathsEl = document.getElementById('myPathsList');
             if (pathsEl) {
                 const paths = [
-                    { name: 'Beginner Florist', progress: 45, courses: 6, completed: 3, icon: '🌱', color: '#10b981' },
+                    { name: 'Beginner Florist', progress: 45, courses: 6, completed: 3, icon: '<i class="bi bi-seedling"></i>', color: '#10b981' },
                     { name: 'Wedding Specialist', progress: 20, courses: 8, completed: 2, icon: '💒', color: '#ec4899' },
-                    { name: 'Professional Florist', progress: 0, courses: 10, completed: 0, icon: '🏆', color: '#f59e0b' }
+                    { name: 'Professional Florist', progress: 0, courses: 10, completed: 0, icon: '<i class="bi bi-trophy"></i>', color: '#f59e0b' }
                 ];
                 pathsEl.innerHTML = paths.map(p => `
                     <div class="sd-progress-card" style="cursor:pointer;">

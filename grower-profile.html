@@ -324,7 +324,7 @@
             if (g.logo_url || g.image) {
                 avatar.src = g.logo_url || g.image;
             } else {
-                avatar.outerHTML = '<div class="gp-avatar-placeholder">🌱</div>';
+                avatar.outerHTML = '<div class="gp-avatar-placeholder"><i class="bi bi-seedling"></i></div>';
             }
 
             // Name & Info
@@ -350,11 +350,11 @@
             `;
 
             // Varieties
-            const flowerEmojis = { rose: '🌹', sunflower: '🌻', tulip: '🌷', orchid: '🌺', cherry: '🌸', daisy: '🌼', lavender: '🪻', lily: '🌺', carnation: '🌺', peony: '🌸' };
+            const flowerEmojis = { rose: '<i class="bi bi-flower2"></i>', sunflower: '<i class="bi bi-sun"></i>', tulip: '<i class="bi bi-flower2"></i>', orchid: '<i class="bi bi-flower1"></i>', cherry: '<i class="bi bi-flower2"></i>', daisy: '<i class="bi bi-flower1"></i>', lavender: '🪻', lily: '<i class="bi bi-flower1"></i>', carnation: '<i class="bi bi-flower1"></i>', peony: '<i class="bi bi-flower2"></i>' };
             function getEmoji(name) {
                 const lower = (name || '').toLowerCase();
                 for (const [k, v] of Object.entries(flowerEmojis)) { if (lower.includes(k)) return v; }
-                return '🌸';
+                return '<i class="bi bi-flower2"></i>';
             }
             document.getElementById('gpVarieties').innerHTML = specialties.map(s => `
                 <a href="marketplace?q=${encodeURIComponent(s)}" class="gp-variety">
@@ -393,12 +393,12 @@
 
             // Sustainability
             const sustain = [
-                { icon: '🌱', name: 'Organic Farming', desc: 'No synthetic pesticides or fertilizers' },
-                { icon: '💧', name: 'Water Conservation', desc: 'Drip irrigation systems reduce waste' },
-                { icon: '♻️', name: 'Eco-Friendly Packaging', desc: 'Biodegradable materials used' },
+                { icon: '<i class="bi bi-seedling"></i>', name: 'Organic Farming', desc: 'No synthetic pesticides or fertilizers' },
+                { icon: '<i class="bi bi-droplet"></i>', name: 'Water Conservation', desc: 'Drip irrigation systems reduce waste' },
+                { icon: '<i class="bi bi-recycle"></i>', name: 'Eco-Friendly Packaging', desc: 'Biodegradable materials used' },
                 { icon: '🌍', name: 'Carbon Neutral', desc: 'Offsetting our carbon footprint' },
-                { icon: '🐝', name: 'Pollinator Friendly', desc: 'Supporting local bee populations' },
-                { icon: '🌻', name: 'Local Sourcing', desc: 'Supporting local communities' }
+                { icon: '<i class="bi bi-tree"></i>', name: 'Pollinator Friendly', desc: 'Supporting local bee populations' },
+                { icon: '<i class="bi bi-sun"></i>', name: 'Local Sourcing', desc: 'Supporting local communities' }
             ];
             document.getElementById('gpSustain').innerHTML = sustain.map(s => `
                 <div class="gp-sustain-item">
@@ -412,9 +412,9 @@
             const certs = g.certifications || [];
             const defaultCerts = ['Certified Grower'];
             const displayCerts = certs.length ? certs : (g.organic_certified ? ['Organic Certified', 'Certified Grower'] : defaultCerts);
-            const certIcons = { organic: '🌿', export: '📦', gap: '✅', fair: '🤝', certified: '🏅' };
+            const certIcons = { organic: '<i class="bi bi-flower1"></i>', export: '<i class="bi bi-box"></i>', gap: '<i class="bi bi-check-circle-fill"></i>', fair: '<i class="bi bi-handshake"></i>', certified: '<i class="bi bi-award"></i>' };
             document.getElementById('gpCerts').innerHTML = displayCerts.map(c => {
-                const icon = Object.entries(certIcons).find(([k]) => c.toLowerCase().includes(k))?.[1] || '🏅';
+                const icon = Object.entries(certIcons).find(([k]) => c.toLowerCase().includes(k))?.[1] || '<i class="bi bi-award"></i>';
                 return `<div class="gp-cert"><div class="gp-cert-icon">${icon}</div><div class="gp-cert-name">${c}</div></div>`;
             }).join('');
 

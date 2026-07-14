@@ -108,11 +108,11 @@
                 </div>
                 <div class="grw-pills">
                     <button class="grw-pill active" onclick="filterType(this, 'all')">All Farms</button>
-                    <button class="grw-pill" onclick="filterType(this, 'roses')">🌹 Roses</button>
-                    <button class="grw-pill" onclick="filterType(this, 'sunflowers')">🌻 Sunflowers</button>
-                    <button class="grw-pill" onclick="filterType(this, 'orchids')">🌺 Orchids</button>
-                    <button class="grw-pill" onclick="filterType(this, 'tropical')">🌴 Tropical</button>
-                    <button class="grw-pill" onclick="filterType(this, 'organic')">🌿 Organic</button>
+                    <button class="grw-pill" onclick="filterType(this, 'roses')"><i class="bi bi-flower2"></i> Roses</button>
+                    <button class="grw-pill" onclick="filterType(this, 'sunflowers')"><i class="bi bi-sun"></i> Sunflowers</button>
+                    <button class="grw-pill" onclick="filterType(this, 'orchids')"><i class="bi bi-flower1"></i> Orchids</button>
+                    <button class="grw-pill" onclick="filterType(this, 'tropical')"><i class="bi bi-tree"></i> Tropical</button>
+                    <button class="grw-pill" onclick="filterType(this, 'organic')"><i class="bi bi-flower1"></i> Organic</button>
                 </div>
             </div>
         </div>
@@ -304,7 +304,7 @@
                 return `
                 <div class="grw-card">
                     <div class="grw-card-banner">
-                        <img src="${f.cover_image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 160%22><rect fill=%22%23d4edda%22 width=%22400%22 height=%22160%22/><text x=%22200%22 y=%2290%22 text-anchor=%22middle%22 fill=%22%2310b981%22 font-size=%2248%22>🌱</text></svg>'}" alt="${f.farm_name}" loading="lazy">
+                        <img src="${f.cover_image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 160%22><rect fill=%22%23d4edda%22 width=%22400%22 height=%22160%22/><text x=%22200%22 y=%2290%22 text-anchor=%22middle%22 fill=%22%2310b981%22 font-size=%2248%22><i class="bi bi-seedling"></i></text></svg>'}" alt="${f.farm_name}" loading="lazy">
                         ${f.is_verified ? '<div class="grw-card-verified"><i class="bi bi-patch-check-fill"></i> Verified</div>' : ''}
                         <button class="grw-card-fav" onclick="event.stopPropagation()"><i class="bi bi-heart"></i></button>
                     </div>
@@ -323,11 +323,11 @@
                             <span><i class="bi bi-people"></i> ${f.follower_count || 0} followers</span>
                         </div>
                         <div class="grw-card-badges">
-                            ${f.organic_certified ? '<span class="grw-card-badge organic">🌿 Organic</span>' : ''}
-                            ${f.farm_tours ? '<span class="grw-card-badge tours">🚶 Tours</span>' : ''}
+                            ${f.organic_certified ? '<span class="grw-card-badge organic"><i class="bi bi-flower1"></i> Organic</span>' : ''}
+                            ${f.farm_tours ? '<span class="grw-card-badge tours"><i class="bi bi-person-walking"></i> Tours</span>' : ''}
                             ${f.workshops ? '<span class="grw-card-badge workshops">🎓 Workshops</span>' : ''}
-                            ${f.delivery_available ? '<span class="grw-card-badge delivery">🚚 Delivery</span>' : ''}
-                            ${f.wholesale_available ? '<span class="grw-card-badge wholesale">📦 Wholesale</span>' : ''}
+                            ${f.delivery_available ? '<span class="grw-card-badge delivery"><i class="bi bi-truck"></i> Delivery</span>' : ''}
+                            ${f.wholesale_available ? '<span class="grw-card-badge wholesale"><i class="bi bi-box"></i> Wholesale</span>' : ''}
                         </div>
                         <div class="grw-card-footer">
                             <a href="grower-profile.html?id=${f.id}" class="btn btn-outline btn-sm">View Farm</a>
@@ -381,7 +381,7 @@
             if (!map) return;
             markers.forEach(m => map.removeLayer(m));
             markers = [];
-            const farmIcon = L.divIcon({ html: '<div style="background:#10b981;color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.3);">🌱</div>', className: '', iconSize: [28, 28], iconAnchor: [14, 14] });
+            const farmIcon = L.divIcon({ html: '<div style="background:#10b981;color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.3);"><i class="bi bi-seedling"></i></div>', className: '', iconSize: [28, 28], iconAnchor: [14, 14] });
             filtered.forEach(f => {
                 if (!f.latitude || !f.longitude) return;
                 const marker = L.marker([f.latitude, f.longitude], { icon: farmIcon }).addTo(map);
@@ -389,7 +389,7 @@
                     <div style="min-width:180px;">
                         <strong>${f.farm_name}</strong><br>
                         <small style="color:#666;">${f.location || ''}</small><br>
-                        <small>⭐ ${(Number(f.avg_rating || f.rating) || 0).toFixed(1)}</small><br>
+                        <small><i class="bi bi-star-fill"></i> ${(Number(f.avg_rating || f.rating) || 0).toFixed(1)}</small><br>
                         <a href="grower-profile.html?id=${f.id}" style="color:#10b981;font-size:0.85rem;">View Farm →</a>
                     </div>
                 `);

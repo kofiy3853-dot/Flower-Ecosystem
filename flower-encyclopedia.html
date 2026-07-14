@@ -82,7 +82,7 @@
     <!-- Hero -->
     <section class="enc-hero">
         <div class="container">
-            <h1>🌸 Flower Encyclopedia</h1>
+            <h1><i class="bi bi-flower2"></i> Flower Encyclopedia</h1>
             <p>Discover, identify, and learn about thousands of flowers and plants from around the world.</p>
             <div class="enc-hero-btns">
                 <a href="#browse" class="btn">Browse Flowers</a>
@@ -102,20 +102,20 @@
             <!-- Quick Filters -->
             <div class="enc-filters" id="encFilters">
                 <button class="enc-filter active" data-filter="all" onclick="setFilter('all')">All</button>
-                <button class="enc-filter" data-filter="indoor" onclick="setFilter('indoor')">🌿 Indoor</button>
-                <button class="enc-filter" data-filter="outdoor" onclick="setFilter('outdoor')">🌳 Outdoor</button>
+                <button class="enc-filter" data-filter="indoor" onclick="setFilter('indoor')"><i class="bi bi-flower1"></i> Indoor</button>
+                <button class="enc-filter" data-filter="outdoor" onclick="setFilter('outdoor')"><i class="bi bi-tree"></i> Outdoor</button>
                 <button class="enc-filter" data-filter="easy" onclick="setFilter('easy')">✨ Easy Care</button>
-                <button class="enc-filter" data-filter="fragrant" onclick="setFilter('fragrant')">🌸 Fragrant</button>
+                <button class="enc-filter" data-filter="fragrant" onclick="setFilter('fragrant')"><i class="bi bi-flower2"></i> Fragrant</button>
             </div>
 
             <!-- Season Filters -->
             <div class="enc-filter-group">
                 <div class="enc-filter-label">Season</div>
                 <div class="enc-filters">
-                    <button class="enc-filter" data-season="spring" onclick="setSeason('spring')">🌸 Spring</button>
-                    <button class="enc-filter" data-season="summer" onclick="setSeason('summer')">☀️ Summer</button>
-                    <button class="enc-filter" data-season="autumn" onclick="setSeason('autumn')">🍂 Autumn</button>
-                    <button class="enc-filter" data-season="winter" onclick="setSeason('winter')">❄️ Winter</button>
+                    <button class="enc-filter" data-season="spring" onclick="setSeason('spring')"><i class="bi bi-flower2"></i> Spring</button>
+                    <button class="enc-filter" data-season="summer" onclick="setSeason('summer')"><i class="bi bi-sun"></i> Summer</button>
+                    <button class="enc-filter" data-season="autumn" onclick="setSeason('autumn')"><i class="bi bi-leaf"></i> Autumn</button>
+                    <button class="enc-filter" data-season="winter" onclick="setSeason('winter')"><i class="bi bi-snow"></i> Winter</button>
                 </div>
             </div>
 
@@ -158,7 +158,7 @@
     <div class="container" id="identify">
         <div class="enc-ai-section">
             <div>
-                <h2 style="margin-bottom:0.5rem;">📷 AI Flower Identification</h2>
+                <h2 style="margin-bottom:0.5rem;"><i class="bi bi-camera"></i> AI Flower Identification</h2>
                 <p style="color:var(--text-light);margin-bottom:1rem;">Upload a photo to instantly identify any flower</p>
                 <div class="enc-ai-upload" id="aiUpload" onclick="document.getElementById('aiFileInput').click()">
                     <i class="bi bi-camera"></i>
@@ -206,15 +206,15 @@
     <section class="section-padding">
         <div class="container">
             <div class="enc-season">
-                <h2>🌸 Spring Flowers</h2>
+                <h2><i class="bi bi-flower2"></i> Spring Flowers</h2>
                 <div class="enc-season-scroll" id="springFlowers"></div>
             </div>
             <div class="enc-season">
-                <h2>☀️ Summer Flowers</h2>
+                <h2><i class="bi bi-sun"></i> Summer Flowers</h2>
                 <div class="enc-season-scroll" id="summerFlowers"></div>
             </div>
             <div class="enc-season">
-                <h2>🍂 Autumn Flowers</h2>
+                <h2><i class="bi bi-leaf"></i> Autumn Flowers</h2>
                 <div class="enc-season-scroll" id="autumnFlowers"></div>
             </div>
         </div>

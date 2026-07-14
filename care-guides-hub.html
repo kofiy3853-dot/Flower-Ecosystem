@@ -55,7 +55,7 @@
     <!-- Hero -->
     <section class="cg-hero">
         <div class="container">
-            <h1>🌿 Flower Care Guides</h1>
+            <h1><i class="bi bi-flower1"></i> Flower Care Guides</h1>
             <p>Learn how to grow healthier flowers with expert care tips, maintenance guides, and AI assistance.</p>
         </div>
     </section>
@@ -166,14 +166,14 @@
         // ─── Browse by Flower ────────────────────────────────────────
         async function loadFlowers() {
             const flowers = [
-                { name: 'Roses', icon: '🌹', slug: 'rose' },
-                { name: 'Tulips', icon: '🌷', slug: 'tulip' },
-                { name: 'Sunflowers', icon: '🌻', slug: 'sunflower' },
+                { name: 'Roses', icon: '<i class="bi bi-flower2"></i>', slug: 'rose' },
+                { name: 'Tulips', icon: '<i class="bi bi-flower2"></i>', slug: 'tulip' },
+                { name: 'Sunflowers', icon: '<i class="bi bi-sun"></i>', slug: 'sunflower' },
                 { name: 'Orchids', icon: '🪴', slug: 'orchid' },
-                { name: 'Lilies', icon: '🌺', slug: 'lily' },
-                { name: 'Peonies', icon: '🌸', slug: 'peony' },
+                { name: 'Lilies', icon: '<i class="bi bi-flower1"></i>', slug: 'lily' },
+                { name: 'Peonies', icon: '<i class="bi bi-flower2"></i>', slug: 'peony' },
                 { name: 'Hydrangeas', icon: '💠', slug: 'hydrangea' },
-                { name: 'Lavender', icon: '💜', slug: 'lavender' }
+                { name: 'Lavender', icon: '<i class="bi bi-heart-fill"></i>', slug: 'lavender' }
             ];
 
             document.getElementById('flowerGrid').innerHTML = flowers.map(f => `
@@ -192,16 +192,16 @@
         // ─── Browse by Topic ─────────────────────────────────────────
         function loadTopics() {
             const topics = [
-                { name: 'Watering', icon: '💧' },
-                { name: 'Sunlight', icon: '☀️' },
-                { name: 'Soil', icon: '🌱' },
+                { name: 'Watering', icon: '<i class="bi bi-droplet"></i>' },
+                { name: 'Sunlight', icon: '<i class="bi bi-sun"></i>' },
+                { name: 'Soil', icon: '<i class="bi bi-seedling"></i>' },
                 { name: 'Repotting', icon: '🪴' },
-                { name: 'Pruning', icon: '✂️' },
-                { name: 'Temperature', icon: '🌡️' },
-                { name: 'Pest Control', icon: '🐛' },
-                { name: 'Fertilizer', icon: '🍃' },
-                { name: 'Blooming', icon: '🌼' },
-                { name: 'Winter Care', icon: '❄️' }
+                { name: 'Pruning', icon: '<i class="bi bi-scissors"></i>' },
+                { name: 'Temperature', icon: '<i class="bi bi-thermometer"></i>' },
+                { name: 'Pest Control', icon: '<i class="bi bi-bug"></i>' },
+                { name: 'Fertilizer', icon: '<i class="bi bi-leaf"></i>' },
+                { name: 'Blooming', icon: '<i class="bi bi-flower1"></i>' },
+                { name: 'Winter Care', icon: '<i class="bi bi-snow"></i>' }
             ];
 
             document.getElementById('topicGrid').innerHTML = topics.map(t => `
@@ -227,7 +227,7 @@
             let season, tips;
 
             if (month >= 2 && month <= 4) {
-                season = '🌸 Spring';
+                season = '<i class="bi bi-flower2"></i> Spring';
                 tips = [
                     'Start fertilizing as new growth appears',
                     'Prune dead branches from winter',
@@ -235,7 +235,7 @@
                     'Monitor for early pest activity'
                 ];
             } else if (month >= 5 && month <= 7) {
-                season = '☀️ Summer';
+                season = '<i class="bi bi-sun"></i> Summer';
                 tips = [
                     'Water deeply during hot spells',
                     'Deadhead spent blooms regularly',
@@ -243,7 +243,7 @@
                     'Harvest flowers in the cool morning'
                 ];
             } else if (month >= 8 && month <= 10) {
-                season = '🍂 Autumn';
+                season = '<i class="bi bi-leaf"></i> Autumn';
                 tips = [
                     'Reduce watering as growth slows',
                     'Plant spring-blooming bulbs',
@@ -251,7 +251,7 @@
                     'Protect tender plants from frost'
                 ];
             } else {
-                season = '❄️ Winter';
+                season = '<i class="bi bi-snow"></i> Winter';
                 tips = [
                     'Keep indoor plants away from drafts',
                     'Reduce watering frequency',

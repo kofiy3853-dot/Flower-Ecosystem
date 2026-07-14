@@ -212,16 +212,16 @@
         let styles = [], wrappings = [], ribbons = [], extras = [];
 
         const occasions = [
-            { id: 'wedding', name: 'Wedding', icon: '💍', desc: 'Elegant arrangements for your special day' },
-            { id: 'birthday', name: 'Birthday', icon: '🎂', desc: 'Celebrate with colorful blooms' },
-            { id: 'anniversary', name: 'Anniversary', icon: '💕', desc: 'Romantic flowers for love' },
-            { id: 'valentine', name: "Valentine's Day", icon: '❤️', desc: 'Express your love' },
+            { id: 'wedding', name: 'Wedding', icon: '<i class="bi bi-ring"></i>', desc: 'Elegant arrangements for your special day' },
+            { id: 'birthday', name: 'Birthday', icon: '<i class="bi bi-cake"></i>', desc: 'Celebrate with colorful blooms' },
+            { id: 'anniversary', name: 'Anniversary', icon: '<i class="bi bi-heart-fill"></i>', desc: 'Romantic flowers for love' },
+            { id: 'valentine', name: "Valentine's Day", icon: '<i class="bi bi-heart-fill"></i>', desc: 'Express your love' },
             { id: 'graduation', name: 'Graduation', icon: '🎓', desc: 'Celebrate achievement' },
-            { id: 'mother', name: "Mother's Day", icon: '👩', desc: 'Honor mom with flowers' },
-            { id: 'sympathy', name: 'Sympathy', icon: '🙏', desc: 'Thoughtful arrangements' },
-            { id: 'congratulations', name: 'Congratulations', icon: '🎉', desc: 'Celebrate success' },
-            { id: 'baby', name: 'New Baby', icon: '👶', desc: 'Welcome new life' },
-            { id: 'corporate', name: 'Corporate', icon: '🏢', desc: 'Professional events' },
+            { id: 'mother', name: "Mother's Day", icon: '<i class="bi bi-person"></i>', desc: 'Honor mom with flowers' },
+            { id: 'sympathy', name: 'Sympathy', icon: '<i class="bi bi-hand-index"></i>', desc: 'Thoughtful arrangements' },
+            { id: 'congratulations', name: 'Congratulations', icon: '<i class="bi bi-stars"></i>', desc: 'Celebrate success' },
+            { id: 'baby', name: 'New Baby', icon: '<i class="bi bi-person"></i>', desc: 'Welcome new life' },
+            { id: 'corporate', name: 'Corporate', icon: '<i class="bi bi-building"></i>', desc: 'Professional events' },
             { id: 'custom', name: 'Custom', icon: '✨', desc: 'Create something unique' }
         ];
 
@@ -395,7 +395,7 @@
         function renderGreenery() {
             document.getElementById('greeneryGrid').innerHTML = greenery.map(g => `
                 <div class="bc-card${bcData.greenery?.id === g.id ? ' selected' : ''}" onclick="selectGreenery('${g.id}')">
-                    <div class="bc-card-img">🌿</div>
+                    <div class="bc-card-img"><i class="bi bi-flower1"></i></div>
                     <div class="bc-card-name">${g.name}</div>
                     <div class="bc-card-price">+GHS ${g.price.toFixed(2)}</div>
                 </div>
@@ -420,7 +420,7 @@
         function renderWrappings() {
             document.getElementById('wrappingGrid').innerHTML = wrappings.map(w => `
                 <div class="bc-card${bcData.wrapping?.id === w.id ? ' selected' : ''}" onclick="selectWrapping('${w.id}')">
-                    <div class="bc-card-img">📦</div>
+                    <div class="bc-card-img"><i class="bi bi-box"></i></div>
                     <div class="bc-card-name">${w.name}</div>
                     <div class="bc-card-price">+GHS ${Number(w.price || 0).toFixed(2)}</div>
                 </div>
@@ -445,7 +445,7 @@
         function renderRibbons() {
             document.getElementById('ribbonGrid').innerHTML = ribbons.map(r => `
                 <div class="bc-card${bcData.ribbon?.id === r.id ? ' selected' : ''}" onclick="selectRibbon('${r.id}')">
-                    <div class="bc-card-img">🎀</div>
+                    <div class="bc-card-img"><i class="bi bi-stars"></i></div>
                     <div class="bc-card-name">${r.name}</div>
                     <div class="bc-card-price">+GHS ${Number(r.price || 0).toFixed(2)}</div>
                 </div>
@@ -491,7 +491,7 @@
                 const selected = bcData.extras.find(x => x.id === e.id);
                 return `
                     <div class="bc-card${selected ? ' selected' : ''}" onclick="toggleExtra('${e.id}')">
-                        <div class="bc-card-img">🎁</div>
+                        <div class="bc-card-img"><i class="bi bi-gift"></i></div>
                         <div class="bc-card-name">${e.name}</div>
                         <div class="bc-card-price">+GHS ${Number(e.price || 0).toFixed(2)}</div>
                     </div>

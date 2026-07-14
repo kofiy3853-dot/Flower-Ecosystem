@@ -55,7 +55,7 @@
     <!-- Hero -->
     <section class="fm-hero">
         <div class="container">
-            <h1>🌸 Flower Meanings</h1>
+            <h1><i class="bi bi-flower2"></i> Flower Meanings</h1>
             <p>Discover the stories, emotions, and symbolism behind every flower.</p>
         </div>
     </section>
@@ -136,10 +136,10 @@
         let searchTimeout = null;
 
         const meaningIcons = {
-            'love': '❤️', 'friendship': '🤝', 'celebration': '🎉', 'birthday': '🎂',
-            'wedding': '💍', 'congratulations': '💐', 'sympathy': '🙏', 'new beginnings': '🌱',
-            'admiration': '💜', 'peace': '🕊️', 'success': '🌟', 'new baby': '👶',
-            'default': '🌸'
+            'love': '<i class="bi bi-heart-fill"></i>', 'friendship': '<i class="bi bi-handshake"></i>', 'celebration': '<i class="bi bi-stars"></i>', 'birthday': '<i class="bi bi-cake"></i>',
+            'wedding': '<i class="bi bi-ring"></i>', 'congratulations': '💐', 'sympathy': '<i class="bi bi-hand-index"></i>', 'new beginnings': '<i class="bi bi-seedling"></i>',
+            'admiration': '<i class="bi bi-heart-fill"></i>', 'peace': '🕊️', 'success': '<i class="bi bi-stars"></i>', 'new baby': '<i class="bi bi-person"></i>',
+            'default': '<i class="bi bi-flower2"></i>'
         };
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -198,12 +198,12 @@
         // ─── Load Occasions ──────────────────────────────────────────
         async function loadOccasions() {
             const occasions = [
-                { name: 'Wedding', icon: '💍', flowers: ['Roses', 'Peonies', 'Calla Lilies', 'Hydrangeas'] },
-                { name: 'Birthday', icon: '🎂', flowers: ['Gerbera', 'Sunflowers', 'Daisies'] },
-                { name: 'Valentine\'s Day', icon: '❤️', flowers: ['Red Roses', 'Tulips', 'Lilies'] },
-                { name: 'Mother\'s Day', icon: '🌸', flowers: ['Carnations', 'Tulips', 'Roses'] },
-                { name: 'Sympathy', icon: '🙏', flowers: ['White Lilies', 'Chrysanthemums', 'White Roses'] },
-                { name: 'Congratulations', icon: '🎉', flowers: ['Orchids', 'Carnations', 'Iris'] }
+                { name: 'Wedding', icon: '<i class="bi bi-ring"></i>', flowers: ['Roses', 'Peonies', 'Calla Lilies', 'Hydrangeas'] },
+                { name: 'Birthday', icon: '<i class="bi bi-cake"></i>', flowers: ['Gerbera', 'Sunflowers', 'Daisies'] },
+                { name: 'Valentine\'s Day', icon: '<i class="bi bi-heart-fill"></i>', flowers: ['Red Roses', 'Tulips', 'Lilies'] },
+                { name: 'Mother\'s Day', icon: '<i class="bi bi-flower2"></i>', flowers: ['Carnations', 'Tulips', 'Roses'] },
+                { name: 'Sympathy', icon: '<i class="bi bi-hand-index"></i>', flowers: ['White Lilies', 'Chrysanthemums', 'White Roses'] },
+                { name: 'Congratulations', icon: '<i class="bi bi-stars"></i>', flowers: ['Orchids', 'Carnations', 'Iris'] }
             ];
 
             document.getElementById('occasionsGrid').innerHTML = occasions.map(o => `

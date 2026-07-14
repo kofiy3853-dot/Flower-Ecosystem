@@ -64,7 +64,7 @@
 
     <section class="mg-hero">
         <div class="container">
-            <h1>🌱 My Garden</h1>
+            <h1><i class="bi bi-seedling"></i> My Garden</h1>
             <p>Track your plants and get personalized care reminders</p>
             <button class="btn" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);margin-top:1rem;" onclick="openAddModal()"><i class="bi bi-plus-lg"></i> Add Plant</button>
         </div>
@@ -119,11 +119,11 @@
             <div class="form-group">
                 <label class="form-label">Care Type</label>
                 <select class="form-input" id="careType">
-                    <option value="water">💧 Water</option>
-                    <option value="fertilize">🍃 Fertilize</option>
-                    <option value="prune">✂️ Prune</option>
+                    <option value="water"><i class="bi bi-droplet"></i> Water</option>
+                    <option value="fertilize"><i class="bi bi-leaf"></i> Fertilize</option>
+                    <option value="prune"><i class="bi bi-scissors"></i> Prune</option>
                     <option value="repot">🪴 Repot</option>
-                    <option value="treat">💊 Treat</option>
+                    <option value="treat"><i class="bi bi-capsule"></i> Treat</option>
                 </select>
             </div>
             <div class="form-group">
@@ -188,7 +188,7 @@
                             <span><i class="bi bi-calendar"></i> ${p.date_added ? new Date(p.date_added).toLocaleDateString() : ''}</span>
                         </div>
                         <div style="font-size:0.8rem;color:var(--text-light);margin-bottom:0.75rem;">
-                            💧 Last watered: ${p.last_watered ? timeAgo(p.last_watered) : 'Never'}
+                            <i class="bi bi-droplet"></i> Last watered: ${p.last_watered ? timeAgo(p.last_watered) : 'Never'}
                         </div>
                         <div class="mg-plant-actions">
                             <button class="btn btn-outline btn-sm" onclick="openCareModal('${p.id}')"><i class="bi bi-check2-circle"></i> Log Care</button>
@@ -206,9 +206,9 @@
             const needsAttention = total - healthy;
 
             document.getElementById('gardenStats').innerHTML = `
-                <div class="mg-stat"><div class="icon">🌱</div><div class="num">${total}</div><div class="label">Total Plants</div></div>
-                <div class="mg-stat"><div class="icon">💚</div><div class="num">${healthy}</div><div class="label">Healthy</div></div>
-                <div class="mg-stat"><div class="icon">⚠️</div><div class="num">${needsAttention}</div><div class="label">Need Attention</div></div>
+                <div class="mg-stat"><div class="icon"><i class="bi bi-seedling"></i></div><div class="num">${total}</div><div class="label">Total Plants</div></div>
+                <div class="mg-stat"><div class="icon"><i class="bi bi-heart-fill"></i></div><div class="num">${healthy}</div><div class="label">Healthy</div></div>
+                <div class="mg-stat"><div class="icon"><i class="bi bi-exclamation-triangle"></i></div><div class="num">${needsAttention}</div><div class="label">Need Attention</div></div>
             `;
         }
 
@@ -235,7 +235,7 @@
                                 ${r.water_status === 'overdue' ? 'Water now!' : r.water_status === 'due' ? 'Water soon' : 'Watered recently'}
                             </div>
                         </div>
-                        <button class="btn btn-sm btn-outline" onclick="quickWater('${r.id}')">💧 Water</button>
+                        <button class="btn btn-sm btn-outline" onclick="quickWater('${r.id}')"><i class="bi bi-droplet"></i> Water</button>
                     </div>
                 `).join('');
             } catch {}

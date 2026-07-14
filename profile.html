@@ -493,7 +493,7 @@
 
             // Location
             if (user.location || user.city) {
-                document.getElementById('profileLocation').textContent = '📍 ' + (user.city ? escapeHtml(user.city) + (user.location ? ', ' : '') : '') + (user.location ? escapeHtml(user.location) : '');
+                document.getElementById('profileLocation').textContent = '<i class="bi bi-geo-alt"></i> ' + (user.city ? escapeHtml(user.city) + (user.location ? ', ' : '') : '') + (user.location ? escapeHtml(user.location) : '');
             }
 
             // Social links
@@ -652,7 +652,7 @@
 
             const all = [
                 ...roleBadges.map(b => ({ label: b.label, icon: '<i class="bi ' + b.icon + '"></i>' })),
-                ...earnedBadges.map(b => ({ label: b.name, icon: b.icon || '🏆', color: badgeLevelColor(b.level) }))
+                ...earnedBadges.map(b => ({ label: b.name, icon: b.icon || '<i class="bi bi-trophy"></i>', color: badgeLevelColor(b.level) }))
             ];
 
             el.innerHTML = all.length

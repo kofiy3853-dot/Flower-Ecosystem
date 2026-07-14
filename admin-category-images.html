@@ -254,7 +254,7 @@
                     </div>
                     <div class="cim-img-info">
                         <div class="cim-img-alt">${escapeHtml(img.alt_text || 'No alt text')}</div>
-                        <div class="cim-img-meta">${img.photographer ? '📸 ' + escapeHtml(img.photographer) : ''} • ${new Date(img.created_at).toLocaleDateString()}</div>
+                        <div class="cim-img-meta">${img.photographer ? '<i class="bi bi-camera"></i> ' + escapeHtml(img.photographer) : ''} • ${new Date(img.created_at).toLocaleDateString()}</div>
                     </div>
                 </div>
             `).join('');
