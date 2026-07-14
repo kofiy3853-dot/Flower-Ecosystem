@@ -354,6 +354,16 @@ app.use('/api/grower', require('./routes/grower'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api', require('./routes/learning'));
 app.use('/api/knowledge', require('./routes/knowledge'));
+// Alias: /api/flowers -> /api/knowledge/flowers (frontend calls this path)
+app.get('/api/flowers', (req, res) => {
+    const qs = new URLSearchParams(req.query).toString();
+    res.redirect(302, '/api/knowledge/flowers' + (qs ? '?' + qs : ''));
+});
+app.get('/api/flowers/*', (req, res) => {
+    const suffix = req.params[0];
+    const qs = new URLSearchParams(req.query).toString();
+    res.redirect(302, '/api/knowledge/flowers/' + suffix + (qs ? '?' + qs : ''));
+});
 app.use('/api/events', require('./routes/events'));
 app.use('/api', require('./routes/community'));
 app.use('/api/feed', require('./routes/feed'));
