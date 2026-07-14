@@ -296,8 +296,18 @@ async function loadEvents() {
 
     let data;
     try {
-        const res = await fetch(`/api/events?${params}`);
-        data = await res.json();
+        if (currentFilter === 'my-events') {
+            if (!userLoggedIn()) {
+                data = { events: [], total: 0, pages: 1 };
+            } else {
+                const res = await fetch('/api/events/my', { headers: authHeaders() });
+                const myEvents = await res.json();
+                data = { events: Array.isArray(myEvents) ? myEvents : [], total: myEvents.length, pages: 1 };
+            }
+        } else {
+            const res = await fetch(`/api/events?${params}`);
+            data = await res.json();
+        }
     } catch {
         data = { events: [], total: 0, pages: 1 };
     }
