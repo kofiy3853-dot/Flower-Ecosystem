@@ -1,16 +1,3 @@
-// Ensure escapeHtml and renderStars are available (api.js loads before this with defer)
-const escapeHtml = window.escapeHtml || function(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'''}[c])); };
-const renderStars = window.renderStars || function(rating) {
-    const r = Number(rating) || 0;
-    const full = Math.floor(r);
-    const half = r % 1 >= 0.5;
-    let html = '';
-    for (let i = 0; i < full; i++) html += '<i class="bi bi-star-fill"></i>';
-    if (half) html += '<i class="bi bi-star-half"></i>';
-    for (let i = full + (half ? 1 : 0); i < 5; i++) html += '<i class="bi bi-star"></i>';
-    return html;
-};
-
 document.addEventListener('DOMContentLoaded', () => {
     ['statProducts', 'statSellers', 'statUsers', 'statCategories'].forEach(id => {
         const el = document.getElementById(id);
@@ -55,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     initNewsletter();
-    initRevealAnimations();
 });
 
 // ─── HERO STATS (fast load) ────────────────────────────────────────
@@ -426,8 +412,6 @@ function renderEvents(data) {
     }).join('');
 }
 
-
-
 // ─── NEWSLETTER ─────────────────────────────────────────────────────
 function initNewsletter() {
     const form = document.getElementById('newsletterForm');
@@ -439,9 +423,10 @@ function initNewsletter() {
         const btn = form.querySelector('button');
         if (btn) { btn.disabled = true; btn.textContent = 'Subscribing...'; }
         try {
+            const csrfToken = (document.cookie.match(/(?:^|; )csrf_token=([^;]+)/) || [])[1] || '';
             const res = await fetch('/api/newsletter/subscribe', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', ...(csrfToken && { 'X-CSRF-Token': csrfToken }) },
                 body: JSON.stringify({ email: input.value.trim() })
             });
             if (res.ok) {
@@ -453,21 +438,4 @@ function initNewsletter() {
             if (btn) { btn.disabled = false; btn.textContent = 'Subscribe'; }
         }
     });
-}
-
-// ─── REVEAL ANIMATIONS ──────────────────────────────────────────────
-// Note: animations.js already sets up an IntersectionObserver that adds
-// the 'active' class. This function re-observes any elements added
-// dynamically after the initial DOMContentLoaded pass.
-function initRevealAnimations() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('active'); // was 'revealed' — fixed
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-    // Only observe elements not yet activated
-    document.querySelectorAll('.reveal-up:not(.active)').forEach(el => observer.observe(el));
 }

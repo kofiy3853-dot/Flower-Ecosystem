@@ -67,6 +67,22 @@ function initAnimations() {
 
     // Re-run observe elements when new components are loaded
     document.addEventListener('componentLoaded', observeElements);
+
+    // Also watch for dynamically added .reveal-up elements (e.g. after async data loads)
+    const mutationObserver = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+            for (const node of mutation.addedNodes) {
+                if (node.nodeType !== 1) continue; // skip text nodes
+                if (node.classList && node.classList.contains('reveal-up') && !node.classList.contains('active')) {
+                    revealObserver.observe(node);
+                }
+                if (node.querySelectorAll) {
+                    node.querySelectorAll('.reveal-up:not(.active)').forEach(el => revealObserver.observe(el));
+                }
+            }
+        }
+    });
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
 }
 
 if (document.readyState === 'loading') {
