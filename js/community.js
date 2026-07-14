@@ -61,14 +61,14 @@ async function loadStats() {
         const data = await res.json();
         const counters = document.querySelectorAll('.counter');
         if (counters.length >= 3) {
-            counters[0].setAttribute('data-target', Math.max(data.members || 0, 18420));
-            counters[1].setAttribute('data-target', Math.max(data.posts || data.discussions || 0, 72000));
-            counters[2].setAttribute('data-target', Math.max(data.discussions || 0, 5600));
+            counters[0].setAttribute('data-target', data.members || 0);
+            counters[1].setAttribute('data-target', data.posts || 0);
+            counters[2].setAttribute('data-target', data.discussions || 0);
         }
         if (counters.length >= 6) {
-            counters[3].setAttribute('data-target', Math.max(data.clubs || 0, 230));
-            counters[4].setAttribute('data-target', Math.max(data.events || 0, 160));
-            counters[5].setAttribute('data-target', Math.max(data.showcase || 0, 4200));
+            counters[3].setAttribute('data-target', data.clubs || 0);
+            counters[4].setAttribute('data-target', data.events || 0);
+            counters[5].setAttribute('data-target', data.showcase || 0);
         }
     } catch {}
 }
