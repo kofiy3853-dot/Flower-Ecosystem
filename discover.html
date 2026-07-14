@@ -176,7 +176,7 @@
                         <input type="file" id="aiFileInput" accept="image/*" style="display:none;" onchange="identifyFlower(this.files[0])">
                     </div>
                 </div>
-                <div class="disc-ai-result" id="aiResult">
+                <div class="disc-ai-result" id="aiIdentifyResult">
                     <p style="color:var(--text-light);font-size:0.9rem;">Upload a flower photo to get started. The AI will identify the species and provide care information.</p>
                 </div>
             </div>
@@ -292,7 +292,7 @@
 
         async function identifyFlower(file) {
             if (!file) return;
-            const resultEl = document.getElementById('aiResult');
+            const resultEl = document.getElementById('aiIdentifyResult');
             const uploadEl = document.getElementById('aiUpload');
             uploadEl.innerHTML = `
                 <img src="${URL.createObjectURL(file)}" style="max-height:120px;border-radius:8px;margin-bottom:0.5rem;">

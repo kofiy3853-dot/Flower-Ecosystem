@@ -94,7 +94,7 @@
                     <div>
                         <h1 id="courseTitle">Loading...</h1>
                         <div class="course-meta">
-                            <span><i class="bi bi-star-fill" style="color:#f1c40f;"></i> <span id="courseRating">0</span> (<span id="courseReviews">0</span>)</span>
+                            <span><i class="bi bi-star-fill" style="color:#f1c40f;"></i> <span id="courseRating">0</span> (<span id="courseReviewsCount">0</span>)</span>
                             <span><i class="bi bi-people"></i> <span id="courseStudents">0</span> students</span>
                             <span><i class="bi bi-clock"></i> <span id="courseDuration">0</span> hours</span>
                             <span><i class="bi bi-bar-chart"></i> <span id="courseLevel">Beginner</span></span>
@@ -348,7 +348,7 @@
             document.getElementById('breadcrumbCourse').textContent = course.title;
             document.getElementById('courseTitle').textContent = course.title;
             document.getElementById('courseRating').textContent = (course.rating || 0) > 0 ? course.rating : 'New';
-            document.getElementById('courseReviews').textContent = course.reviews_count || course.reviews || 0;
+            document.getElementById('courseReviewsCount').textContent = course.reviews_count || course.reviews || 0;
             document.getElementById('courseStudents').textContent = course.students_count || course.students || 0;
             const dur = course.duration_minutes || course.duration || 0;
             document.getElementById('courseDuration').textContent = Math.floor(dur / 60) + 'h ' + (dur % 60) + 'm';
