@@ -487,9 +487,22 @@
             } catch { alert('Registration failed. Please try again.'); }
         }
 
-        function cancelRegistration() {
+        async function cancelRegistration() {
             if (!confirm('Are you sure you want to cancel?')) return;
-            alert('Registration cancelled.');
+            if (!currentEvent) return;
+            try {
+                const res = await fetch(`/api/events/${currentEvent.id}/register`, {
+                    method: 'DELETE',
+                    headers: authHeaders()
+                });
+                if (res.ok) {
+                    alert('Registration cancelled.');
+                    location.reload();
+                } else {
+                    const data = await res.json();
+                    alert(data.error || 'Cancellation failed');
+                }
+            } catch { alert('Cancellation failed. Please try again.'); }
         }
 
         function shareEvent() {
