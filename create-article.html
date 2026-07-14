@@ -188,16 +188,6 @@
                             <label class="form-label">Category <span class="required">*</span></label>
                             <select class="form-select" id="articleCategory" required>
                                 <option value="">Select category</option>
-                                <option value="flower-care">Flower Care</option>
-                                <option value="floral-design">Floral Design</option>
-                                <option value="flower-farming">Flower Farming</option>
-                                <option value="gardening">Gardening</option>
-                                <option value="business">Business</option>
-                                <option value="wedding-flowers">Wedding Flowers</option>
-                                <option value="plant-diseases">Plant Diseases</option>
-                                <option value="indoor-plants">Indoor Plants</option>
-                                <option value="sustainability">Sustainability</option>
-                                <option value="industry-news">Industry News</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -284,7 +274,7 @@
                     <div class="form-group">
                         <label class="form-label">URL Slug <span class="required">*</span></label>
                         <div class="slug-input">
-                            <span class="slug-prefix">flower-ecosystem.com/articles/</span>
+                            <span class="slug-prefix">/articles/</span>
                             <input type="text" class="form-input" id="urlSlug" placeholder="your-article-slug">
                         </div>
                         <p class="form-hint">Auto-generated from title. Only lowercase letters, numbers, and hyphens.</p>
@@ -508,17 +498,22 @@
         let linkedItems = { courses: [], products: [], events: [], articles: [] };
 
         document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('flower-user')) {
+                window.location.href = 'login.html';
+                return;
+            }
             loadHeaderFooter();
             setupEditor();
             setupTags();
             setupSlugGenerator();
             setupMetaCounter();
             loadUserInfo();
+            loadCategories();
         });
 
         function loadHeaderFooter() {
-            fetch('components/header.html').then(r => r.text()).then(h => document.getElementById('header-container').innerHTML = h);
-            fetch('components/footer.html').then(r => r.text()).then(h => document.getElementById('footer-container').innerHTML = h);
+            fetchWithAuth('components/header.html').then(r => r.text()).then(h => document.getElementById('header-container').innerHTML = h);
+            fetchWithAuth('components/footer.html').then(r => r.text()).then(h => document.getElementById('footer-container').innerHTML = h);
         }
 
         function loadUserInfo() {
@@ -526,6 +521,22 @@
             if (user) {
                 document.getElementById('authorName').textContent = user.name || user.email || 'Author';
             }
+        }
+
+        async function loadCategories() {
+            try {
+                const res = await fetchWithAuth('/api/articles/categories');
+                if (!res.ok) return;
+                const cats = await res.json();
+                const list = Array.isArray(cats) ? cats : [];
+                const select = document.getElementById('articleCategory');
+                list.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id || c.slug || c.name;
+                    opt.textContent = c.name || c.title;
+                    select.appendChild(opt);
+                });
+            } catch {}
         }
 
         // ─── Step Navigation ──────────────────────────────────────────
@@ -563,6 +574,13 @@
                 const category = document.getElementById('articleCategory').value;
                 if (!title || !category) {
                     alert('Please fill in the title and category.');
+                    return false;
+                }
+            }
+            if (step === 3) {
+                const content = document.getElementById('editorContent').innerText.trim();
+                if (!content || content.length < 10) {
+                    alert('Please write some content for your article.');
                     return false;
                 }
             }
@@ -675,7 +693,7 @@
         }
 
         // ─── Cover Upload ─────────────────────────────────────────────
-        function handleCoverUpload(input) {
+        async function handleCoverUpload(input) {
             const file = input.files[0];
             if (!file) return;
             const preview = document.getElementById('coverPreview');
@@ -685,6 +703,19 @@
             `;
             preview.style.display = 'block';
             coverUploaded = true;
+
+            // Upload to server
+            try {
+                const fd = new FormData();
+                fd.append('image', file);
+                const res = await fetchWithAuth('/api/upload', { method: 'POST', body: fd });
+                if (res.ok) {
+                    const data = await res.json();
+                    window.coverImageUrl = data.url || data.image_url || data.path;
+                }
+            } catch (e) {
+                console.warn('Cover upload failed:', e.message);
+            }
         }
 
         function removeCover() {
@@ -711,30 +742,53 @@
         });
 
         // ─── Link Modal ───────────────────────────────────────────────
-        function openLinkModal(type) {
-            const id = prompt(`Enter ${type} ID to link:`);
-            if (!id) return;
+        async function openLinkModal(type) {
+            const search = prompt(`Search for a ${type} to link (enter a keyword):`);
+            if (!search || !search.trim()) return;
 
-            const names = { course: 'Course', product: 'Product', event: 'Event', article: 'Article' };
-            const item = { id, name: `${names[type]} ${id}`, type };
+            const endpoints = { course: '/api/courses', product: '/api/products', event: '/api/events', article: '/api/articles' };
+            const endpoint = endpoints[type];
+            if (!endpoint) return;
 
-            const container = document.getElementById('related' + type.charAt(0).toUpperCase() + type.slice(1) + 's');
-            if (container.querySelector('p')) container.innerHTML = '';
+            try {
+                const res = await fetchWithAuth(`${endpoint}?search=${encodeURIComponent(search.trim())}&limit=5`);
+                if (!res.ok) return;
+                const data = await res.json();
+                const items = Array.isArray(data) ? data : (data.courses || data.products || data.events || data.articles || []);
 
-            const div = document.createElement('div');
-            div.className = 'link-item';
-            div.innerHTML = `
-                <div style="width:50px;height:50px;background:var(--primary-light);border-radius:6px;display:flex;align-items:center;justify-content:center;">
-                    <i class="bi bi-link-45deg" style="color:var(--primary-color);"></i>
-                </div>
-                <div class="info">
-                    <div class="name">${item.name}</div>
-                    <div class="type">${item.type}</div>
-                </div>
-                <button type="button" class="btn btn-sm btn-outline" onclick="this.closest('.link-item').remove()">Remove</button>
-            `;
-            container.appendChild(div);
-            linkedItems[type + 's'].push(item);
+                if (!items.length) {
+                    alert(`No ${type}s found for "${search.trim()}"`);
+                    return;
+                }
+
+                const names = { course: 'Course', product: 'Product', event: 'Event', article: 'Article' };
+                const container = document.getElementById('related' + type.charAt(0).toUpperCase() + type.slice(1) + 's');
+                if (container.querySelector('p')) container.innerHTML = '';
+
+                // Show selection list
+                const choice = prompt(`Found ${items.length} result(s):\n${items.map((item, i) => `${i + 1}. ${item.title || item.name}`).join('\n')}\n\nEnter number to link (1-${items.length}):`);
+                const idx = parseInt(choice, 10) - 1;
+                if (isNaN(idx) || idx < 0 || idx >= items.length) return;
+
+                const item = items[idx];
+                const div = document.createElement('div');
+                div.className = 'link-item';
+                div.dataset.id = item.id;
+                div.innerHTML = `
+                    <div style="width:50px;height:50px;background:var(--primary-light);border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                        ${item.image || item.thumbnail_url ? `<img src="${item.image || item.thumbnail_url}" alt="" style="width:100%;height:100%;object-fit:cover;">` : `<i class="bi bi-link-45deg" style="color:var(--primary-color);"></i>`}
+                    </div>
+                    <div class="info">
+                        <div class="name">${item.title || item.name || names[type] + ' ' + item.id}</div>
+                        <div class="type">${names[type]}</div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline" onclick="this.closest('.link-item').remove()">Remove</button>
+                `;
+                container.appendChild(div);
+                linkedItems[type + 's'].push({ id: item.id, name: item.title || item.name, type });
+            } catch (e) {
+                console.warn('Link search failed:', e.message);
+            }
         }
 
         // ─── Sidebar Update ───────────────────────────────────────────
@@ -808,20 +862,6 @@
                 btn.disabled = false;
                 btn.textContent = origText;
             }
-        }
-                if (!res.ok) {
-                    const err = await res.json().catch(() => ({ error: 'Failed to save draft' }));
-                    throw new Error(err.error || 'Failed to save draft');
-                }
-                return res.json();
-            }).then(article => {
-                alert('Draft saved successfully!');
-                window.location.href = 'article-detail.html?id=' + article.id;
-            }).catch(err => {
-                alert('Error: ' + err.message);
-                btn.disabled = false;
-                btn.textContent = origText;
-            });
         }
 
         function collectData() {
