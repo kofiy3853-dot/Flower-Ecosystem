@@ -78,9 +78,25 @@ router.delete('/users/:id', requireRole('ADMIN', 'SUPERADMIN'), asyncHandler(asy
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
-        // Clean up dependent records that lack ON DELETE CASCADE
-        await client.query('DELETE FROM platform.conversations WHERE participant_1 = $1 OR participant_2 = $1', [req.params.id]).catch(() => {});
-        await client.query('DELETE FROM platform.messages WHERE sender_id = $1', [req.params.id]).catch(() => {});
+        // Clean up dependent records from all tables that reference auth.users
+        const cleanupQueries = [
+            'DELETE FROM platform.conversations WHERE participant_1 = $1 OR participant_2 = $1',
+            'DELETE FROM platform.messages WHERE sender_id = $1',
+            'DELETE FROM platform.reviews WHERE user_id = $1',
+            'DELETE FROM marketplace.order_items WHERE seller_id = $1',
+            'DELETE FROM admin.audit_log WHERE user_id = $1',
+            'DELETE FROM sellers.orders WHERE buyer_id = $1',
+            'DELETE FROM sellers.reviews WHERE user_id = $1',
+            'DELETE FROM sellers.messages WHERE sender_id = $1',
+            'DELETE FROM growers.bulk_orders WHERE buyer_id = $1',
+            'DELETE FROM learning.instructor_reviews WHERE reviewer_id = $1',
+            'DELETE FROM research.articles WHERE submitted_by = $1 OR approved_by = $1',
+            'DELETE FROM community.competitions WHERE created_by = $1',
+            'DELETE FROM learning.instructor_applications WHERE reviewed_by = $1'
+        ];
+        for (const q of cleanupQueries) {
+            await client.query(q, [req.params.id]).catch(() => {});
+        }
         await client.query('DELETE FROM auth.users WHERE id = $1', [req.params.id]);
         await client.query('COMMIT');
     } catch (err) {
