@@ -403,6 +403,7 @@ function renderEvents(data) {
                 <span class="article-tag">${escapeHtml(cat)}</span>
                 <h4>${escapeHtml(e.title)}</h4>
                 <p style="margin-bottom:0.25rem;"><i class="bi bi-geo-alt"></i> ${escapeHtml(e.location || 'Online')}</p>
+                ${e.organizer_name ? `<p style="margin-bottom:0.25rem;font-size:0.82rem;color:var(--text-muted);"><i class="bi bi-person"></i> ${escapeHtml(e.organizer_name)}</p>` : ''}
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.5rem;font-size:0.85rem;">
                     <strong style="color:var(--primary-color);">${escapeHtml(e.price === 0 || e.price === '0' ? 'Free' : (e.price || ''))}</strong>
                     <span style="color:var(--text-muted);">${e.spots ? e.spots + ' spots left' : ''}</span>
