@@ -446,12 +446,12 @@ async function clPublish() {
         };
 
         if (listingType === 'flower') {
-            body.flower_type = document.getElementById('flowerVariety').value || null;
-            body.color = document.getElementById('flowerColor').value || null;
-            body.flower_cond = document.getElementById('flowerFresh').value || null;
-            body.height = document.getElementById('stemLength').value.trim() || null;
-            body.care_level = document.getElementById('flowerGrade').value || null;
-            body.shelf_life_days = parseInt(document.getElementById('flowerQty').value) || 7;
+            body.flower_type = document.getElementById('prodFlowerType').value || null;
+            body.color = document.getElementById('prodColor').value || null;
+            body.flower_cond = document.getElementById('prodType').value || null;
+            body.height = document.getElementById('prodHeight').value.trim() || null;
+            body.care_level = document.getElementById('prodFlowerForm').value || null;
+            body.bloom_season = document.getElementById('prodFloweringTime').value.trim() || null;
         } else if (listingType === 'arrangement') {
             body.arrangement_type = document.getElementById('arrType').value || null;
             body.occasion = document.getElementById('arrOccasion').value || null;
