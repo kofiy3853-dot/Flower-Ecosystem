@@ -383,8 +383,9 @@ function renderEvents(data) {
     // Filter out past events
     const now = new Date();
     const items = normalizeArray(data, 'events').filter(e => {
-        if (!e.date) return true;
-        const eventDate = new Date(e.date);
+        const evDate = e.date || e.event_date;
+        if (!evDate) return true;
+        const eventDate = new Date(evDate);
         return isNaN(eventDate) || eventDate >= now;
     }).slice(0, 3);
     
@@ -393,17 +394,24 @@ function renderEvents(data) {
         return;
     }
     
-    grid.innerHTML = items.map(e => `
+    grid.innerHTML = items.map(e => {
+        const img = e.image || e.image_url || placeholderImg(3);
+        const cat = e.category || e.event_category || 'Event';
+        const evDate = e.date || e.event_date;
+        const d = evDate ? new Date(evDate) : null;
+        const day = d ? d.getDate() : '';
+        const month = d ? d.toLocaleString('en', { month: 'short' }) : '';
+        return `
         <a href="event-detail.html?id=${encodeURIComponent(e.id)}" class="event-card" style="text-decoration:none;color:inherit;">
             <div class="event-img-wrap">
-                <img src="${e.image || placeholderImg(3)}" alt="${escapeHtml(e.title)}" loading="lazy">
+                <img src="${img}" alt="${escapeHtml(e.title)}" loading="lazy">
                 <div class="event-date-badge">
-                    <span class="day">${escapeHtml(e.day || '')}</span>
-                    <span class="month">${escapeHtml(e.month || '')}</span>
+                    <span class="day">${day}</span>
+                    <span class="month">${month}</span>
                 </div>
             </div>
             <div class="event-info">
-                <span class="article-tag">${escapeHtml(e.category || 'Event')}</span>
+                <span class="article-tag">${escapeHtml(cat)}</span>
                 <h4>${escapeHtml(e.title)}</h4>
                 <p style="margin-bottom:0.25rem;"><i class="bi bi-geo-alt"></i> ${escapeHtml(e.location || 'Online')}</p>
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.5rem;font-size:0.85rem;">
@@ -411,8 +419,8 @@ function renderEvents(data) {
                     <span style="color:var(--text-muted);">${e.spots ? e.spots + ' spots left' : ''}</span>
                 </div>
             </div>
-        </a>
-    `).join('');
+        </a>`;
+    }).join('');
 }
 
 
