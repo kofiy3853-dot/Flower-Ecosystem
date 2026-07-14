@@ -751,33 +751,97 @@
         }
 
         // ─── Save & Publish ───────────────────────────────────────────
-        function saveDraft() {
-            const data = collectData();
-            data.status = 'draft';
-            console.log('Saving draft:', data);
-            alert('Article saved as draft!');
-        }
-
-        function publishArticle() {
+        async function publishArticle() {
             if (!validateStep(1)) return;
             const data = collectData();
+            data.is_published = true;
             data.status = 'published';
-            console.log('Publishing:', data);
-            alert('Article published successfully!');
-            window.location.href = 'articles.html';
+
+            const btn = document.getElementById('publishBtn');
+            const origText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Publishing...';
+
+            try {
+                const res = await fetchWithCsrf('/api/articles', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({ error: 'Failed to publish' }));
+                    throw new Error(err.error || 'Failed to publish article');
+                }
+                const article = await res.json();
+                alert('Article published successfully!');
+                window.location.href = 'article-detail.html?id=' + article.id;
+            } catch (err) {
+                alert('Error: ' + err.message);
+                btn.disabled = false;
+                btn.textContent = origText;
+            }
+        }
+
+        async function saveDraft() {
+            const data = collectData();
+            data.is_published = false;
+            data.status = 'draft';
+
+            const btn = document.querySelector('button[onclick="saveDraft()"]');
+            const origText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            try {
+                const res = await fetchWithCsrf('/api/articles', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({ error: 'Failed to save draft' }));
+                    throw new Error(err.error || 'Failed to save draft');
+                }
+                alert('Article saved as draft!');
+                btn.disabled = false;
+                btn.textContent = origText;
+            } catch (err) {
+                alert('Error: ' + err.message);
+                btn.disabled = false;
+                btn.textContent = origText;
+            }
+        }
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({ error: 'Failed to save draft' }));
+                    throw new Error(err.error || 'Failed to save draft');
+                }
+                return res.json();
+            }).then(article => {
+                alert('Draft saved successfully!');
+                window.location.href = 'article-detail.html?id=' + article.id;
+            }).catch(err => {
+                alert('Error: ' + err.message);
+                btn.disabled = false;
+                btn.textContent = origText;
+            });
         }
 
         function collectData() {
+            const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
             return {
                 title: document.getElementById('articleTitle').value,
                 subtitle: document.getElementById('articleSubtitle').value,
-                category: document.getElementById('articleCategory').value,
-                tags,
-                content: document.getElementById('editorContent').innerHTML,
+                excerpt: document.getElementById('metaDesc').value, // using meta description as excerpt
                 slug: document.getElementById('urlSlug').value,
-                metaDescription: document.getElementById('metaDesc').value,
+                content: document.getElementById('editorContent').innerHTML,
+                thumbnail_url: window.coverImageUrl || null,
+                author_name: user?.name || user?.email || 'Author',
+                author_title: 'Contributor',
+                category_id: document.getElementById('articleCategory').value || null,
+                reading_time: parseInt(document.getElementById('readTime').textContent) || 5,
+                is_featured: false,
+                meta_description: document.getElementById('metaDesc').value,
                 keywords: document.getElementById('keywords').value,
-                visibility: document.querySelector('input[name="visibility"]:checked')?.value,
+                tags: tags,
+                visibility: document.querySelector('input[name="visibility"]:checked')?.value || 'public',
                 related: linkedItems
             };
         }

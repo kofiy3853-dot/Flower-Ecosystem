@@ -558,6 +558,36 @@ router.get('/articles', asyncHandler(async (req, res) => {
     res.json({ articles: filtered.slice(offset, offset + lim), total: filtered.length, page: pg, limit: lim, pages: 1 });
 }));
 
+// ─── Create Article ──────────────────────────────────────
+router.post('/articles', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+
+    const { title, slug, excerpt, content, thumbnail_url, author_name, author_title, category_id, reading_time, is_featured, is_published, meta_description, keywords, tags, visibility, scheduled_at } = req.body;
+
+    if (!title || !content) {
+        return res.status(400).json({ error: 'Title and content are required' });
+    }
+
+    const articleSlug = slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+    // Check if slug exists
+    const existing = await pool.query('SELECT id FROM learning.articles WHERE slug = $1', [articleSlug]);
+    if (existing.rows.length) {
+        return res.status(409).json({ error: 'An article with this slug already exists' });
+    }
+
+    const publishedAt = is_published ? (scheduled_at ? new Date(scheduled_at) : new Date()) : null;
+
+    const r = await pool.query(
+        `INSERT INTO learning.articles (title, slug, excerpt, content, thumbnail_url, author_name, author_title, category_id, reading_time, is_featured, is_published, published_at, meta_description, keywords, tags, visibility, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
+         RETURNING *`,
+        [title, articleSlug, excerpt || null, content, thumbnail_url || null, author_name || req.user?.name || null, author_title || null, category_id || null, reading_time || 5, is_featured || false, is_published || false, publishedAt, meta_description || null, keywords || null, tags || [], visibility || 'public', publishedAt]
+    );
+
+    res.status(201).json(r.rows[0]);
+}));
+
 router.get('/articles/featured', asyncHandler(async (_, res) => {
     if (await dbAvailable()) {
         try {
@@ -601,6 +631,36 @@ router.get('/articles/:id', asyncHandler(async (req, res) => {
     const fallback = readJSON(path.join(__dirname, '..', 'data', 'articles.json'));
     const article = fallback.find(a => a.id === id || a.slug === id);
     article ? res.json(article) : res.status(404).json({ error: 'Article not found' });
+}));
+
+// ─── Create Article ──────────────────────────────────────
+router.post('/articles', requireAuth, asyncHandler(async (req, res) => {
+    if (!(await dbAvailable())) return res.status(503).json({ error: 'Database unavailable' });
+
+    const { title, slug, excerpt, content, thumbnail_url, author_name, author_title, category_id, reading_time, is_featured, is_published, meta_description, keywords, tags, visibility, scheduled_at, related } = req.body;
+
+    if (!title || !content) {
+        return res.status(400).json({ error: 'Title and content are required' });
+    }
+
+    const articleSlug = slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+    // Check if slug exists
+    const existing = await pool.query('SELECT id FROM learning.articles WHERE slug = $1', [articleSlug]);
+    if (existing.rows.length) {
+        return res.status(409).json({ error: 'An article with this slug already exists' });
+    }
+
+    const publishedAt = is_published ? (scheduled_at ? new Date(scheduled_at) : new Date()) : null;
+
+    const r = await pool.query(
+        `INSERT INTO learning.articles (title, slug, excerpt, content, thumbnail_url, author_name, author_title, category_id, reading_time, is_featured, is_published, published_at, meta_description, keywords, tags, visibility, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
+         RETURNING *`,
+        [title, articleSlug, excerpt || null, content, thumbnail_url || null, author_name || req.user?.name || null, author_title || null, category_id || null, reading_time || 5, is_featured || false, is_published || false, publishedAt, meta_description || null, keywords || null, tags || [], visibility || 'public', publishedAt]
+    );
+
+    res.status(201).json(r.rows[0];
 }));
 
 router.get('/articles/:id/related', asyncHandler(async (req, res) => {
