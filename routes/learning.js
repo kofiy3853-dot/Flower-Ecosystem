@@ -660,7 +660,7 @@ router.post('/articles', requireAuth, asyncHandler(async (req, res) => {
         [title, articleSlug, excerpt || null, content, thumbnail_url || null, author_name || req.user?.name || null, author_title || null, category_id || null, reading_time || 5, is_featured || false, is_published || false, publishedAt, meta_description || null, keywords || null, tags || [], visibility || 'public', publishedAt]
     );
 
-    res.status(201).json(r.rows[0];
+    res.status(201).json(r.rows[0]);
 }));
 
 router.get('/articles/:id/related', asyncHandler(async (req, res) => {

@@ -15,9 +15,12 @@ ALTER TABLE platform.messages ADD CONSTRAINT messages_sender_id_fkey FOREIGN KEY
 ALTER TABLE platform.reviews DROP CONSTRAINT IF EXISTS reviews_user_id_fkey;
 ALTER TABLE platform.reviews ADD CONSTRAINT reviews_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
 
--- admin.platform_settings
-ALTER TABLE admin.platform_settings DROP CONSTRAINT IF EXISTS platform_settings_updated_by_fkey;
-ALTER TABLE admin.platform_settings ADD CONSTRAINT platform_settings_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+-- admin.platform_settings (may not exist)
+DO $$ BEGIN
+    ALTER TABLE admin.platform_settings DROP CONSTRAINT IF EXISTS platform_settings_updated_by_fkey;
+    ALTER TABLE admin.platform_settings ADD CONSTRAINT platform_settings_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES auth.users(id) ON DELETE SET NULL;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- events.events
 ALTER TABLE events.events DROP CONSTRAINT IF EXISTS events_organizer_id_fkey;
