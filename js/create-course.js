@@ -721,21 +721,20 @@
     window.saveDraft = async function() {
         saveStepData(currentStep);
         try {
-            const token = localStorage.getItem('flower-user');
             const body = buildPayload();
             body.status = 'draft';
 
             let res;
             if (courseData.course_id) {
-                res = await fetch('/api/courses/' + courseData.course_id, {
+                res = await fetchWithCsrf('/api/courses/' + courseData.course_id, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body)
                 });
             } else {
-                res = await fetch('/api/courses', {
+                res = await fetchWithCsrf('/api/courses', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body)
                 });
             }
@@ -767,22 +766,21 @@
         }
         
         try {
-            const token = localStorage.getItem('flower-user');
             const body = buildPayload();
             body.status = 'review';
             body.is_published = false;
 
             let res;
             if (courseData.course_id) {
-                res = await fetch('/api/courses/' + courseData.course_id, {
+                res = await fetchWithCsrf('/api/courses/' + courseData.course_id, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body)
                 });
             } else {
-                res = await fetch('/api/courses', {
+                res = await fetchWithCsrf('/api/courses', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body)
                 });
             }
