@@ -557,9 +557,10 @@
                 if (window.innerWidth <= 768) { e.preventDefault(); this.parentElement.classList.toggle('mobile-open'); }
             });
         });
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js').catch(() => {});
-        }
+        // Service worker disabled — was causing fetch errors and stale cache
+        // if ('serviceWorker' in navigator) {
+        //     navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+        // }
     </script>
 </body>
 </html>
