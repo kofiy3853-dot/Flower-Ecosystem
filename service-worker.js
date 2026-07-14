@@ -1,4 +1,4 @@
-const CACHE_NAME = 'flower-ecosystem-v2';
+const CACHE_NAME = 'flower-ecosystem-v3';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -12,7 +12,9 @@ const STATIC_ASSETS = [
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => {
-            return cache.addAll(STATIC_ASSETS);
+            return Promise.allSettled(
+                STATIC_ASSETS.map(url => cache.add(url).catch(() => {}))
+            );
         })
     );
     self.skipWaiting();
@@ -54,7 +56,7 @@ self.addEventListener('fetch', event => {
                     caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
                     return response;
                 })
-                .catch(() => caches.match(request))
+                .catch(() => caches.match(request).then(cached => cached || new Response('', { status: 408 })))
         );
         return;
     }
@@ -70,7 +72,7 @@ self.addEventListener('fetch', event => {
                     }
                     return response;
                 })
-                .catch(() => caches.match(request))
+                .catch(() => caches.match(request).then(cached => cached || new Response('', { status: 408 })))
         );
         return;
     }
